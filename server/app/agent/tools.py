@@ -180,6 +180,25 @@ def build_registry() -> ToolRegistry:
         }
         return {"enterprise_id": enterprise_id, "enterprise": result["enterprise"]["name"], "dimensions": summary}
 
+    def resolve_stock_code(db: Session, name: str) -> dict:
+        """名称 → 股票代码候选（添加企业前确认）。"""
+        from app.services.enterprise import lookup_stock
+
+        return lookup_stock(name)
+
+    def add_enterprise(db: Session, name: str, stock_code: str = "", auto_fetch: bool = True) -> dict:
+        """动作工具：添加企业并（可选）自动拉取公开数据。"""
+        from app.services.enterprise import create_enterprise
+
+        result = create_enterprise(db, name, stock_code or None, auto_fetch)
+        if "refresh" in result and isinstance(result["refresh"], dict):
+            dims = result["refresh"].get("dimensions", {})
+            result["refresh_summary"] = {
+                d: (f"+{v.get('inserted', 0)}/~{v.get('updated', 0)}" if v.get("ok") else (v.get("gap") or v.get("error")))
+                for d, v in dims.items()
+            }
+        return result
+
     def run_risk_analysis(db: Session, enterprise_id: int) -> dict:
         """动作工具：触发一次完整研判（大模型 + 规则交叉校验），耗时 10~40 秒。"""
         from app.services.risk import analyze_enterprise
@@ -265,6 +284,31 @@ def build_registry() -> ToolRegistry:
             "required": ["enterprise_id"],
         },
         handler=refresh_enterprise_data,
+        read_only=False,
+    ))
+    reg.register(Tool(
+        name="resolve_stock_code",
+        description="按企业名称查询 A 股股票代码候选（用于添加企业前确认标的）。",
+        parameters={
+            "type": "object",
+            "properties": {"name": {"type": "string", "description": "企业/上市公司名称关键词"}},
+            "required": ["name"],
+        },
+        handler=resolve_stock_code,
+    ))
+    reg.register(Tool(
+        name="add_enterprise",
+        description="添加一家新企业到平台（可自动解析股票代码并拉取公开数据：财报/新闻/诉讼）。这是写操作，需用户授权。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "企业全称或常用名"},
+                "stock_code": {"type": "string", "description": "可选：A股代码（不填则按名称自动解析）"},
+                "auto_fetch": {"type": "boolean", "description": "是否自动拉取公开数据，默认 true"},
+            },
+            "required": ["name"],
+        },
+        handler=add_enterprise,
         read_only=False,
     ))
     reg.register(Tool(

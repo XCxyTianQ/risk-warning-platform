@@ -106,6 +106,31 @@ export const api = {
       dimensions: Record<string, { ok: boolean; source?: string; fetched?: number; inserted?: number; updated?: number; gap?: string; error?: string }>
     }>(`/api/enterprise/${id}/refresh${q}`, { method: 'POST' })
   },
+  datasources: () =>
+    request<{ sources: { dimension: string; mode: string; sources: { name: string; dimensions: string[] }[] }[] }>(
+      '/api/datasources',
+    ),
+
+  // --- 自由添加企业 ---
+  resolveStock: (name: string) =>
+    request<{ query: string; candidates: { code: string; name: string }[] }>(
+      `/api/resolve_stock?name=${encodeURIComponent(name)}`,
+    ),
+  createEnterprise: (body: { name: string; stock_code?: string; auto_fetch?: boolean }) =>
+    request<{
+      enterprise_id: number
+      name: string
+      stock_code?: string
+      resolved_from?: string
+      refresh?: any
+      error?: string
+    }>('/api/enterprises', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteEnterprise: (id: number) =>
+    request<{ deleted: number; name: string }>(`/api/enterprise/${id}`, { method: 'DELETE' }),
 
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>

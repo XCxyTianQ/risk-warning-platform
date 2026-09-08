@@ -16,6 +16,13 @@ class AnalyzeByName(BaseModel):
     name: str
 
 
+class CreateEnterpriseIn(BaseModel):
+    name: str
+    stock_code: str | None = None
+    auto_fetch: bool = True
+    industry: str = ""
+
+
 def _get_ent(db: Session, enterprise_id: int) -> Enterprise:
     ent = db.get(Enterprise, enterprise_id)
     if ent is None:
@@ -43,6 +50,43 @@ def get_enterprise(enterprise_id: int, db: Session = Depends(get_db)):
         "reg_date": ent.reg_date, "industry": ent.industry, "address": ent.address,
         "data_note": ent.data_note,
     }
+
+
+@router.get("/resolve_stock")
+def resolve_stock(name: str):
+    """企业名称 → 股票代码候选（添加企业时确认用）。"""
+    from app.services.enterprise import lookup_stock
+
+    return lookup_stock(name)
+
+
+@router.post("/enterprises")
+def create_enterprise(body: CreateEnterpriseIn, db: Session = Depends(get_db)):
+    """自由添加企业：可自动解析股票代码并拉取公开数据。"""
+    from app.services.enterprise import create_enterprise as create
+
+    result = create(db, body.name, body.stock_code, body.auto_fetch, body.industry)
+    if result.get("error"):
+        raise HTTPException(409 if "已存在" in result["error"] else 400, result["error"])
+    return result
+
+
+@router.delete("/enterprise/{enterprise_id}")
+def delete_enterprise(enterprise_id: int, db: Session = Depends(get_db)):
+    from app.services.enterprise import delete_enterprise as delete
+
+    result = delete(db, enterprise_id)
+    if result.get("error"):
+        raise HTTPException(404, result["error"])
+    return result
+
+
+@router.get("/datasources")
+def datasources():
+    """当前启用的数据源与维度覆盖（多信源状态）。"""
+    from app.datasources.registry import source_status
+
+    return {"sources": source_status()}
 
 
 @router.post("/enterprises/analyze_by_name")

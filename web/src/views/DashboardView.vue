@@ -8,6 +8,7 @@ import BaseChart from '../components/BaseChart.vue'
 
 const router = useRouter()
 const data = ref<DashboardSummary | null>(null)
+const sources = ref<{ dimension: string; mode: string; sources: { name: string }[] }[]>([])
 const loading = ref(true)
 const error = ref('')
 
@@ -66,7 +67,9 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    data.value = await api.summary()
+    const [summary, ds] = await Promise.all([api.summary(), api.datasources()])
+    data.value = summary
+    sources.value = ds.sources
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -124,6 +127,19 @@ onMounted(load)
     </div>
 
     <div class="card">
+      <h3 class="card-title">数据源覆盖（多信源）</h3>
+      <div class="src-grid">
+        <div v-for="s in sources" :key="s.dimension" class="src-item">
+          <div class="src-dim">{{ DIM_LABEL[s.dimension] ?? s.dimension }}</div>
+          <div class="src-names">
+            <span v-for="x in s.sources" :key="x.name" class="src-tag">{{ x.name }}</span>
+          </div>
+          <div class="src-mode">{{ s.mode === 'merge' ? '多源合并' : '优先降级' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3 class="card-title">企业风险矩阵</h3>
       <table class="table">
         <thead>
@@ -139,8 +155,7 @@ onMounted(load)
           </tr>
         </thead>
         <tbody>
-          <tr v-for="e in data?.enterprises ?? []" :key="e.id" class="clickable" @click="router.push(`/enterprises/${e.id}`)">
-            <td class="name">{{ e.name }}</td>
+          <tr v-for="e in data?.enterprises ?? []" :key="e.id" class="clickable" @click="router.push(`/enterprises/${e.id}`)">            <td class="name">{{ e.name }}</td>
             <td>{{ e.industry }}</td>
             <td>
               <span class="score-cell" :style="{ color: scoreColor(e.score) }">{{ e.score ?? '—' }}</span>
@@ -157,3 +172,45 @@ onMounted(load)
     </div>
   </div>
 </template>
+
+<style scoped>
+.src-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.src-item {
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--hover);
+}
+
+.src-dim {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.src-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.src-tag {
+  font-size: 11px;
+  font-family: Consolas, monospace;
+  color: var(--primary);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.src-mode {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+</style>

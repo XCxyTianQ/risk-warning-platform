@@ -1,32 +1,69 @@
-"""数据源注册表：按维度选择数据源 + 降级链 + 拉取入库。"""
+"""数据源注册表：按维度选择数据源 + 降级链 + 多信源合并 + 幂等入库。"""
 
 from sqlalchemy.orm import Session as DbSession
 
 from app.datasources.akshare_src import akshare_source
+from app.datasources.announcement_src import announcement_source
 from app.datasources.base import DataSource, FetchResult, NormalizedRecord
+from app.datasources.sina_src import sina_source
 from app.db.models import Enterprise, Finance, LegalRecord, News
 
-# 维度 → 数据源优先级（后续可插入 paid_src / manual_src）
-PRIORITY: dict[str, list[DataSource]] = {
-    "finance": [akshare_source],
-    "news": [akshare_source],
-    "legal": [akshare_source],
+# 维度 → 数据源优先级（靠前者优先；news 维度多信源合并）
+SOURCES: dict[str, list[DataSource]] = {
+    "finance": [akshare_source, sina_source],       # 东财 → 新浪（降级）
+    "news": [akshare_source, announcement_source],  # 东财个股新闻 + 东财公告（合并）
+    "legal": [akshare_source],                      # 巨潮诉讼统计
 }
+MERGE_DIMS = {"news"}
+
+
+def source_status() -> list[dict]:
+    """供前端"数据源"页展示。"""
+    return [
+        {
+            "dimension": dim,
+            "sources": [{"name": s.name, "dimensions": s.dimensions} for s in sources],
+            "mode": "merge" if dim in MERGE_DIMS else "fallback",
+        }
+        for dim, sources in SOURCES.items()
+    ]
 
 
 def fetch_dimension(db: DbSession, enterprise: Enterprise, dimension: str) -> FetchResult:
-    """按优先级依次尝试，全部失败则返回带 error/gap 的结果（不抛异常）。"""
-    last = FetchResult(dimension, "none", error="无可用数据源")
-    for source in PRIORITY.get(dimension, []):
+    """按优先级拉取：news 合并多源；其余首个成功源生效。全部失败返回带 error/gap 的结果。"""
+    sources = SOURCES.get(dimension, [])
+    if not sources:
+        return FetchResult(dimension, "none", error=f"无数据源: {dimension}")
+
+    merged: list[NormalizedRecord] = []
+    used: list[str] = []
+    errors: list[str] = []
+    gap = ""
+
+    for source in sources:
         result = source.fetch(enterprise, dimension)
         if result.ok and result.records:
-            return result
-        last = result
-    return last
+            merged.extend(result.records)
+            used.append(result.source)
+            if dimension not in MERGE_DIMS:
+                break  # 非合并维度：首个成功即用
+        elif result.ok:
+            used.append(result.source)  # 成功但无记录（如无诉讼）
+            if dimension not in MERGE_DIMS:
+                break
+        else:
+            errors.append(f"{result.source}: {result.gap or result.error}")
+            gap = gap or result.gap
+
+    if merged:
+        return FetchResult(dimension, "+".join(used), records=merged)
+    if used:
+        return FetchResult(dimension, "+".join(used), records=[])
+    return FetchResult(dimension, "none", error="; ".join(errors), gap=gap)
 
 
 def upsert_records(db: DbSession, enterprise_id: int, result: FetchResult) -> dict:
-    """幂等入库：财务按 (企业, 年份, 报告类型) 覆盖；新闻/法律按来源 external_id 去重。"""
+    """幂等入库：财务按 (企业, 年份, 报告类型) 覆盖；新闻/法律按标题去重。"""
     inserted = updated = 0
     for rec in result.records:
         if rec.kind == "finance":

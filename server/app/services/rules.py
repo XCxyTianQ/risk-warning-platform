@@ -242,15 +242,17 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
     if dim == "operation":
         op = ind["operation"]
         age = op.get("age_years")
-        s = 95.0 if age is not None else None
-        if s is None:
+        has_fin = op.get("net_margin") is not None or op.get("revenue_growth") is not None
+        if age is None and not has_fin:
             return None, "无成立年限与财务数据（数据不足）"
-        if age < 2:
-            s -= 10
-        elif age < 5:
-            s -= 5
-        elif age >= 10:
-            s += 5
+        s = 95.0 if age is not None else 90.0
+        if age is not None:
+            if age < 2:
+                s -= 10
+            elif age < 5:
+                s -= 5
+            elif age >= 10:
+                s += 5
         if op.get("net_margin") is not None:
             if op["net_margin"] < 0:
                 s -= 30
@@ -263,7 +265,7 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
                 s -= 15
             elif op["revenue_growth"] > 20:
                 s += 3
-        note = f"成立 {age} 年"
+        note = f"成立 {age} 年" if age is not None else "成立年限未知"
         if op.get("net_margin") is not None:
             note += f" · 净利润率 {op['net_margin']}%"
         if op.get("revenue_growth") is not None:
