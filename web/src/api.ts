@@ -97,6 +97,21 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
     }),
+
+  // --- 对话会话（历史持久化） ---
+  chatSessions: () =>
+    request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(
+      '/api/chat/sessions',
+    ),
+  chatSession: (id: string) =>
+    request<{
+      session_id: string
+      title: string
+      updated_at: string
+      messages: { role: string; content: string; tool_calls: any[]; tool_call_id: string; tool_name: string }[]
+    }>(`/api/chat/sessions/${id}`),
+  chatDelete: (id: string) =>
+    request<{ deleted: string }>(`/api/chat/sessions/${id}`, { method: 'DELETE' }),
 }
 
 /** 风险等级元数据 */

@@ -58,7 +58,7 @@ def _summarize(result: dict) -> dict:
 
 
 def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[AgentEvent]:
-    store.append(session, {"role": "user", "content": user_text})
+    store.append(db, session, {"role": "user", "content": user_text})
     client = _client()
 
     for step in range(MAX_STEPS):
@@ -78,7 +78,7 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
             return
 
         if tool_calls:
-            store.append(session, {
+            store.append(db, session, {
                 "role": "assistant",
                 "content": "".join(text_parts),
                 "tool_calls": tool_calls,
@@ -98,9 +98,10 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
                     "read_only": bool(tool and tool.read_only),
                 })
                 result = _registry.call(name, args, db)
-                store.append(session, {
+                store.append(db, session, {
                     "role": "tool",
                     "tool_call_id": tc.get("id", ""),
+                    "tool_name": name,
                     "content": json.dumps(result, ensure_ascii=False)[:MAX_TOOL_RESULT_CHARS],
                 })
                 yield AgentEvent("tool_result", {
@@ -111,8 +112,8 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
             continue
 
         final_text = "".join(text_parts)
-        store.append(session, {"role": "assistant", "content": final_text})
-        yield AgentEvent("done", {"session_id": session.id, "steps": step + 1})
+        store.append(db, session, {"role": "assistant", "content": final_text})
+        yield AgentEvent("done", {"session_id": session.id, "steps": step + 1, "title": session.title})
         return
 
     yield AgentEvent("error", {"message": f"达到最大工具调用轮次（{MAX_STEPS}），请换一种问法"})

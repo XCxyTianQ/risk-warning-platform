@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 
+import { api } from '../api'
 import { openForTool, workspace } from '../workspace/store'
 
 interface ToolCard {
@@ -21,12 +22,24 @@ interface ChatMsg {
   error?: string
 }
 
+interface SessionRow {
+  id: string
+  title: string
+  updated_at: string
+  message_count: number
+}
+
 const messages = ref<ChatMsg[]>([])
 const input = ref('')
 const busy = ref(false)
 const sessionId = ref<string | null>(null)
 const listEl = ref<HTMLDivElement | null>(null)
+const historyOpen = ref(false)
+const sessions = ref<SessionRow[]>([])
+const loadingHistory = ref(false)
 let abort: AbortController | null = null
+
+const SESSION_KEY = 'rw-chat-session'
 
 const SUGGESTIONS = [
   '康美药业现在风险怎么样？',
@@ -61,6 +74,99 @@ function render(text: string) {
     .replace(/\n{2,}/g, '<br/><br/>')
     .replace(/\n/g, '<br/>')
 }
+
+function safeParse(s: string): Record<string, any> {
+  try {
+    return JSON.parse(s)
+  } catch {
+    return {}
+  }
+}
+
+// ---------- 历史会话 ----------
+async function loadSessions() {
+  loadingHistory.value = true
+  try {
+    const r = await api.chatSessions()
+    sessions.value = r.sessions
+  } catch {
+    sessions.value = []
+  } finally {
+    loadingHistory.value = false
+  }
+}
+
+function rebuildMessages(rows: any[]): ChatMsg[] {
+  const out: ChatMsg[] = []
+  let current: ChatMsg | null = null
+  for (const m of rows) {
+    if (m.role === 'user') {
+      out.push({ role: 'user', text: m.content, tools: [] })
+      current = null
+    } else if (m.role === 'assistant') {
+      const calls: any[] = m.tool_calls ?? []
+      if (calls.length) {
+        const msg: ChatMsg = {
+          role: 'assistant',
+          text: m.content || '',
+          tools: calls.map((tc) => ({
+            id: tc.id,
+            name: tc.function?.name ?? '',
+            args: safeParse(tc.function?.arguments ?? '{}'),
+            running: false,
+            readOnly: true,
+          })),
+        }
+        out.push(msg)
+        current = msg
+      } else if (m.content) {
+        out.push({ role: 'assistant', text: m.content, tools: [] })
+        current = null
+      }
+    } else if (m.role === 'tool' && current) {
+      const card = current.tools.find((t) => t.id === m.tool_call_id)
+      if (card) card.result = safeParse(m.content)
+    }
+  }
+  return out
+}
+
+async function openSession(id: string) {
+  historyOpen.value = false
+  busy.value = false
+  try {
+    const r = await api.chatSession(id)
+    sessionId.value = r.session_id
+    localStorage.setItem(SESSION_KEY, r.session_id)
+    messages.value = rebuildMessages(r.messages)
+    await scrollBottom()
+  } catch (e) {
+    messages.value = [{ role: 'assistant', text: '', tools: [], error: (e as Error).message }]
+  }
+}
+
+async function deleteSession(id: string) {
+  await api.chatDelete(id)
+  if (sessionId.value === id) reset()
+  await loadSessions()
+}
+
+function newChat() {
+  stop()
+  messages.value = []
+  sessionId.value = null
+  localStorage.removeItem(SESSION_KEY)
+}
+
+function reset() {
+  newChat()
+}
+
+onMounted(async () => {
+  const saved = localStorage.getItem(SESSION_KEY)
+  if (saved) await openSession(saved)
+  await loadSessions()
+})
 
 async function send(text?: string) {
   const content = (text ?? input.value).trim()
@@ -117,6 +223,7 @@ async function send(text?: string) {
 function handleEvent(event: string, data: any, reply: ChatMsg) {
   if (event === 'session') {
     sessionId.value = data.session_id
+    localStorage.setItem(SESSION_KEY, data.session_id)
   } else if (event === 'token') {
     reply.text += data.text ?? ''
   } else if (event === 'tool') {
@@ -142,6 +249,7 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
     reply.error = data.message
   } else if (event === 'done') {
     reply.streaming = false
+    loadSessions()
   }
 }
 
@@ -149,19 +257,37 @@ function stop() {
   abort?.abort()
   busy.value = false
 }
-
-function reset() {
-  stop()
-  messages.value = []
-  sessionId.value = null
-}
 </script>
 
 <template>
   <div class="chat-panel">
-    <div v-if="messages.length" class="chat-toolbar">
-      <span class="session" v-if="sessionId">会话 {{ sessionId }}</span>
-      <button class="btn ghost small" @click="reset">清空</button>
+    <div class="chat-toolbar">
+      <div class="tb-left">
+        <button class="btn ghost small" @click="historyOpen = !historyOpen">
+          🕘 历史会话 {{ sessions.length ? `(${sessions.length})` : '' }}
+        </button>
+        <span class="session" v-if="sessionId">会话 {{ sessionId }}</span>
+      </div>
+      <button class="btn ghost small" @click="newChat">＋ 新对话</button>
+    </div>
+
+    <!-- 历史会话列表 -->
+    <div v-if="historyOpen" class="history">
+      <div v-if="loadingHistory" class="history-empty">加载中…</div>
+      <div v-else-if="!sessions.length" class="history-empty">还没有历史会话</div>
+      <div
+        v-for="s in sessions"
+        :key="s.id"
+        class="history-item"
+        :class="{ current: s.id === sessionId }"
+        @click="openSession(s.id)"
+      >
+        <div class="hi-main">
+          <div class="hi-title">{{ s.title }}</div>
+          <div class="hi-meta">{{ s.message_count }} 条消息 · {{ new Date(s.updated_at).toLocaleString('zh-CN', { hour12: false }) }}</div>
+        </div>
+        <button class="hi-del" title="删除" @click.stop="deleteSession(s.id)">✕</button>
+      </div>
     </div>
 
     <div ref="listEl" class="chat-list">
@@ -232,14 +358,89 @@ function reset() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   padding-bottom: 8px;
   border-bottom: 1px dashed var(--border);
   margin-bottom: 10px;
 }
 
+.tb-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .session {
   font-size: 11px;
   color: var(--text-sub);
+}
+
+/* 历史会话 */
+.history {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-elev);
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 4px;
+}
+
+.history-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: var(--hover);
+}
+
+.history-item.current {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.hi-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.hi-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hi-meta {
+  font-size: 10.5px;
+  color: var(--text-sub);
+}
+
+.hi-del {
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.hi-del:hover {
+  color: var(--danger);
+  background: rgba(220, 38, 38, 0.08);
 }
 
 .chat-list {

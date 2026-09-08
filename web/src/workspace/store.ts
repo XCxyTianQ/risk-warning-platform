@@ -156,6 +156,30 @@ export function openForTool(name: string, result: Record<string, any>) {
   }
 }
 
+/** 拖拽停靠状态（HTML5 DnD） */
+export const drag = reactive({
+  panelId: '' as string,
+  overZone: '' as DockZone | '',
+})
+
+export function startPanelDrag(id: string) {
+  drag.panelId = id
+}
+
+export function setDragOver(zone: DockZone | '') {
+  drag.overZone = zone
+}
+
+export function endPanelDrag() {
+  drag.panelId = ''
+  drag.overZone = ''
+}
+
+export function dropOn(zone: DockZone) {
+  if (drag.panelId) setDock(drag.panelId, zone)
+  endPanelDrag()
+}
+
 // ---------- 布局持久化 ----------
 function persist() {
   try {

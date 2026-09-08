@@ -91,3 +91,35 @@ class RiskFact(Base):
     ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     enterprise: Mapped[Enterprise] = relationship(back_populates="facts")
+
+
+class ChatSession(Base):
+    """对话会话（Agent 工作区）。"""
+
+    __tablename__ = "chat_session"
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    title: Mapped[str] = mapped_column(String(120), default="新对话")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+
+    messages: Mapped[list["ChatMessage"]] = relationship(
+        back_populates="session", cascade="all, delete-orphan"
+    )
+
+
+class ChatMessage(Base):
+    """会话消息（user / assistant / tool），保留工具调用以便回放。"""
+
+    __tablename__ = "chat_message"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(ForeignKey("chat_session.id"), index=True)
+    role: Mapped[str] = mapped_column(String(16))
+    content: Mapped[str] = mapped_column(Text, default="")
+    tool_calls_json: Mapped[str] = mapped_column(Text, default="")   # assistant 消息的工具调用
+    tool_call_id: Mapped[str] = mapped_column(String(60), default="")  # tool 消息对应的调用
+    tool_name: Mapped[str] = mapped_column(String(60), default="")
+    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    session: Mapped[ChatSession] = relationship(back_populates="messages")

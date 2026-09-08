@@ -6,10 +6,13 @@ import ChatPanel from '../panels/ChatPanel.vue'
 import DockZone from './DockZone.vue'
 import { COMPONENTS, panelProps } from './registry'
 import {
+  drag,
+  dropOn,
   openPanel,
   PANEL_META,
   panelsOf,
   restore,
+  setDragOver,
   setSize,
   workspace,
   type DockZone as Zone,
@@ -136,6 +139,37 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
       <div v-if="bottomPanels.length" class="split split-h" @pointerdown="startResize('bottom', $event)"></div>
       <DockZone v-if="bottomPanels.length" zone="bottom" class="area area-bottom" />
+
+      <!-- 拖拽停靠落点（拖动标签时出现） -->
+      <template v-if="drag.panelId">
+        <div
+          class="drop-zone dz-left"
+          :class="{ over: drag.overZone === 'left' }"
+          @dragover.prevent="setDragOver('left')"
+          @dragleave="setDragOver('')"
+          @drop.prevent="dropOn('left')"
+        >
+          停靠到左侧
+        </div>
+        <div
+          class="drop-zone dz-right"
+          :class="{ over: drag.overZone === 'right' }"
+          @dragover.prevent="setDragOver('right')"
+          @dragleave="setDragOver('')"
+          @drop.prevent="dropOn('right')"
+        >
+          停靠到右侧
+        </div>
+        <div
+          class="drop-zone dz-bottom"
+          :class="{ over: drag.overZone === 'bottom' }"
+          @dragover.prevent="setDragOver('bottom')"
+          @dragleave="setDragOver('')"
+          @drop.prevent="dropOn('bottom')"
+        >
+          停靠到底部
+        </div>
+      </template>
     </div>
 
     <!-- 最大化面板 -->
@@ -229,6 +263,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   display: flex;
   flex-direction: column;
   gap: 0;
+  position: relative;
 }
 
 .stage-top {
@@ -312,6 +347,49 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 .split-v:hover::after,
 .split-h:hover::after {
   background: var(--primary);
+}
+
+/* ---------- 拖拽停靠落点 ---------- */
+.drop-zone {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
+  border: 2px dashed rgba(37, 99, 235, 0.45);
+  border-radius: 10px;
+  z-index: 30;
+  pointer-events: auto;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.drop-zone.over {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: var(--primary);
+}
+
+.dz-left {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 22%;
+}
+
+.dz-right {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 22%;
+}
+
+.dz-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26%;
 }
 
 /* ---------- 最大化 ---------- */

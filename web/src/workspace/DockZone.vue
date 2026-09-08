@@ -6,9 +6,14 @@ import {
   activate,
   activePanelOf,
   closePanel,
+  drag,
+  dropOn,
+  endPanelDrag,
   PANEL_META,
   panelsOf,
   setDock,
+  setDragOver,
+  startPanelDrag,
   toggleMaximize,
   type DockZone,
 } from './store'
@@ -21,10 +26,24 @@ const horizontal = computed(() => props.zone === 'bottom')
 
 const DOCK_ICON: Record<DockZone, string> = { left: '⇤', right: '⇥', bottom: '⇩' }
 const DOCK_TITLE: Record<DockZone, string> = { left: '停靠左侧', right: '停靠右侧', bottom: '停靠底部' }
+
+function onTabDragStart(id: string, e: DragEvent) {
+  startPanelDrag(id)
+  if (e.dataTransfer) {
+    e.dataTransfer.setData('text/plain', id)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+}
 </script>
 
 <template>
-  <section class="zone" :class="`zone-${zone}`">
+  <section
+    class="zone"
+    :class="[`zone-${zone}`, { 'drop-target': drag.panelId && drag.overZone === zone }]"
+    @dragover.prevent="setDragOver(zone)"
+    @dragleave="setDragOver('')"
+    @drop.prevent="dropOn(zone)"
+  >
     <!-- 标签栏 -->
     <div class="tabs">
       <button
@@ -32,6 +51,9 @@ const DOCK_TITLE: Record<DockZone, string> = { left: '停靠左侧', right: '停
         :key="p.id"
         class="tab"
         :class="{ active: active?.id === p.id }"
+        draggable="true"
+        @dragstart="onTabDragStart(p.id, $event)"
+        @dragend="endPanelDrag"
         @click="activate(p.id)"
       >
         <span class="tab-icon">{{ PANEL_META[p.type].icon }}</span>
@@ -68,6 +90,12 @@ const DOCK_TITLE: Record<DockZone, string> = { left: '停靠左侧', right: '停
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.zone.drop-target {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25), var(--shadow);
 }
 
 /* 标签栏 */
