@@ -99,7 +99,17 @@ const missing = computed(() => dimRows.value.filter((d) => d.score === null))
 const strengths = computed(() => [...scored.value].sort((a, b) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 2))
 const weaknesses = computed(() => [...scored.value].sort((a, b) => (a.score ?? 0) - (b.score ?? 0)).slice(0, 2))
 
-const narrative = computed(() => GRADE_NARRATIVE[snapshot.value?.grade ?? ''] ?? null)
+const narrative = computed(() => {
+  if (!snapshot.value) return null
+  if (snapshot.value.score === null || snapshot.value.score === undefined) {
+    return {
+      title: '无数据，无法评估',
+      body: '该企业尚未采集到任何公开数据（财报 / 新闻 / 司法），或三个数据源均无对应记录，因此不参与评分。',
+      advice: '请点击右上角「🔄 数据源刷新」尝试重新采集；非上市企业请使用人工数据导入，或确认企业名称与股票代码是否正确。',
+    }
+  }
+  return GRADE_NARRATIVE[snapshot.value.grade] ?? null
+})
 
 const compareText = computed(() => {
   const s = snapshot.value?.score

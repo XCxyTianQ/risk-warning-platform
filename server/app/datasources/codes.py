@@ -28,7 +28,14 @@ def _table() -> list[dict]:
 
 
 def resolve_code(name: str, limit: int = 8) -> list[dict]:
-    """按名称模糊匹配股票代码；完全相等/以查询串开头者优先。"""
+    """按名称匹配股票代码。
+
+    匹配策略（避免"中色集团"这类不存在名称误匹配到"中色股份"）：
+    - 完全相等：直接命中
+    - 名称以查询串开头且查询串长度 ≥ 4：允许（如"贵州茅台"→"贵州茅台"、"宁德时代"→"宁德时代"）
+    - 查询串是证券简称的完整子串且长度 ≥ 4：允许
+    其余模糊包含（如 2 字查询）不自动采用，仅作为候选返回给用户确认。
+    """
     query = (name or "").strip()
     if not query:
         return []
@@ -36,6 +43,21 @@ def resolve_code(name: str, limit: int = 8) -> list[dict]:
     hits = [r for r in rows if query in r["name"]]
     hits.sort(key=lambda r: (0 if r["name"] == query else 1 if r["name"].startswith(query) else 2, len(r["name"])))
     return hits[:limit]
+
+
+def resolve_code_strict(name: str) -> dict | None:
+    """严格解析（自动添加企业用）：只接受完全相等或长度 ≥4 的前缀匹配。"""
+    query = (name or "").strip()
+    if len(query) < 2:
+        return None
+    for r in _table():
+        if r["name"] == query:
+            return r
+    if len(query) >= 4:
+        for r in _table():
+            if r["name"].startswith(query):
+                return r
+    return None
 
 
 def name_of(code: str) -> str:

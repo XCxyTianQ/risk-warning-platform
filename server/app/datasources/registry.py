@@ -109,10 +109,17 @@ def upsert_records(db: DbSession, enterprise_id: int, result: FetchResult) -> di
 
 
 def refresh_enterprise(db: DbSession, enterprise_id: int, dimensions: list[str] | None = None) -> dict:
-    """从数据源刷新一家企业（返回每个维度的拉取/入库统计）。"""
+    """从数据源刷新一家企业（返回每个维度的拉取/入库统计），并记录各维度数据状态。"""
+    import json as _json
+
     ent = db.get(Enterprise, enterprise_id)
     if ent is None:
         return {"error": f"企业不存在: {enterprise_id}"}
+
+    try:
+        status = _json.loads(ent.data_status_json or "{}")
+    except ValueError:
+        status = {}
 
     dims = dimensions or ["finance", "news", "legal"]
     out: dict = {
@@ -122,6 +129,7 @@ def refresh_enterprise(db: DbSession, enterprise_id: int, dimensions: list[str] 
     for dim in dims:
         result = fetch_dimension(db, ent, dim)
         if not result.ok:
+            status[dim] = "error" if result.error else "never"
             out["dimensions"][dim] = {
                 "ok": False,
                 "source": result.source,
@@ -130,10 +138,16 @@ def refresh_enterprise(db: DbSession, enterprise_id: int, dimensions: list[str] 
             }
             continue
         stats = upsert_records(db, enterprise_id, result)
+        # ok=查到记录；empty=查过但确实没有（可判 0 风险）
+        status[dim] = "ok" if result.records else "empty"
         out["dimensions"][dim] = {
             "ok": True,
             "source": result.source,
             "fetched": len(result.records),
             **stats,
         }
+
+    ent.data_status_json = _json.dumps(status, ensure_ascii=False)
+    db.commit()
+    out["data_status"] = status
     return out

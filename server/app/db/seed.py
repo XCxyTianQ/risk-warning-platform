@@ -38,11 +38,17 @@ def seed() -> None:
         summary = []
         for item in data["enterprises"]:
             obj = Enterprise(**{k: item[k] for k in ENTERPRISE_FIELDS if k in item})
-            db.add(obj)
-            db.flush()
             legal = item.get("legal_records", [])
             news = item.get("news", [])
             finance = item.get("finance", [])
+            # 数据状态：有记录=ok；查过但确实没有=empty；非上市无财报=never
+            obj.data_status_json = json.dumps({
+                "finance": "ok" if finance else "never",
+                "legal": "ok" if legal else "empty",
+                "news": "ok" if news else "empty",
+            }, ensure_ascii=False)
+            db.add(obj)
+            db.flush()
             for r in legal:
                 db.add(LegalRecord(enterprise_id=obj.id, **r))
             for n in news:

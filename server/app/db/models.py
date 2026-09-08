@@ -21,6 +21,9 @@ class Enterprise(Base):
     industry: Mapped[str] = mapped_column(String(80), default="")
     address: Mapped[str] = mapped_column(String(300), default="")
     data_note: Mapped[str] = mapped_column(Text, default="")  # 信源与数据说明
+    # 各维度数据状态：{"finance": "ok|empty|error|never", ...}
+    # ok=查到记录；empty=查过但无记录（可判 0 风险）；error=拉取失败；never=从未采集
+    data_status_json: Mapped[str] = mapped_column(Text, default="{}")
 
     legal_records: Mapped[list["LegalRecord"]] = relationship(back_populates="enterprise")
     news: Mapped[list["News"]] = relationship(back_populates="enterprise")

@@ -1,6 +1,4 @@
-"""六维企业评分引擎。
-
-设计：
+"""六维企业评分引擎。设计：
 - 每个维度输出 0~100 分（越高越健康）与等级；数据不足的维度输出 None + gray，不参与综合评分。
 - 综合评分 = 可用维度加权平均；映射到 AAA~C 信用式等级。
 - 与 LLM 研判的关系：本模块输出"规则评分"，LLM 输出"研判结论"，
@@ -16,6 +14,7 @@
 """
 
 from datetime import date, timedelta
+import json
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -100,6 +99,10 @@ def _age_years(reg_date: str) -> int | None:
 
 def compute_indicators(db: Session, enterprise_id: int) -> dict:
     ent = db.get(Enterprise, enterprise_id)
+    try:
+        data_status = json.loads(ent.data_status_json or "{}") if ent else {}
+    except ValueError:
+        data_status = {}
 
     # --- 财务 ---
     finance_rows = (
@@ -177,6 +180,7 @@ def compute_indicators(db: Session, enterprise_id: int) -> dict:
     }
 
     return {
+        "data_status": data_status,
         "finance": finance,
         "legal": {
             "count": len(legal_rows),
@@ -201,13 +205,23 @@ def compute_indicators(db: Session, enterprise_id: int) -> dict:
 # 维度评分
 # ---------------------------------------------------------------------------
 
+def _status(ind: dict, dim: str) -> str:
+    return (ind.get("data_status") or {}).get(dim, "never")
+
+
 def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
-    """返回 (score, note)。score=None 表示数据不足。"""
+    """返回 (score, note)。score=None 表示"无数据/未采集"，不参与综合评分。
+
+    关键原则：**没有数据 ≠ 没有风险**。
+    - status=ok：查到记录，按规则打分
+    - status=empty：查过且确实没有（如无诉讼、无负面新闻），可判 0 风险
+    - status=never/error：从未采集或拉取失败 → 该维度 gray，不参与评分
+    """
 
     if dim == "finance":
+        if _status(ind, "finance") != "ok" or not ind["finance"].get("available"):
+            return None, "无公开财报数据（未采集或数据不足）"
         fin = ind["finance"]
-        if not fin.get("available"):
-            return None, "无公开财报（数据不足）"
         s = 100.0
         debt = fin.get("debt_ratio") or 0
         if debt >= 85:
@@ -223,6 +237,9 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
         return _clamp(s), f"资产负债率 {debt}% · 净利润 {fin.get('net_profit')} 万（{fin.get('year')}）"
 
     if dim == "legal":
+        st = _status(ind, "legal")
+        if st not in ("ok", "empty"):
+            return None, "司法数据未采集（数据不足）"
         s = 100.0
         s -= min(50, ind["legal"]["count"] * 6)
         s -= min(25, ind["legal"]["penalty"] * 10)
@@ -233,6 +250,9 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
         return _clamp(s), f"司法/行政记录 {ind['legal']['count']} 项 · 涉案 {ind['legal']['amount']:.0f} 万"
 
     if dim == "news":
+        st = _status(ind, "news")
+        if st not in ("ok", "empty"):
+            return None, "舆情数据未采集（数据不足）"
         n = ind["news"]
         s = 100.0
         s -= min(60, n["negative_ratio"] * 120)
@@ -242,7 +262,9 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
     if dim == "operation":
         op = ind["operation"]
         age = op.get("age_years")
-        has_fin = op.get("net_margin") is not None or op.get("revenue_growth") is not None
+        has_fin = _status(ind, "finance") == "ok" and (
+            op.get("net_margin") is not None or op.get("revenue_growth") is not None
+        )
         if age is None and not has_fin:
             return None, "无成立年限与财务数据（数据不足）"
         s = 95.0 if age is not None else 90.0
@@ -273,6 +295,8 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
         return _clamp(s), note
 
     if dim == "credit":
+        if _status(ind, "legal") not in ("ok", "empty"):
+            return None, "信用/司法数据未采集（数据不足）"
         c = ind["credit"]
         s = 100.0
         s -= min(45, c["shixin"] * 40)
@@ -282,6 +306,8 @@ def dim_score(dim: str, ind: dict) -> tuple[int | None, str]:
         return _clamp(s), note
 
     if dim == "supply":
+        if _status(ind, "legal") not in ("ok", "empty") and _status(ind, "news") not in ("ok", "empty"):
+            return None, "供应链相关数据未采集（数据不足）"
         sp = ind["supply"]
         s = 100.0
         s -= min(45, sp["contract_disputes"] * 8)
@@ -313,6 +339,8 @@ def rules_verdict(db: Session, enterprise_id: int) -> dict:
     overall = round(sum(scores) / len(scores), 1) if scores else None
     grade, grade_label = grade_of(overall)
     level = score_to_level(int(overall) if overall is not None else None)
+    if not scores:
+        grade, grade_label, level = "—", "无数据，无法评估", "gray"
     return {
         "score": overall,
         "grade": grade,
@@ -320,4 +348,5 @@ def rules_verdict(db: Session, enterprise_id: int) -> dict:
         "level": level,
         "dimensions": dims,
         "indicators": ind,
+        "data_status": ind.get("data_status", {}),
     }
