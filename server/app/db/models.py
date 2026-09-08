@@ -106,6 +106,17 @@ class ChatSession(Base):
     title: Mapped[str] = mapped_column(String(120), default="新对话")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    # 上下文压缩：摘要文本 + 已压缩到的消息 id（该 id 及之前的消息折叠进摘要）
+    summary: Mapped[str] = mapped_column(Text, default="")
+    compacted_until: Mapped[int] = mapped_column(Integer, default=0)
+    compact_count: Mapped[int] = mapped_column(Integer, default=0)
+    # 用量与成本（缓存命中率是关键成本指标）
+    prompt_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    completion_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cache_hit_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cache_miss_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    llm_calls: Mapped[int] = mapped_column(Integer, default=0)
+    est_cost: Mapped[float] = mapped_column(Float, default=0.0)
 
     messages: Mapped[list["ChatMessage"]] = relationship(
         back_populates="session", cascade="all, delete-orphan"

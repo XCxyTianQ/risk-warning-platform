@@ -39,4 +39,23 @@ for eid, name in rows:
     con.execute("UPDATE enterprise SET data_status_json=? WHERE id=?", (json.dumps(has, ensure_ascii=False), eid))
 con.commit()
 print(f"[migrate] 已回填 {len(rows)} 家企业的数据状态")
+
+# chat_session 用量/压缩字段
+ccols = [r[1] for r in con.execute("PRAGMA table_info(chat_session)")]
+new_cols = [
+    ("summary", "TEXT DEFAULT ''"),
+    ("compacted_until", "INTEGER DEFAULT 0"),
+    ("compact_count", "INTEGER DEFAULT 0"),
+    ("prompt_tokens", "INTEGER DEFAULT 0"),
+    ("completion_tokens", "INTEGER DEFAULT 0"),
+    ("cache_hit_tokens", "INTEGER DEFAULT 0"),
+    ("cache_miss_tokens", "INTEGER DEFAULT 0"),
+    ("llm_calls", "INTEGER DEFAULT 0"),
+    ("est_cost", "REAL DEFAULT 0"),
+]
+for name, decl in new_cols:
+    if name not in ccols:
+        con.execute(f"ALTER TABLE chat_session ADD COLUMN {name} {decl}")
+        print(f"[migrate] 已添加 chat_session.{name}")
+con.commit()
 con.close()

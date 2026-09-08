@@ -61,6 +61,22 @@ class LlmClient:
         self._config = config
         self._http = httpx.Client(timeout=config.timeout_s)
         self.last_prompt_tokens = 0  # 最近一次 usage.prompt_tokens（0=未知）
+        # 最近一次调用的完整用量（含缓存命中/未命中 token，用于成本统计）
+        self.last_usage: dict = {}
+
+    def _capture_usage(self, data: dict) -> None:
+        usage = (data or {}).get("usage") or {}
+        if not usage:
+            return
+        self.last_usage = {
+            "prompt_tokens": usage.get("prompt_tokens", 0) or 0,
+            "completion_tokens": usage.get("completion_tokens", 0) or 0,
+            "cache_hit_tokens": usage.get("prompt_cache_hit_tokens", 0) or 0,
+            "cache_miss_tokens": usage.get("prompt_cache_miss_tokens", 0) or 0,
+            "reasoning_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens", 0) or 0,
+        }
+        if isinstance(usage.get("prompt_tokens"), int):
+            self.last_prompt_tokens = usage["prompt_tokens"]
 
     @property
     def config(self) -> LlmConfig:
@@ -102,9 +118,7 @@ class LlmClient:
             err = data.get("error") if isinstance(data, dict) else data
             raise LlmException(0, f"LLM error: {err}")
         # 记录 usage.prompt_tokens（上下文压缩触发用；缺失时保持上次值）
-        usage = data.get("usage") or {}
-        if isinstance(usage.get("prompt_tokens"), int):
-            self.last_prompt_tokens = usage["prompt_tokens"]
+        self._capture_usage(data)
         choices = data.get("choices") or []
         if not choices:
             raise LlmException(0, "LLM returned no choices: " + str(data)[:500])
@@ -131,6 +145,8 @@ class LlmClient:
             "messages": messages,
             "max_tokens": max_tokens or self._config.max_tokens,
             "stream": True,
+            # 让流式响应最后一个 chunk 也带 usage（缓存命中统计必需）
+            "stream_options": {"include_usage": True},
         }
         if tools:
             body["tools"] = tools
@@ -162,8 +178,8 @@ class LlmClient:
                     except ValueError:
                         continue
                     usage = chunk.get("usage") or {}
-                    if isinstance(usage.get("prompt_tokens"), int):
-                        self.last_prompt_tokens = usage["prompt_tokens"]
+                    if usage:
+                        self._capture_usage(chunk)
                     choices = chunk.get("choices") or []
                     if not choices:
                         continue

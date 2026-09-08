@@ -27,6 +27,18 @@ interface ChatMsg {
   tools: ToolCard[]
   streaming?: boolean
   error?: string
+  notice?: string
+}
+
+interface UsageStats {
+  llm_calls: number
+  prompt_tokens: number
+  completion_tokens: number
+  cache_hit_tokens: number
+  cache_miss_tokens: number
+  cache_hit_rate: number
+  est_cost: number
+  compact_count: number
 }
 
 interface SessionRow {
@@ -44,6 +56,7 @@ const listEl = ref<HTMLDivElement | null>(null)
 const historyOpen = ref(false)
 const sessions = ref<SessionRow[]>([])
 const loadingHistory = ref(false)
+const usage = ref<UsageStats | null>(null)
 let abort: AbortController | null = null
 
 const SESSION_KEY = 'rw-chat-session'
@@ -164,6 +177,7 @@ async function openSession(id: string) {
     sessionId.value = r.session_id
     localStorage.setItem(SESSION_KEY, r.session_id)
     messages.value = rebuildMessages(r.messages)
+    usage.value = (r as any).usage ?? null
     await scrollBottom()
   } catch (e) {
     messages.value = [{ role: 'assistant', text: '', tools: [], error: (e as Error).message }]
@@ -275,10 +289,29 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
     if (card) {
       card.approval = { id: data.approval_id, description: data.description, status: 'pending' }
     }
+  } else if (event === 'usage') {
+    usage.value = {
+      llm_calls: data.llm_calls ?? 0,
+      prompt_tokens: data.prompt_tokens ?? 0,
+      completion_tokens: data.completion_tokens ?? 0,
+      cache_hit_tokens: data.cache_hit_tokens ?? 0,
+      cache_miss_tokens: data.cache_miss_tokens ?? 0,
+      cache_hit_rate: data.cache_hit_rate ?? 0,
+      est_cost: data.est_cost ?? 0,
+      compact_count: data.compact_count ?? 0,
+    }
+  } else if (event === 'compaction') {
+    if (data.phase === 'start') {
+      reply.notice = `上下文接近上限（约 ${data.estimated_tokens} tok / 窗口 ${data.window}），正在压缩历史…`
+    } else if (data.phase === 'done') {
+      reply.notice = `已压缩 ${data.folded} 条历史消息为摘要，上下文已收敛（累计压缩 ${data.compact_count} 次）`
+      if (data.usage) usage.value = { ...(usage.value as any), ...data.usage }
+    }
   } else if (event === 'error') {
     reply.error = data.message
   } else if (event === 'done') {
     reply.streaming = false
+    if (data.usage) usage.value = data.usage
     loadSessions()
   }
 }
@@ -297,6 +330,16 @@ function stop() {
           🕘 历史会话 {{ sessions.length ? `(${sessions.length})` : '' }}
         </button>
         <span class="session" v-if="sessionId">会话 {{ sessionId }}</span>
+        <span
+          v-if="usage && usage.llm_calls"
+          class="usage"
+          :title="`调用 ${usage.llm_calls} 次 · 输入 ${usage.prompt_tokens} tok（命中 ${usage.cache_hit_tokens} / 未命中 ${usage.cache_miss_tokens}）· 输出 ${usage.completion_tokens} tok${usage.compact_count ? ` · 压缩 ${usage.compact_count} 次` : ''}`"
+        >
+          💰 缓存命中 {{ Math.round((usage.cache_hit_rate ?? 0) * 100) }}%
+          · {{ ((usage.prompt_tokens + usage.completion_tokens) / 1000).toFixed(1) }}k tok
+          · ¥{{ usage.est_cost.toFixed(4) }}
+          <template v-if="usage.compact_count"> · 已压缩 {{ usage.compact_count }} 次</template>
+        </span>
       </div>
       <button class="btn ghost small" @click="newChat">＋ 新对话</button>
     </div>
@@ -372,6 +415,7 @@ function stop() {
 
           <div v-if="m.text" class="bubble" v-html="render(m.text)"></div>
           <div v-else-if="m.streaming && !m.tools.length" class="bubble typing"><i></i><i></i><i></i></div>
+          <div v-if="m.notice" class="notice">🗜️ {{ m.notice }}</div>
           <div v-if="m.error" class="bubble error-bubble">{{ m.error }}</div>
         </div>
       </div>
@@ -417,6 +461,26 @@ function stop() {
 .session {
   font-size: 11px;
   color: var(--text-sub);
+}
+
+.usage {
+  font-size: 11px;
+  color: var(--text-sub);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 9px;
+  background: var(--hover);
+  cursor: help;
+  white-space: nowrap;
+}
+
+.notice {
+  font-size: 11.5px;
+  color: var(--warn);
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: 8px;
+  padding: 6px 10px;
 }
 
 /* 历史会话 */

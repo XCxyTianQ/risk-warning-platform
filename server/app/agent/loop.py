@@ -2,7 +2,11 @@
 
 对齐 Harness/Codex 的核心循环：
   用户消息 → LLM(带 tools) → tool_calls → 执行工具 → 结果回注 → 再调用 → 纯文本回答
-每个阶段产出事件（token / tool / tool_result / done / error），由 SSE 推给前端。
+
+成本控制（对齐 DSH）：
+- 主动压缩：每次调用前按 thresholdRatio 检查 token 压力，必要时触发 compaction
+- 溢出恢复：提供方报上下文超限时，强制压缩一次并重试
+- 用量事件：每次调用后回传 usage（含缓存命中/未命中 token），供前端展示命中率与成本
 """
 
 import json
@@ -10,7 +14,7 @@ from typing import Iterator
 
 from sqlalchemy.orm import Session as DbSession
 
-from app.agent import approvals
+from app.agent import approvals, context
 from app.agent.events import AgentEvent
 from app.agent.prompt import SYSTEM_PROMPT
 from app.agent.session import Session, store
@@ -55,15 +59,55 @@ def _summarize(result: dict) -> dict:
         }
     if "facts" in result:
         summary["facts"] = [f["text"][:60] for f in result["facts"][:5]]
+    if "items" in result and isinstance(result["items"], list):
+        summary["alerts"] = [
+            {"id": a.get("id"), "level": a.get("level"), "title": (a.get("title") or "")[:40],
+             "status": a.get("status_label")}
+            for a in result["items"][:5] if isinstance(a, dict)
+        ]
     return {"ok": True, **summary}
+
+
+def _build_messages(session: Session) -> list[dict]:
+    return [{"role": "system", "content": SYSTEM_PROMPT}, *store.context(session)]
+
+
+def _maybe_compact(db: DbSession, session: Session, client: LlmClient, messages: list[dict],
+                   force: bool = False) -> Iterator[AgentEvent]:
+    """按压力阈值（或强制）压缩上下文；产出 compaction 事件，返回新的 messages 由调用方重建。"""
+    if not settings.compaction_enabled:
+        return
+    over, est = context.should_compact(messages, _registry.definitions())
+    if not (force or over):
+        return
+    yield AgentEvent("compaction", {"phase": "start", "estimated_tokens": est,
+                                    "window": settings.llm_context_window, "forced": force})
+    result = context.compact(db, session, client, messages, _registry.definitions())
+    if result:
+        store.add_usage(db, session, result.get("usage") or {})
+        yield AgentEvent("compaction", {
+            "phase": "done",
+            "folded": result["folded"],
+            "summary_chars": len(result["summary"]),
+            "compact_count": session.compact_count,
+            "usage": store.usage_stats(session),
+        })
+    else:
+        yield AgentEvent("compaction", {"phase": "skipped", "reason": "无可折叠历史或摘要失败"})
 
 
 def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[AgentEvent]:
     store.append(db, session, {"role": "user", "content": user_text})
     client = _client()
 
+    # 主动压缩检查（DSH：每次调用前按最新压力重新解析）
+    messages = _build_messages(session)
+    for ev in _maybe_compact(db, session, client, messages):
+        yield ev
+        messages = _build_messages(session)
+
     for step in range(MAX_STEPS):
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}, *store.context(session)]
+        messages = _build_messages(session)
         text_parts: list[str] = []
         tool_calls: list[dict] | None = None
 
@@ -74,7 +118,19 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
                     yield AgentEvent("token", {"text": ev["text"]})
                 elif ev["type"] == "tool_calls":
                     tool_calls = ev["tool_calls"]
-        except Exception as exc:  # noqa: BLE001 —— 模型层异常直接反馈给用户
+            # 每次调用后累计用量（缓存命中率/成本）
+            if client.last_usage:
+                stats = store.add_usage(db, session, client.last_usage)
+                yield AgentEvent("usage", {"call": dict(client.last_usage), **stats})
+        except Exception as exc:  # noqa: BLE001
+            # 溢出恢复：上下文超限 → 强制压缩一次并重试（DSH overflow recovery）
+            if context.is_overflow_error(exc) and settings.compaction_enabled:
+                forced = False
+                for ev in _maybe_compact(db, session, client, messages, force=True):
+                    yield ev
+                    forced = True
+                if forced:
+                    continue
             yield AgentEvent("error", {"message": f"模型调用失败：{exc}"})
             return
 
@@ -147,7 +203,12 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
 
         final_text = "".join(text_parts)
         store.append(db, session, {"role": "assistant", "content": final_text})
-        yield AgentEvent("done", {"session_id": session.id, "steps": step + 1, "title": session.title})
+        yield AgentEvent("done", {
+            "session_id": session.id,
+            "steps": step + 1,
+            "title": session.title,
+            "usage": store.usage_stats(session),
+        })
         return
 
     yield AgentEvent("error", {"message": f"达到最大工具调用轮次（{MAX_STEPS}），请换一种问法"})

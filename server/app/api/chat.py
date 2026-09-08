@@ -55,6 +55,8 @@ def get_session(session_id: str, db: DbSession = Depends(get_db)):
         "session_id": s.id,
         "title": s.title,
         "updated_at": s.updated_at.isoformat(),
+        "summary": s.summary,
+        "usage": store.usage_stats(s),
         "messages": [
             {
                 "role": m.get("role"),

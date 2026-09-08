@@ -27,6 +27,18 @@ class Settings(BaseSettings):
     agent_require_approval: bool = True   # 动作工具是否需用户确认
     agent_approval_timeout: int = 300     # 等待确认超时（秒），超时视为拒绝
 
+    # --- 上下文压缩（对齐 DSH compaction 策略） ---
+    llm_context_window: int = 128000      # 模型上下文窗口（token）
+    compaction_enabled: bool = True
+    compaction_threshold_ratio: float = 0.8   # 估算用量 ≥ 窗口×该比例时触发压缩
+    compaction_retain_ratio: float = 0.16     # 压缩后保留最近的比例
+    compaction_summary_max_tokens: int = 1024 # 摘要输出上限
+
+    # --- 成本估算（每 100 万 token 单价，元；按 DeepSeek 缓存/未命中/输出计） ---
+    price_cache_hit: float = 0.5
+    price_cache_miss: float = 4.0
+    price_output: float = 12.0
+
     # --- 数据库（原型 SQLite；正式换 PostgreSQL） ---
     database_url: str = "sqlite:///./data/platform.db"
 
