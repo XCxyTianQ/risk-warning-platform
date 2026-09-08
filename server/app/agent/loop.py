@@ -36,8 +36,13 @@ def _summarize(result: dict) -> dict:
     """给前端展示用的工具结果摘要（避免把大 JSON 直接推给 UI）。"""
     if "error" in result:
         return {"ok": False, "error": result["error"]}
-    keys = ("count", "score", "grade", "level", "summary", "enterprise_total", "avg_score")
+    keys = ("count", "score", "grade", "level", "summary", "enterprise_total", "avg_score",
+            "enterprise_id", "enterprise_name", "enterprise")
     summary = {k: result[k] for k in keys if k in result}
+    ent = result.get("enterprise")
+    if isinstance(ent, dict):
+        summary["enterprise_id"] = ent.get("id")
+        summary["enterprise_name"] = ent.get("name")
     if "enterprises" in result:
         summary["enterprises"] = [
             {"name": e["name"], "score": e["score"], "grade": e["grade"], "level": e["level"]}

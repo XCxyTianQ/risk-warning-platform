@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue'
 
+import { openForTool, workspace } from '../workspace/store'
+
 interface ToolCard {
   id: string
   name: string
@@ -8,6 +10,7 @@ interface ToolCard {
   readOnly?: boolean
   running: boolean
   result?: Record<string, any>
+  opened?: string
 }
 
 interface ChatMsg {
@@ -26,7 +29,7 @@ const listEl = ref<HTMLDivElement | null>(null)
 let abort: AbortController | null = null
 
 const SUGGESTIONS = [
-  '康美药业现在风险怎么样？简要说明依据',
+  '康美药业现在风险怎么样？',
   '平台里哪些企业是高风险？',
   '宁德时代和贵州茅台哪个更稳？',
   '整体情况怎么样，平均分多少？',
@@ -46,12 +49,8 @@ async function scrollBottom() {
   listEl.value?.scrollTo({ top: listEl.value.scrollHeight, behavior: 'smooth' })
 }
 
-/** 极简 markdown 渲染（先转义再替换，避免 XSS） */
 function render(text: string) {
-  const esc = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+  const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   return esc
     .replace(/^### (.+)$/gm, '<h4>$1</h4>')
     .replace(/^## (.+)$/gm, '<h3>$1</h3>')
@@ -68,7 +67,6 @@ async function send(text?: string) {
   if (!content || busy.value) return
   input.value = ''
   busy.value = true
-
   messages.value.push({ role: 'user', text: content, tools: [] })
   const reply: ChatMsg = { role: 'assistant', text: '', tools: [], streaming: true }
   messages.value.push(reply)
@@ -83,7 +81,6 @@ async function send(text?: string) {
       signal: abort.signal,
     })
     if (!resp.body) throw new Error('服务端未返回流')
-
     const reader = resp.body.getReader()
     const decoder = new TextDecoder()
     let buf = ''
@@ -97,21 +94,18 @@ async function send(text?: string) {
         const evLine = block.split('\n').find((l) => l.startsWith('event: '))
         const dataLine = block.split('\n').find((l) => l.startsWith('data: '))
         if (!evLine || !dataLine) continue
-        const event = evLine.slice(7).trim()
         let data: any = {}
         try {
           data = JSON.parse(dataLine.slice(6))
         } catch {
           continue
         }
-        handleEvent(event, data, reply)
+        handleEvent(evLine.slice(7).trim(), data, reply)
         await scrollBottom()
       }
     }
   } catch (e) {
-    if ((e as Error).name !== 'AbortError') {
-      reply.error = (e as Error).message
-    }
+    if ((e as Error).name !== 'AbortError') reply.error = (e as Error).message
   } finally {
     reply.streaming = false
     busy.value = false
@@ -138,6 +132,11 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
     if (card) {
       card.running = false
       card.result = data.result
+      // ★ Agent ↔ 界面协作：按工具结果自动在画布开窗
+      const before = workspace.panels.length
+      openForTool(card.name, data.result)
+      if (workspace.panels.length > before) card.opened = '已在新面板打开'
+      else if (card.name === 'get_score_profile' || card.name === 'run_risk_analysis') card.opened = '已更新画像面板'
     }
   } else if (event === 'error') {
     reply.error = data.message
@@ -159,131 +158,128 @@ function reset() {
 </script>
 
 <template>
-  <div class="chat-page">
-    <div class="page-head">
-      <div>
-        <h2>智能问答</h2>
-        <p class="page-sub">用自然语言提问，Agent 自动调用工具取数、评分、找证据后回答（多轮对话）</p>
-      </div>
-      <button v-if="messages.length" class="btn ghost small" @click="reset">清空对话</button>
+  <div class="chat-panel">
+    <div v-if="messages.length" class="chat-toolbar">
+      <span class="session" v-if="sessionId">会话 {{ sessionId }}</span>
+      <button class="btn ghost small" @click="reset">清空</button>
     </div>
 
-    <div class="chat-card">
-      <div ref="listEl" class="chat-list">
-        <!-- 空态 -->
-        <div v-if="!messages.length" class="welcome">
-          <div class="welcome-mark">险</div>
-          <h3>你好，我是险小e</h3>
-          <p>我可以查询企业风险画像、对比企业、触发研判、汇总平台情况。试试下面的问题：</p>
-          <div class="suggests">
-            <button v-for="s in SUGGESTIONS" :key="s" class="suggest" @click="send(s)">{{ s }}</button>
-          </div>
+    <div ref="listEl" class="chat-list">
+      <div v-if="!messages.length" class="welcome">
+        <div class="welcome-mark">险</div>
+        <p class="welcome-title">你好，我是险小e</p>
+        <p class="welcome-sub">问我企业风险，我会自动取数、评分、找证据，并把结果开成新面板。</p>
+        <div class="suggests">
+          <button v-for="s in SUGGESTIONS" :key="s" class="suggest" @click="send(s)">{{ s }}</button>
         </div>
+      </div>
 
-        <!-- 消息 -->
-        <div v-for="(m, i) in messages" :key="i" class="msg" :class="m.role">
-          <div v-if="m.role === 'assistant'" class="avatar">险</div>
-          <div class="bubble-wrap">
-            <!-- 工具调用卡片 -->
-            <div v-for="t in m.tools" :key="t.id" class="tool-card" :class="{ running: t.running }">
-              <div class="tool-head">
-                <span class="tool-icon">{{ t.running ? '⏳' : t.result?.ok === false ? '⚠️' : '🔧' }}</span>
-                <span class="tool-name">{{ TOOL_LABEL[t.name] ?? t.name }}</span>
-                <code class="tool-args">{{ JSON.stringify(t.args) }}</code>
-                <span v-if="t.readOnly === false" class="tool-tag">动作</span>
-              </div>
-              <div v-if="t.result" class="tool-result">
-                <template v-if="t.result.ok === false">
-                  <span class="fail-text">{{ t.result.error }}</span>
-                </template>
-                <template v-else>
-                  <span v-if="t.result.count !== undefined">{{ t.result.count }} 条结果</span>
-                  <span v-if="t.result.score !== undefined"> · 评分 {{ t.result.score }}（{{ t.result.grade }}）</span>
-                  <span v-if="t.result.enterprise_total !== undefined"> · 共 {{ t.result.enterprise_total }} 家企业，平均 {{ t.result.avg_score }} 分</span>
-                  <ul v-if="t.result.enterprises" class="tool-items">
-                    <li v-for="e in t.result.enterprises" :key="e.name">{{ e.name }} — {{ e.score }} 分（{{ e.grade }}）</li>
-                  </ul>
-                </template>
-              </div>
+      <div v-for="(m, i) in messages" :key="i" class="msg" :class="m.role">
+        <div v-if="m.role === 'assistant'" class="avatar">险</div>
+        <div class="bubble-wrap">
+          <div v-for="t in m.tools" :key="t.id" class="tool-card" :class="{ running: t.running }">
+            <div class="tool-head">
+              <span>{{ t.running ? '⏳' : t.result?.ok === false ? '⚠️' : '🔧' }}</span>
+              <span class="tool-name">{{ TOOL_LABEL[t.name] ?? t.name }}</span>
+              <code class="tool-args">{{ JSON.stringify(t.args) }}</code>
+              <span v-if="t.readOnly === false" class="tool-tag">动作</span>
             </div>
-
-            <!-- 正文 -->
-            <div v-if="m.text" class="bubble" v-html="render(m.text)"></div>
-            <div v-else-if="m.streaming && !m.tools.length" class="bubble typing"><i></i><i></i><i></i></div>
-            <div v-if="m.error" class="bubble error-bubble">{{ m.error }}</div>
+            <div v-if="t.result" class="tool-result">
+              <template v-if="t.result.ok === false">
+                <span class="fail-text">{{ t.result.error }}</span>
+              </template>
+              <template v-else>
+                <span v-if="t.result.count !== undefined">{{ t.result.count }} 条</span>
+                <span v-if="t.result.score !== undefined"> · {{ t.result.score }} 分（{{ t.result.grade }}）</span>
+                <span v-if="t.result.enterprise_total !== undefined"> · {{ t.result.enterprise_total }} 家企业，平均 {{ t.result.avg_score }} 分</span>
+                <ul v-if="t.result.enterprises" class="tool-items">
+                  <li v-for="e in t.result.enterprises" :key="e.name">{{ e.name }} — {{ e.score }} 分（{{ e.grade }}）</li>
+                </ul>
+              </template>
+              <span v-if="t.opened" class="opened-tag">↗ {{ t.opened }}</span>
+            </div>
           </div>
+
+          <div v-if="m.text" class="bubble" v-html="render(m.text)"></div>
+          <div v-else-if="m.streaming && !m.tools.length" class="bubble typing"><i></i><i></i><i></i></div>
+          <div v-if="m.error" class="bubble error-bubble">{{ m.error }}</div>
         </div>
       </div>
+    </div>
 
-      <!-- 输入区 -->
-      <div class="composer">
-        <textarea
-          v-model="input"
-          rows="2"
-          placeholder="问点什么，例如：康美药业风险如何？（Enter 发送，Shift+Enter 换行）"
-          @keydown.enter.exact.prevent="send()"
-        ></textarea>
-        <button v-if="busy" class="btn ghost" @click="stop">停止</button>
-        <button v-else class="btn primary" :disabled="!input.trim()" @click="send()">发送</button>
-      </div>
-      <p class="hint">
-        Agent 会按需调用：搜索企业 → 评分画像 → 风险事实 → （可选）触发完整研判。工具调用过程实时展示。
-      </p>
+    <div class="composer">
+      <textarea
+        v-model="input"
+        rows="2"
+        placeholder="提问…（Enter 发送）"
+        @keydown.enter.exact.prevent="send()"
+      ></textarea>
+      <button v-if="busy" class="btn ghost" @click="stop">停止</button>
+      <button v-else class="btn primary" :disabled="!input.trim()" @click="send()">发送</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.chat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+.chat-panel {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 250px);
-  min-height: 480px;
+  min-height: 420px;
+}
+
+.chat-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 10px;
+}
+
+.session {
+  font-size: 11px;
+  color: var(--text-sub);
 }
 
 .chat-list {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  padding-right: 4px;
 }
 
-/* 空态 */
 .welcome {
   margin: auto;
   text-align: center;
-  max-width: 560px;
+  max-width: 420px;
 }
 
 .welcome-mark {
-  width: 52px;
-  height: 52px;
-  margin: 0 auto 12px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 10px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #fff;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.welcome h3 {
-  margin: 0 0 6px;
-  font-size: 17px;
+.welcome-title {
+  font-weight: 700;
+  margin: 0 0 4px;
 }
 
-.welcome p {
-  margin: 0 0 16px;
-  font-size: 13px;
+.welcome-sub {
+  font-size: 12px;
   color: var(--text-sub);
+  margin: 0 0 14px;
 }
 
 .suggests {
@@ -298,23 +294,20 @@ function reset() {
   background: var(--bg-elev);
   color: var(--text);
   border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 12.5px;
+  padding: 6px 12px;
+  font-size: 12px;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s;
 }
 
 .suggest:hover {
   border-color: var(--primary);
   color: var(--primary);
-  transform: translateY(-1px);
 }
 
-/* 消息 */
 .msg {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-start;
 }
 
@@ -323,13 +316,13 @@ function reset() {
 }
 
 .avatar {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   flex: none;
-  border-radius: 9px;
+  border-radius: 8px;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #fff;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -337,7 +330,7 @@ function reset() {
 }
 
 .bubble-wrap {
-  max-width: 78%;
+  max-width: 86%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -350,32 +343,28 @@ function reset() {
 .bubble {
   background: var(--hover);
   border-radius: 12px;
-  padding: 12px 15px;
-  font-size: 13.5px;
-  line-height: 1.75;
+  padding: 10px 13px;
+  font-size: 13px;
+  line-height: 1.7;
   word-break: break-word;
 }
 
 .bubble :deep(h3),
 .bubble :deep(h4) {
-  margin: 10px 0 6px;
-  font-size: 14px;
+  margin: 8px 0 5px;
+  font-size: 13.5px;
 }
 
 .bubble :deep(ul) {
-  margin: 6px 0;
-  padding-left: 18px;
-}
-
-.bubble :deep(li) {
-  margin: 3px 0;
+  margin: 5px 0;
+  padding-left: 17px;
 }
 
 .bubble :deep(code) {
   background: rgba(37, 99, 235, 0.1);
   border-radius: 4px;
   padding: 1px 5px;
-  font-size: 12px;
+  font-size: 11.5px;
 }
 
 .msg.user .bubble {
@@ -386,15 +375,14 @@ function reset() {
 .error-bubble {
   background: rgba(220, 38, 38, 0.1);
   color: var(--danger);
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
-/* 打字动画 */
 .typing {
   display: inline-flex;
   gap: 5px;
   align-items: center;
-  padding: 14px 16px;
+  padding: 12px 14px;
 }
 
 .typing i {
@@ -413,14 +401,13 @@ function reset() {
   30% { opacity: 1; }
 }
 
-/* 工具卡片 */
 .tool-card {
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
   background: var(--bg-elev);
   border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 12px;
+  padding: 7px 11px;
+  font-size: 11.5px;
 }
 
 .tool-card.running {
@@ -430,7 +417,7 @@ function reset() {
 .tool-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
 }
 
@@ -440,10 +427,10 @@ function reset() {
 
 .tool-args {
   color: var(--text-sub);
-  font-size: 11px;
+  font-size: 10.5px;
   background: var(--hover);
   border-radius: 4px;
-  padding: 1px 6px;
+  padding: 1px 5px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -451,7 +438,7 @@ function reset() {
 }
 
 .tool-tag {
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--warn);
   border: 1px solid currentColor;
   border-radius: 4px;
@@ -459,23 +446,29 @@ function reset() {
 }
 
 .tool-result {
-  margin-top: 6px;
+  margin-top: 5px;
   color: var(--text-sub);
-  font-size: 11.5px;
 }
 
 .tool-items {
   margin: 4px 0 0;
-  padding-left: 16px;
+  padding-left: 15px;
 }
 
-/* 输入区 */
+.opened-tag {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .composer {
-  border-top: 1px solid var(--border);
-  padding: 12px 16px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  margin-top: 10px;
 }
 
 .composer textarea {
@@ -483,9 +476,9 @@ function reset() {
   resize: none;
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 9px 11px;
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.6;
   background: var(--bg-elev);
   color: var(--text);
@@ -494,12 +487,5 @@ function reset() {
 
 .composer textarea:focus {
   border-color: var(--primary);
-}
-
-.hint {
-  margin: 0;
-  padding: 0 16px 12px;
-  font-size: 11.5px;
-  color: var(--text-sub);
 }
 </style>

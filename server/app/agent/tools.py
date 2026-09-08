@@ -118,7 +118,10 @@ def build_registry() -> ToolRegistry:
         if dimension:
             q = q.filter(RiskFact.dimension == dimension)
         rows = q.order_by(RiskFact.ts.desc()).limit(limit).all()
+        ent = db.get(Enterprise, enterprise_id)
         return {
+            "enterprise_id": enterprise_id,
+            "enterprise_name": ent.name if ent else "",
             "count": len(rows),
             "facts": [
                 {
@@ -169,6 +172,7 @@ def build_registry() -> ToolRegistry:
         result = analyze_enterprise(db, enterprise_id)
         v = result["verdict"]
         return {
+            "enterprise_id": enterprise_id,
             "enterprise": result["enterprise"]["name"],
             "score": v["score"],
             "grade": v["grade"],

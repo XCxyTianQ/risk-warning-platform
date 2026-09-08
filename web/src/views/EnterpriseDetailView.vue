@@ -8,7 +8,8 @@ import BaseChart from '../components/BaseChart.vue'
 
 const route = useRoute()
 const router = useRouter()
-const id = Number(route.params.id)
+const props = defineProps<{ enterpriseId?: number }>()
+const id = computed(() => props.enterpriseId ?? Number(route.params.id))
 
 const profile = ref<any>(null)
 const snapshot = ref<RiskSnapshot | null>(null)
@@ -128,7 +129,7 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const [p, s, summary] = await Promise.all([api.enterprise(id), api.risk(id), api.summary()])
+    const [p, s, summary] = await Promise.all([api.enterprise(id.value), api.risk(id.value), api.summary()])
     profile.value = p
     snapshot.value = s
     avgScore.value = summary.avg_score
@@ -162,7 +163,7 @@ onMounted(load)
   <div class="page">
     <div class="page-head">
       <div>
-        <button class="btn ghost small" @click="router.back()">← 返回</button>
+        <button v-if="!props.enterpriseId" class="btn ghost small" @click="router.back()">← 返回</button>
         <h2>{{ profile?.name ?? '企业详情' }}</h2>
         <p class="page-sub" v-if="profile">
           {{ profile.industry }} · 法定代表人 {{ profile.legal_rep }} · 注册资本 {{ profile.reg_capital_wan }} 万 ·
