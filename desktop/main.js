@@ -57,9 +57,15 @@ function backendCommand() {
   if (process.env.RWP_BACKEND) {
     return { cmd: process.env.RWP_BACKEND, args: [], cwd: path.dirname(process.env.RWP_BACKEND) }
   }
-  const packagedExe = resourcePath('backend', 'risk-api.exe')
-  if (!isDev && fs.existsSync(packagedExe)) {
-    return { cmd: packagedExe, args: [], cwd: path.dirname(packagedExe) }
+  // PyInstaller 可能是 onedir（backend/risk-api/risk-api.exe）或单文件（backend/risk-api.exe）
+  const candidates = [
+    resourcePath('backend', 'risk-api', 'risk-api.exe'),
+    resourcePath('backend', 'risk-api.exe'),
+  ]
+  if (!isDev) {
+    for (const exe of candidates) {
+      if (fs.existsSync(exe)) return { cmd: exe, args: [], cwd: path.dirname(exe) }
+    }
   }
   // 开发模式：用 venv 的 python 跑 desktop_entry.py
   const repo = path.resolve(__dirname, '..')
