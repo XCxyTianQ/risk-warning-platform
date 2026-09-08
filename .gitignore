@@ -18,6 +18,10 @@ data/*.db
 data/*.sqlite*
 !data/README.md
 
+# ===== 运行产物 =====
+server/analyze_result.json
+*.result.json
+
 # ===== IDE / OS =====
 .idea/
 .vscode/
