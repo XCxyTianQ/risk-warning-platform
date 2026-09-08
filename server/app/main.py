@@ -10,6 +10,7 @@ from app.api.chat import router as chat_router
 from app.api.dashboard import router as dashboard_router
 from app.api.enterprises import router as enterprise_router
 from app.api.mcp import router as mcp_router
+from app.api.plugins import router as plugins_router
 from app.api.settings import router as settings_router
 from app.api.skills import router as skills_router
 from app.core.config import settings
@@ -30,13 +31,15 @@ async def lifespan(app: FastAPI):
             db.close()
     except Exception:  # noqa: BLE001
         pass
-    # 内置技能入库
+    # 内置技能与预设入库
     try:
+        from app.services.plugins import seed_builtin_presets
         from app.skills.service import seed_builtin
 
         db = SessionLocal()
         try:
             seed_builtin(db)
+            seed_builtin_presets(db)
         finally:
             db.close()
     except Exception:  # noqa: BLE001
@@ -73,6 +76,7 @@ app.include_router(alert_router)
 app.include_router(settings_router)
 app.include_router(mcp_router)
 app.include_router(skills_router)
+app.include_router(plugins_router)
 
 
 @app.get("/api/health")

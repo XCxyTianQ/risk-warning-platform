@@ -9,7 +9,6 @@ export interface UsageStats {
   cache_hit_tokens: number
   cache_miss_tokens: number
   cache_hit_rate: number
-  est_cost: number
   compact_count: number
 }
 
@@ -23,7 +22,6 @@ export interface PreheatStatus {
   last_warm_ago: number | null
   last_label: string
   last_hit_tokens: number
-  warm_cost: number
   ttl_seconds: number
   last_error: string
 }

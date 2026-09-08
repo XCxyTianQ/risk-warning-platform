@@ -34,14 +34,9 @@ class Session:
     est_cost: float = 0.0
 
 
-def estimate_cost(cache_hit: int, cache_miss: int, output: int) -> float:
-    """按 每 100 万 token 单价估算（元）。缓存命中价格远低于未命中。"""
-    return round(
-        cache_hit / 1e6 * settings.price_cache_hit
-        + cache_miss / 1e6 * settings.price_cache_miss
-        + output / 1e6 * settings.price_output,
-        6,
-    )
+def estimate_cost(cache_hit: int, cache_miss: int, output: int) -> float:  # noqa: ARG001
+    """保留占位：平台不再展示金额估算。"""
+    return 0.0
 
 
 class SessionStore:
@@ -172,7 +167,6 @@ class SessionStore:
         session.cache_hit_tokens += hit
         session.cache_miss_tokens += miss
         session.llm_calls += 1
-        session.est_cost = round(session.est_cost + estimate_cost(hit, miss, output), 6)
 
         row = db.get(ChatSession, session.id)
         if row is not None:
@@ -181,12 +175,12 @@ class SessionStore:
             row.cache_hit_tokens = session.cache_hit_tokens
             row.cache_miss_tokens = session.cache_miss_tokens
             row.llm_calls = session.llm_calls
-            row.est_cost = session.est_cost
         db.commit()
         return self.usage_stats(session)
 
     @staticmethod
     def usage_stats(session: Session) -> dict:
+        """会话用量统计（不含金额估算）。"""
         total_cache = session.cache_hit_tokens + session.cache_miss_tokens
         hit_rate = round(session.cache_hit_tokens / total_cache, 4) if total_cache else 0.0
         return {
@@ -196,7 +190,6 @@ class SessionStore:
             "cache_hit_tokens": session.cache_hit_tokens,
             "cache_miss_tokens": session.cache_miss_tokens,
             "cache_hit_rate": hit_rate,
-            "est_cost": round(session.est_cost, 6),
             "compact_count": session.compact_count,
         }
 
@@ -218,7 +211,6 @@ class SessionStore:
                 "title": r.title,
                 "updated_at": r.updated_at.isoformat(),
                 "message_count": counts.get(r.id, 0),
-                "est_cost": round(r.est_cost or 0, 6),
                 "cache_hit_rate": (
                     round((r.cache_hit_tokens or 0) / ((r.cache_hit_tokens or 0) + (r.cache_miss_tokens or 0)), 4)
                     if (r.cache_hit_tokens or 0) + (r.cache_miss_tokens or 0) else 0.0

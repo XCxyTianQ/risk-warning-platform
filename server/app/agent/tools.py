@@ -73,6 +73,28 @@ class ToolRegistry:
                 continue
         return count
 
+    def register_custom_tools(self, db: Session) -> int:
+        """注册用户手搓的声明式 HTTP 插件。"""
+        from app.services.plugins import enabled_custom_tools, run_custom_tool
+
+        count = 0
+        for row in enabled_custom_tools(db):
+            def handler(_db: Session, _row=row, **kwargs):
+                return run_custom_tool(_row, kwargs)
+
+            try:
+                self.register(Tool(
+                    name=f"custom_{row.name}"[:64],
+                    description=f"[插件] {row.description or row.name}",
+                    parameters=__import__("json").loads(row.parameters_json or "{}") or {"type": "object", "properties": {}},
+                    handler=handler,
+                    read_only=not row.require_approval,
+                ))
+                count += 1
+            except ValueError:
+                continue
+        return count
+
     def definitions(self) -> list[dict]:
         return [t.schema() for t in self._tools.values()]
 
@@ -106,8 +128,12 @@ def _brief(ent: Enterprise, verdict: dict) -> dict:
     }
 
 
-def build_registry() -> ToolRegistry:
+def build_registry(preset: dict | None = None) -> ToolRegistry:
+    """构建工具注册表。preset = {"tools": [白名单], "skills": [白名单]}（空=全部）。"""
     reg = ToolRegistry()
+    allowed_tools = set((preset or {}).get("tools") or [])
+    allowed_skills = set((preset or {}).get("skills") or [])
+    ALWAYS = {"list_skills", "load_skill"}
 
     def search_enterprise(db: Session, keyword: str = "", limit: int = 5) -> dict:
         q = db.query(Enterprise)
@@ -259,6 +285,8 @@ def build_registry() -> ToolRegistry:
         from app.skills.service import skills_for_tool
 
         items = skills_for_tool(db)
+        if allowed_skills:
+            items = [s for s in items if s["name"] in allowed_skills]
         return {"count": len(items), "skills": items,
                 "hint": "选定后用 load_skill(name) 载入该技能的完整执行指令"}
 
@@ -266,6 +294,8 @@ def build_registry() -> ToolRegistry:
         """载入技能完整指令，后续按该指令执行任务。"""
         from app.skills.service import get_by_name
 
+        if allowed_skills and name not in allowed_skills:
+            return {"error": f"当前预设未启用该技能：{name}", "available": sorted(allowed_skills)}
         row = get_by_name(db, name)
         if row is None or not row.enabled:
             from app.skills.service import skills_for_tool
@@ -454,4 +484,10 @@ def build_registry() -> ToolRegistry:
         handler=run_risk_analysis,
         read_only=False,
     ))
+
+    # 预设工具白名单过滤（list_skills / load_skill 始终保留，便于技能发现）
+    if allowed_tools:
+        for name in list(reg._tools):
+            if name not in allowed_tools and name not in ALWAYS:
+                reg._tools.pop(name, None)
     return reg

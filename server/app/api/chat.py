@@ -17,6 +17,7 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 class ChatIn(BaseModel):
     message: str
     session_id: str | None = None
+    preset_id: int | None = None
 
 
 class ApprovalIn(BaseModel):
@@ -105,7 +106,6 @@ def usage_summary(session_id: str | None = None, db: DbSession = Depends(get_db)
         "cache_hit_tokens": hit or 0,
         "cache_miss_tokens": miss or 0,
         "cache_hit_rate": round((hit or 0) / cache_total, 4) if cache_total else 0.0,
-        "est_cost": round(cost or 0.0, 6),
         "compact_count": compacts or 0,
     }
     session_stats = None
@@ -149,7 +149,7 @@ def chat_stream(body: ChatIn):
 
                 warmer.warm(SYSTEM_PROMPT, build_registry().definitions(), label="new-session")
             yield f"event: session\ndata: {json.dumps({'session_id': session.id, 'title': session.title}, ensure_ascii=False)}\n\n"
-            for ev in run_agent(db, session, message):
+            for ev in run_agent(db, session, message, preset_id=body.preset_id):
                 yield ev.to_sse()
         finally:
             db.close()

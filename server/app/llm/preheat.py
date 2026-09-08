@@ -43,7 +43,6 @@ class PromptCacheWarmer:
             "last_warm_ago": round(time.time() - self.last_warm_at, 1) if self.last_warm_at else None,
             "last_label": self.last_label,
             "last_hit_tokens": self.last_hit_tokens,
-            "warm_cost": round(self.warm_cost, 6),
             "ttl_seconds": settings.preheat_ttl_seconds,
             "last_error": self.last_error,
         }
@@ -85,15 +84,6 @@ class PromptCacheWarmer:
             self.last_label = label
             self.warm_count += 1
             self.last_hit_tokens = int(usage.get("cache_hit_tokens", 0) or 0)
-            hit = int(usage.get("cache_hit_tokens", 0) or 0)
-            miss = int(usage.get("cache_miss_tokens", 0) or 0) or int(usage.get("prompt_tokens", 0) or 0)
-            self.warm_cost = round(
-                self.warm_cost
-                + hit / 1e6 * settings.price_cache_hit
-                + miss / 1e6 * settings.price_cache_miss
-                + int(usage.get("completion_tokens", 0) or 0) / 1e6 * settings.price_output,
-                6,
-            )
             return {"ok": True, "label": label, "usage": usage, **self.status()}
 
     def warm_async(self, system_prompt: str, tools: list[dict], label: str = "startup", force: bool = False) -> None:

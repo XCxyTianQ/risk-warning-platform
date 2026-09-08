@@ -197,3 +197,40 @@ class Skill(Base):
     builtin: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class CustomTool(Base):
+    """用户手搓的插件工具：声明式 HTTP 调用（无需写代码）。"""
+
+    __tablename__ = "custom_tool"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(60), unique=True)
+    description: Mapped[str] = mapped_column(String(300), default="")
+    parameters_json: Mapped[str] = mapped_column(Text, default="{}")   # JSON Schema
+    method: Mapped[str] = mapped_column(String(10), default="GET")
+    url: Mapped[str] = mapped_column(String(400), default="")          # 支持 {arg} 占位
+    headers_json: Mapped[str] = mapped_column(Text, default="{}")
+    body_template: Mapped[str] = mapped_column(Text, default="")       # 支持 {arg} 占位
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    require_approval: Mapped[bool] = mapped_column(Boolean, default=False)
+    builtin: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class AgentPreset(Base):
+    """Agent 预设（对齐 DSH 组合理念）：提示词补充 + 工具白名单 + 技能白名单 + 模型覆盖。"""
+
+    __tablename__ = "agent_preset"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), unique=True)
+    description: Mapped[str] = mapped_column(String(300), default="")
+    prompt_extra: Mapped[str] = mapped_column(Text, default="")        # 追加到 system 提示词
+    tools_json: Mapped[str] = mapped_column(Text, default="[]")        # 工具白名单（空=全部）
+    skills_json: Mapped[str] = mapped_column(Text, default="[]")       # 技能白名单（空=全部）
+    model_override: Mapped[str] = mapped_column(String(80), default="")  # 可选模型覆盖
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    builtin: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

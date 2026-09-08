@@ -19,7 +19,7 @@ import {
   type PanelType,
 } from './store'
 
-const LAUNCHER: PanelType[] = ['dashboard', 'enterprises', 'alerts', 'analyze', 'profile', 'skills', 'mcp']
+const LAUNCHER: PanelType[] = ['dashboard', 'enterprises', 'alerts', 'analyze', 'profile', 'presets', 'mcp']
 
 const leftPanels = computed(() => panelsOf('left'))
 const rightPanels = computed(() => panelsOf('right'))

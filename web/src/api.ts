@@ -263,6 +263,73 @@ export const api = {
     }),
   deleteSkill: (id: number) => request<{ deleted: number }>(`/api/skills/${id}`, { method: 'DELETE' }),
 
+  // --- Agent 预设 / 插件 / 技能 ---
+  presets: () =>
+    request<{
+      total: number
+      items: {
+        id: number
+        name: string
+        description: string
+        prompt_extra: string
+        tools: string[]
+        skills: string[]
+        model_override: string
+        enabled: boolean
+        builtin: boolean
+      }[]
+    }>('/api/plugins/presets'),
+  createPreset: (body: Record<string, any>) =>
+    request<{ preset_id: number; name: string }>('/api/plugins/presets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  updatePreset: (id: number, body: Record<string, any>) =>
+    request<{ ok: boolean }>(`/api/plugins/presets/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deletePreset: (id: number) => request<{ deleted: number }>(`/api/plugins/presets/${id}`, { method: 'DELETE' }),
+
+  customTools: () =>
+    request<{
+      total: number
+      items: {
+        id: number
+        name: string
+        description: string
+        parameters: Record<string, any>
+        method: string
+        url: string
+        headers: Record<string, string>
+        body_template: string
+        enabled: boolean
+        require_approval: boolean
+        builtin: boolean
+      }[]
+    }>('/api/plugins/tools'),
+  createCustomTool: (body: Record<string, any>) =>
+    request<{ tool_id: number; name: string }>('/api/plugins/tools', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  updateCustomTool: (id: number, body: Record<string, any>) =>
+    request<{ ok: boolean }>(`/api/plugins/tools/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteCustomTool: (id: number) => request<{ deleted: number }>(`/api/plugins/tools/${id}`, { method: 'DELETE' }),
+  testCustomTool: (id: number, args: Record<string, any> = {}) =>
+    request<Record<string, any>>(`/api/plugins/tools/${id}/test`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(args),
+    }),
+
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>
     request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(

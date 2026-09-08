@@ -10,7 +10,6 @@ let timer: number | undefined
 const pressure = computed(() => contextPressure())
 const sessionHit = computed(() => usageState.session?.cache_hit_rate ?? 0)
 const globalHit = computed(() => usageState.global?.cache_hit_rate ?? 0)
-const cost = computed(() => usageState.session?.est_cost ?? usageState.global?.est_cost ?? 0)
 const inTok = computed(() => usageState.session?.prompt_tokens ?? usageState.global?.prompt_tokens ?? 0)
 const outTok = computed(() => usageState.session?.completion_tokens ?? usageState.global?.completion_tokens ?? 0)
 const compacts = computed(() => usageState.session?.compact_count ?? usageState.global?.compact_count ?? 0)
@@ -32,7 +31,6 @@ const preheatTitle = computed(() => {
     `预热次数：${p.warm_count}`,
     `最近一次：${p.last_label || '—'}（${p.last_warm_ago ?? '—'} 秒前）`,
     `预热时命中 ${p.last_hit_tokens} token`,
-    `预热累计成本 ¥${p.warm_cost.toFixed(6)}`,
     `新鲜期：${p.ttl_seconds}s（期内不重复预热）`,
     p.last_error ? `最近错误：${p.last_error}` : '',
   ]
@@ -94,7 +92,6 @@ onUnmounted(() => {
         缓存命中 {{ ((sessionHit || globalHit) * 100).toFixed(1) }}%
       </span>
       <span class="sb-item" title="输入 / 输出 token">↑{{ fmtTokens(inTok) }} ↓{{ fmtTokens(outTok) }}</span>
-      <span class="sb-item cost" title="估算成本（按 DeepSeek 单价：缓存命中 ¥0.5/M、未命中 ¥4/M、输出 ¥12/M；其他提供商可在 .env 调整 PRICE_* 参数）">¥{{ cost.toFixed(4) }}</span>
       <span class="sb-item" title="累计调用次数">⚙ {{ calls }}</span>
       <span class="sb-item" :class="{ warn: compacts > 0 }" title="上下文压缩次数">🗜️ {{ compacts }}</span>
       <button class="sb-toggle" :title="expanded ? '收起明细' : '展开明细'" @click="expanded = !expanded">
@@ -111,7 +108,6 @@ onUnmounted(() => {
         <div class="sd-row"><span>其中命中缓存</span><b class="ok-text">{{ (usageState.session?.cache_hit_tokens ?? 0).toLocaleString() }}</b></div>
         <div class="sd-row"><span>未命中</span><b>{{ (usageState.session?.cache_miss_tokens ?? 0).toLocaleString() }}</b></div>
         <div class="sd-row"><span>输出 token</span><b>{{ (usageState.session?.completion_tokens ?? 0).toLocaleString() }}</b></div>
-        <div class="sd-row"><span>估算成本</span><b>¥{{ (usageState.session?.est_cost ?? 0).toFixed(6) }}</b></div>
         <div class="sd-row"><span>压缩次数</span><b>{{ usageState.session?.compact_count ?? 0 }}</b></div>
       </div>
       <div class="sd-col">
@@ -121,7 +117,6 @@ onUnmounted(() => {
         <div class="sd-row"><span>输入 token</span><b>{{ (usageState.global?.prompt_tokens ?? 0).toLocaleString() }}</b></div>
         <div class="sd-row"><span>缓存命中率</span><b :style="{ color: hitColor(globalHit) }">{{ (globalHit * 100).toFixed(1) }}%</b></div>
         <div class="sd-row"><span>输出 token</span><b>{{ (usageState.global?.completion_tokens ?? 0).toLocaleString() }}</b></div>
-        <div class="sd-row"><span>累计成本</span><b>¥{{ (usageState.global?.est_cost ?? 0).toFixed(6) }}</b></div>
         <div class="sd-row"><span>累计压缩</span><b>{{ usageState.global?.compact_count ?? 0 }}</b></div>
       </div>
       <div class="sd-col">

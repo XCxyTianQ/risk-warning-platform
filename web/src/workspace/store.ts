@@ -2,7 +2,7 @@
 
 import { reactive } from 'vue'
 
-export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze' | 'mcp' | 'skills'
+export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze' | 'mcp' | 'presets'
 export type DockZone = 'left' | 'right' | 'bottom'
 
 export interface Panel {
@@ -21,7 +21,7 @@ export const PANEL_META: Record<PanelType, { title: string; icon: string; desc: 
   alerts: { title: '风险线索', icon: '🚨', desc: '大模型产出的风险事实', singleton: true },
   analyze: { title: '智能研判', icon: '🧠', desc: '单企业一键研判', singleton: true },
   mcp: { title: 'MCP 服务', icon: '🔌', desc: '外部 MCP 工具接入与同步', singleton: true },
-  skills: { title: '技能库', icon: '📚', desc: '可复用的任务方法论', singleton: true },
+  presets: { title: 'Agent 预设', icon: '🧩', desc: '预设组合 + 手搓插件/技能', singleton: true },
 }
 
 interface WorkspaceState {
@@ -160,7 +160,7 @@ export function openForTool(name: string, result: Record<string, any>) {
     return
   }
   if (name === 'list_skills' || name === 'load_skill') {
-    openPanel('skills', { dock: 'right' })
+    openPanel('presets', { dock: 'right' })
   }
 }
 

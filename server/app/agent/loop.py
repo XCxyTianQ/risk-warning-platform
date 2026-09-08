@@ -28,9 +28,13 @@ MAX_TOOL_RESULT_CHARS = 6000
 _base_registry = build_registry()
 
 
-def _registry_for(db: DbSession):
-    """每次运行构建注册表：内置工具 + 启用的 MCP 工具。"""
-    reg = build_registry()
+def _registry_for(db: DbSession, preset: dict | None = None):
+    """每次运行构建注册表：内置工具（按预设过滤）+ 自定义插件 + 启用的 MCP 工具。"""
+    reg = build_registry(preset)
+    try:
+        reg.register_custom_tools(db)
+    except Exception:  # noqa: BLE001
+        pass
     try:
         reg.register_mcp(db)
     except Exception:  # noqa: BLE001 —— MCP 不可用不影响内置工具
@@ -78,8 +82,8 @@ def _summarize(result: dict) -> dict:
     return {"ok": True, **summary}
 
 
-def _build_messages(session: Session) -> list[dict]:
-    return [{"role": "system", "content": SYSTEM_PROMPT}, *store.context(session)]
+def _build_messages(session: Session, system_prompt: str = SYSTEM_PROMPT) -> list[dict]:
+    return [{"role": "system", "content": system_prompt}, *store.context(session)]
 
 
 def _maybe_compact(db: DbSession, session: Session, client: LlmClient, reg, messages: list[dict],
@@ -113,19 +117,46 @@ def _maybe_compact(db: DbSession, session: Session, client: LlmClient, reg, mess
         yield AgentEvent("compaction", {"phase": "skipped", "reason": "无可折叠历史或摘要失败"})
 
 
-def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[AgentEvent]:
+def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | None = None) -> Iterator[AgentEvent]:
     store.append(db, session, {"role": "user", "content": user_text})
+
+    # 载入 Agent 预设（提示词补充 + 工具白名单 + 技能白名单 + 模型覆盖）
+    preset_row = None
+    preset: dict | None = None
+    system_prompt = SYSTEM_PROMPT
+    if preset_id:
+        try:
+            from app.services.plugins import get_preset
+
+            preset_row = get_preset(db, preset_id)
+            if preset_row is not None:
+                import json as _json
+
+                preset = {
+                    "tools": _json.loads(preset_row.tools_json or "[]"),
+                    "skills": _json.loads(preset_row.skills_json or "[]"),
+                }
+                if preset_row.prompt_extra:
+                    system_prompt = f"{SYSTEM_PROMPT}\n\n[当前预设：{preset_row.name}]\n{preset_row.prompt_extra}"
+        except Exception:  # noqa: BLE001
+            preset_row = None
+
     client = _client()
-    reg = _registry_for(db)
+    if preset_row is not None and preset_row.model_override:
+        client = LlmClient(LlmConfig(
+            base_url=settings.llm_base_url, api_key=settings.llm_api_key,
+            model=preset_row.model_override, max_tokens=settings.llm_max_tokens,
+        ))
+    reg = _registry_for(db, preset)
 
     # 主动压缩检查（DSH：每次调用前按最新压力重新解析）
-    messages = _build_messages(session)
+    messages = _build_messages(session, system_prompt)
     for ev in _maybe_compact(db, session, client, reg, messages):
         yield ev
-        messages = _build_messages(session)
+        messages = _build_messages(session, system_prompt)
 
     for step in range(MAX_STEPS):
-        messages = _build_messages(session)
+        messages = _build_messages(session, system_prompt)
         text_parts: list[str] = []
         tool_calls: list[dict] | None = None
 

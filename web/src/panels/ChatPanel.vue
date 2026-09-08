@@ -58,6 +58,8 @@ const historyOpen = ref(false)
 const sessions = ref<SessionRow[]>([])
 const loadingHistory = ref(false)
 const usage = ref<UsageStats | null>(null)
+const presets = ref<{ id: number; name: string; description: string; enabled: boolean }[]>([])
+const presetId = ref<number | null>(null)
 let abort: AbortController | null = null
 
 const SESSION_KEY = 'rw-chat-session'
@@ -206,10 +208,21 @@ function reset() {
 }
 
 onMounted(async () => {
+  const savedPreset = localStorage.getItem('rw-preset')
+  if (savedPreset) presetId.value = Number(savedPreset) || null
+  try {
+    presets.value = (await api.presets()).items.filter((p) => p.enabled)
+  } catch {
+    presets.value = []
+  }
   const saved = localStorage.getItem(SESSION_KEY)
   if (saved) await openSession(saved)
   await loadSessions()
 })
+
+function onPresetChange() {
+  localStorage.setItem('rw-preset', presetId.value ? String(presetId.value) : '')
+}
 
 async function send(text?: string) {
   const content = (text ?? input.value).trim()
@@ -226,7 +239,7 @@ async function send(text?: string) {
     const resp = await fetch('/api/chat/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: content, session_id: sessionId.value }),
+      body: JSON.stringify({ message: content, session_id: sessionId.value, preset_id: presetId.value }),
       signal: abort.signal,
     })
     if (!resp.body) throw new Error('服务端未返回流')
@@ -354,11 +367,19 @@ function stop() {
         >
           💰 缓存命中 {{ Math.round((usage.cache_hit_rate ?? 0) * 100) }}%
           · {{ ((usage.prompt_tokens + usage.completion_tokens) / 1000).toFixed(1) }}k tok
-          · ¥{{ usage.est_cost.toFixed(4) }}
           <template v-if="usage.compact_count"> · 已压缩 {{ usage.compact_count }} 次</template>
         </span>
       </div>
       <button class="btn ghost small" @click="newChat">＋ 新对话</button>
+    </div>
+
+    <div class="preset-bar">
+      <span class="pb-label">🧩 预设</span>
+      <select v-model="presetId" class="preset-select" @change="onPresetChange">
+        <option :value="null">通用（默认）</option>
+        <option v-for="p in presets" :key="p.id" :value="p.id">{{ p.name }}</option>
+      </select>
+      <span class="pb-desc">{{ presets.find((p) => p.id === presetId)?.description ?? '全工具、全技能' }}</span>
     </div>
 
     <!-- 历史会话列表 -->
@@ -480,6 +501,44 @@ function stop() {
   color: var(--text-sub);
 }
 
+.preset-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 8px;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.pb-label {
+  font-size: 11.5px;
+  color: var(--text-sub);
+}
+
+.preset-select {
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+
+.preset-select:focus {
+  border-color: var(--primary);
+}
+
+.pb-desc {
+  font-size: 11px;
+  color: var(--text-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .usage {
   font-size: 11px;
   color: var(--text-sub);
@@ -491,8 +550,7 @@ function stop() {
   white-space: nowrap;
 }
 
-.notice {
-  font-size: 11.5px;
+.notice {  font-size: 11.5px;
   color: var(--warn);
   background: rgba(217, 119, 6, 0.08);
   border: 1px solid rgba(217, 119, 6, 0.3);
