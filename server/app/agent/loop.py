@@ -25,7 +25,17 @@ from app.llm.client import LlmClient, LlmConfig
 MAX_STEPS = 5
 MAX_TOOL_RESULT_CHARS = 6000
 
-_registry = build_registry()
+_base_registry = build_registry()
+
+
+def _registry_for(db: DbSession):
+    """每次运行构建注册表：内置工具 + 启用的 MCP 工具。"""
+    reg = build_registry()
+    try:
+        reg.register_mcp(db)
+    except Exception:  # noqa: BLE001 —— MCP 不可用不影响内置工具
+        pass
+    return reg
 
 
 def _client() -> LlmClient:
@@ -72,24 +82,24 @@ def _build_messages(session: Session) -> list[dict]:
     return [{"role": "system", "content": SYSTEM_PROMPT}, *store.context(session)]
 
 
-def _maybe_compact(db: DbSession, session: Session, client: LlmClient, messages: list[dict],
+def _maybe_compact(db: DbSession, session: Session, client: LlmClient, reg, messages: list[dict],
                    force: bool = False) -> Iterator[AgentEvent]:
     """按压力阈值（或强制）压缩上下文；产出 compaction 事件，返回新的 messages 由调用方重建。"""
     if not settings.compaction_enabled:
         return
-    over, est = context.should_compact(messages, _registry.definitions())
+    over, est = context.should_compact(messages, reg.definitions())
     if not (force or over):
         return
     yield AgentEvent("compaction", {"phase": "start", "estimated_tokens": est,
                                     "window": settings.llm_context_window, "forced": force})
-    result = context.compact(db, session, client, messages, _registry.definitions())
+    result = context.compact(db, session, client, messages, reg.definitions())
     if result:
         store.add_usage(db, session, result.get("usage") or {})
         # 压缩后前缀变化（system + 摘要）→ 立即预热新前缀，避免下一次请求全价处理
         try:
             from app.llm.preheat import warmer
 
-            warmer.warm(SYSTEM_PROMPT, _registry.definitions(), force=True, label="post-compaction")
+            warmer.warm(SYSTEM_PROMPT, reg.definitions(), force=True, label="post-compaction")
         except Exception:  # noqa: BLE001
             pass
         yield AgentEvent("compaction", {
@@ -106,10 +116,11 @@ def _maybe_compact(db: DbSession, session: Session, client: LlmClient, messages:
 def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[AgentEvent]:
     store.append(db, session, {"role": "user", "content": user_text})
     client = _client()
+    reg = _registry_for(db)
 
     # 主动压缩检查（DSH：每次调用前按最新压力重新解析）
     messages = _build_messages(session)
-    for ev in _maybe_compact(db, session, client, messages):
+    for ev in _maybe_compact(db, session, client, reg, messages):
         yield ev
         messages = _build_messages(session)
 
@@ -119,7 +130,7 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
         tool_calls: list[dict] | None = None
 
         try:
-            for ev in client.chat_stream(messages, tools=_registry.definitions()):
+            for ev in client.chat_stream(messages, tools=reg.definitions()):
                 if ev["type"] == "text":
                     text_parts.append(ev["text"])
                     yield AgentEvent("token", {"text": ev["text"]})
@@ -133,7 +144,7 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
             # 溢出恢复：上下文超限 → 强制压缩一次并重试（DSH overflow recovery）
             if context.is_overflow_error(exc) and settings.compaction_enabled:
                 forced = False
-                for ev in _maybe_compact(db, session, client, messages, force=True):
+                for ev in _maybe_compact(db, session, client, reg, messages, force=True):
                     yield ev
                     forced = True
                 if forced:
@@ -154,7 +165,7 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
                     args = json.loads(fn.get("arguments") or "{}")
                 except ValueError:
                     args = {}
-                tool = _registry.get(name)
+                tool = reg.get(name)
                 yield AgentEvent("tool", {
                     "id": tc.get("id", ""),
                     "name": name,
@@ -194,7 +205,7 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
                         })
                         continue
 
-                result = _registry.call(name, args, db)
+                result = reg.call(name, args, db)
                 store.append(db, session, {
                     "role": "tool",
                     "tool_call_id": tc.get("id", ""),

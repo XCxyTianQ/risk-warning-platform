@@ -70,7 +70,33 @@ server/app/
 | A4 | 会话持久化（DB）+ 布局持久化（localStorage） | 刷新后对话历史与面板编排均恢复 | ✅ |
 | A5 | 动作工具二次确认（run_risk_analysis / refresh_enterprise_data 前询问用户） | 动作类工具执行前弹出确认 | ✅ |
 
-## 6. 不做的
+## 6. MCP 与技能模块（Harness 生态对齐）
+
+### MCP（双向）
+
+| 方向 | 实现 | 说明 |
+|---|---|---|
+| **接入外部 MCP 服务** | `app/mcp/client.py` + `service.py` + `/api/mcp/servers` | HTTP JSON-RPC 2.0（initialize / ping / tools/list / tools/call）；注册后自动同步工具，Agent 每轮动态加载（工具名 `mcp_<服务id>_<工具名>`，描述带 `[MCP:服务名]` 前缀） |
+| **对外暴露本平台** | `POST /api/mcp` | 其他 Agent/客户端可把本平台当 MCP 工具服务器：`tools/list` 返回全部 14 个内置工具，`tools/call` 直接执行 |
+| 授权策略 | 服务级 `require_approval` | 勾选后该服务的工具视为写操作，调用前走审批流程 |
+
+实测：注册 `tests/mock_mcp_server.py`（本地 mock）→ 自动同步 2 个工具；`tools/call` 正常返回。
+
+### 技能（Skills）
+
+- `app/skills/service.py` + `app/db/models.py:Skill`：名称 / 描述 / 完整指令（Markdown）/ 启用开关，内置 4 个技能
+  （企业风险评估报告、多企业对比分析、预警处置建议、舆情专项研判）
+- **渐进式披露**（保持 system 提示词静态 → 缓存友好）：
+  1. system 提示词只写一句"需要专门方法时用 list_skills / load_skill"
+  2. `list_skills` 只返回名称 + 描述（不污染上下文）
+  3. `load_skill(name)` 返回完整指令，模型随后严格按指令执行
+- 前端「技能库」面板支持新建/编辑/启停/删除；Agent 调用技能时会自动打开该面板
+
+实测：提问"用「企业风险评估报告」技能分析一下康美药业" → Agent 依次调用
+`search_enterprise → list_skills → load_skill → get_score_profile → get_risk_facts ×2`，
+最终按技能模板输出「企业概况 / 风险评级 / 六维评分 / 关键风险点 / 处置建议」结构报告。
+
+## 7. 不做的
 
 - ❌ 不做多 Agent 编排（Planner/Executor 分离）——单 Agent + 工具足够，避免过度设计
 - ❌ 不引入 WebSocket——SSE 单向流足够，实现更简单

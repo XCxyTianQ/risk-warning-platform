@@ -45,6 +45,34 @@ class ToolRegistry:
             raise ValueError(f"tool already registered: {tool.name}")
         self._tools[tool.name] = tool
 
+    def register_mcp(self, db: Session) -> int:
+        """把启用的外部 MCP 服务工具注册进本次运行（每会话动态加载）。"""
+        from app.mcp.client import McpClient
+        from app.mcp.service import enabled_tools
+
+        count = 0
+        for item in enabled_tools(db):
+            tool = item["tool"]
+            name = item["openai_name"]
+            url, auth, mcp_name, server_name = item["server_url"], item["auth_header"], tool.name, item["server_name"]
+
+            def handler(_db: Session, _url=url, _auth=auth, _name=mcp_name, **kwargs):
+                client = McpClient(_url, _auth)
+                return {"mcp_result": client.call_tool(_name, kwargs)}
+
+            try:
+                self.register(Tool(
+                    name=name,
+                    description=f"[MCP:{server_name}] {tool.description or tool.name}",
+                    parameters=tool.input_schema or {"type": "object", "properties": {}},
+                    handler=handler,
+                    read_only=not item["require_approval"],
+                ))
+                count += 1
+            except ValueError:
+                continue
+        return count
+
     def definitions(self) -> list[dict]:
         return [t.schema() for t in self._tools.values()]
 
@@ -226,6 +254,26 @@ def build_registry() -> ToolRegistry:
             }
         return result
 
+    def list_skills(db: Session) -> dict:
+        """列出可用技能（只给名称与描述，避免污染上下文）。"""
+        from app.skills.service import skills_for_tool
+
+        items = skills_for_tool(db)
+        return {"count": len(items), "skills": items,
+                "hint": "选定后用 load_skill(name) 载入该技能的完整执行指令"}
+
+    def load_skill(db: Session, name: str) -> dict:
+        """载入技能完整指令，后续按该指令执行任务。"""
+        from app.skills.service import get_by_name
+
+        row = get_by_name(db, name)
+        if row is None or not row.enabled:
+            from app.skills.service import skills_for_tool
+
+            return {"error": f"技能不存在或已停用：{name}",
+                    "available": [s["name"] for s in skills_for_tool(db)]}
+        return {"skill": row.name, "description": row.description, "instructions": row.content}
+
     def run_risk_analysis(db: Session, enterprise_id: int) -> dict:
         """动作工具：触发一次完整研判（大模型 + 规则交叉校验），耗时 10~40 秒。"""
         from app.services.risk import analyze_enterprise
@@ -378,6 +426,22 @@ def build_registry() -> ToolRegistry:
         },
         handler=add_enterprise,
         read_only=False,
+    ))
+    reg.register(Tool(
+        name="list_skills",
+        description="列出平台可用技能（如「企业风险评估报告」「多企业对比分析」）。需要专门分析方法时先调用它。",
+        parameters={"type": "object", "properties": {}, "required": []},
+        handler=list_skills,
+    ))
+    reg.register(Tool(
+        name="load_skill",
+        description="载入指定技能的完整执行指令，然后严格按该指令完成任务。",
+        parameters={
+            "type": "object",
+            "properties": {"name": {"type": "string", "description": "技能名称（来自 list_skills）"}},
+            "required": ["name"],
+        },
+        handler=load_skill,
     ))
     reg.register(Tool(
         name="run_risk_analysis",

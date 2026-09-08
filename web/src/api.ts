@@ -210,6 +210,59 @@ export const api = {
   preheatStatus: () => request<Record<string, any>>('/api/settings/preheat'),
   resetSettings: () => request<{ reset: boolean; note: string }>('/api/settings/reset', { method: 'POST' }),
 
+  // --- MCP 服务 ---
+  mcpServers: () =>
+    request<{
+      total: number
+      items: {
+        id: number
+        name: string
+        url: string
+        enabled: boolean
+        require_approval: boolean
+        status: string
+        status_detail: string
+        tool_count: number
+        tools: { name: string; description: string }[]
+        synced_at: string | null
+      }[]
+    }>('/api/mcp/servers'),
+  addMcpServer: (body: { name: string; url: string; auth_header?: string; require_approval?: boolean }) =>
+    request<{ server_id: number; tool_count?: number; tools?: string[]; error?: string }>('/api/mcp/servers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  patchMcpServer: (id: number, body: Record<string, any>) =>
+    request<{ ok: boolean }>(`/api/mcp/servers/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteMcpServer: (id: number) => request<{ deleted: number }>(`/api/mcp/servers/${id}`, { method: 'DELETE' }),
+  testMcpServer: (id: number) => request<{ ok: boolean; tools?: string[]; error?: string }>(`/api/mcp/servers/${id}/test`, { method: 'POST' }),
+  syncMcpServer: (id: number) => request<{ ok: boolean; tool_count?: number; error?: string }>(`/api/mcp/servers/${id}/sync`, { method: 'POST' }),
+
+  // --- 技能库 ---
+  skills: () =>
+    request<{
+      total: number
+      items: { id: number; name: string; description: string; content: string; enabled: boolean; builtin: boolean; updated_at: string }[]
+    }>('/api/skills'),
+  createSkill: (body: { name: string; description: string; content: string }) =>
+    request<{ skill_id: number; name: string }>('/api/skills', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  updateSkill: (id: number, body: Record<string, any>) =>
+    request<{ ok: boolean }>(`/api/skills/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteSkill: (id: number) => request<{ deleted: number }>(`/api/skills/${id}`, { method: 'DELETE' }),
+
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>
     request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(

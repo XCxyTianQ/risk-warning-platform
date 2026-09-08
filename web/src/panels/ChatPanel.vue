@@ -82,6 +82,8 @@ const TOOL_LABEL: Record<string, string> = {
   list_alerts: '查询预警',
   handle_alert: '处置预警',
   get_alert_report: '生成预警报告',
+  list_skills: '查看技能',
+  load_skill: '载入技能',
 }
 
 /** 动作工具审批 */

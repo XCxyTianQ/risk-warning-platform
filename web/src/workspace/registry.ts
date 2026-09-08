@@ -5,6 +5,8 @@ import AnalyzeView from '../views/AnalyzeView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import EnterpriseDetailView from '../views/EnterpriseDetailView.vue'
 import EnterprisesView from '../views/EnterprisesView.vue'
+import McpPanel from '../panels/McpPanel.vue'
+import SkillsPanel from '../panels/SkillsPanel.vue'
 import type { Panel, PanelType } from './store'
 
 export const COMPONENTS: Record<PanelType, any> = {
@@ -13,6 +15,8 @@ export const COMPONENTS: Record<PanelType, any> = {
   enterprises: EnterprisesView,
   alerts: AlertsView,
   analyze: AnalyzeView,
+  mcp: McpPanel,
+  skills: SkillsPanel,
 }
 
 export function panelProps(p: Panel | null): Record<string, any> {

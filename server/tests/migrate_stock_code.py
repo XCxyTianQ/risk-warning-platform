@@ -59,3 +59,4 @@ for name, decl in new_cols:
         print(f"[migrate] 已添加 chat_session.{name}")
 con.commit()
 con.close()
+print("[migrate] 完成（新表 mcp_server / skill 由 init_db 自动创建）")
