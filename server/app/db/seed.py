@@ -1,16 +1,19 @@
-"""样例数据入库（阶段2：1 家企业 3 类数据）。幂等：清空重灌。
+"""样例数据入库（多企业演示数据集 v2）。幂等：清空重灌。
 
-数据文件：data/samples/*.json（演示数据集 v1，信源=公开报道，企业=杭州深度求索人工智能基础技术研究有限公司）
+数据文件：data/samples/dataset.json（公开信源整理/演示数据）
 """
 
 import json
-import os
 from pathlib import Path
 
 from app.db.database import SessionLocal, init_db
-from app.db.models import Enterprise, Finance, LegalRecord, News
+from app.db.models import Enterprise, Finance, LegalRecord, News, RiskFact
 
 SAMPLES_DIR = Path(__file__).resolve().parents[3] / "data" / "samples"
+ENTERPRISE_FIELDS = (
+    "name", "unified_code", "legal_rep", "reg_capital_wan",
+    "reg_date", "industry", "address", "data_note",
+)
 
 
 def _load(name: str):
@@ -20,34 +23,37 @@ def _load(name: str):
 
 def seed() -> None:
     init_db()
-    ent = _load("enterprise.json")
-    legal = _load("legal_records.json")
-    news = _load("news.json")
-    finance = _load("finance.json")
+    data = _load("dataset.json")
 
     db = SessionLocal()
     try:
-        # 幂等：清空该企业相关数据重灌
-        existing = db.query(Enterprise).filter(Enterprise.name == ent["name"]).first()
-        if existing:
-            db.query(LegalRecord).filter(LegalRecord.enterprise_id == existing.id).delete()
-            db.query(News).filter(News.enterprise_id == existing.id).delete()
-            db.query(Finance).filter(Finance.enterprise_id == existing.id).delete()
-            db.query(Enterprise).filter(Enterprise.id == existing.id).delete()
-            db.commit()
-
-        obj = Enterprise(**{k: v for k, v in ent.items() if k != "facts"})
-        db.add(obj)
-        db.flush()
-
-        for r in legal:
-            db.add(LegalRecord(enterprise_id=obj.id, **r))
-        for n in news:
-            db.add(News(enterprise_id=obj.id, **n))
-        for fd in finance:
-            db.add(Finance(enterprise_id=obj.id, **fd))
+        # 幂等：清空重灌（原型期策略；正式版走迁移+增量）
+        db.query(RiskFact).delete()
+        db.query(Finance).delete()
+        db.query(News).delete()
+        db.query(LegalRecord).delete()
+        db.query(Enterprise).delete()
         db.commit()
-        print(f"[seed] ok: {obj.name}（legal={len(legal)}, news={len(news)}, finance={len(finance)}）")
+
+        summary = []
+        for item in data["enterprises"]:
+            obj = Enterprise(**{k: item[k] for k in ENTERPRISE_FIELDS if k in item})
+            db.add(obj)
+            db.flush()
+            legal = item.get("legal_records", [])
+            news = item.get("news", [])
+            finance = item.get("finance", [])
+            for r in legal:
+                db.add(LegalRecord(enterprise_id=obj.id, **r))
+            for n in news:
+                db.add(News(enterprise_id=obj.id, **n))
+            for f in finance:
+                db.add(Finance(enterprise_id=obj.id, **f))
+            summary.append(f"{obj.name}(legal={len(legal)}, news={len(news)}, finance={len(finance)})")
+        db.commit()
+        print(f"[seed] ok: {len(summary)} 家企业")
+        for line in summary:
+            print("  -", line)
     finally:
         db.close()
 

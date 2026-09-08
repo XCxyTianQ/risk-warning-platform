@@ -29,13 +29,27 @@ def compute_indicators(db: Session, enterprise_id: int) -> dict:
     ).scalar() or 0
     negative_ratio = round(news_negative / news_total, 3) if news_total else 0.0
 
-    # 财务维度：无财报数据 → 数据不足（gray）
-    finance_count = db.query(func.count(Finance.id)).filter(
-        Finance.enterprise_id == enterprise_id
-    ).scalar() or 0
-    finance_available = finance_count > 0
+    # 财务维度：取最新一期财报
+    finance_rows = (
+        db.query(Finance)
+        .filter(Finance.enterprise_id == enterprise_id)
+        .order_by(Finance.year.desc())
+        .all()
+    )
+    if finance_rows:
+        latest = finance_rows[0]
+        finance = {
+            "available": True,
+            "year": latest.year,
+            "debt_ratio": latest.debt_ratio,
+            "net_profit": latest.net_profit,
+            "revenue": latest.revenue,
+            "source": latest.source,
+        }
+    else:
+        finance = {"available": False, "note": "未上市/无公开财报（数据不足）"}
     return {
-        "finance": {"available": finance_available, "note": "未上市企业，无公开财报（数据不足）"},
+        "finance": finance,
         "legal": {"count": legal_total, "amount": legal_amount},
         "news": {"total": news_total, "negative": news_negative, "negative_ratio": negative_ratio},
     }
@@ -62,7 +76,18 @@ def dim_level(dim: str, ind: dict) -> str:
             return "yellow"
         return "green"
     if dim == "finance":
-        return "gray"  # 数据不足：不参与定级
+        fin = ind["finance"]
+        if not fin.get("available"):
+            return "gray"  # 数据不足：不参与定级
+        debt = fin.get("debt_ratio") or 0
+        profit = fin.get("net_profit") or 0
+        if debt >= 85 or (profit < 0 and debt >= 70):
+            return "red"
+        if debt >= 70 or profit < 0:
+            return "orange"
+        if debt >= 60:
+            return "yellow"
+        return "green"
     return "green"
 
 

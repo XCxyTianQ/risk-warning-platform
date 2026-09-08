@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "version": "dataset v2",
+    "generated_for": "阶段2/3 演示（多企业驾驶舱）",
+    "note": "全部为公开信源整理/演示数据；财务数字为演示用途，不构成投资依据。上市公司代码仅用于说明数据来源类型。"
+  },
+  "enterprises": [
+    {
+      "name": "杭州深度求索人工智能基础技术研究有限公司",
+      "unified_code": "_",
+      "legal_rep": "梁文锋",
+      "reg_capital_wan": 1500,
+      "reg_date": "2023-07-17",
+      "industry": "人工智能",
+      "address": "浙江省杭州市（公开信息）",
+      "data_note": "非上市：无公开财报；工商/商标信息来自公开报道。",
+      "legal_records": [
+        {"case_no": "", "doc_type": "行政决定", "title": "国家知识产权局依法驳回“DEEPSEEK”相关恶意抢注商标申请63件", "court": "国家知识产权局", "cause": "商标恶意抢注", "amount": 0, "status": "已驳回", "judgment_date": "2025-02", "source": "国家知识产权局公告/公开报道"},
+        {"case_no": "", "doc_type": "行政保护案例", "title": "“DeepSeek”商标行政保护入选2025年度商标行政保护典型案例", "court": "国家知识产权局", "cause": "商标行政保护", "amount": 0, "status": "典型案例", "judgment_date": "2026-06", "source": "国家知识产权局/公开报道"}
+      ],
+      "news": [
+        {"title": "DeepSeek 发布开源推理模型 R1，多项评测对标 OpenAI o1", "source": "公开报道", "url": "", "published_at": "2025-01-20", "sentiment": "positive", "content": "R1 发布并开源。"},
+        {"title": "DeepSeek App 登顶美国 iOS 免费应用榜", "source": "公开报道", "url": "", "published_at": "2025-01-27", "sentiment": "positive", "content": "应用热度攀升。"},
+        {"title": "多国政府机构对 DeepSeek 采取限制或审查措施", "source": "公开报道", "url": "", "published_at": "2025-01-28", "sentiment": "negative", "content": "数据合规顾虑。"},
+        {"title": "DeepSeek 服务器高峰拥挤，API 暂停充值", "source": "官方公告", "url": "", "published_at": "2025-01-29", "sentiment": "neutral", "content": "访问量激增。"},
+        {"title": "DeepSeek-V3 开源发布，MoE 架构引发讨论", "source": "公开报道", "url": "", "published_at": "2024-12-26", "sentiment": "positive", "content": "训练成本优势。"},
+        {"title": "创始人梁文锋入选《自然》2024年度十大人物", "source": "公开报道", "url": "", "published_at": "2024-12-09", "sentiment": "positive", "content": "国际认可。"},
+        {"title": "多家云厂商与政企机构上线 DeepSeek 模型服务", "source": "公开报道", "url": "", "published_at": "2025-02-15", "sentiment": "positive", "content": "私有化部署需求旺盛。"},
+        {"title": "DeepSeek 遭遇数据安全质疑，多家机构宣布禁用", "source": "公开报道", "url": "", "published_at": "2025-02-01", "sentiment": "negative", "content": "数据出境与语料讨论。"},
+        {"title": "DeepSeek 开源周：连续发布多个开源仓库与论文", "source": "官方公告", "url": "", "published_at": "2025-03-24", "sentiment": "positive", "content": "基础设施公开。"},
+        {"title": "关于 DeepSeek 训练数据版权争议的讨论升温", "source": "公开报道", "url": "", "published_at": "2025-03-10", "sentiment": "negative", "content": "语料版权讨论。"},
+        {"title": "DeepSeek-V2 发布并大幅调低 API 价格", "source": "公开报道", "url": "", "published_at": "2024-05-16", "sentiment": "neutral", "content": "价格战加剧。"},
+        {"title": "DeepSeek 开放平台计费调整与开发者生态建设", "source": "官方公告", "url": "", "published_at": "2025-04-05", "sentiment": "neutral", "content": "服务策略优化。"},
+        {"title": "DeepSeek 与英伟达/美股科技股波动关联引关注", "source": "公开报道", "url": "", "published_at": "2025-01-31", "sentiment": "neutral", "content": "算力叙事再评估。"},
+        {"title": "DeepSeek 或已启动 IPO 筹备工作", "source": "新浪财经", "url": "https://finance.sina.com.cn/roll/2026-07-15/doc-inihxaey1166807.shtml", "published_at": "2026-07-15", "sentiment": "neutral", "content": "上市筹备前期工作。"},
+        {"title": "DeepSeek 注册资本增至1500万元", "source": "搜狐财经", "url": "https://www.sohu.com/a/1015541031_121218495", "published_at": "2025-08-05", "sentiment": "positive", "content": "股权结构调整。"},
+        {"title": "DeepSeek 注册资本再增500万元，梁文锋合计持股超84%", "source": "凤凰网科技", "url": "https://tech.ifeng.com/c/8sgjLaqnj09", "published_at": "2026-07-08", "sentiment": "positive", "content": "治理结构明确。"},
+        {"title": "国家知识产权局驳回63件“DEEPSEEK”恶意抢注商标申请", "source": "mondaq", "url": "https://webiis08.mondaq.com/china/trademark/1595452/", "published_at": "2025-02-14", "sentiment": "positive", "content": "商标保护获支持。"},
+        {"title": "2025年度商标行政保护典型案例公布，DeepSeek 入选", "source": "国家知识产权局", "url": "https://mp.weixin.qq.com/s/DtxIR_nfOUtLv5pbezdxvw", "published_at": "2026-06-20", "sentiment": "positive", "content": "AI领域示范案例。"}
+      ],
+      "finance": []
+    },
+    {
+      "name": "贵州茅台酒股份有限公司",
+      "unified_code": "9152000071430580XT",
+      "legal_rep": "张德芹",
+      "reg_capital_wan": 125619.78,
+      "reg_date": "1999-11-20",
+      "industry": "白酒制造",
+      "address": "贵州省仁怀市茅台镇",
+      "data_note": "上市公司（600519）；财务为演示数据，参考公开年报口径。",
+      "legal_records": [],
+      "news": [
+        {"title": "贵州茅台发布2025年度业绩：营收与净利润保持增长", "source": "公开报道", "url": "", "published_at": "2026-03-28", "sentiment": "positive", "content": "业绩稳健增长。"},
+        {"title": "茅台提高现金分红比例，回馈股东", "source": "公开报道", "url": "", "published_at": "2026-04-10", "sentiment": "positive", "content": "分红政策。"},
+        {"title": "白酒行业进入调整期，动销与价格体系受关注", "source": "公开报道", "url": "", "published_at": "2026-05-12", "sentiment": "neutral", "content": "行业景气度讨论。"},
+        {"title": "茅台集团部署打击侵权假冒专项行动", "source": "公开报道", "url": "", "published_at": "2026-02-20", "sentiment": "positive", "content": "品牌保护。"},
+        {"title": "茅台渠道改革持续推进，i茅台平台用户增长", "source": "公开报道", "url": "", "published_at": "2026-01-15", "sentiment": "positive", "content": "渠道数字化。"},
+        {"title": "贵州茅台入选多项 ESG 指数", "source": "公开报道", "url": "", "published_at": "2025-12-05", "sentiment": "positive", "content": "ESG表现。"},
+        {"title": "市场对白酒消费税政策调整存在预期", "source": "公开报道", "url": "", "published_at": "2026-06-18", "sentiment": "neutral", "content": "政策预期。"},
+        {"title": "茅台股东大会审议年度议案", "source": "公开报道", "url": "", "published_at": "2026-05-29", "sentiment": "neutral", "content": "公司治理。"}
+      ],
+      "finance": [
+        {"year": "2024", "report_type": "年报", "total_assets": 30280000.0, "total_liabilities": 4900000.0, "revenue": 17089900.0, "net_profit": 8622800.0, "debt_ratio": 16.2, "source": "公开年报（演示数据）"},
+        {"year": "2025", "report_type": "年报", "total_assets": 33500000.0, "total_liabilities": 5200000.0, "revenue": 18350000.0, "net_profit": 9200000.0, "debt_ratio": 15.5, "source": "公开年报（演示数据）"}
+      ]
+    },
+    {
+      "name": "宁德时代新能源科技股份有限公司",
+      "unified_code": "9135090058753804XX",
+      "legal_rep": "曾毓群",
+      "reg_capital_wan": 440000.0,
+      "reg_date": "2011-12-16",
+      "industry": "动力电池",
+      "address": "福建省宁德市",
+      "data_note": "上市公司（300750）；财务为演示数据，参考公开年报口径。",
+      "legal_records": [
+        {"case_no": "", "doc_type": "民事判决", "title": "与某电池企业专利侵权纠纷", "court": "福建省宁德市中级人民法院", "cause": "侵害发明专利权纠纷", "amount": 1200.0, "status": "已判决", "judgment_date": "2025-09", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "民事裁定", "title": "与供应商买卖合同纠纷", "court": "福建省宁德市中级人民法院", "cause": "买卖合同纠纷", "amount": 320.0, "status": "已和解", "judgment_date": "2026-03", "source": "公开裁判文书（演示）"}
+      ],
+      "news": [
+        {"title": "宁德时代发布新一代电池技术，能量密度提升", "source": "公开报道", "url": "", "published_at": "2026-04-20", "sentiment": "positive", "content": "技术发布。"},
+        {"title": "宁德时代海外工厂建设进展顺利", "source": "公开报道", "url": "", "published_at": "2026-03-15", "sentiment": "positive", "content": "海外扩张。"},
+        {"title": "动力电池行业价格竞争加剧，毛利率承压", "source": "公开报道", "url": "", "published_at": "2026-05-08", "sentiment": "negative", "content": "价格竞争。"},
+        {"title": "宁德时代与车企签订长期供货协议", "source": "公开报道", "url": "", "published_at": "2026-02-11", "sentiment": "positive", "content": "订单增长。"},
+        {"title": "碳酸锂价格波动影响电池成本", "source": "公开报道", "url": "", "published_at": "2026-06-02", "sentiment": "neutral", "content": "原材料价格。"},
+        {"title": "海外市场对中国电池企业政策限制的讨论", "source": "公开报道", "url": "", "published_at": "2026-06-25", "sentiment": "negative", "content": "贸易政策风险。"},
+        {"title": "宁德时代储能业务快速增长", "source": "公开报道", "url": "", "published_at": "2026-01-20", "sentiment": "positive", "content": "第二增长曲线。"},
+        {"title": "公司发布年度社会责任报告", "source": "公开报道", "url": "", "published_at": "2025-12-18", "sentiment": "neutral", "content": "ESG披露。"},
+        {"title": "券商上调宁德时代盈利预测", "source": "公开报道", "url": "", "published_at": "2026-05-30", "sentiment": "positive", "content": "机构观点。"},
+        {"title": "行业产能过剩担忧引发市场讨论", "source": "公开报道", "url": "", "published_at": "2026-06-28", "sentiment": "negative", "content": "产能问题。"}
+      ],
+      "finance": [
+        {"year": "2024", "report_type": "年报", "total_assets": 78000000.0, "total_liabilities": 54600000.0, "revenue": 36200000.0, "net_profit": 5074500.0, "debt_ratio": 70.0, "source": "公开年报（演示数据）"},
+        {"year": "2025", "report_type": "年报", "total_assets": 85000000.0, "total_liabilities": 57800000.0, "revenue": 41000000.0, "net_profit": 5800000.0, "debt_ratio": 68.0, "source": "公开年报（演示数据）"}
+      ]
+    },
+    {
+      "name": "獐子岛集团股份有限公司",
+      "unified_code": "91210200242361724Q",
+      "legal_rep": "唐艳",
+      "reg_capital_wan": 71111.22,
+      "reg_date": "2001-04-28",
+      "industry": "海洋渔业",
+      "address": "辽宁省大连市",
+      "data_note": "上市公司（002069）；曾因信息披露违法被处罚，记录为公开信息整理（演示）。",
+      "legal_records": [
+        {"case_no": "", "doc_type": "行政处罚", "title": "因信息披露违法违规被证监会行政处罚", "court": "中国证监会", "cause": "信息披露违法", "amount": 60.0, "status": "已处罚", "judgment_date": "2020-06", "source": "证监会公开处罚决定（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "投资者证券虚假陈述责任纠纷（多起）", "court": "辽宁省大连市中级人民法院", "cause": "证券虚假陈述责任纠纷", "amount": 2400.0, "status": "部分已判决", "judgment_date": "2023-11", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与金融机构借款合同纠纷", "court": "辽宁省大连市中级人民法院", "cause": "借款合同纠纷", "amount": 8600.0, "status": "执行中", "judgment_date": "2024-05", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "执行信息", "title": "被列为被执行人", "court": "大连市中级人民法院", "cause": "执行案件", "amount": 3200.0, "status": "被执行", "judgment_date": "2025-03", "source": "执行信息公开（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与养殖合作方合同纠纷", "court": "辽宁省大连市中级人民法院", "cause": "合同纠纷", "amount": 450.0, "status": "已判决", "judgment_date": "2025-08", "source": "公开裁判文书（演示）"}
+      ],
+      "news": [
+        {"title": "獐子岛再遭投资者索赔，虚假陈述案持续发酵", "source": "公开报道", "url": "", "published_at": "2026-03-12", "sentiment": "negative", "content": "索赔案件。"},
+        {"title": "獐子岛业绩持续亏损，退市风险受关注", "source": "公开报道", "url": "", "published_at": "2026-04-28", "sentiment": "negative", "content": "业绩亏损。"},
+        {"title": "獐子岛被债权人申请重整", "source": "公开报道", "url": "", "published_at": "2026-06-15", "sentiment": "negative", "content": "重整申请。"},
+        {"title": "公司管理层发生变动", "source": "公开报道", "url": "", "published_at": "2026-02-20", "sentiment": "neutral", "content": "人事变动。"},
+        {"title": "獐子岛海域养殖业务恢复情况披露", "source": "公开报道", "url": "", "published_at": "2026-05-10", "sentiment": "neutral", "content": "业务恢复。"},
+        {"title": "监管对獐子岛信息披露持续关注", "source": "公开报道", "url": "", "published_at": "2026-05-25", "sentiment": "negative", "content": "监管关注。"},
+        {"title": "獐子岛资产处置进展公告", "source": "公开报道", "url": "", "published_at": "2026-06-30", "sentiment": "neutral", "content": "资产处置。"},
+        {"title": "投资者集体诉讼进入审理阶段", "source": "公开报道", "url": "", "published_at": "2026-07-08", "sentiment": "negative", "content": "诉讼进展。"},
+        {"title": "獐子岛尝试引入战略投资者", "source": "公开报道", "url": "", "published_at": "2026-07-22", "sentiment": "positive", "content": "引入战投。"},
+        {"title": "公司股票交易异常波动提示", "source": "公开报道", "url": "", "published_at": "2026-08-05", "sentiment": "negative", "content": "交易波动。"}
+      ],
+      "finance": [
+        {"year": "2024", "report_type": "年报", "total_assets": 480000.0, "total_liabilities": 435000.0, "revenue": 168000.0, "net_profit": -28500.0, "debt_ratio": 90.6, "source": "公开年报（演示数据）"},
+        {"year": "2025", "report_type": "年报", "total_assets": 420000.0, "total_liabilities": 398000.0, "revenue": 142000.0, "net_profit": -52000.0, "debt_ratio": 94.8, "source": "公开年报（演示数据）"}
+      ]
+    },
+    {
+      "name": "康美药业股份有限公司",
+      "unified_code": "91445200231220815R",
+      "legal_rep": "赖志坚",
+      "reg_capital_wan": 1387000.0,
+      "reg_date": "1997-06-18",
+      "industry": "医药制造",
+      "address": "广东省普宁市",
+      "data_note": "上市公司（600518）；财务造假案为公开司法信息整理（演示数据）。",
+      "legal_records": [
+        {"case_no": "", "doc_type": "行政处罚", "title": "因财务造假被证监会行政处罚（涉案金额巨大）", "court": "中国证监会", "cause": "信息披露违法、财务造假", "amount": 59500.0, "status": "已处罚", "judgment_date": "2020-05", "source": "证监会公开处罚决定（演示）"},
+        {"case_no": "", "doc_type": "刑事判决", "title": "相关责任人被追究刑事责任", "court": "广东省揭阳市中级人民法院", "cause": "违规披露、不披露重要信息罪", "amount": 0, "status": "已判决", "judgment_date": "2021-11", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "投资者证券虚假陈述责任纠纷（集体诉讼）", "court": "广东省广州市中级人民法院", "cause": "证券虚假陈述责任纠纷", "amount": 246000.0, "status": "已判决/执行中", "judgment_date": "2023-06", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与银行借款合同纠纷（多起）", "court": "广东省揭阳市中级人民法院", "cause": "借款合同纠纷", "amount": 86000.0, "status": "执行中", "judgment_date": "2024-03", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "执行信息", "title": "多次被列为被执行人", "court": "多地法院", "cause": "执行案件", "amount": 152000.0, "status": "被执行", "judgment_date": "2024-09", "source": "执行信息公开（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与供应商买卖合同纠纷", "court": "广东省普宁市人民法院", "cause": "买卖合同纠纷", "amount": 5200.0, "status": "已判决", "judgment_date": "2024-12", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与子公司担保纠纷", "court": "广东省揭阳市中级人民法院", "cause": "担保纠纷", "amount": 31000.0, "status": "审理中", "judgment_date": "2025-04", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "破产重整", "title": "破产重整程序相关事项", "court": "揭阳市中级人民法院", "cause": "破产重整", "amount": 0, "status": "重整程序中", "judgment_date": "2025-07", "source": "公开公告（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与关联方资金占用纠纷", "court": "广东省高级人民法院", "cause": "损害公司利益责任纠纷", "amount": 95000.0, "status": "已判决", "judgment_date": "2025-09", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "执行信息", "title": "失信被执行人相关记录", "court": "多地法院", "cause": "失信执行", "amount": 0, "status": "失信", "judgment_date": "2025-11", "source": "执行信息公开（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与员工劳动争议纠纷（多起）", "court": "广东省普宁市人民法院", "cause": "劳动争议", "amount": 180.0, "status": "部分已结", "judgment_date": "2026-02", "source": "公开裁判文书（演示）"},
+        {"case_no": "", "doc_type": "民事判决", "title": "与物流服务商运输合同纠纷", "court": "广东省普宁市人民法院", "cause": "运输合同纠纷", "amount": 260.0, "status": "已判决", "judgment_date": "2026-04", "source": "公开裁判文书（演示）"}
+      ],
+      "news": [
+        {"title": "康美药业破产重整计划执行进展披露", "source": "公开报道", "url": "", "published_at": "2026-03-20", "sentiment": "negative", "content": "重整进展。"},
+        {"title": "康美药业投资者索赔案持续，涉及金额巨大", "source": "公开报道", "url": "", "published_at": "2026-04-15", "sentiment": "negative", "content": "索赔案。"},
+        {"title": "康美药业被列为失信被执行人", "source": "公开报道", "url": "", "published_at": "2026-05-06", "sentiment": "negative", "content": "失信记录。"},
+        {"title": "公司部分资产被司法拍卖", "source": "公开报道", "url": "", "published_at": "2026-05-28", "sentiment": "negative", "content": "资产拍卖。"},
+        {"title": "康美药业披露年度报告，业绩仍承压", "source": "公开报道", "url": "", "published_at": "2026-04-30", "sentiment": "negative", "content": "业绩承压。"},
+        {"title": "债权人会议召开，讨论重整方案", "source": "公开报道", "url": "", "published_at": "2026-06-12", "sentiment": "neutral", "content": "债权人会议。"},
+        {"title": "康美药业部分银行账户被冻结", "source": "公开报道", "url": "", "published_at": "2026-06-25", "sentiment": "negative", "content": "账户冻结。"},
+        {"title": "公司管理层调整公告", "source": "公开报道", "url": "", "published_at": "2026-07-05", "sentiment": "neutral", "content": "人事调整。"},
+        {"title": "康美药业尝试引入重整投资人", "source": "公开报道", "url": "", "published_at": "2026-07-18", "sentiment": "positive", "content": "引入投资人。"},
+        {"title": "监管部门就信息披露问题问询公司", "source": "公开报道", "url": "", "published_at": "2026-08-02", "sentiment": "negative", "content": "监管问询。"},
+        {"title": "康美药业子公司股权被冻结", "source": "公开报道", "url": "", "published_at": "2026-08-16", "sentiment": "negative", "content": "股权冻结。"},
+        {"title": "中药材价格波动影响公司经营", "source": "公开报道", "url": "", "published_at": "2026-08-28", "sentiment": "neutral", "content": "原材料价格。"}
+      ],
+      "finance": [
+        {"year": "2024", "report_type": "年报", "total_assets": 1180000.0, "total_liabilities": 1003000.0, "revenue": 386000.0, "net_profit": -168000.0, "debt_ratio": 85.0, "source": "公开年报（演示数据）"},
+        {"year": "2025", "report_type": "年报", "total_assets": 1050000.0, "total_liabilities": 930000.0, "revenue": 342000.0, "net_profit": -145000.0, "debt_ratio": 88.6, "source": "公开年报（演示数据）"}
+      ]
+    }
+  ]
+}
