@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { EChartsOption } from 'echarts'
 
-import { api, DIM_LABEL, fmtTime, levelOf, type DashboardSummary } from '../api'
+import { api, DIM_LABEL, fmtTime, gradeColor, levelOf, scoreColor, type DashboardSummary } from '../api'
 import BaseChart from '../components/BaseChart.vue'
 
 const router = useRouter()
@@ -16,9 +16,9 @@ const stats = computed(() => {
   if (!d) return []
   return [
     { label: '监测企业', value: d.enterprise_total, tone: 'primary', icon: '🏢' },
+    { label: '平均评分', value: d.avg_score ?? '—', tone: 'cyan', icon: '⭐' },
     { label: '高风险', value: d.level_counts.red ?? 0, tone: 'red', icon: '🚨' },
     { label: '较高风险', value: d.level_counts.orange ?? 0, tone: 'orange', icon: '⚠️' },
-    { label: '风险线索', value: d.fact_total, tone: 'cyan', icon: '🔎' },
   ]
 })
 
@@ -109,7 +109,7 @@ onMounted(load)
         <BaseChart v-if="data" :option="dimOption" height="240px" />
       </div>
       <div class="card">
-        <h3 class="card-title">最新风险线索</h3>
+        <h3 class="card-title">最新风险线索（共 {{ data?.fact_total ?? 0 }} 条）</h3>
         <ul v-if="data?.recent_facts.length" class="timeline">
           <li v-for="(f, i) in data.recent_facts" :key="i">
             <span class="dot" :style="{ background: levelOf('yellow').color }"></span>
@@ -130,10 +130,11 @@ onMounted(load)
           <tr>
             <th>企业</th>
             <th>行业</th>
-            <th>综合等级</th>
-            <th>财务</th>
-            <th>法律</th>
-            <th>舆情</th>
+            <th>综合评分</th>
+            <th>等级</th>
+            <th>财务健康</th>
+            <th>法律合规</th>
+            <th>舆情声誉</th>
             <th></th>
           </tr>
         </thead>
@@ -141,10 +142,14 @@ onMounted(load)
           <tr v-for="e in data?.enterprises ?? []" :key="e.id" class="clickable" @click="router.push(`/enterprises/${e.id}`)">
             <td class="name">{{ e.name }}</td>
             <td>{{ e.industry }}</td>
+            <td>
+              <span class="score-cell" :style="{ color: scoreColor(e.score) }">{{ e.score ?? '—' }}</span>
+              <span class="grade-cell" :style="{ background: gradeColor(e.grade) }">{{ e.grade }}</span>
+            </td>
             <td><span class="chip" :style="{ background: levelOf(e.level).color }">{{ levelOf(e.level).label }}</span></td>
-            <td><span class="level-text" :style="{ color: levelOf(e.dimensions.finance).color }">{{ levelOf(e.dimensions.finance).label }}</span></td>
-            <td><span class="level-text" :style="{ color: levelOf(e.dimensions.legal).color }">{{ levelOf(e.dimensions.legal).label }}</span></td>
-            <td><span class="level-text" :style="{ color: levelOf(e.dimensions.news).color }">{{ levelOf(e.dimensions.news).label }}</span></td>
+            <td><span class="level-text" :style="{ color: scoreColor(e.dimension_scores?.finance) }">{{ e.dimension_scores?.finance ?? '—' }}</span></td>
+            <td><span class="level-text" :style="{ color: scoreColor(e.dimension_scores?.legal) }">{{ e.dimension_scores?.legal ?? '—' }}</span></td>
+            <td><span class="level-text" :style="{ color: scoreColor(e.dimension_scores?.news) }">{{ e.dimension_scores?.news ?? '—' }}</span></td>
             <td class="arrow">→</td>
           </tr>
         </tbody>

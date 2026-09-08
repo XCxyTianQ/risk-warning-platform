@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { api, DIM_LABEL, levelOf, type AnalyzeResp } from '../api'
+import { api, DIM_LABEL, gradeColor, levelOf, scoreColor, type AnalyzeResp } from '../api'
 
 const keyword = ref('深度求索')
 const loading = ref(false)
@@ -16,26 +16,16 @@ let timer: number | undefined
 const dims = computed(() => {
   const v = result.value?.verdict
   if (!v) return []
-  return Object.keys(v.dimensions).map((key) => ({
-    key,
-    label: DIM_LABEL[key] ?? key,
-    level: v.dimensions[key].level,
-    indicators: v.dimensions[key].indicators ?? {},
-  }))
+  return Object.keys(DIM_LABEL)
+    .filter((k) => v.dimensions[k])
+    .map((key) => ({
+      key,
+      label: DIM_LABEL[key],
+      level: v.dimensions[key].level,
+      score: v.dimensions[key].score,
+      note: v.dimensions[key].note ?? '',
+    }))
 })
-
-function fmtIndicator(key: string, ind: Record<string, any>): string {
-  if (key === 'finance') {
-    if (!ind.available) return '无公开财报（数据不足）'
-    return `资产负债率 ${ind.debt_ratio}% · 净利润 ${Number(ind.net_profit).toLocaleString()} 万`
-  }
-  if (key === 'legal') return `涉诉/记录 ${ind.count ?? 0} 项 · 涉案金额 ${Number(ind.amount ?? 0).toLocaleString()} 万`
-  if (key === 'news') {
-    const r = Math.round((ind.negative_ratio ?? 0) * 100)
-    return `新闻 ${ind.total ?? 0} 条 · 负面 ${ind.negative ?? 0} 条（${r}%）`
-  }
-  return ''
-}
 
 async function run() {
   const name = keyword.value.trim()
@@ -64,7 +54,7 @@ async function run() {
     <div class="page-head">
       <div>
         <h2>智能研判</h2>
-        <p class="page-sub">输入企业名称 → 多模态大模型调用工具取数 → 规则引擎交叉校验 → 输出证据链</p>
+        <p class="page-sub">输入企业名称 → 多模态大模型调用工具取数 → 六维评分 + 规则引擎交叉校验 → 证据链</p>
       </div>
     </div>
 
@@ -103,8 +93,18 @@ async function run() {
             {{ result.enterprise.data_note }}
           </div>
         </div>
-        <div class="level-badge" :style="{ background: levelOf(result.verdict.level).color }">
-          {{ levelOf(result.verdict.level).label }}
+        <div class="result-score">
+          <div class="rs-num" :style="{ color: scoreColor(result.verdict.score) }">
+            {{ result.verdict.score ?? '—' }}<small>分</small>
+          </div>
+          <div class="rs-badges">
+            <span class="grade-badge" :style="{ background: gradeColor(result.verdict.grade) }">
+              {{ result.verdict.grade }} · {{ result.verdict.grade_label }}
+            </span>
+            <span class="level-badge" :style="{ background: levelOf(result.verdict.level).color }">
+              {{ levelOf(result.verdict.level).label }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -125,12 +125,14 @@ async function run() {
         <div v-for="d in dims" :key="d.key" class="card dim-card">
           <div class="dim-head">
             <span class="dim-name">{{ d.label }}</span>
-            <span class="level-text" :style="{ color: levelOf(d.level).color }">{{ levelOf(d.level).label }}</span>
+            <span class="dim-score" :style="{ color: scoreColor(d.score) }">
+              {{ d.score ?? '—' }}<small v-if="d.score !== null">/100</small>
+            </span>
           </div>
           <div class="dim-bar">
-            <div class="dim-fill" :style="{ width: levelOf(d.level).radar + '%', background: levelOf(d.level).color }"></div>
+            <div class="dim-fill" :style="{ width: (d.score ?? 0) + '%', background: scoreColor(d.score) }"></div>
           </div>
-          <div class="dim-note">{{ fmtIndicator(d.key, d.indicators) }}</div>
+          <div class="dim-note">{{ d.note }}</div>
         </div>
       </div>
 
@@ -149,3 +151,48 @@ async function run() {
     </template>
   </div>
 </template>
+
+<style scoped>
+.result-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.rs-num {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rs-num small {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-left: 2px;
+}
+
+.rs-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.grade-badge {
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 4px 14px;
+}
+
+.dim-score {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.dim-score small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-sub);
+}
+</style>

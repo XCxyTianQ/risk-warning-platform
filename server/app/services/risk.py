@@ -22,13 +22,16 @@ from app.llm.tools import build_data_tools
 from app.services.rules import rules_verdict
 
 RISK_SYSTEM = (
-    "你是企业经营风险研判分析师。你将获得企业的工商档案、财务、法律（涉诉/行政）与舆情数据。"
-    "请先调用工具获取数据，再基于“评级规则”给出风险研判。"
+    "你是企业经营风险研判分析师。你将获得企业的工商档案、财务、法律（涉诉/行政）、舆情数据。"
+    "请先调用工具获取数据，再基于“六维评分规则”给出风险研判。"
+    "六个维度：finance 财务健康、legal 法律合规、news 舆情声誉、operation 经营能力、"
+    "credit 信用状况、supply 供应链稳定；每维度 0~100 分（越高越健康）。"
     "最终回复必须是一个严格的 JSON 对象，不要包含任何解释文字。JSON 格式：\n"
     '{"level":"red|orange|yellow|green","summary":"一句话结论",'
-    '"dimensions":{"finance":{"level":"red|orange|yellow|green|gray","reason":"..."},'
-    '"legal":{"level":"...","reason":"..."},"news":{"level":"...","reason":"..."}},'
-    '"evidence":[{"dimension":"finance|legal|news","text":"事实描述","source":"来源","date":"YYYY-MM-DD"}]}\n'
+    '"dimensions":{"finance":{"level":"...","score":0-100,"reason":"..."},'
+    '"legal":{"...":"..."},"news":{"...":"..."},"operation":{"...":"..."},'
+    '"credit":{"...":"..."},"supply":{"...":"..."}},'
+    '"evidence":[{"dimension":"finance|legal|news|operation|credit|supply","text":"事实描述","source":"来源","date":"YYYY-MM-DD"}]}\n'
     "level 取值：red=高风险，orange=较高风险，yellow=关注，green=正常，gray=数据不足。"
     "证据必须逐条来自工具返回的数据，不得编造。"
 )
@@ -129,6 +132,9 @@ def analyze_enterprise(db: Session, enterprise_id: int) -> dict:
         },
         "verdict": {
             "level": final_level,
+            "score": rules["score"],
+            "grade": rules["grade"],
+            "grade_label": rules["grade_label"],
             "level_by": "rules" if not cross_check else "llm",
             "cross_check_ok": cross_check,
             "llm_level": llm_level,
@@ -156,6 +162,9 @@ def risk_snapshot(db: Session, enterprise_id: int) -> dict:
     return {
         "enterprise": {"id": ent.id, "name": ent.name},
         "verdict_level": rules["level"],
+        "score": rules["score"],
+        "grade": rules["grade"],
+        "grade_label": rules["grade_label"],
         "dimensions": rules["dimensions"],
         "facts": [
             {

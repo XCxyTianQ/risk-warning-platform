@@ -6,11 +6,11 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.db.models import Enterprise, News, RiskFact
-from app.services.rules import rules_verdict
+from app.services.rules import DIM_META, rules_verdict
 
 router = APIRouter(prefix="/api", tags=["dashboard"])
 
-DIM_LABEL = {"finance": "财务", "legal": "法律", "news": "舆情"}
+DIM_LABEL = {k: v for k, v in DIM_META.items()}
 
 
 @router.get("/dashboard/summary")
@@ -32,7 +32,11 @@ def dashboard_summary(db: Session = Depends(get_db)):
             "name": ent.name,
             "industry": ent.industry,
             "level": verdict["level"],
+            "score": verdict["score"],
+            "grade": verdict["grade"],
+            "grade_label": verdict["grade_label"],
             "dimensions": {d: verdict["dimensions"][d]["level"] for d in verdict["dimensions"]},
+            "dimension_scores": {d: verdict["dimensions"][d]["score"] for d in verdict["dimensions"]},
             "indicators": verdict["indicators"],
         })
 
@@ -46,8 +50,10 @@ def dashboard_summary(db: Session = Depends(get_db)):
     sentiment_rows = (
         db.query(News.sentiment, func.count(News.id)).group_by(News.sentiment).all()
     )
+    scores = [r["score"] for r in rows if r["score"] is not None]
     return {
         "enterprise_total": len(enterprises),
+        "avg_score": round(sum(scores) / len(scores), 1) if scores else None,
         "level_counts": level_counts,
         "dimension_levels": dim_level_counts,
         "enterprises": rows,

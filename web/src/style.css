@@ -263,6 +263,22 @@ tr.clickable:hover td {
   text-align: right;
 }
 
+.score-cell {
+  font-weight: 700;
+  font-size: 15px;
+  margin-right: 6px;
+}
+
+.grade-cell {
+  display: inline-block;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 1px 6px;
+  vertical-align: middle;
+}
+
 /* 工具条 */
 .toolbar {
   display: flex;

@@ -5,12 +5,17 @@ export interface EnterpriseRow {
   name: string
   industry: string
   level: string
+  score: number | null
+  grade: string
+  grade_label: string
   dimensions: Record<string, string>
+  dimension_scores: Record<string, number | null>
   indicators: Record<string, any>
 }
 
 export interface DashboardSummary {
   enterprise_total: number
+  avg_score: number | null
   level_counts: Record<string, number>
   dimension_levels: Record<string, Record<string, number>>
   enterprises: EnterpriseRow[]
@@ -30,10 +35,21 @@ export interface RiskFact {
   ts: string
 }
 
+export interface DimensionView {
+  score: number | null
+  level: string
+  label?: string
+  note?: string
+  indicators?: Record<string, any>
+}
+
 export interface RiskSnapshot {
   enterprise: { id: number; name: string }
   verdict_level: string
-  dimensions: Record<string, { level: string; indicators?: Record<string, any> }>
+  score: number | null
+  grade: string
+  grade_label: string
+  dimensions: Record<string, DimensionView>
   facts: { dimension: string; text: string; evidence: Record<string, any>; confidence: number; ts: string }[]
 }
 
@@ -41,11 +57,14 @@ export interface AnalyzeResp {
   enterprise: { id: number; name: string; legal_rep: string; industry: string; data_note?: string }
   verdict: {
     level: string
+    score: number | null
+    grade: string
+    grade_label: string
     level_by: string
     cross_check_ok: boolean
     llm_level: string
     rules_level: string
-    dimensions: Record<string, { level: string; indicators?: Record<string, any> }>
+    dimensions: Record<string, DimensionView>
     summary: string
     evidence: { dimension: string; text: string; source?: string; date?: string }[]
   }
@@ -60,7 +79,10 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   summary: () => request<DashboardSummary>('/api/dashboard/summary'),
-  enterprises: () => request<{ total: number; items: { id: number; name: string; industry: string; reg_date: string }[] }>('/api/enterprises'),
+  enterprises: () =>
+    request<{ total: number; items: { id: number; name: string; industry: string; reg_date: string }[] }>(
+      '/api/enterprises',
+    ),
   enterprise: (id: number) => request<any>(`/api/enterprise/${id}`),
   risk: (id: number) => request<RiskSnapshot>(`/api/enterprise/${id}/risk`),
   facts: (params: { dimension?: string; enterprise_id?: number } = {}) => {
@@ -77,7 +99,7 @@ export const api = {
     }),
 }
 
-/** 等级元数据（颜色/标签/雷达数值） */
+/** 风险等级元数据 */
 export const LEVELS: Record<string, { label: string; color: string; radar: number }> = {
   red: { label: '高风险', color: '#dc2626', radar: 100 },
   orange: { label: '较高风险', color: '#ea580c', radar: 75 },
@@ -86,10 +108,42 @@ export const LEVELS: Record<string, { label: string; color: string; radar: numbe
   gray: { label: '数据不足', color: '#94a3b8', radar: 0 },
 }
 
+/** 六个评分维度 */
 export const DIM_LABEL: Record<string, string> = {
-  finance: '财务',
-  legal: '法律',
-  news: '舆情',
+  finance: '财务健康',
+  legal: '法律合规',
+  news: '舆情声誉',
+  operation: '经营能力',
+  credit: '信用状况',
+  supply: '供应链稳定',
+}
+
+/** 综合评分 → 等级颜色 */
+export function gradeColor(grade?: string): string {
+  switch (grade) {
+    case 'AAA':
+    case 'AA':
+      return '#16a34a'
+    case 'A':
+      return '#65a30d'
+    case 'BBB':
+      return '#ca8a04'
+    case 'BB':
+      return '#ea580c'
+    case 'C':
+      return '#dc2626'
+    default:
+      return '#94a3b8'
+  }
+}
+
+/** 分数 → 颜色（越高越健康） */
+export function scoreColor(score: number | null | undefined): string {
+  if (score === null || score === undefined) return '#94a3b8'
+  if (score >= 85) return '#16a34a'
+  if (score >= 70) return '#ca8a04'
+  if (score >= 55) return '#ea580c'
+  return '#dc2626'
 }
 
 export function levelOf(level?: string) {

@@ -109,10 +109,19 @@ def build_data_tools(db, enterprise_id: int) -> ToolRegistry:
 
     def get_rules(args: dict):
         return {
+            "scoring": "每个维度 0~100 分（越高越健康）；综合评分 = 可用维度平均分；"
+                       "等级：≥85 正常(green)、70~84 关注(yellow)、55~69 较高风险(orange)、<55 高风险(red)、无数据 gray",
+            "grades": {"AAA": "≥90 优秀", "AA": "80~89 良好", "A": "70~79 稳健",
+                       "BBB": "60~69 关注", "BB": "50~59 预警", "C": "<50 高风险"},
+            "dimensions": {
+                "finance": "资产负债率 ≥85% 或 净利润为负 → 扣分；连续亏损再扣分",
+                "legal": "每条涉诉 -6（上限-50）；行政处罚 -10；刑事 -20；涉案 ≥1亿 -10",
+                "news": "负面舆情占比 ×120 扣分（上限-60）；近一年负面每条 -3",
+                "operation": "成立年限 + 净利润率 + 营收增速综合；净利润率为负 -30",
+                "credit": "失信 -40/次；被执行 -30/次；行政处罚 -12/次",
+                "supply": "合同类纠纷 -8/项；供应链负面舆情 -8/条",
+            },
             "levels": {"red": "高风险", "orange": "较高风险", "yellow": "关注", "green": "正常", "gray": "数据不足"},
-            "legal": {"thresholds": "涉诉 ≥3 → orange；≥10 → red；≥1 → yellow"},
-            "news": {"thresholds": "负面舆情占比 ≥30% → orange；≥50% → red；≥10% → yellow"},
-            "finance": {"thresholds": "未上市无财报 → 数据不足(gray)，不参与定级"},
         }
 
     reg.register("get_entity_profile", {
