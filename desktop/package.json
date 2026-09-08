@@ -1,0 +1,81 @@
+{
+  "name": "risk-warning-desktop",
+  "productName": "企业经营风险预警平台",
+  "version": "0.3.0",
+  "description": "基于多模态大模型的企业经营风险预警平台 · Windows 桌面端",
+  "main": "main.js",
+  "private": true,
+  "author": "risk-warning-platform",
+  "scripts": {
+    "start": "electron .",
+    "dev": "cross-env RWP_DEV=1 electron .",
+    "smoke": "cross-env RWP_SMOKE=1 electron .",
+    "build:web": "node scripts/build-web.js",
+    "build:backend": "node scripts/build-backend.js",
+    "dist": "node scripts/build-web.js && node scripts/build-backend.js && electron-builder --win --x64",
+    "dist:dir": "node scripts/build-web.js && node scripts/build-backend.js && electron-builder --win --x64 --dir"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^37.10.3",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.riskwarning.platform",
+    "productName": "RiskWarningPlatform",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "build/icon.png",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/web",
+        "to": "web"
+      },
+      {
+        "from": "resources/samples",
+        "to": "samples"
+      },
+      {
+        "from": "resources/backend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "RiskWarningPlatform-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "企业经营风险预警平台",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "RiskWarningPlatform-${version}-portable.${ext}"
+    }
+  }
+}

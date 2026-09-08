@@ -12,18 +12,27 @@ _DATA_DIR = _REPO_ROOT / "data"
 
 
 def _resolve_db_url() -> str:
-    """sqlite 相对路径统一解析到仓库根 data/ 下，避免依赖运行目录。"""
+    """sqlite 路径解析：优先 RWP_DATA_DIR（桌面端），否则相对仓库根 data/。"""
     url = settings.database_url
     prefix = "sqlite:///./"
     if url.startswith(prefix):
-        rel = url[len(prefix):]
-        return "sqlite:///" + str((_REPO_ROOT / rel).resolve()).replace("\\", "/")
+        rel = Path(url[len(prefix):])
+        if settings.data_dir:
+            # 桌面端：数据库直接落在数据目录下（rel 形如 data/platform.db → <data_dir>/platform.db）
+            target = Path(settings.data_dir).expanduser() / rel.name
+        else:
+            target = _REPO_ROOT / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        return "sqlite:///" + str(target.resolve()).replace("\\", "/")
     return url
 
 
 _db_url = _resolve_db_url()
 if _db_url.startswith("sqlite"):
-    _DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if settings.data_dir:
+        Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
+    else:
+        _DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class Base(DeclarativeBase):

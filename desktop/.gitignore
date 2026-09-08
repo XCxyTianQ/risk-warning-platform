@@ -1,0 +1,8 @@
+node_modules/
+release/
+resources/web/
+resources/backend/
+resources/samples/
+.pyinstaller/
+dist/
+*.log

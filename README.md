@@ -63,7 +63,21 @@ python server/tests/mock_llm.py
 - [x] 阶段 2：最小纵向切片（企业研判 → 六维评分画像 → 证据链）
 - [x] **Agent 化重构（对话式研判）**：SSE 流式对话 + 工具循环（搜索/画像/事实/研判），对齐 Harness/Codex 设计哲学
 - [x] **数据源接入**：AkShare 多信源（东财/新浪/巨潮）+ 自由添加企业 + 数据状态门控
-- [x] **预警中心闭环**：评分自动生成工单 → 处置流转（待处理/处理中/已处置/忽略）→ 处理流水 → 报告导出
+- [x] **预警中心闭环**：评分自动生成工单 → 处置流转 → 处理流水 → 报告导出
+- [x] **成本控制**：对话压缩（DSH 前缀缓存复用）+ 缓存命中/用量常驻可视化 + 提示词缓存预热
+- [x] **生态能力**：MCP 双向接入 + 技能库 + Agent 预设/手搓插件 + JSON 导入导出
+- [x] **对话管理**：搜索/置顶/重命名/清空/导出 MD+JSON/只读分享链接
+- [x] **桌面端**：Electron + 内嵌 Python 后端（动态端口 / 独立数据目录 / 托盘菜单）
 - [ ] 阶段 3：数据层扩展（100 家企业批量采集）
-- [ ] 阶段 5：平台页面完整化
 - [ ] 阶段 6：测试评测部署材料
+
+## 桌面端（Windows exe）
+
+见 [`desktop/README.md`](desktop/README.md) 与 [`docs/桌面端-Windows-exe方案评估.md`](docs/桌面端-Windows-exe方案评估.md)。
+
+```powershell
+cd desktop
+npm install
+npm run dev      # 开发运行（venv python 拉起后端）
+npm run dist     # 打包安装包 + 便携版
+```

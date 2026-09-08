@@ -45,6 +45,13 @@ async def lifespan(app: FastAPI):
             db.close()
     except Exception:  # noqa: BLE001
         pass
+    # 首次运行（空库）灌入样例企业数据
+    try:
+        from app.db.seed import seed_if_empty
+
+        seed_if_empty()
+    except Exception:  # noqa: BLE001
+        pass
     # 启动时预热提示词缓存（后台线程，不阻塞启动）
     try:
         from app.agent.prompt import SYSTEM_PROMPT
@@ -83,4 +90,33 @@ app.include_router(share_router)
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"status": "ok", "service": settings.app_name, "version": "0.2.0"}
+    return {"status": "ok", "service": settings.app_name, "version": "0.3.0"}
+
+
+# ---------------------------------------------------------------------------
+# 桌面端：托管前端构建产物（Electron 通过 RWP_WEB_DIST 传入目录）
+# ---------------------------------------------------------------------------
+def _mount_web(dist_dir: str) -> bool:
+    from pathlib import Path
+
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    dist = Path(dist_dir)
+    if not (dist / "index.html").is_file():
+        return False
+    if (dist / "assets").is_dir():
+        app.mount("/assets", StaticFiles(directory=str(dist / "assets")), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def spa(full_path: str):
+        target = (dist / full_path).resolve()
+        if full_path and target.is_file() and str(target).startswith(str(dist.resolve())):
+            return FileResponse(str(target))
+        return FileResponse(str(dist / "index.html"))
+
+    return True
+
+
+if settings.web_dist:
+    _mount_web(settings.web_dist)

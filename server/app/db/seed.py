@@ -10,6 +10,16 @@ from app.db.database import SessionLocal, init_db
 from app.db.models import Enterprise, Finance, LegalRecord, News, RiskFact
 
 SAMPLES_DIR = Path(__file__).resolve().parents[3] / "data" / "samples"
+
+
+def _samples_dir() -> Path:
+    """样例数据目录：桌面端可通过 RWP_SAMPLES_DIR 指向随包资源。"""
+    import os
+
+    custom = os.getenv("RWP_SAMPLES_DIR", "")
+    if custom and (Path(custom) / "dataset.json").is_file():
+        return Path(custom)
+    return SAMPLES_DIR
 ENTERPRISE_FIELDS = (
     "name", "unified_code", "stock_code", "legal_rep", "reg_capital_wan",
     "reg_date", "industry", "address", "data_note",
@@ -17,8 +27,27 @@ ENTERPRISE_FIELDS = (
 
 
 def _load(name: str):
-    with open(SAMPLES_DIR / name, encoding="utf-8") as f:
+    with open(_samples_dir() / name, encoding="utf-8") as f:
         return json.load(f)
+
+
+def seed_if_empty() -> dict:
+    """首次运行（空库）时灌入样例数据，让桌面端开箱即有内容。"""
+    from app.db.database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        from app.db.models import Enterprise
+
+        if db.query(Enterprise).count() > 0:
+            return {"seeded": False, "reason": "已有数据"}
+    finally:
+        db.close()
+    try:
+        seed()
+        return {"seeded": True}
+    except FileNotFoundError as exc:
+        return {"seeded": False, "reason": f"样例数据缺失: {exc}"}
 
 
 def seed() -> None:

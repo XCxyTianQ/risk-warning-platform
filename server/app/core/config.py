@@ -6,6 +6,8 @@
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+import os
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -13,6 +15,11 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "risk-warning-platform"
+
+    # --- 桌面端（Electron）集成 ---
+    data_dir: str = os.getenv("RWP_DATA_DIR", "")   # 数据目录（桌面端指向用户数据目录；空=仓库 data/）
+    web_dist: str = os.getenv("RWP_WEB_DIST", "")   # 前端构建产物目录（桌面端由 Electron 传入）
+    samples_dir: str = os.getenv("RWP_SAMPLES_DIR", "")  # 首次运行灌入的样例数据目录
 
     # --- LLM（OpenAI 兼容端点；默认指向本地 mock_llm.py） ---
     llm_base_url: str = "http://127.0.0.1:9000/v1"
