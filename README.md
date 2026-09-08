@@ -18,7 +18,7 @@ MVP 边界：只做 **财务 / 法律 / 舆情** 三个风险维度；每维度�
 
 ```
 risk-warning-platform/
-├── docs/        # 调研、架构、设计文档
+├── docs/        # 调研、架构、设计文档（★ 骨架技术设计.md = 总设计文档）
 ├── server/      # FastAPI 后端
 │   ├── app/
 │   │   ├── main.py        # 入口 + /api/health + CORS
