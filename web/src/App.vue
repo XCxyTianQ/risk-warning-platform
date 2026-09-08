@@ -2,6 +2,9 @@
 import { onMounted, ref } from 'vue'
 import { RouterView } from 'vue-router'
 
+import StatusBar from './workspace/StatusBar.vue'
+import { usageState } from './workspace/usage'
+
 const apiOk = ref<boolean | null>(null)
 const theme = ref<'light' | 'dark'>('light')
 
@@ -22,8 +25,10 @@ onMounted(async () => {
   try {
     const resp = await fetch('/api/health')
     apiOk.value = resp.ok
+    usageState.apiOk = resp.ok
   } catch {
     apiOk.value = false
+    usageState.apiOk = false
   }
 })
 </script>
@@ -54,6 +59,8 @@ onMounted(async () => {
     <main class="content">
       <RouterView />
     </main>
+
+    <StatusBar />
   </div>
 </template>
 
@@ -159,7 +166,8 @@ onMounted(async () => {
 
 .content {
   flex: 1;
-  padding: 16px 20px 32px;
+  min-height: 0;
+  padding: 16px 20px 48px;
   max-width: 1720px;
   width: 100%;
   margin: 0 auto;

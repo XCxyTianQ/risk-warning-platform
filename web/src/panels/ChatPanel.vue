@@ -3,6 +3,7 @@ import { nextTick, onMounted, ref } from 'vue'
 
 import { api } from '../api'
 import { openForTool, workspace } from '../workspace/store'
+import { setSessionUsage, usageState } from '../workspace/usage'
 
 interface Approval {
   id: string
@@ -178,6 +179,7 @@ async function openSession(id: string) {
     localStorage.setItem(SESSION_KEY, r.session_id)
     messages.value = rebuildMessages(r.messages)
     usage.value = (r as any).usage ?? null
+    setSessionUsage(usage.value, r.session_id)
     await scrollBottom()
   } catch (e) {
     messages.value = [{ role: 'assistant', text: '', tools: [], error: (e as Error).message }]
@@ -300,18 +302,31 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
       est_cost: data.est_cost ?? 0,
       compact_count: data.compact_count ?? 0,
     }
+    setSessionUsage(usage.value, sessionId.value ?? '')
+    usageState.lastPromptTokens = data.call?.prompt_tokens ?? usageState.lastPromptTokens
+    usageState.compacting = false
   } else if (event === 'compaction') {
     if (data.phase === 'start') {
       reply.notice = `上下文接近上限（约 ${data.estimated_tokens} tok / 窗口 ${data.window}），正在压缩历史…`
+      usageState.compacting = true
     } else if (data.phase === 'done') {
       reply.notice = `已压缩 ${data.folded} 条历史消息为摘要，上下文已收敛（累计压缩 ${data.compact_count} 次）`
-      if (data.usage) usage.value = { ...(usage.value as any), ...data.usage }
+      usageState.compacting = false
+      if (data.usage) {
+        usage.value = { ...(usage.value as any), ...data.usage }
+        setSessionUsage(usage.value, sessionId.value ?? '')
+      }
+    } else {
+      usageState.compacting = false
     }
   } else if (event === 'error') {
     reply.error = data.message
   } else if (event === 'done') {
     reply.streaming = false
-    if (data.usage) usage.value = data.usage
+    if (data.usage) {
+      usage.value = data.usage
+      setSessionUsage(data.usage, sessionId.value ?? '')
+    }
     loadSessions()
   }
 }

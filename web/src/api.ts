@@ -193,6 +193,17 @@ export const api = {
   chatDelete: (id: string) =>
     request<{ deleted: string }>(`/api/chat/sessions/${id}`, { method: 'DELETE' }),
 
+  /** 全局/会话用量与成本（常驻状态栏） */
+  chatUsage: (sessionId?: string) =>
+    request<{
+      model: string
+      context_window: number
+      threshold_ratio: number
+      retain_ratio: number
+      global: Record<string, number>
+      session: (Record<string, number> & { session_id: string; title: string }) | null
+    }>(`/api/chat/usage${sessionId ? `?session_id=${sessionId}` : ''}`),
+
   /** 动作工具审批 */
   chatApprove: (approvalId: string, approved: boolean) =>
     request<{ approval_id: string; approved: boolean }>('/api/chat/approve', {

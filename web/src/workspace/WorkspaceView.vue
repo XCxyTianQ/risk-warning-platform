@@ -213,7 +213,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 .ide {
   display: flex;
   gap: 10px;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 152px);
   min-height: 520px;
 }
 

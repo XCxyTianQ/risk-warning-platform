@@ -77,6 +77,52 @@ def delete_session(session_id: str, db: DbSession = Depends(get_db)):
     return {"deleted": session_id}
 
 
+@router.get("/usage")
+def usage_summary(session_id: str | None = None, db: DbSession = Depends(get_db)):
+    """全局/会话用量与成本（常驻状态栏数据源）。"""
+    from sqlalchemy import func
+
+    from app.core.config import settings
+    from app.db.models import ChatSession
+
+    row = db.query(
+        func.count(ChatSession.id),
+        func.coalesce(func.sum(ChatSession.llm_calls), 0),
+        func.coalesce(func.sum(ChatSession.prompt_tokens), 0),
+        func.coalesce(func.sum(ChatSession.completion_tokens), 0),
+        func.coalesce(func.sum(ChatSession.cache_hit_tokens), 0),
+        func.coalesce(func.sum(ChatSession.cache_miss_tokens), 0),
+        func.coalesce(func.sum(ChatSession.est_cost), 0.0),
+        func.coalesce(func.sum(ChatSession.compact_count), 0),
+    ).first()
+    sessions, calls, prompt, completion, hit, miss, cost, compacts = row
+    cache_total = (hit or 0) + (miss or 0)
+    global_stats = {
+        "sessions": sessions or 0,
+        "llm_calls": calls or 0,
+        "prompt_tokens": prompt or 0,
+        "completion_tokens": completion or 0,
+        "cache_hit_tokens": hit or 0,
+        "cache_miss_tokens": miss or 0,
+        "cache_hit_rate": round((hit or 0) / cache_total, 4) if cache_total else 0.0,
+        "est_cost": round(cost or 0.0, 6),
+        "compact_count": compacts or 0,
+    }
+    session_stats = None
+    if session_id:
+        s = store.get(db, session_id)
+        if s is not None:
+            session_stats = {"session_id": s.id, "title": s.title, **store.usage_stats(s)}
+    return {
+        "model": settings.llm_model,
+        "context_window": settings.llm_context_window,
+        "threshold_ratio": settings.compaction_threshold_ratio,
+        "retain_ratio": settings.compaction_retain_ratio,
+        "global": global_stats,
+        "session": session_stats,
+    }
+
+
 @router.post("/stream")
 def chat_stream(body: ChatIn):
     """SSE：session / token / tool / tool_result / done / error 事件。"""
