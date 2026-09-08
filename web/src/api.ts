@@ -342,11 +342,52 @@ export const api = {
       },
     ),
 
-  // --- 对话会话（历史持久化） ---
-  chatSessions: () =>
-    request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(
-      '/api/chat/sessions',
-    ),
+  // --- 对话会话（历史持久化 + 对话管理） ---
+  chatSessions: (q = '') =>
+    request<{
+      sessions: {
+        id: string
+        title: string
+        pinned: boolean
+        updated_at: string
+        created_at: string
+        message_count: number
+        cache_hit_rate: number
+        shared: boolean
+      }[]
+    }>(`/api/chat/sessions${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+  chatPatch: (id: string, body: { title?: string; pinned?: boolean }) =>
+    request<{ ok: boolean }>(`/api/chat/sessions/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  chatClear: (id: string) => request<{ deleted_messages: number }>(`/api/chat/sessions/${id}/clear`, { method: 'POST' }),
+  chatBatchDelete: (ids: string[]) =>
+    request<{ deleted: number }>('/api/chat/sessions/batch_delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    }),
+  chatExportUrl: (id: string, format: 'md' | 'json') => `/api/chat/sessions/${id}/export?format=${format}`,
+  chatShare: (id: string) =>
+    request<{ token: string; url: string; created_at: string }>(`/api/chat/sessions/${id}/share`, { method: 'POST' }),
+  chatRevokeShare: (id: string) => request<{ ok: boolean }>(`/api/chat/sessions/${id}/share`, { method: 'DELETE' }),
+  chatImport: (data: Record<string, any>) =>
+    request<{ session_id: string; title: string; messages: number }>('/api/chat/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data }),
+    }),
+  shared: (token: string) =>
+    request<{
+      session_id: string
+      title: string
+      created_at: string
+      updated_at: string
+      usage: Record<string, number>
+      messages: { role: string; content: string; tool_calls: any[]; tool_name: string }[]
+    }>(`/api/share/${token}`),
   chatSession: (id: string) =>
     request<{
       session_id: string

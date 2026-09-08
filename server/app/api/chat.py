@@ -3,7 +3,7 @@
 import json
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import PlainTextResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session as DbSession
 
@@ -37,8 +37,89 @@ def approve(body: ApprovalIn):
 
 
 @router.get("/sessions")
-def list_sessions(limit: int = 20, db: DbSession = Depends(get_db)):
-    return {"sessions": store.list(db, limit=limit)}
+def list_sessions(limit: int = 50, q: str = "", db: DbSession = Depends(get_db)):
+    return {"sessions": store.list(db, limit=limit, q=q)}
+
+
+class SessionPatch(BaseModel):
+    title: str | None = None
+    pinned: bool | None = None
+
+
+class BatchDeleteIn(BaseModel):
+    ids: list[str]
+
+
+class SessionImportIn(BaseModel):
+    data: dict
+
+
+@router.patch("/sessions/{session_id}")
+def patch_session(session_id: str, body: SessionPatch, db: DbSession = Depends(get_db)):
+    if body.title is not None:
+        result = store.rename(db, session_id, body.title)
+        if result.get("error"):
+            raise HTTPException(404, result["error"])
+    if body.pinned is not None:
+        result = store.set_pinned(db, session_id, body.pinned)
+        if result.get("error"):
+            raise HTTPException(404, result["error"])
+    return {"ok": True, "session_id": session_id}
+
+
+@router.post("/sessions/{session_id}/clear")
+def clear_session(session_id: str, db: DbSession = Depends(get_db)):
+    result = store.clear_messages(db, session_id)
+    if result.get("error"):
+        raise HTTPException(404, result["error"])
+    return result
+
+
+@router.post("/sessions/batch_delete")
+def batch_delete(body: BatchDeleteIn, db: DbSession = Depends(get_db)):
+    return store.batch_delete(db, body.ids)
+
+
+@router.get("/sessions/{session_id}/export")
+def export_session(session_id: str, format: str = "md", db: DbSession = Depends(get_db)):
+    """导出会话：format=md（可读报告）/ json（可再导入）。"""
+    if format == "json":
+        data = store.export_json(db, session_id)
+        if not data:
+            raise HTTPException(404, "会话不存在")
+        return data
+    text = store.export_markdown(db, session_id)
+    if not text:
+        raise HTTPException(404, "会话不存在")
+    return PlainTextResponse(
+        text,
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="session-{session_id}.md"'},
+    )
+
+
+@router.post("/sessions/{session_id}/share")
+def share_session(session_id: str, db: DbSession = Depends(get_db)):
+    result = store.share(db, session_id)
+    if result.get("error"):
+        raise HTTPException(404, result["error"])
+    return result
+
+
+@router.delete("/sessions/{session_id}/share")
+def revoke_share(session_id: str, db: DbSession = Depends(get_db)):
+    result = store.revoke_share(db, session_id)
+    if result.get("error"):
+        raise HTTPException(404, result["error"])
+    return result
+
+
+@router.post("/import")
+def import_session(body: SessionImportIn, db: DbSession = Depends(get_db)):
+    result = store.import_session(db, body.data)
+    if result.get("error"):
+        raise HTTPException(400, result["error"])
+    return result
 
 
 @router.post("/sessions")

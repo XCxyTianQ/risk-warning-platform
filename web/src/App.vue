@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 
 import StatusBar from './workspace/StatusBar.vue'
 import SettingsDialog from './workspace/SettingsDialog.vue'
 import { usageState } from './workspace/usage'
 
+const route = useRoute()
 const apiOk = ref<boolean | null>(null)
 const theme = ref<'light' | 'dark'>('light')
 const settingsOpen = ref(false)
@@ -37,7 +38,13 @@ onMounted(async () => {
 
 <template>
   <div class="shell">
-    <header class="topbar">
+    <!-- 分享页：独立只读视图，不显示工作台外壳 -->
+    <main v-if="route.meta.standalone" class="standalone">
+      <RouterView />
+    </main>
+
+    <template v-else>
+      <header class="topbar">
       <div class="brand">
         <div class="brand-mark">险</div>
         <div>
@@ -59,12 +66,13 @@ onMounted(async () => {
       </div>
     </header>
 
-    <main class="content">
-      <RouterView />
-    </main>
+      <main class="content">
+        <RouterView />
+      </main>
 
-    <StatusBar />
-    <SettingsDialog v-if="settingsOpen" @close="settingsOpen = false" @saved="settingsOpen = false" />
+      <StatusBar />
+      <SettingsDialog v-if="settingsOpen" @close="settingsOpen = false" @saved="settingsOpen = false" />
+    </template>
   </div>
 </template>
 
@@ -73,6 +81,10 @@ onMounted(async () => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.standalone {
+  flex: 1;
 }
 
 .topbar {

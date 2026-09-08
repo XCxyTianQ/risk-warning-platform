@@ -45,8 +45,12 @@ interface UsageStats {
 interface SessionRow {
   id: string
   title: string
+  pinned: boolean
   updated_at: string
+  created_at: string
   message_count: number
+  cache_hit_rate: number
+  shared: boolean
 }
 
 const messages = ref<ChatMsg[]>([])
@@ -58,6 +62,8 @@ const historyOpen = ref(false)
 const sessions = ref<SessionRow[]>([])
 const loadingHistory = ref(false)
 const usage = ref<UsageStats | null>(null)
+const toast = ref('')
+const error = ref('')
 const presets = ref<{ id: number; name: string; description: string; enabled: boolean }[]>([])
 const presetId = ref<number | null>(null)
 let abort: AbortController | null = null
@@ -127,16 +133,85 @@ function safeParse(s: string): Record<string, any> {
 }
 
 // ---------- 历史会话 ----------
+const searchQ = ref('')
+
 async function loadSessions() {
   loadingHistory.value = true
   try {
-    const r = await api.chatSessions()
+    const r = await api.chatSessions(searchQ.value.trim())
     sessions.value = r.sessions
   } catch {
     sessions.value = []
   } finally {
     loadingHistory.value = false
   }
+}
+
+async function togglePin(s: SessionRow) {
+  await api.chatPatch(s.id, { pinned: !s.pinned })
+  await loadSessions()
+}
+
+async function renameSession(s: SessionRow) {
+  const title = prompt('重命名会话', s.title)
+  if (title === null) return
+  await api.chatPatch(s.id, { title })
+  await loadSessions()
+}
+
+async function removeSession(s: SessionRow) {
+  if (!confirm(`删除会话「${s.title}」？该操作不可恢复。`)) return
+  await api.chatDelete(s.id)
+  if (sessionId.value === s.id) newChat()
+  await loadSessions()
+}
+
+function exportSession(s: SessionRow, format: 'md' | 'json') {
+  window.open(api.chatExportUrl(s.id, format), '_blank')
+}
+
+async function shareSession(s: SessionRow) {
+  try {
+    const r = await api.chatShare(s.id)
+    const url = `${location.origin}${r.url}`
+    await navigator.clipboard?.writeText(url).catch(() => {})
+    toast.value = `分享链接已复制：${url}`
+    await loadSessions()
+  } catch (e) {
+    error.value = (e as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 8000)
+}
+
+async function revokeShare(s: SessionRow) {
+  await api.chatRevokeShare(s.id)
+  toast.value = '已撤销分享'
+  await loadSessions()
+  setTimeout(() => (toast.value = ''), 3000)
+}
+
+async function importSessionFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  try {
+    const text = await file.text()
+    const r = await api.chatImport(JSON.parse(text))
+    toast.value = `已导入会话「${r.title}」（${r.messages} 条消息）`
+    await loadSessions()
+    await openSession(r.session_id)
+  } catch (err) {
+    error.value = (err as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 5000)
+}
+
+async function clearCurrent() {
+  if (!sessionId.value) return
+  if (!confirm('清空当前会话的全部消息？（会话本身保留）')) return
+  await api.chatClear(sessionId.value)
+  messages.value = []
+  usage.value = null
+  await loadSessions()
 }
 
 function rebuildMessages(rows: any[]): ChatMsg[] {
@@ -190,21 +265,11 @@ async function openSession(id: string) {
   }
 }
 
-async function deleteSession(id: string) {
-  await api.chatDelete(id)
-  if (sessionId.value === id) reset()
-  await loadSessions()
-}
-
 function newChat() {
   stop()
   messages.value = []
   sessionId.value = null
   localStorage.removeItem(SESSION_KEY)
-}
-
-function reset() {
-  newChat()
 }
 
 onMounted(async () => {
@@ -370,7 +435,11 @@ function stop() {
           <template v-if="usage.compact_count"> · 已压缩 {{ usage.compact_count }} 次</template>
         </span>
       </div>
-      <button class="btn ghost small" @click="newChat">＋ 新对话</button>
+      <div class="tb-actions">
+        <button class="btn ghost small" :disabled="!sessionId" @click="shareSession({ id: sessionId } as SessionRow)">🔗 分享</button>
+        <button class="btn ghost small" :disabled="!sessionId" @click="clearCurrent">🧹 清空</button>
+        <button class="btn ghost small" @click="newChat">＋ 新对话</button>
+      </div>
     </div>
 
     <div class="preset-bar">
@@ -382,10 +451,17 @@ function stop() {
       <span class="pb-desc">{{ presets.find((p) => p.id === presetId)?.description ?? '全工具、全技能' }}</span>
     </div>
 
-    <!-- 历史会话列表 -->
+    <!-- 历史会话列表（对话管理） -->
     <div v-if="historyOpen" class="history">
+      <div class="history-search">
+        <input v-model="searchQ" placeholder="搜索标题或消息内容…" @input="loadSessions" />
+        <label class="btn ghost small import-btn">
+          ⤒ 导入
+          <input type="file" accept="application/json,.json" @change="importSessionFile" />
+        </label>
+      </div>
       <div v-if="loadingHistory" class="history-empty">加载中…</div>
-      <div v-else-if="!sessions.length" class="history-empty">还没有历史会话</div>
+      <div v-else-if="!sessions.length" class="history-empty">没有匹配的会话</div>
       <div
         v-for="s in sessions"
         :key="s.id"
@@ -393,11 +469,25 @@ function stop() {
         :class="{ current: s.id === sessionId }"
         @click="openSession(s.id)"
       >
+        <button class="hi-pin" :class="{ on: s.pinned }" :title="s.pinned ? '取消置顶' : '置顶'" @click.stop="togglePin(s)">📌</button>
         <div class="hi-main">
-          <div class="hi-title">{{ s.title }}</div>
-          <div class="hi-meta">{{ s.message_count }} 条消息 · {{ new Date(s.updated_at).toLocaleString('zh-CN', { hour12: false }) }}</div>
+          <div class="hi-title">
+            {{ s.title }}
+            <span v-if="s.shared" class="hi-tag">已分享</span>
+          </div>
+          <div class="hi-meta">
+            {{ s.message_count }} 条 · 命中 {{ Math.round((s.cache_hit_rate ?? 0) * 100) }}% ·
+            {{ new Date(s.updated_at).toLocaleString('zh-CN', { hour12: false }) }}
+          </div>
         </div>
-        <button class="hi-del" title="删除" @click.stop="deleteSession(s.id)">✕</button>
+        <div class="hi-actions">
+          <button class="hi-btn" title="重命名" @click.stop="renameSession(s)">✎</button>
+          <button class="hi-btn" title="导出 Markdown" @click.stop="exportSession(s, 'md')">MD</button>
+          <button class="hi-btn" title="导出 JSON" @click.stop="exportSession(s, 'json')">JSON</button>
+          <button v-if="!s.shared" class="hi-btn" title="生成分享链接" @click.stop="shareSession(s)">🔗</button>
+          <button v-else class="hi-btn" title="撤销分享" @click.stop="revokeShare(s)">🚫</button>
+          <button class="hi-del" title="删除" @click.stop="removeSession(s)">✕</button>
+        </div>
       </div>
     </div>
 
@@ -576,10 +666,96 @@ function stop() {
   text-align: center;
 }
 
+.history-search {
+  display: flex;
+  gap: 8px;
+  padding: 4px 6px 8px;
+}
+
+.history-search input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  background: var(--card);
+  color: var(--text);
+  outline: none;
+}
+
+.history-search input:focus {
+  border-color: var(--primary);
+}
+
+.import-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+}
+
+.import-btn input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hi-pin {
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  cursor: pointer;
+  opacity: 0.35;
+  padding: 2px;
+}
+
+.hi-pin.on {
+  opacity: 1;
+}
+
+.hi-tag {
+  font-size: 10px;
+  color: var(--primary);
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0 4px;
+  margin-left: 4px;
+}
+
+.hi-actions {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  flex: none;
+}
+
+.hi-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-sub);
+  border-radius: 5px;
+  font-size: 10px;
+  padding: 1px 5px;
+  cursor: pointer;
+  line-height: 16px;
+}
+
+.hi-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.tb-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .history-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 8px 10px;
   border-radius: 8px;
   cursor: pointer;

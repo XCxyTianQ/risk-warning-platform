@@ -110,6 +110,10 @@ class ChatSession(Base):
     summary: Mapped[str] = mapped_column(Text, default="")
     compacted_until: Mapped[int] = mapped_column(Integer, default=0)
     compact_count: Mapped[int] = mapped_column(Integer, default=0)
+    # 对话管理
+    pinned: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    share_token: Mapped[str] = mapped_column(String(32), default="", index=True)
+    share_created_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     # 用量与成本（缓存命中率是关键成本指标）
     prompt_tokens: Mapped[int] = mapped_column(Integer, default=0)
     completion_tokens: Mapped[int] = mapped_column(Integer, default=0)

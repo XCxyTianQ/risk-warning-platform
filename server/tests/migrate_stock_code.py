@@ -52,6 +52,9 @@ new_cols = [
     ("cache_miss_tokens", "INTEGER DEFAULT 0"),
     ("llm_calls", "INTEGER DEFAULT 0"),
     ("est_cost", "REAL DEFAULT 0"),
+    ("pinned", "BOOLEAN DEFAULT 0"),
+    ("share_token", "VARCHAR(32) DEFAULT ''"),
+    ("share_created_at", "DATETIME"),
 ]
 for name, decl in new_cols:
     if name not in ccols:

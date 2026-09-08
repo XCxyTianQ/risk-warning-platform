@@ -193,15 +193,22 @@ class SessionStore:
             "compact_count": session.compact_count,
         }
 
-    def list(self, db: DbSession, limit: int = 20) -> list[dict]:
+    def list(self, db: DbSession, limit: int = 50, q: str = "") -> list[dict]:
         counts = dict(
             db.query(ChatMessage.session_id, func.count(ChatMessage.id))
             .group_by(ChatMessage.session_id)
             .all()
         )
+        query = db.query(ChatSession)
+        if q:
+            like = f"%{q}%"
+            matched_ids = [
+                row[0] for row in db.query(ChatMessage.session_id)
+                .filter(ChatMessage.content.like(like)).distinct().all()
+            ]
+            query = query.filter(ChatSession.title.like(like) | ChatSession.id.in_(matched_ids or [""]))
         rows = (
-            db.query(ChatSession)
-            .order_by(ChatSession.updated_at.desc())
+            query.order_by(ChatSession.pinned.desc(), ChatSession.updated_at.desc())
             .limit(limit)
             .all()
         )
@@ -209,15 +216,191 @@ class SessionStore:
             {
                 "id": r.id,
                 "title": r.title,
+                "pinned": bool(r.pinned),
                 "updated_at": r.updated_at.isoformat(),
+                "created_at": r.created_at.isoformat(),
                 "message_count": counts.get(r.id, 0),
                 "cache_hit_rate": (
                     round((r.cache_hit_tokens or 0) / ((r.cache_hit_tokens or 0) + (r.cache_miss_tokens or 0)), 4)
                     if (r.cache_hit_tokens or 0) + (r.cache_miss_tokens or 0) else 0.0
                 ),
+                "shared": bool(r.share_token),
             }
             for r in rows
         ]
+
+    def rename(self, db: DbSession, session_id: str, title: str) -> dict:
+        row = db.get(ChatSession, session_id)
+        if row is None:
+            return {"error": f"会话不存在: {session_id}"}
+        row.title = (title or "").strip()[:120] or row.title
+        row.updated_at = datetime.utcnow()
+        db.commit()
+        return {"ok": True, "id": row.id, "title": row.title}
+
+    def set_pinned(self, db: DbSession, session_id: str, pinned: bool) -> dict:
+        row = db.get(ChatSession, session_id)
+        if row is None:
+            return {"error": f"会话不存在: {session_id}"}
+        row.pinned = bool(pinned)
+        db.commit()
+        return {"ok": True, "id": row.id, "pinned": row.pinned}
+
+    def clear_messages(self, db: DbSession, session_id: str) -> dict:
+        row = db.get(ChatSession, session_id)
+        if row is None:
+            return {"error": f"会话不存在: {session_id}"}
+        n = db.query(ChatMessage).filter(ChatMessage.session_id == session_id).delete()
+        row.summary = ""
+        row.compacted_until = 0
+        row.compact_count = 0
+        row.updated_at = datetime.utcnow()
+        db.commit()
+        return {"ok": True, "deleted_messages": n}
+
+    def batch_delete(self, db: DbSession, ids: list[str]) -> dict:
+        deleted = 0
+        for sid in ids or []:
+            if self.delete(db, sid):
+                deleted += 1
+        return {"deleted": deleted}
+
+    def share(self, db: DbSession, session_id: str) -> dict:
+        row = db.get(ChatSession, session_id)
+        if row is None:
+            return {"error": f"会话不存在: {session_id}"}
+        if not row.share_token:
+            row.share_token = uuid.uuid4().hex[:20]
+            row.share_created_at = datetime.utcnow()
+            db.commit()
+        return {
+            "ok": True,
+            "session_id": row.id,
+            "token": row.share_token,
+            "url": f"/share/{row.share_token}",
+            "created_at": (row.share_created_at or datetime.utcnow()).isoformat(),
+        }
+
+    def revoke_share(self, db: DbSession, session_id: str) -> dict:
+        row = db.get(ChatSession, session_id)
+        if row is None:
+            return {"error": f"会话不存在: {session_id}"}
+        row.share_token = ""
+        row.share_created_at = None
+        db.commit()
+        return {"ok": True, "session_id": row.id}
+
+    def get_shared(self, db: DbSession, token: str) -> dict | None:
+        row = db.query(ChatSession).filter(ChatSession.share_token == token).first()
+        if row is None:
+            return None
+        session = self.get(db, row.id)
+        if session is None:
+            return None
+        return {
+            "session_id": session.id,
+            "title": session.title,
+            "created_at": session.created_at.isoformat(),
+            "updated_at": session.updated_at.isoformat(),
+            "usage": self.usage_stats(session),
+            "messages": [
+                {
+                    "role": m.get("role"),
+                    "content": m.get("content") or "",
+                    "tool_calls": m.get("tool_calls") or [],
+                    "tool_name": m.get("tool_name", ""),
+                }
+                for m in session.messages
+                if m.get("role") in ("user", "assistant", "tool")
+            ],
+        }
+
+    def export_markdown(self, db: DbSession, session_id: str) -> str:
+        """导出为可读 Markdown（适合贴到报告/答辩材料）。"""
+        s = self.get(db, session_id)
+        if s is None:
+            return ""
+        stats = self.usage_stats(s)
+        lines = [
+            f"# {s.title}",
+            "",
+            f"- 会话 ID：`{s.id}`",
+            f"- 创建时间：{s.created_at.isoformat()}",
+            f"- 最后更新：{s.updated_at.isoformat()}",
+            f"- 消息数：{len([m for m in s.messages if m.get('role') in ('user', 'assistant')])}",
+            f"- LLM 调用：{stats['llm_calls']} 次 · 输入 {stats['prompt_tokens']} tok"
+            f"（缓存命中 {stats['cache_hit_tokens']}）· 输出 {stats['completion_tokens']} tok",
+            "",
+            "---",
+            "",
+        ]
+        tool_names: dict[str, str] = {}
+        for m in s.messages:
+            for tc in m.get("tool_calls") or []:
+                if tc.get("id"):
+                    tool_names[tc["id"]] = (tc.get("function") or {}).get("name", "")
+        for m in s.messages:
+            role = m.get("role")
+            content = (m.get("content") or "").strip()
+            if role == "user":
+                lines += ["## 🧑 用户", "", content, ""]
+            elif role == "assistant":
+                if content:
+                    lines += ["## 🤖 助手", "", content, ""]
+                for tc in m.get("tool_calls") or []:
+                    fn = tc.get("function") or {}
+                    lines += [f"> 🔧 调用工具 `{fn.get('name')}`：`{fn.get('arguments', '')}`", ""]
+            elif role == "tool":
+                name = m.get("tool_name") or tool_names.get(m.get("tool_call_id", ""), "tool")
+                snippet = content[:400].replace("\n", " ")
+                lines += [f"> ↩️ `{name}` 返回：{snippet}{'…' if len(content) > 400 else ''}", ""]
+        lines += ["---", "", "> 由「企业经营风险预警平台」导出；数据来自公开信源，不构成投资建议。"]
+        return "\n".join(lines)
+
+    def export_json(self, db: DbSession, session_id: str) -> dict:
+        """导出为可再导入的 JSON（全保真）。"""
+        s = self.get(db, session_id)
+        if s is None:
+            return {}
+        return {
+            "kind": "risk-warning-chat-session",
+            "version": 1,
+            "exported_at": datetime.utcnow().isoformat(),
+            "title": s.title,
+            "usage": self.usage_stats(s),
+            "messages": [
+                {
+                    "role": m.get("role"),
+                    "content": m.get("content") or "",
+                    "tool_calls": m.get("tool_calls") or [],
+                    "tool_call_id": m.get("tool_call_id", ""),
+                    "tool_name": m.get("tool_name", ""),
+                }
+                for m in s.messages
+            ],
+        }
+
+    def import_session(self, db: DbSession, data: dict) -> dict:
+        """导入会话 JSON，生成新会话（保留消息与工具调用）。"""
+        if not isinstance(data, dict) or data.get("kind") != "risk-warning-chat-session":
+            return {"error": "不是有效的会话导出文件（kind 应为 risk-warning-chat-session）"}
+        title = (data.get("title") or "导入的对话")[:120]
+        existing = db.query(ChatSession).filter(ChatSession.title == title).first()
+        if existing is not None:
+            title = f"{title}（导入）"
+        session = self.create(db, title)
+        for m in data.get("messages") or []:
+            if m.get("role") not in ("user", "assistant", "tool"):
+                continue
+            self.append(db, session, {
+                "role": m["role"],
+                "content": m.get("content") or "",
+                "tool_calls": m.get("tool_calls") or None,
+                "tool_call_id": m.get("tool_call_id", ""),
+                "tool_name": m.get("tool_name", ""),
+            })
+        return {"ok": True, "session_id": session.id, "title": title,
+                "messages": len(session.messages)}
 
     def delete(self, db: DbSession, session_id: str) -> bool:
         row = db.get(ChatSession, session_id)
