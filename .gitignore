@@ -1,0 +1,26 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.env
+
+# ===== Node =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ===== 数据与产物（不入库） =====
+data/*.csv
+data/*.jsonl
+data/*.db
+data/*.sqlite*
+data/samples/
+!data/README.md
+
+# ===== IDE / OS =====
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
