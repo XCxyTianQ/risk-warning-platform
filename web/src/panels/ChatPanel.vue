@@ -63,6 +63,11 @@ const TOOL_LABEL: Record<string, string> = {
   get_platform_overview: '平台总览',
   run_risk_analysis: '触发完整研判',
   refresh_enterprise_data: '数据源刷新',
+  resolve_stock_code: '解析股票代码',
+  add_enterprise: '添加企业',
+  list_alerts: '查询预警',
+  handle_alert: '处置预警',
+  get_alert_report: '生成预警报告',
 }
 
 /** 动作工具审批 */

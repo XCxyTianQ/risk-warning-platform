@@ -127,3 +127,28 @@ class ChatMessage(Base):
     ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     session: Mapped[ChatSession] = relationship(back_populates="messages")
+
+
+class Alert(Base):
+    """预警工单（闭环：待处理 → 处理中 → 已处置 / 已忽略，含处理流水）。"""
+
+    __tablename__ = "alert"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    enterprise_id: Mapped[int] = mapped_column(ForeignKey("enterprise.id"), index=True)
+    level: Mapped[str] = mapped_column(String(10), index=True)      # red/orange/yellow
+    dimension: Mapped[str] = mapped_column(String(30), default="")  # 六维之一或 overall
+    title: Mapped[str] = mapped_column(String(200))
+    summary: Mapped[str] = mapped_column(Text, default="")
+    evidence_json: Mapped[str] = mapped_column(Text, default="")
+    score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    status: Mapped[str] = mapped_column(String(16), default="pending", index=True)
+    source: Mapped[str] = mapped_column(String(20), default="scoring")  # scoring/analysis/manual
+    fingerprint: Mapped[str] = mapped_column(String(120), default="", index=True)
+    handler: Mapped[str] = mapped_column(String(60), default="")
+    notes_json: Mapped[str] = mapped_column(Text, default="[]")     # 处理流水 [{ts, action, handler, note}]
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    handled_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+    enterprise: Mapped[Enterprise] = relationship()

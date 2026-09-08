@@ -70,6 +70,26 @@ export interface AnalyzeResp {
   }
 }
 
+export interface AlertRow {
+  id: number
+  enterprise_id: number
+  enterprise: string
+  level: string
+  dimension: string
+  dimension_label: string
+  title: string
+  summary: string
+  score: number | null
+  status: string
+  status_label: string
+  handler: string
+  created_at: string
+  updated_at: string
+  handled_at: string | null
+  notes: { ts: string; status_label?: string; handler?: string; note?: string }[]
+  evidence: any[]
+}
+
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const resp = await fetch(url, init)
   const data = await resp.json().catch(() => ({}))
@@ -131,6 +151,32 @@ export const api = {
     }),
   deleteEnterprise: (id: number) =>
     request<{ deleted: number; name: string }>(`/api/enterprise/${id}`, { method: 'DELETE' }),
+
+  // --- 预警中心 ---
+  alerts: (params: { status?: string; level?: string; enterprise_id?: number } = {}) => {
+    const q = new URLSearchParams()
+    if (params.status) q.set('status', params.status)
+    if (params.level) q.set('level', params.level)
+    if (params.enterprise_id) q.set('enterprise_id', String(params.enterprise_id))
+    return request<{ total: number; items: AlertRow[] }>(`/api/alerts?${q.toString()}`)
+  },
+  alertSummary: () =>
+    request<{ total: number; pending: number; handling: number; by_status: Record<string, number>; by_level: Record<string, number> }>(
+      '/api/alerts/summary',
+    ),
+  generateAlerts: (enterprise_id?: number) =>
+    request<{ created?: any[]; skipped?: number; enterprises?: number; error?: string }>('/api/alerts/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enterprise_id: enterprise_id ?? null }),
+    }),
+  handleAlert: (id: number, action: string, handler = '', note = '') =>
+    request<{ alert_id: number; status: string; status_label: string; notes: any[] }>(`/api/alerts/${id}/handle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, handler, note }),
+    }),
+  alertReportUrl: (id: number) => `/api/alerts/${id}/report`,
 
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>

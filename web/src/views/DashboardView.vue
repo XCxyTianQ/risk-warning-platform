@@ -9,6 +9,7 @@ import BaseChart from '../components/BaseChart.vue'
 const router = useRouter()
 const data = ref<DashboardSummary | null>(null)
 const sources = ref<{ dimension: string; mode: string; sources: { name: string }[] }[]>([])
+const alerts = ref<{ pending: number; handling: number; total: number } | null>(null)
 const loading = ref(true)
 const error = ref('')
 
@@ -19,7 +20,7 @@ const stats = computed(() => {
     { label: '监测企业', value: d.enterprise_total, tone: 'primary', icon: '🏢' },
     { label: '平均评分', value: d.avg_score ?? '—', tone: 'cyan', icon: '⭐' },
     { label: '高风险', value: d.level_counts.red ?? 0, tone: 'red', icon: '🚨' },
-    { label: '较高风险', value: d.level_counts.orange ?? 0, tone: 'orange', icon: '⚠️' },
+    { label: '待处理预警', value: alerts.value?.pending ?? 0, tone: 'orange', icon: '📋' },
   ]
 })
 
@@ -67,9 +68,10 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const [summary, ds] = await Promise.all([api.summary(), api.datasources()])
+    const [summary, ds, alertSum] = await Promise.all([api.summary(), api.datasources(), api.alertSummary()])
     data.value = summary
     sources.value = ds.sources
+    alerts.value = alertSum
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {

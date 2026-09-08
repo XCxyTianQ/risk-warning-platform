@@ -165,6 +165,33 @@ def build_registry() -> ToolRegistry:
             "news_sentiment": sentiment,
         }
 
+    def list_alerts(db: Session, status: str = "", level: str = "", enterprise_id: int = 0, limit: int = 10) -> dict:
+        """预警工单列表（可按状态/等级/企业筛选）。"""
+        from app.services.alerts import list_alerts as _list
+
+        return _list(
+            db,
+            status=status or None,
+            level=level or None,
+            enterprise_id=enterprise_id or None,
+            limit=limit,
+        )
+
+    def handle_alert(db: Session, alert_id: int, action: str, handler: str = "", note: str = "") -> dict:
+        """动作工具：处置预警（start 开始处理 / resolve 已处置 / ignore 忽略 / reopen 重新打开）。"""
+        from app.services.alerts import handle_alert as _handle
+
+        return _handle(db, alert_id, action, handler, note)
+
+    def get_alert_report(db: Session, alert_id: int) -> dict:
+        """生成预警报告（Markdown 文本）。"""
+        from app.services.alerts import report_markdown
+
+        text = report_markdown(db, alert_id)
+        if not text:
+            return {"error": f"预警不存在: {alert_id}"}
+        return {"alert_id": alert_id, "report_markdown": text[:4000]}
+
     def refresh_enterprise_data(db: Session, enterprise_id: int, dimensions: str = "") -> dict:
         """动作工具：从公开数据源（AkShare）刷新企业财务/舆情/诉讼数据。"""
         from app.datasources import refresh_enterprise
@@ -271,6 +298,47 @@ def build_registry() -> ToolRegistry:
         description="获取平台整体统计：企业总数、平均评分、各风险等级数量、风险事实总数。",
         parameters={"type": "object", "properties": {}, "required": []},
         handler=get_platform_overview,
+    ))
+    reg.register(Tool(
+        name="list_alerts",
+        description="查询预警工单：可按状态（pending/handling/resolved/ignored）、等级（red/orange/yellow）、企业 id 筛选。用户问'有哪些预警/待处理预警'时使用。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "status": {"type": "string", "description": "pending/handling/resolved/ignored"},
+                "level": {"type": "string", "description": "red/orange/yellow"},
+                "enterprise_id": {"type": "integer"},
+                "limit": {"type": "integer", "description": "默认 10"},
+            },
+            "required": [],
+        },
+        handler=list_alerts,
+    ))
+    reg.register(Tool(
+        name="handle_alert",
+        description="处置预警工单（写操作，需授权）：start=开始处理，resolve=标记已处置，ignore=忽略，reopen=重新打开。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "alert_id": {"type": "integer"},
+                "action": {"type": "string", "description": "start/resolve/ignore/reopen"},
+                "handler": {"type": "string", "description": "处理人"},
+                "note": {"type": "string", "description": "处置说明"},
+            },
+            "required": ["alert_id", "action"],
+        },
+        handler=handle_alert,
+        read_only=False,
+    ))
+    reg.register(Tool(
+        name="get_alert_report",
+        description="生成指定预警的处置报告（Markdown 文本，含证据链与处理流水）。",
+        parameters={
+            "type": "object",
+            "properties": {"alert_id": {"type": "integer"}},
+            "required": ["alert_id"],
+        },
+        handler=get_alert_report,
     ))
     reg.register(Tool(
         name="refresh_enterprise_data",

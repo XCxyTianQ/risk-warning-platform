@@ -150,4 +150,13 @@ def refresh_enterprise(db: DbSession, enterprise_id: int, dimensions: list[str] 
     ent.data_status_json = _json.dumps(status, ensure_ascii=False)
     db.commit()
     out["data_status"] = status
+
+    # 数据刷新后重算评分并生成/更新预警工单（闭环）
+    try:
+        from app.services.alerts import generate_for_enterprise
+
+        alert_result = generate_for_enterprise(db, enterprise_id, source="scoring")
+        out["alerts_created"] = len(alert_result.get("created", []))
+    except Exception:  # noqa: BLE001 —— 预警失败不影响刷新结果
+        out["alerts_created"] = 0
     return out

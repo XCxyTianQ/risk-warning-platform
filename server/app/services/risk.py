@@ -140,6 +140,14 @@ def analyze_enterprise(db: Session, enterprise_id: int) -> dict:
             ))
     db.commit()
 
+    # 研判完成 → 触发预警工单（闭环起点）
+    try:
+        from app.services.alerts import generate_for_enterprise
+
+        generate_for_enterprise(db, enterprise_id, source="analysis")
+    except Exception:  # noqa: BLE001 —— 预警生成失败不影响研判结果
+        pass
+
     return {
         "enterprise": {
             "id": ent.id, "name": ent.name, "legal_rep": ent.legal_rep,

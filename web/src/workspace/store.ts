@@ -153,6 +153,10 @@ export function openForTool(name: string, result: Record<string, any>) {
   }
   if (name === 'get_platform_overview') {
     openPanel('dashboard', { dock: 'bottom' })
+    return
+  }
+  if (name === 'list_alerts' || name === 'handle_alert' || name === 'get_alert_report') {
+    openPanel('alerts', { dock: 'right' })
   }
 }
 
