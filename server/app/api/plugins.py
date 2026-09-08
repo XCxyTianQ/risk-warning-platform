@@ -127,3 +127,30 @@ def delete_preset(preset_id: int, db: DbSession = Depends(get_db)):
 @router.post("/presets/seed")
 def seed_presets(db: DbSession = Depends(get_db)):
     return {"created": svc.seed_builtin_presets(db)}
+
+
+# ---------- 导入 / 导出（JSON 分享） ----------
+class ImportIn(BaseModel):
+    data: dict
+    strategy: str = "rename"  # skip | rename | overwrite
+
+
+@router.get("/presets/{preset_id}/export")
+def export_preset(preset_id: int, db: DbSession = Depends(get_db)):
+    result = svc.export_preset(db, preset_id)
+    if result.get("error"):
+        raise HTTPException(404, result["error"])
+    return result
+
+
+@router.get("/export")
+def export_all(db: DbSession = Depends(get_db)):
+    return svc.export_all(db)
+
+
+@router.post("/import")
+def import_bundle(body: ImportIn, db: DbSession = Depends(get_db)):
+    result = svc.import_bundle(db, body.data, body.strategy)
+    if result.get("error"):
+        raise HTTPException(400, result["error"])
+    return result

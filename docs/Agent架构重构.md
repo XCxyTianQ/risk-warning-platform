@@ -96,6 +96,21 @@ server/app/
 `search_enterprise → list_skills → load_skill → get_score_profile → get_risk_facts ×2`，
 最终按技能模板输出「企业概况 / 风险评级 / 六维评分 / 关键风险点 / 处置建议」结构报告。
 
+### 预设 / 插件 / 技能 的导入导出（JSON 分享）
+
+| 接口 | 作用 |
+|---|---|
+| `GET /api/plugins/presets/{id}/export` | 导出单个预设，**自动带上它引用的技能与自定义插件**（保证可移植） |
+| `GET /api/plugins/export` | 导出全部预设 + 技能 + 插件 |
+| `POST /api/plugins/import` | 导入分享包，`strategy` 可选 `rename`（推荐）/ `skip` / `overwrite` |
+
+- 分享包格式：`{"kind":"risk-warning-agent-bundle","version":1,"presets":[...],"skills":[...],"tools":[...]}`
+- **智能去重**：同名且内容一致的技能 / 同名且 URL+方法一致的插件 → 直接复用，不产生副本
+- 版本保护：`version` 高于平台支持时拒绝导入并提示升级
+- 前端「Agent 预设」面板：每行「导出」按钮下载单个包；顶部「⤓ 导出全部」「⤒ 导入」（支持选文件或粘贴 JSON，并显示导入结果明细）
+
+实测：导出「合规审查专员」→ 改名导入 → 生成「合规审查专员（导入2）」而技能复用；`skip` 策略下全部跳过；非法包返回 400 且提示 kind 不匹配。
+
 ## 7. 不做的
 
 - ❌ 不做多 Agent 编排（Planner/Executor 分离）——单 Agent + 工具足够，避免过度设计

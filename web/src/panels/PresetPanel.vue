@@ -186,6 +186,71 @@ function toggleToolField(list: string[], name: string) {
   else list.push(name)
 }
 
+// ---------- 导入 / 导出 ----------
+const importOpen = ref(false)
+const importText = ref('')
+const importStrategy = ref('rename')
+const importResult = ref<any>(null)
+const importing = ref(false)
+
+function download(name: string, data: any) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+async function exportPreset(p: Preset) {
+  try {
+    const bundle = await api.exportPreset(p.id)
+    download(`preset-${p.name}.json`, bundle)
+    toast.value = `已导出「${p.name}」`
+  } catch (e) {
+    error.value = (e as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 4000)
+}
+
+async function exportAll() {
+  try {
+    const bundle = await api.exportAll()
+    download(`agent-bundle-${new Date().toISOString().slice(0, 10)}.json`, bundle)
+    toast.value = '已导出全部预设/技能/插件'
+  } catch (e) {
+    error.value = (e as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 4000)
+}
+
+function pickFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => (importText.value = String(reader.result || ''))
+  reader.readAsText(file)
+}
+
+async function doImport() {
+  importing.value = true
+  error.value = ''
+  importResult.value = null
+  try {
+    const data = JSON.parse(importText.value)
+    const r = await api.importBundle(data, importStrategy.value)
+    importResult.value = r
+    toast.value = `导入完成：预设 ${r.presets.length} · 技能 ${r.skills.length} · 插件 ${r.tools.length}`
+    await load()
+  } catch (e) {
+    error.value = (e as Error).message
+  } finally {
+    importing.value = false
+    setTimeout(() => (toast.value = ''), 6000)
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -196,9 +261,13 @@ onMounted(load)
         <h2>Agent 预设</h2>
         <p class="page-sub">预设 = 提示词补充 + 工具白名单 + 技能白名单（对话时可切换）</p>
       </div>
-      <button v-if="tab === 'presets'" class="btn primary small" @click="newPreset">＋ 新建预设</button>
-      <button v-else-if="tab === 'tools'" class="btn primary small" @click="newTool">＋ 手搓插件</button>
-      <button v-else class="btn primary small" @click="newSkill">＋ 新建技能</button>
+      <div class="head-actions">
+        <button class="btn ghost small" @click="exportAll">⤓ 导出全部</button>
+        <button class="btn ghost small" @click="importOpen = true; importResult = null">⤒ 导入</button>
+        <button v-if="tab === 'presets'" class="btn primary small" @click="newPreset">＋ 新建预设</button>
+        <button v-else-if="tab === 'tools'" class="btn primary small" @click="newTool">＋ 手搓插件</button>
+        <button v-else class="btn primary small" @click="newSkill">＋ 新建技能</button>
+      </div>
     </div>
 
     <div class="toolbar">
@@ -236,6 +305,7 @@ onMounted(load)
         </div>
         <div class="row-actions">
           <button class="btn ghost small" @click="editPreset = { ...p }">编辑</button>
+          <button class="btn ghost small" @click="exportPreset(p)">导出</button>
           <button class="btn ghost small" @click="api.updatePreset(p.id, { enabled: !p.enabled }).then(load)">
             {{ p.enabled ? '停用' : '启用' }}
           </button>
@@ -286,6 +356,43 @@ onMounted(load)
             {{ s.enabled ? '停用' : '启用' }}
           </button>
           <button v-if="!s.builtin" class="btn ghost small danger" @click="api.deleteSkill(s.id).then(load)">删除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 导入弹窗 -->
+    <div v-if="importOpen" class="mask" @click.self="importOpen = false">
+      <div class="dialog">
+        <h3>导入预设 / 技能 / 插件</h3>
+        <label class="field">
+          <span>选择 JSON 文件</span>
+          <input type="file" accept="application/json,.json" @change="pickFile" />
+        </label>
+        <label class="field">
+          <span>或粘贴分享包内容</span>
+          <textarea v-model="importText" rows="10" placeholder='{"kind":"risk-warning-agent-bundle", ...}'></textarea>
+        </label>
+        <label class="field">
+          <span>同名冲突处理</span>
+          <select v-model="importStrategy">
+            <option value="rename">重命名导入（推荐）</option>
+            <option value="skip">跳过同名</option>
+            <option value="overwrite">覆盖同名</option>
+          </select>
+        </label>
+        <div v-if="importResult" class="import-result">
+          <div class="ir-row"><span>预设</span><b>{{ importResult.presets.join('、') || '—' }}</b></div>
+          <div class="ir-row"><span>技能</span><b>{{ importResult.skills.join('、') || '—' }}</b></div>
+          <div class="ir-row"><span>插件</span><b>{{ importResult.tools.join('、') || '—' }}</b></div>
+          <div v-if="importResult.skipped.length" class="ir-row">
+            <span>已跳过</span><b>{{ importResult.skipped.join('、') }}</b>
+          </div>
+        </div>
+        <div class="dlg-actions">
+          <button class="btn ghost" @click="importOpen = false">关闭</button>
+          <button class="btn primary" :disabled="importing || !importText.trim()" @click="doImport">
+            {{ importing ? '导入中…' : '导入' }}
+          </button>
         </div>
       </div>
     </div>
@@ -469,6 +576,34 @@ onMounted(load)
   gap: 6px;
   flex-wrap: wrap;
   flex: none;
+}
+
+.head-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.import-result {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--hover);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.ir-row {
+  display: flex;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--text-sub);
+  padding: 2px 0;
+}
+
+.ir-row b {
+  color: var(--text);
+  flex: 1;
+  word-break: break-all;
 }
 
 .danger {

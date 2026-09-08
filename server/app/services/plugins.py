@@ -253,3 +253,183 @@ def seed_builtin_presets(db: DbSession) -> int:
     if created:
         db.commit()
     return created
+
+
+# ---------------------------------------------------------------------------
+# 导入 / 导出（JSON 分享包）
+# ---------------------------------------------------------------------------
+
+BUNDLE_KIND = "risk-warning-agent-bundle"
+BUNDLE_VERSION = 1
+
+
+def _skill_dict(db: DbSession, name: str) -> dict | None:
+    from app.db.models import Skill
+
+    row = db.query(Skill).filter(Skill.name == name).first()
+    if row is None:
+        return None
+    return {"name": row.name, "description": row.description, "content": row.content}
+
+
+def _tool_dict(db: DbSession, name: str) -> dict | None:
+    """name 可为 custom_xxx 或 xxx。"""
+    raw = name[7:] if name.startswith("custom_") else name
+    row = db.query(CustomTool).filter(CustomTool.name == raw).first()
+    if row is None:
+        return None
+    return {
+        "name": row.name, "description": row.description,
+        "parameters": json.loads(row.parameters_json or "{}"),
+        "method": row.method, "url": row.url,
+        "headers": json.loads(row.headers_json or "{}"),
+        "body_template": row.body_template,
+        "require_approval": row.require_approval,
+    }
+
+
+def export_preset(db: DbSession, preset_id: int) -> dict:
+    """导出单个预设（含其引用的技能与自定义插件，保证可移植）。"""
+    row = db.get(AgentPreset, preset_id)
+    if row is None:
+        return {"error": f"预设不存在: {preset_id}"}
+    preset = next((p for p in list_presets(db)["items"] if p["id"] == preset_id), None)
+    skills = [s for name in (preset or {}).get("skills", []) if (s := _skill_dict(db, name))]
+    tools = [t for name in (preset or {}).get("tools", []) if (t := _tool_dict(db, name))]
+    return {
+        "kind": BUNDLE_KIND,
+        "version": BUNDLE_VERSION,
+        "exported_at": datetime.utcnow().isoformat(),
+        "presets": [preset],
+        "skills": skills,
+        "tools": tools,
+    }
+
+
+def export_all(db: DbSession) -> dict:
+    """导出全部预设 + 技能 + 插件。"""
+    return {
+        "kind": BUNDLE_KIND,
+        "version": BUNDLE_VERSION,
+        "exported_at": datetime.utcnow().isoformat(),
+        "presets": list_presets(db)["items"],
+        "skills": list_skills_dict(db),
+        "tools": list_custom_tools(db)["items"],
+    }
+
+
+def list_skills_dict(db: DbSession) -> list[dict]:
+    from app.db.models import Skill
+
+    rows = db.query(Skill).order_by(Skill.id).all()
+    return [{"name": r.name, "description": r.description, "content": r.content} for r in rows]
+
+
+def _unique_name(db: DbSession, model, name: str) -> str:
+    base = name
+    i = 1
+    while db.query(model).filter(model.name == name).first():
+        i += 1
+        name = f"{base}（导入{i}）"
+    return name
+
+
+def import_bundle(db: DbSession, data: dict, strategy: str = "rename") -> dict:
+    """导入分享包。strategy: skip（跳过同名）/ rename（重命名）/ overwrite（覆盖）。"""
+    if not isinstance(data, dict) or data.get("kind") != BUNDLE_KIND:
+        return {"error": f"不是有效的分享包（kind 应为 {BUNDLE_KIND}）"}
+    if int(data.get("version") or 0) > BUNDLE_VERSION:
+        return {"error": f"分享包版本过新（{data.get('version')} > {BUNDLE_VERSION}），请升级平台"}
+
+    result = {"tools": [], "skills": [], "presets": [], "skipped": [], "strategy": strategy}
+
+    def conflict(model, name: str) -> tuple[object | None, str]:
+        existing = db.query(model).filter(model.name == name).first()
+        if existing is None:
+            return None, name
+        if strategy == "skip":
+            return existing, name
+        if strategy == "overwrite":
+            return existing, name
+        return None, _unique_name(db, model, name)
+
+    # 1) 插件（同名且 URL/方法一致 → 直接复用，不重复导入）
+    for t in data.get("tools") or []:
+        name = (t.get("name") or "").strip()
+        if not name:
+            continue
+        existing = db.query(CustomTool).filter(CustomTool.name == name).first()
+        if existing is not None and existing.url == (t.get("url") or "") and existing.method == (t.get("method") or "GET").upper():
+            result["tools"].append(f"{name}（已存在，复用）")
+            continue
+        existing, final = conflict(CustomTool, name)
+        if existing is not None and strategy == "skip":
+            result["skipped"].append(f"插件 {name}")
+            continue
+        payload = {
+            "description": t.get("description") or "",
+            "parameters_json": json.dumps(t.get("parameters") or {}, ensure_ascii=False),
+            "method": (t.get("method") or "GET").upper(),
+            "url": t.get("url") or "",
+            "headers_json": json.dumps(t.get("headers") or {}, ensure_ascii=False),
+            "body_template": t.get("body_template") or "",
+            "require_approval": bool(t.get("require_approval", False)),
+        }
+        if existing is not None:
+            for k, v in payload.items():
+                setattr(existing, k, v)
+            result["tools"].append(f"{name}（覆盖）")
+        else:
+            db.add(CustomTool(name=final, enabled=True, **payload))
+            result["tools"].append(final)
+
+    # 2) 技能（同名且内容一致 → 复用，避免重复）
+    from app.db.models import Skill
+
+    for s in data.get("skills") or []:
+        name = (s.get("name") or "").strip()
+        if not name or not (s.get("content") or "").strip():
+            continue
+        existing = db.query(Skill).filter(Skill.name == name).first()
+        if existing is not None and (existing.content or "").strip() == (s.get("content") or "").strip():
+            result["skills"].append(f"{name}（已存在，复用）")
+            continue
+        existing, final = conflict(Skill, name)
+        if existing is not None and strategy == "skip":
+            result["skipped"].append(f"技能 {name}")
+            continue
+        if existing is not None:
+            existing.description = s.get("description") or existing.description
+            existing.content = s.get("content") or existing.content
+            result["skills"].append(f"{name}（覆盖）")
+        else:
+            db.add(Skill(name=final, description=s.get("description") or "", content=s.get("content") or ""))
+            result["skills"].append(final)
+
+    # 3) 预设（最后导入，工具/技能已就位）
+    for p in data.get("presets") or []:
+        name = (p.get("name") or "").strip()
+        if not name:
+            continue
+        existing, final = conflict(AgentPreset, name)
+        if existing is not None and strategy == "skip":
+            result["skipped"].append(f"预设 {name}")
+            continue
+        payload = {
+            "description": p.get("description") or "",
+            "prompt_extra": p.get("prompt_extra") or "",
+            "tools_json": json.dumps(p.get("tools") or [], ensure_ascii=False),
+            "skills_json": json.dumps(p.get("skills") or [], ensure_ascii=False),
+            "model_override": p.get("model_override") or "",
+        }
+        if existing is not None:
+            for k, v in payload.items():
+                setattr(existing, k, v)
+            existing.updated_at = datetime.utcnow()
+            result["presets"].append(f"{name}（覆盖）")
+        else:
+            db.add(AgentPreset(name=final, enabled=True, **payload))
+            result["presets"].append(final)
+
+    db.commit()
+    return result

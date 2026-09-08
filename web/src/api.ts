@@ -330,6 +330,18 @@ export const api = {
       body: JSON.stringify(args),
     }),
 
+  exportPreset: (id: number) => request<Record<string, any>>(`/api/plugins/presets/${id}/export`),
+  exportAll: () => request<Record<string, any>>('/api/plugins/export'),
+  importBundle: (data: Record<string, any>, strategy: string) =>
+    request<{ tools: string[]; skills: string[]; presets: string[]; skipped: string[]; strategy: string }>(
+      '/api/plugins/import',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data, strategy }),
+      },
+    ),
+
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>
     request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(
