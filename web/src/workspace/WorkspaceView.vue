@@ -2,40 +2,71 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import { api } from '../api'
-import AlertsView from '../views/AlertsView.vue'
-import AnalyzeView from '../views/AnalyzeView.vue'
-import DashboardView from '../views/DashboardView.vue'
-import EnterpriseDetailView from '../views/EnterpriseDetailView.vue'
-import EnterprisesView from '../views/EnterprisesView.vue'
 import ChatPanel from '../panels/ChatPanel.vue'
-import PanelFrame from './PanelFrame.vue'
-import { PANEL_META, openPanel, workspace, type PanelType } from './store'
+import DockZone from './DockZone.vue'
+import { COMPONENTS, panelProps } from './registry'
+import {
+  openPanel,
+  PANEL_META,
+  panelsOf,
+  restore,
+  setSize,
+  workspace,
+  type DockZone as Zone,
+  type PanelType,
+} from './store'
 
-const COMPONENTS: Record<PanelType, any> = {
-  chat: ChatPanel,
-  profile: EnterpriseDetailView,
-  dashboard: DashboardView,
-  enterprises: EnterprisesView,
-  alerts: AlertsView,
-  analyze: AnalyzeView,
+const LAUNCHER: PanelType[] = ['dashboard', 'enterprises', 'alerts', 'analyze', 'profile']
+
+const leftPanels = computed(() => panelsOf('left'))
+const rightPanels = computed(() => panelsOf('right'))
+const bottomPanels = computed(() => panelsOf('bottom'))
+const maximizedPanel = computed(() => workspace.panels.find((p) => p.id === workspace.maximized) ?? null)
+
+const stageStyle = computed(() => ({
+  '--left-w': `${workspace.sizes.left}px`,
+  '--right-w': `${workspace.sizes.right}px`,
+  '--bottom-h': `${workspace.sizes.bottom}px`,
+}))
+
+// ---------- 拖动分屏 ----------
+function startResize(zone: Zone, e: PointerEvent) {
+  e.preventDefault()
+  const startX = e.clientX
+  const startY = e.clientY
+  const base = workspace.sizes[zone]
+
+  const move = (ev: PointerEvent) => {
+    if (zone === 'left') setSize('left', base + (ev.clientX - startX))
+    else if (zone === 'right') setSize('right', base - (ev.clientX - startX))
+    else setSize('bottom', base - (ev.clientY - startY))
+  }
+  const up = () => {
+    window.removeEventListener('pointermove', move)
+    window.removeEventListener('pointerup', up)
+    document.body.style.userSelect = ''
+    document.body.style.cursor = ''
+  }
+  document.body.style.userSelect = 'none'
+  document.body.style.cursor = zone === 'bottom' ? 'row-resize' : 'col-resize'
+  window.addEventListener('pointermove', move)
+  window.addEventListener('pointerup', up)
 }
 
-const LAUNCHER: PanelType[] = ['chat', 'dashboard', 'enterprises', 'alerts', 'analyze']
-
-// ---- 命令面板 ----
+// ---------- 命令面板 ----------
 const paletteOpen = ref(false)
 const paletteQuery = ref('')
 const enterpriseHits = ref<{ id: number; name: string; industry: string }[]>([])
 
 const commands = computed(() => {
   const q = paletteQuery.value.trim().toLowerCase()
-  const base = (Object.keys(PANEL_META) as PanelType[])
+  const panels = (Object.keys(PANEL_META) as PanelType[])
     .filter((t) => !q || PANEL_META[t].title.includes(q) || PANEL_META[t].desc.toLowerCase().includes(q))
     .map((t) => ({ kind: 'panel' as const, type: t, label: PANEL_META[t].title, desc: PANEL_META[t].desc }))
   const ents = enterpriseHits.value
     .filter((e) => !q || e.name.toLowerCase().includes(q))
     .map((e) => ({ kind: 'enterprise' as const, id: e.id, label: e.name, desc: e.industry }))
-  return [...base, ...ents].slice(0, 12)
+  return [...panels, ...ents].slice(0, 12)
 })
 
 async function loadEnterprises() {
@@ -64,63 +95,61 @@ function onKeydown(e: KeyboardEvent) {
   }
 }
 
-function panelProps(p: { type: PanelType; props: Record<string, any> }) {
-  if (p.type === 'profile') return { enterpriseId: p.props.enterpriseId }
-  return {}
-}
-
 onMounted(() => {
+  restore()
   window.addEventListener('keydown', onKeydown)
-  if (!workspace.panels.length) {
-    openPanel('chat')
-    openPanel('dashboard')
-  }
 })
-
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
-  <div class="workspace">
-    <!-- 工具条 -->
-    <div class="ws-bar">
-      <div class="ws-launcher">
-        <button
-          v-for="t in LAUNCHER"
-          :key="t"
-          class="ws-btn"
-          :title="PANEL_META[t].desc"
-          @click="openPanel(t)"
-        >
-          <span class="ws-icon">{{ PANEL_META[t].icon }}</span>
-          <span class="ws-label">{{ PANEL_META[t].title }}</span>
-        </button>
+  <div class="ide">
+    <!-- 左侧功能栏 -->
+    <aside class="rail">
+      <button
+        v-for="t in LAUNCHER"
+        :key="t"
+        class="rail-btn"
+        :title="`${PANEL_META[t].title} — ${PANEL_META[t].desc}`"
+        @click="openPanel(t)"
+      >
+        <span>{{ PANEL_META[t].icon }}</span>
+      </button>
+      <div class="rail-sep"></div>
+      <button class="rail-btn" title="命令面板 (Ctrl+K)" @click="paletteOpen = true; loadEnterprises()">⌘</button>
+    </aside>
+
+    <!-- 停靠舞台 -->
+    <div class="stage" :style="stageStyle">
+      <div class="stage-top">
+        <DockZone v-if="leftPanels.length" zone="left" class="area area-left" />
+        <div v-if="leftPanels.length" class="split split-v" @pointerdown="startResize('left', $event)"></div>
+
+        <!-- 主区：LLM 对话工作区 -->
+        <section class="area-main">
+          <ChatPanel />
+        </section>
+
+        <div v-if="rightPanels.length" class="split split-v" @pointerdown="startResize('right', $event)"></div>
+        <DockZone v-if="rightPanels.length" zone="right" class="area area-right" />
       </div>
-      <div class="ws-right">
-        <button class="ws-cmd" @click="paletteOpen = true; loadEnterprises()">
-          🔍 命令面板 <kbd>Ctrl K</kbd>
-        </button>
-        <span class="ws-count">{{ workspace.panels.length }} 个面板</span>
-      </div>
+
+      <div v-if="bottomPanels.length" class="split split-h" @pointerdown="startResize('bottom', $event)"></div>
+      <DockZone v-if="bottomPanels.length" zone="bottom" class="area area-bottom" />
     </div>
 
-    <!-- 画布 -->
-    <div v-if="workspace.panels.length" class="canvas">
-      <PanelFrame v-for="(p, i) in workspace.panels" :key="p.id" :panel="p" :index="i">
-        <component :is="COMPONENTS[p.type]" v-bind="panelProps(p)" />
-      </PanelFrame>
-    </div>
-
-    <!-- 空画布引导 -->
-    <div v-else class="empty-canvas">
-      <h2>工作台</h2>
-      <p>从下面的入口打开面板，面板之间可以并排对比、拖拽排序、随时关闭。</p>
-      <div class="empty-cards">
-        <button v-for="t in LAUNCHER" :key="t" class="empty-card" @click="openPanel(t)">
-          <span class="ec-icon">{{ PANEL_META[t].icon }}</span>
-          <span class="ec-title">{{ PANEL_META[t].title }}</span>
-          <span class="ec-desc">{{ PANEL_META[t].desc }}</span>
-        </button>
+    <!-- 最大化面板 -->
+    <div v-if="maximizedPanel" class="max-overlay">
+      <header class="max-head">
+        <span>{{ PANEL_META[maximizedPanel.type].icon }} {{ maximizedPanel.title }}</span>
+        <button class="btn ghost small" @click="workspace.maximized = null">还原 ✕</button>
+      </header>
+      <div class="max-body">
+        <component
+          :is="COMPONENTS[maximizedPanel.type]"
+          v-bind="panelProps(maximizedPanel)"
+          :key="maximizedPanel.id"
+        />
       </div>
     </div>
 
@@ -147,157 +176,176 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </template>
 
 <style scoped>
-.workspace {
+.ide {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  height: calc(100vh - 120px);
+  min-height: 520px;
 }
 
-/* 工具条 */
-.ws-bar {
+/* ---------- 左侧功能栏 ---------- */
+.rail {
+  width: 52px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.rail-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 9px;
+  font-size: 17px;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.15s;
+}
+
+.rail-btn:hover {
+  background: var(--hover);
+  border-color: var(--primary);
+}
+
+.rail-sep {
+  width: 24px;
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* ---------- 舞台 ---------- */
+.stage {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stage-top {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.area {
+  min-width: 0;
+  min-height: 0;
+}
+
+.area-left {
+  width: var(--left-w);
+  flex: none;
+}
+
+.area-right {
+  width: var(--right-w);
+  flex: none;
+}
+
+.area-bottom {
+  height: var(--bottom-h);
+  flex: none;
+}
+
+.area-main {
+  flex: 1;
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 分屏拖拽条 */
+.split-v {
+  width: 8px;
+  flex: none;
+  cursor: col-resize;
+  position: relative;
+}
+
+.split-h {
+  height: 8px;
+  flex: none;
+  cursor: row-resize;
+  position: relative;
+}
+
+.split-v::after,
+.split-h::after {
+  content: '';
+  position: absolute;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.split-v::after {
+  top: 12%;
+  bottom: 12%;
+  left: 3px;
+  width: 2px;
+  border-radius: 2px;
+}
+
+.split-h::after {
+  left: 12%;
+  right: 12%;
+  top: 3px;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.split-v:hover::after,
+.split-h:hover::after {
+  background: var(--primary);
+}
+
+/* ---------- 最大化 ---------- */
+.max-overlay {
+  position: fixed;
+  inset: 68px 16px 16px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.max-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.ws-launcher {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.ws-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 7px 13px;
-  font-size: 12.5px;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  transition: all 0.15s;
-}
-
-.ws-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  transform: translateY(-1px);
-}
-
-.ws-icon {
-  font-size: 14px;
-}
-
-.ws-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.ws-cmd {
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--text-sub);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.ws-cmd:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.ws-cmd kbd {
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0 4px;
-  font-size: 10.5px;
-  margin-left: 4px;
-}
-
-.ws-count {
-  font-size: 11.5px;
-  color: var(--text-sub);
-}
-
-/* 画布 */
-.canvas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 12px;
-  align-items: start;
-}
-
-/* 空态 */
-.empty-canvas {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.empty-canvas h2 {
-  margin: 0 0 6px;
-}
-
-.empty-canvas p {
-  color: var(--text-sub);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
   font-size: 13px;
-  margin: 0 0 24px;
-}
-
-.empty-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-.empty-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: 12px;
-  padding: 20px 14px;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  font-family: inherit;
-  color: var(--text);
-  transition: all 0.15s;
-}
-
-.empty-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-
-.ec-icon {
-  font-size: 22px;
-}
-
-.ec-title {
   font-weight: 700;
-  font-size: 13.5px;
 }
 
-.ec-desc {
-  font-size: 11.5px;
-  color: var(--text-sub);
-  text-align: center;
+.max-body {
+  flex: 1;
+  overflow: auto;
+  padding: 16px 18px;
 }
 
-/* 命令面板 */
+/* ---------- 命令面板 ---------- */
 .palette-mask {
   position: fixed;
   inset: 0;
@@ -316,6 +364,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   border-radius: 14px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   overflow: hidden;
+  height: fit-content;
 }
 
 .palette-input {
@@ -378,5 +427,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   color: var(--text-sub);
   font-size: 12.5px;
   justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .area-left,
+  .area-right {
+    display: none;
+  }
 }
 </style>

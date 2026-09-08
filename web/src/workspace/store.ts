@@ -1,55 +1,84 @@
-/** 工作台面板状态：多面板并存、对话驱动开窗、可拖拽排序 */
+/** IDE 式停靠工作区状态：对话为主区，其他面板停靠左/右/底部 */
 
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
 
-export type PanelType = 'chat' | 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze'
+export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze'
+export type DockZone = 'left' | 'right' | 'bottom'
 
 export interface Panel {
   id: string
   type: PanelType
   title: string
   props: Record<string, any>
-  span: 1 | 2
+  dock: DockZone
   singleton: boolean
 }
 
-export const PANEL_META: Record<PanelType, { title: string; icon: string; span: 1 | 2; singleton: boolean; desc: string }> = {
-  chat: { title: '智能问答', icon: '💬', span: 1, singleton: true, desc: '自然语言提问，Agent 自动调用工具' },
-  profile: { title: '企业评分画像', icon: '🎯', span: 1, singleton: false, desc: '六维评分雷达 + 评级解读' },
-  dashboard: { title: '风险总览', icon: '📊', span: 2, singleton: true, desc: '平台统计与风险分布' },
-  enterprises: { title: '企业档案', icon: '🏢', span: 1, singleton: true, desc: '企业列表与筛选' },
-  alerts: { title: '风险线索', icon: '🚨', span: 1, singleton: true, desc: '大模型产出的风险事实' },
-  analyze: { title: '智能研判', icon: '🧠', span: 1, singleton: true, desc: '单企业一键研判' },
+export const PANEL_META: Record<PanelType, { title: string; icon: string; desc: string; singleton: boolean }> = {
+  profile: { title: '企业评分画像', icon: '🎯', desc: '六维评分雷达 + 评级解读', singleton: false },
+  dashboard: { title: '风险总览', icon: '📊', desc: '平台统计与风险分布', singleton: true },
+  enterprises: { title: '企业档案', icon: '🏢', desc: '企业列表与筛选', singleton: true },
+  alerts: { title: '风险线索', icon: '🚨', desc: '大模型产出的风险事实', singleton: true },
+  analyze: { title: '智能研判', icon: '🧠', desc: '单企业一键研判', singleton: true },
 }
 
-let seq = 0
-const nextId = () => `p${++seq}`
+interface WorkspaceState {
+  panels: Panel[]
+  active: Record<DockZone, string>
+  sizes: Record<DockZone, number>
+  maximized: string | null
+}
 
-export const workspace = reactive({
-  panels: [] as Panel[],
-  focused: '',
+const STORAGE_KEY = 'rw-workspace-v2'
+
+let seq = 0
+const nextId = () => `p${Date.now().toString(36)}${++seq}`
+
+export const workspace = reactive<WorkspaceState>({
+  panels: [],
+  active: { left: '', right: '', bottom: '' },
+  sizes: { left: 380, right: 440, bottom: 300 },
+  maximized: null,
 })
 
-export function openPanel(type: PanelType, opts: { props?: Record<string, any>; title?: string } = {}): Panel {
+export function panelsOf(zone: DockZone): Panel[] {
+  return workspace.panels.filter((p) => p.dock === zone)
+}
+
+export function activePanelOf(zone: DockZone): Panel | null {
+  const list = panelsOf(zone)
+  if (!list.length) return null
+  return list.find((p) => p.id === workspace.active[zone]) ?? list[0]
+}
+
+export function openPanel(
+  type: PanelType,
+  opts: { props?: Record<string, any>; title?: string; dock?: DockZone } = {},
+): Panel {
   const meta = PANEL_META[type]
   const props = opts.props ?? {}
+  const dock = opts.dock ?? 'right'
 
-  // 单例面板：已存在则复用（更新 props）
   if (meta.singleton) {
     const existing = workspace.panels.find((p) => p.type === type)
     if (existing) {
       Object.assign(existing.props, props)
       if (opts.title) existing.title = opts.title
-      workspace.focused = existing.id
+      existing.dock = dock
+      workspace.active[dock] = existing.id
+      workspace.maximized = null
       return existing
     }
   }
 
-  // 画像面板：同一企业不重复开
   if (type === 'profile' && props.enterpriseId) {
-    const dup = workspace.panels.find((p) => p.type === 'profile' && p.props.enterpriseId === props.enterpriseId)
+    const dup = workspace.panels.find(
+      (p) => p.type === 'profile' && p.props.enterpriseId === props.enterpriseId,
+    )
     if (dup) {
-      workspace.focused = dup.id
+      dup.dock = dock
+      workspace.active[dock] = dup.id
+      workspace.maximized = null
       return dup
     }
   }
@@ -59,54 +88,101 @@ export function openPanel(type: PanelType, opts: { props?: Record<string, any>; 
     type,
     title: opts.title ?? meta.title,
     props,
-    span: meta.span,
+    dock,
     singleton: meta.singleton,
   }
   workspace.panels.push(panel)
-  workspace.focused = panel.id
+  workspace.active[dock] = panel.id
+  workspace.maximized = null
   return panel
 }
 
 export function closePanel(id: string) {
   const i = workspace.panels.findIndex((p) => p.id === id)
-  if (i >= 0) workspace.panels.splice(i, 1)
-  if (workspace.focused === id) workspace.focused = workspace.panels[workspace.panels.length - 1]?.id ?? ''
+  if (i < 0) return
+  const [removed] = workspace.panels.splice(i, 1)
+  if (workspace.maximized === id) workspace.maximized = null
+  const list = panelsOf(removed.dock)
+  workspace.active[removed.dock] = list.length ? list[list.length - 1].id : ''
 }
 
-export function toggleSpan(id: string) {
+export function setDock(id: string, zone: DockZone) {
   const p = workspace.panels.find((x) => x.id === id)
-  if (p) p.span = p.span === 2 ? 1 : 2
+  if (!p || p.dock === zone) return
+  p.dock = zone
+  workspace.active[zone] = id
+  const list = panelsOf(p.dock)
+  if (!list.length) workspace.active[p.dock] = ''
 }
 
-export function focusPanel(id: string) {
-  workspace.focused = id
+export function activate(id: string) {
+  const p = workspace.panels.find((x) => x.id === id)
+  if (p) {
+    workspace.active[p.dock] = id
+    workspace.maximized = null
+  }
 }
 
-export function movePanel(from: number, to: number) {
-  if (from === to || from < 0 || to < 0 || from >= workspace.panels.length || to >= workspace.panels.length) return
-  const [item] = workspace.panels.splice(from, 1)
-  workspace.panels.splice(to, 0, item)
+export function toggleMaximize(id: string) {
+  workspace.maximized = workspace.maximized === id ? null : id
 }
 
-/** 对话工具结果 → 自动在画布开窗（Agent 与界面协作的核心） */
+export function setSize(zone: DockZone, px: number) {
+  const min = zone === 'bottom' ? 140 : 260
+  const max = zone === 'bottom' ? 640 : 760
+  workspace.sizes[zone] = Math.max(min, Math.min(max, Math.round(px)))
+}
+
+/** 对话工具结果 → 自动停靠开窗（Agent 与界面协作） */
 export function openForTool(name: string, result: Record<string, any>) {
   if (!result || result.ok === false) return
-  if (name === 'get_score_profile' || name === 'run_risk_analysis') {
+  if (name === 'get_score_profile' || name === 'run_risk_analysis' || name === 'get_risk_facts') {
     const id = result.enterprise_id ?? result.enterprise?.id
-    if (id) openPanel('profile', { props: { enterpriseId: id }, title: result.enterprise_name ?? result.enterprise ?? '企业评分画像' })
-    return
-  }
-  if (name === 'get_risk_facts') {
-    if (result.enterprise_id) {
-      openPanel('profile', { props: { enterpriseId: result.enterprise_id }, title: result.enterprise_name ?? '企业评分画像' })
+    if (id) {
+      openPanel('profile', {
+        props: { enterpriseId: id },
+        title: result.enterprise_name ?? result.enterprise ?? '企业评分画像',
+        dock: 'right',
+      })
     }
     return
   }
   if (name === 'search_enterprise' || name === 'list_enterprises_by_level') {
-    openPanel('enterprises')
+    openPanel('enterprises', { dock: 'right' })
     return
   }
   if (name === 'get_platform_overview') {
-    openPanel('dashboard')
+    openPanel('dashboard', { dock: 'bottom' })
   }
 }
+
+// ---------- 布局持久化 ----------
+function persist() {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        panels: workspace.panels,
+        active: workspace.active,
+        sizes: workspace.sizes,
+      }),
+    )
+  } catch {
+    /* 忽略配额/隐私模式错误 */
+  }
+}
+
+export function restore() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return
+    const data = JSON.parse(raw)
+    if (Array.isArray(data.panels)) workspace.panels = data.panels
+    if (data.active) Object.assign(workspace.active, data.active)
+    if (data.sizes) Object.assign(workspace.sizes, data.sizes)
+  } catch {
+    /* 损坏则忽略 */
+  }
+}
+
+watch(workspace, persist, { deep: true })

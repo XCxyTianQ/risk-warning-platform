@@ -224,8 +224,8 @@ function reset() {
 .chat-panel {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 250px);
-  min-height: 420px;
+  height: 100%;
+  min-height: 0;
 }
 
 .chat-toolbar {
