@@ -94,7 +94,7 @@ onUnmounted(() => {
         缓存命中 {{ ((sessionHit || globalHit) * 100).toFixed(1) }}%
       </span>
       <span class="sb-item" title="输入 / 输出 token">↑{{ fmtTokens(inTok) }} ↓{{ fmtTokens(outTok) }}</span>
-      <span class="sb-item cost" title="估算成本（缓存价/未命中价/输出价）">¥{{ cost.toFixed(4) }}</span>
+      <span class="sb-item cost" title="估算成本（按 DeepSeek 单价：缓存命中 ¥0.5/M、未命中 ¥4/M、输出 ¥12/M；其他提供商可在 .env 调整 PRICE_* 参数）">¥{{ cost.toFixed(4) }}</span>
       <span class="sb-item" title="累计调用次数">⚙ {{ calls }}</span>
       <span class="sb-item" :class="{ warn: compacts > 0 }" title="上下文压缩次数">🗜️ {{ compacts }}</span>
       <button class="sb-toggle" :title="expanded ? '收起明细' : '展开明细'" @click="expanded = !expanded">

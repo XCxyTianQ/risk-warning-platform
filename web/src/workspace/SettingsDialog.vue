@@ -17,18 +17,40 @@ interface Group {
   items: Field[]
 }
 
+interface Provider {
+  id: string
+  label: string
+  base_url: string
+  default_model: string
+  key_hint: string
+  note?: string
+  key_optional?: boolean
+}
+
 const emit = defineEmits<{ close: []; saved: [] }>()
 
 const groups = ref<Group[]>([])
-const activeGroup = ref('')
+const providers = ref<Provider[]>([])
+const activeGroup = ref('模型服务')
 const form = ref<Record<string, any>>({})
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
 const toast = ref('')
-const preheat = ref<any>(null)
+
+// 向导状态
+const providerId = ref('')
+const modelList = ref<string[]>([])
+const fetchingModels = ref(false)
+const modelError = ref('')
+const showAdvanced = ref(false)
 
 const current = computed(() => groups.value.find((g) => g.group === activeGroup.value) ?? groups.value[0])
+const provider = computed(() => providers.value.find((p) => p.id === providerId.value) ?? null)
+const basicFields = computed(() => (current.value?.items ?? []).filter((f) => ['llm_base_url', 'llm_api_key', 'llm_model'].includes(f.key)))
+const advancedFields = computed(() =>
+  (current.value?.items ?? []).filter((f) => !['llm_base_url', 'llm_api_key', 'llm_model'].includes(f.key)),
+)
 
 async function load() {
   loading.value = true
@@ -36,14 +58,39 @@ async function load() {
   try {
     const data = await api.settings()
     groups.value = data.groups
-    activeGroup.value = groups.value[0]?.group ?? ''
+    providers.value = data.providers ?? []
     form.value = {}
     for (const g of groups.value) for (const f of g.items) form.value[f.key] = f.value
-    preheat.value = await api.preheatStatus().catch(() => null)
+    // 反推当前提供商
+    const matched = providers.value.find((p) => p.base_url && p.base_url === data.runtime.base_url)
+    providerId.value = matched?.id ?? 'custom'
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
     loading.value = false
+  }
+}
+
+function pickProvider(p: Provider) {
+  providerId.value = p.id
+  if (p.base_url) form.value.llm_base_url = p.base_url
+  if (p.default_model && !form.value.llm_model) form.value.llm_model = p.default_model
+  modelList.value = []
+  modelError.value = ''
+}
+
+async function fetchModels() {
+  fetchingModels.value = true
+  modelError.value = ''
+  try {
+    const r = await api.listModels(form.value.llm_base_url, form.value.llm_api_key)
+    modelList.value = r.models ?? []
+    if (r.error) modelError.value = r.error
+    else if (!modelList.value.length) modelError.value = '该端点未返回模型列表，可手动填写模型名称'
+  } catch (e) {
+    modelError.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    fetchingModels.value = false
   }
 }
 
@@ -53,9 +100,10 @@ async function save() {
   try {
     const r = await api.updateSettings(form.value)
     groups.value = r.settings.groups
+    providers.value = r.settings.providers ?? providers.value
     form.value = {}
     for (const g of groups.value) for (const f of g.items) form.value[f.key] = f.value
-    toast.value = '设置已保存并立即生效'
+    toast.value = '设置已保存并立即生效（已重新预热缓存）'
     setTimeout(() => (toast.value = ''), 4000)
     emit('saved')
   } catch (e) {
@@ -68,7 +116,6 @@ async function save() {
 async function warmNow() {
   try {
     const r = await api.triggerPreheat()
-    preheat.value = r
     toast.value = r.skipped ? `未预热：${r.skipped}` : '已触发缓存预热'
     setTimeout(() => (toast.value = ''), 4000)
   } catch (e) {
@@ -89,7 +136,6 @@ onMounted(load)
 <template>
   <div class="mask" @click.self="emit('close')">
     <div class="dialog">
-      <!-- 左：分组导航 -->
       <aside class="side">
         <div class="side-title">设置</div>
         <button
@@ -107,7 +153,6 @@ onMounted(load)
         </div>
       </aside>
 
-      <!-- 右：表单 -->
       <section class="main">
         <header class="main-head">
           <div class="mh-title">{{ current?.group }}</div>
@@ -115,12 +160,104 @@ onMounted(load)
         </header>
 
         <div v-if="loading" class="empty">加载中…</div>
+
+        <!-- 模型服务：向导式 -->
+        <div v-else-if="activeGroup === '模型服务'" class="form">
+          <div class="step">
+            <div class="step-no">1</div>
+            <div class="step-body">
+              <div class="step-title">选择提供商</div>
+              <div class="providers">
+                <button
+                  v-for="p in providers"
+                  :key="p.id"
+                  class="prov"
+                  :class="{ active: providerId === p.id }"
+                  @click="pickProvider(p)"
+                >
+                  <span class="prov-label">{{ p.label }}</span>
+                  <span v-if="p.note" class="prov-note">{{ p.note }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-no">2</div>
+            <div class="step-body">
+              <div class="step-title">填写 API 地址与 Key</div>
+              <div v-for="f in basicFields" :key="f.key" class="field">
+                <label class="fl">
+                  <span class="fl-label">{{ f.label }}</span>
+                  <span class="fl-key">{{ f.key }}</span>
+                </label>
+                <div class="fc">
+                  <template v-if="f.type === 'password'">
+                    <input
+                      v-model="form[f.key]"
+                      type="password"
+                      :placeholder="f.has_value ? `已配置（${provider?.key_hint ?? '留空则不修改'}）` : (provider?.key_hint ?? '请输入 API Key')"
+                    />
+                  </template>
+                  <template v-else>
+                    <input v-model="form[f.key]" type="text" :placeholder="f.desc" />
+                  </template>
+                  <div class="fd">{{ f.desc }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-no">3</div>
+            <div class="step-body">
+              <div class="step-title">
+                获取可用模型
+                <button class="btn ghost small" :disabled="fetchingModels || !form.llm_base_url" @click="fetchModels">
+                  {{ fetchingModels ? '获取中…' : '⟳ 获取可用模型' }}
+                </button>
+              </div>
+              <div v-if="modelError" class="error-box">{{ modelError }}</div>
+              <div v-if="modelList.length" class="models">
+                <button
+                  v-for="m in modelList"
+                  :key="m"
+                  class="model-chip"
+                  :class="{ active: form.llm_model === m }"
+                  @click="form.llm_model = m"
+                >
+                  {{ m }}
+                </button>
+              </div>
+              <div class="field" style="margin-top: 10px">
+                <label class="fl"><span class="fl-label">当前模型</span><span class="fl-key">llm_model</span></label>
+                <div class="fc">
+                  <input v-model="form.llm_model" type="text" placeholder="从上方列表选择，或手动输入" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="advanced">
+            <button class="adv-toggle" @click="showAdvanced = !showAdvanced">
+              {{ showAdvanced ? '▾' : '▸' }} 高级参数
+            </button>
+            <div v-if="showAdvanced" class="adv-body">
+              <div v-for="f in advancedFields" :key="f.key" class="field">
+                <label class="fl"><span class="fl-label">{{ f.label }}</span><span class="fl-key">{{ f.key }}</span></label>
+                <div class="fc">
+                  <input v-model.number="form[f.key]" type="number" />
+                  <div class="fd">{{ f.desc }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 其他分组：普通表单 -->
         <div v-else class="form">
-          <div v-for="f in current?.items ?? []" :key="f.key" class="field" :class="{ inline: f.type === 'bool' }">
-            <label class="fl">
-              <span class="fl-label">{{ f.label }}</span>
-              <span class="fl-key">{{ f.key }}</span>
-            </label>
+          <div v-for="f in current?.items ?? []" :key="f.key" class="field">
+            <label class="fl"><span class="fl-label">{{ f.label }}</span><span class="fl-key">{{ f.key }}</span></label>
             <div class="fc">
               <template v-if="f.type === 'bool'">
                 <label class="switch">
@@ -141,21 +278,10 @@ onMounted(load)
               <div class="fd">{{ f.desc }}</div>
             </div>
           </div>
-
-          <!-- 缓存预热状态 -->
-          <div v-if="activeGroup === '缓存与成本' && preheat" class="preheat-box">
-            <div class="pb-title">预热状态</div>
-            <div class="pb-row"><span>预热次数</span><b>{{ preheat.warm_count }}</b></div>
-            <div class="pb-row"><span>最近一次</span><b>{{ preheat.last_label || '—' }}（{{ preheat.last_warm_ago ?? '—' }}s 前）</b></div>
-            <div class="pb-row"><span>预热时命中</span><b>{{ preheat.last_hit_tokens }} token</b></div>
-            <div class="pb-row"><span>预热累计成本</span><b>¥{{ (preheat.warm_cost ?? 0).toFixed(6) }}</b></div>
-            <div class="pb-row"><span>新鲜期</span><b>{{ preheat.ttl_seconds }}s</b></div>
-            <div v-if="preheat.last_error" class="pb-row err"><span>最近错误</span><b>{{ preheat.last_error }}</b></div>
-          </div>
-
-          <p v-if="error" class="error-box">{{ error }}</p>
-          <p v-if="toast" class="toast">{{ toast }}</p>
         </div>
+
+        <p v-if="error" class="error-box">{{ error }}</p>
+        <p v-if="toast" class="toast">{{ toast }}</p>
 
         <footer class="main-foot">
           <span class="foot-hint">修改立即生效（写入本地数据库，重启后仍生效）</span>
@@ -193,7 +319,6 @@ onMounted(load)
   overflow: hidden;
 }
 
-/* 左侧导航 */
 .side {
   width: 190px;
   flex: none;
@@ -248,7 +373,6 @@ onMounted(load)
   padding-top: 8px;
 }
 
-/* 右侧主体 */
 .main {
   flex: 1;
   min-width: 0;
@@ -291,14 +415,90 @@ onMounted(load)
   padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
+/* 向导步骤 */
+.step {
+  display: flex;
+  gap: 12px;
+}
+
+.step-no {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* 提供商卡片 */
+.providers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.prov {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.prov:hover {
+  border-color: var(--primary);
+}
+
+.prov.active {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
+  font-weight: 600;
+}
+
+.prov-note {
+  font-size: 10.5px;
+  color: var(--text-sub);
+  font-weight: 400;
+}
+
+/* 字段 */
 .field {
   display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 12px;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
   align-items: start;
+  margin-bottom: 10px;
 }
 
 .fl {
@@ -341,6 +541,60 @@ onMounted(load)
   font-size: 11px;
   color: var(--text-sub);
   margin-top: 4px;
+}
+
+/* 模型列表 */
+.models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.model-chip {
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: Consolas, monospace;
+  cursor: pointer;
+}
+
+.model-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.model-chip.active {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* 高级参数 */
+.advanced {
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+}
+
+.adv-toggle {
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.adv-toggle:hover {
+  color: var(--primary);
+}
+
+.adv-body {
+  margin-top: 10px;
 }
 
 /* 开关 */
@@ -390,37 +644,6 @@ onMounted(load)
   color: var(--text-sub);
 }
 
-/* 预热状态卡 */
-.preheat-box {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--hover);
-  padding: 12px 14px;
-}
-
-.pb-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.pb-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11.5px;
-  padding: 2px 0;
-  color: var(--text-sub);
-}
-
-.pb-row b {
-  color: var(--text);
-}
-
-.pb-row.err b {
-  color: var(--danger);
-}
-
-/* 底部 */
 .main-foot {
   display: flex;
   align-items: center;

@@ -14,9 +14,25 @@ class UpdateIn(BaseModel):
     values: dict
 
 
+class ModelsIn(BaseModel):
+    base_url: str
+    api_key: str | None = None
+
+
 @router.get("")
 def get_settings(db: DbSession = Depends(get_db)):
     return svc.get_view(db)
+
+
+@router.get("/providers")
+def providers():
+    return {"providers": svc.PROVIDERS}
+
+
+@router.post("/models")
+def list_models(body: ModelsIn):
+    """按提供商端点拉取可用模型列表（快速部署向导第三步）。"""
+    return svc.list_models(body.base_url, body.api_key)
 
 
 @router.put("")

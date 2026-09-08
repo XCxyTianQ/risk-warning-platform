@@ -25,10 +25,10 @@ class AppSetting(Base):
 
 # 可编辑字段元数据：分组 → [字段]
 FIELDS: dict[str, list[dict]] = {
-    "模型与接入": [
-        {"key": "llm_base_url", "label": "API 地址", "type": "text", "desc": "OpenAI 兼容端点，如 https://api.deepseek.com/v1"},
-        {"key": "llm_model", "label": "模型名称", "type": "text", "desc": "如 deepseek-v4-flash-vision-exp / deepseek-v4-pro"},
-        {"key": "llm_api_key", "label": "API Key", "type": "password", "desc": "仅保存在本地 .env 与数据库，不会回传明文"},
+    "模型服务": [
+        {"key": "llm_base_url", "label": "API 地址", "type": "text", "desc": "OpenAI 兼容端点；选择提供商后自动填入"},
+        {"key": "llm_api_key", "label": "API Key", "type": "password", "desc": "仅保存在本地，不会回传明文"},
+        {"key": "llm_model", "label": "模型名称", "type": "text", "desc": "点击「获取可用模型」后从列表选择"},
         {"key": "llm_max_tokens", "label": "单次输出上限", "type": "int", "desc": "普通对话的 max_tokens"},
         {"key": "llm_analysis_max_tokens", "label": "研判输出上限", "type": "int", "desc": "风险研判（需输出完整 JSON）的 max_tokens"},
     ],
@@ -39,27 +39,39 @@ FIELDS: dict[str, list[dict]] = {
         {"key": "compaction_retain_ratio", "label": "压缩保留比例", "type": "float", "desc": "压缩后保留最近的比例（DSH 默认 0.16）"},
         {"key": "compaction_summary_max_tokens", "label": "摘要输出上限", "type": "int", "desc": "生成摘要的 max_tokens"},
     ],
-    "缓存与成本": [
-        {"key": "preheat_enabled", "label": "启用缓存预热", "type": "bool", "desc": "用相同 system+tools 预热静态前缀"},
-        {"key": "preheat_on_startup", "label": "启动时预热", "type": "bool", "desc": "服务启动后台线程预热"},
-        {"key": "preheat_ttl_seconds", "label": "预热新鲜期(秒)", "type": "int", "desc": "期内不重复预热"},
-        {"key": "price_cache_hit", "label": "缓存命中价", "type": "float", "desc": "元 / 百万 token"},
-        {"key": "price_cache_miss", "label": "缓存未命中价", "type": "float", "desc": "元 / 百万 token"},
-        {"key": "price_output", "label": "输出价", "type": "float", "desc": "元 / 百万 token"},
-    ],
     "动作审批": [
         {"key": "agent_require_approval", "label": "动作工具需授权", "type": "bool", "desc": "写操作（刷新数据/研判/处置预警）执行前需用户确认"},
         {"key": "agent_approval_timeout", "label": "授权超时(秒)", "type": "int", "desc": "超时视为拒绝"},
     ],
 }
 
-_MASK = "••••••••"
+# 提供商预设（快速部署：选提供商 → 填 Key → 拉取模型）
+PROVIDERS: list[dict] = [
+    {"id": "deepseek", "label": "DeepSeek", "base_url": "https://api.deepseek.com/v1",
+     "default_model": "deepseek-v4-flash-vision-exp", "key_hint": "sk-...", "note": "推荐：多模态 + 高缓存命中"},
+    {"id": "openai", "label": "OpenAI", "base_url": "https://api.openai.com/v1",
+     "default_model": "gpt-4o-mini", "key_hint": "sk-..."},
+    {"id": "dashscope", "label": "阿里云百炼（通义千问）", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+     "default_model": "qwen-plus", "key_hint": "sk-..."},
+    {"id": "zhipu", "label": "智谱 GLM", "base_url": "https://open.bigmodel.cn/api/paas/v4",
+     "default_model": "glm-4-plus", "key_hint": "..."},
+    {"id": "moonshot", "label": "月之暗面 Kimi", "base_url": "https://api.moonshot.cn/v1",
+     "default_model": "moonshot-v1-8k", "key_hint": "sk-..."},
+    {"id": "siliconflow", "label": "硅基流动 SiliconFlow", "base_url": "https://api.siliconflow.cn/v1",
+     "default_model": "deepseek-ai/DeepSeek-V3", "key_hint": "sk-..."},
+    {"id": "ollama", "label": "本地 Ollama", "base_url": "http://127.0.0.1:11434/v1",
+     "default_model": "qwen2.5:7b", "key_hint": "可留空", "key_optional": True},
+    {"id": "custom", "label": "其他（自定义 OpenAI 兼容端点）", "base_url": "",
+     "default_model": "", "key_hint": "按需填写"},
+]
+
+MASK_CHAR = "•"
 
 
 def _mask(value: str) -> str:
     if not value:
         return ""
-    return value[:6] + _MASK[2:] + value[-4:] if len(value) > 12 else _MASK
+    return value[:6] + MASK_CHAR * 6 + value[-4:] if len(value) > 12 else MASK_CHAR * 8
 
 
 def get_view(db: DbSession) -> dict:
@@ -75,14 +87,49 @@ def get_view(db: DbSession) -> dict:
         groups.append({"group": group, "items": items})
     return {
         "groups": groups,
+        "providers": PROVIDERS,
         "runtime": {
             "model": settings.llm_model,
+            "base_url": settings.llm_base_url,
             "context_window": settings.llm_context_window,
-            "preheat_enabled": settings.preheat_enabled,
             "compaction_enabled": settings.compaction_enabled,
             "require_approval": settings.agent_require_approval,
+            "has_api_key": bool(settings.llm_api_key),
         },
     }
+
+
+def list_models(base_url: str, api_key: str | None = None) -> dict:
+    """拉取提供商可用模型列表（OpenAI 兼容 /models）。"""
+    import httpx
+
+    url = (base_url or "").rstrip("/")
+    if not url:
+        return {"error": "请先选择提供商或填写 API 地址", "models": []}
+    if not url.endswith("/v1") and "/v1" not in url:
+        url = url + "/v1"
+    headers = {}
+    key = (api_key or "").strip()
+    # 前端传回的是掩码或空值时，回退到已保存的 Key
+    if not key or MASK_CHAR in key:
+        key = (settings.llm_api_key or "").strip()
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
+    try:
+        with httpx.Client(timeout=30) as c:
+            resp = c.get(url + "/models", headers=headers)
+        if resp.status_code != 200:
+            return {"error": f"HTTP {resp.status_code}: {resp.text[:200]}", "models": []}
+        data = resp.json()
+        items = data.get("data") or data.get("models") or []
+        models = []
+        for m in items:
+            mid = m.get("id") or m.get("name") or m.get("model") if isinstance(m, dict) else str(m)
+            if mid:
+                models.append(mid)
+        return {"models": sorted(set(models)), "count": len(models)}
+    except Exception as exc:  # noqa: BLE001
+        return {"error": f"{type(exc).__name__}: {exc}", "models": []}
 
 
 def _coerce(field: dict, value):
@@ -108,7 +155,7 @@ def update(db: DbSession, payload: dict) -> dict:
                 continue
             value = payload[key]
             if f["type"] == "password":
-                if not value or _MASK in str(value):
+                if not value or MASK_CHAR in str(value):
                     continue  # 未修改
                 value = str(value).strip()
             try:

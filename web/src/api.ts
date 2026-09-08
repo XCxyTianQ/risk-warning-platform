@@ -182,8 +182,23 @@ export const api = {
   settings: () =>
     request<{
       groups: { group: string; items: { key: string; label: string; type: string; desc: string; value: any; has_value?: boolean }[] }[]
+      providers: {
+        id: string
+        label: string
+        base_url: string
+        default_model: string
+        key_hint: string
+        note?: string
+        key_optional?: boolean
+      }[]
       runtime: Record<string, any>
     }>('/api/settings'),
+  listModels: (base_url: string, api_key?: string) =>
+    request<{ models: string[]; count?: number; error?: string }>('/api/settings/models', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base_url, api_key }),
+    }),
   updateSettings: (values: Record<string, any>) =>
     request<{ ok: boolean; applied: Record<string, any>; settings: any }>('/api/settings', {
       method: 'PUT',
