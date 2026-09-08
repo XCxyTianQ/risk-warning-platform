@@ -12,6 +12,7 @@ TODO(步骤2)：实现 chat() 的请求/响应逻辑；支持流式留到 P1。
 """
 
 from dataclasses import dataclass
+import json
 
 import httpx
 
@@ -111,3 +112,80 @@ class LlmClient:
         if not msg:
             raise LlmException(0, "LLM message missing")
         return msg
+
+    def chat_stream(
+        self,
+        messages: list[dict],
+        tools: list[dict] | None = None,
+        max_tokens: int | None = None,
+    ):
+        """流式 chat/completions（SSE）。
+
+        yield 事件：
+          {"type": "text", "text": "..."}           增量正文
+          {"type": "tool_calls", "tool_calls": [...]} 本轮工具调用（聚合后一次性给出）
+        """
+        url = self._config.base_url.rstrip("/") + "/chat/completions"
+        body: dict = {
+            "model": self._config.model,
+            "messages": messages,
+            "max_tokens": max_tokens or self._config.max_tokens,
+            "stream": True,
+        }
+        if tools:
+            body["tools"] = tools
+            body["tool_choice"] = "auto"
+
+        tool_calls: dict[int, dict] = {}
+        try:
+            with self._http.stream(
+                "POST",
+                url,
+                json=body,
+                headers={"Authorization": f"Bearer {self._config.api_key}"},
+            ) as resp:
+                if resp.status_code // 100 != 2:
+                    detail = resp.read().decode("utf-8", "ignore")[:500]
+                    raise LlmException(resp.status_code, f"LLM HTTP {resp.status_code}: {detail}")
+                for raw in resp.iter_lines():
+                    if not raw:
+                        continue
+                    line = raw if isinstance(raw, str) else raw.decode("utf-8", "ignore")
+                    if line.startswith("data:"):
+                        data = line[5:].strip()
+                    else:
+                        continue
+                    if data == "[DONE]":
+                        break
+                    try:
+                        chunk = json.loads(data)
+                    except ValueError:
+                        continue
+                    usage = chunk.get("usage") or {}
+                    if isinstance(usage.get("prompt_tokens"), int):
+                        self.last_prompt_tokens = usage["prompt_tokens"]
+                    choices = chunk.get("choices") or []
+                    if not choices:
+                        continue
+                    delta = choices[0].get("delta") or {}
+                    content = delta.get("content")
+                    if content:
+                        yield {"type": "text", "text": content}
+                    for tc in delta.get("tool_calls") or []:
+                        idx = tc.get("index", 0)
+                        slot = tool_calls.setdefault(
+                            idx,
+                            {"id": "", "type": "function", "function": {"name": "", "arguments": ""}},
+                        )
+                        if tc.get("id"):
+                            slot["id"] = tc["id"]
+                        fn = tc.get("function") or {}
+                        if fn.get("name"):
+                            slot["function"]["name"] = fn["name"]
+                        if fn.get("arguments"):
+                            slot["function"]["arguments"] += fn["arguments"]
+        except httpx.HTTPError as exc:
+            raise LlmException(-1, f"LLM stream failed: {exc}") from exc
+
+        if tool_calls:
+            yield {"type": "tool_calls", "tool_calls": [tool_calls[i] for i in sorted(tool_calls)]}

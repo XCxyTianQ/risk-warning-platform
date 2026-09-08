@@ -7,6 +7,7 @@ const apiOk = ref<boolean | null>(null)
 const theme = ref<'light' | 'dark'>('light')
 
 const NAV = [
+  { to: '/chat', label: '智能问答', icon: '💬' },
   { to: '/', label: '风险总览', icon: '📊' },
   { to: '/analyze', label: '智能研判', icon: '🧠' },
   { to: '/enterprises', label: '企业档案', icon: '🏢' },
