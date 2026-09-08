@@ -11,7 +11,7 @@ import {
   openPanel,
   PANEL_META,
   panelsOf,
-  restore,
+  resetLayout,
   setDragOver,
   setSize,
   workspace,
@@ -99,7 +99,8 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-  restore()
+  // 每次启动只显示对话区：清空上次的面板布局
+  resetLayout()
   window.addEventListener('keydown', onKeydown)
 })
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))

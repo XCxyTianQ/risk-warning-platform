@@ -178,6 +178,23 @@ export const api = {
     }),
   alertReportUrl: (id: number) => `/api/alerts/${id}/report`,
 
+  // --- 设置 ---
+  settings: () =>
+    request<{
+      groups: { group: string; items: { key: string; label: string; type: string; desc: string; value: any; has_value?: boolean }[] }[]
+      runtime: Record<string, any>
+    }>('/api/settings'),
+  updateSettings: (values: Record<string, any>) =>
+    request<{ ok: boolean; applied: Record<string, any>; settings: any }>('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values }),
+    }),
+  triggerPreheat: () =>
+    request<{ ok?: boolean; skipped?: string; label?: string; warm_count?: number }>('/api/settings/preheat', { method: 'POST' }),
+  preheatStatus: () => request<Record<string, any>>('/api/settings/preheat'),
+  resetSettings: () => request<{ reset: boolean; note: string }>('/api/settings/reset', { method: 'POST' }),
+
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>
     request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(

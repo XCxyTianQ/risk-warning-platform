@@ -9,13 +9,25 @@ from app.api.alerts import router as alert_router
 from app.api.chat import router as chat_router
 from app.api.dashboard import router as dashboard_router
 from app.api.enterprises import router as enterprise_router
+from app.api.settings import router as settings_router
 from app.core.config import settings
-from app.db.database import init_db
+from app.db.database import SessionLocal, init_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    # 应用 DB 中的设置覆盖（先于预热，确保用最新模型/端点）
+    try:
+        from app.services.settings_store import load_and_apply
+
+        db = SessionLocal()
+        try:
+            load_and_apply(db)
+        finally:
+            db.close()
+    except Exception:  # noqa: BLE001
+        pass
     # 启动时预热提示词缓存（后台线程，不阻塞启动）
     try:
         from app.agent.prompt import SYSTEM_PROMPT
@@ -45,6 +57,7 @@ app.include_router(enterprise_router)
 app.include_router(dashboard_router)
 app.include_router(chat_router)
 app.include_router(alert_router)
+app.include_router(settings_router)
 
 
 @app.get("/api/health")

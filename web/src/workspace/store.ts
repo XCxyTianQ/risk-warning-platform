@@ -1,6 +1,6 @@
 /** IDE 式停靠工作区状态：对话为主区，其他面板停靠左/右/底部 */
 
-import { reactive, watch } from 'vue'
+import { reactive } from 'vue'
 
 export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze'
 export type DockZone = 'left' | 'right' | 'bottom'
@@ -28,8 +28,6 @@ interface WorkspaceState {
   sizes: Record<DockZone, number>
   maximized: string | null
 }
-
-const STORAGE_KEY = 'rw-workspace-v2'
 
 let seq = 0
 const nextId = () => `p${Date.now().toString(36)}${++seq}`
@@ -184,33 +182,10 @@ export function dropOn(zone: DockZone) {
   endPanelDrag()
 }
 
-// ---------- 布局持久化 ----------
-function persist() {
-  try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        panels: workspace.panels,
-        active: workspace.active,
-        sizes: workspace.sizes,
-      }),
-    )
-  } catch {
-    /* 忽略配额/隐私模式错误 */
-  }
+// ---------- 启动状态 ----------
+/** 每次启动只显示对话区（主区），不恢复上次的面板布局 */
+export function resetLayout() {
+  workspace.panels = []
+  workspace.active = { left: '', right: '', bottom: '' }
+  workspace.maximized = null
 }
-
-export function restore() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return
-    const data = JSON.parse(raw)
-    if (Array.isArray(data.panels)) workspace.panels = data.panels
-    if (data.active) Object.assign(workspace.active, data.active)
-    if (data.sizes) Object.assign(workspace.sizes, data.sizes)
-  } catch {
-    /* 损坏则忽略 */
-  }
-}
-
-watch(workspace, persist, { deep: true })

@@ -3,10 +3,12 @@ import { onMounted, ref } from 'vue'
 import { RouterView } from 'vue-router'
 
 import StatusBar from './workspace/StatusBar.vue'
+import SettingsDialog from './workspace/SettingsDialog.vue'
 import { usageState } from './workspace/usage'
 
 const apiOk = ref<boolean | null>(null)
 const theme = ref<'light' | 'dark'>('light')
+const settingsOpen = ref(false)
 
 function applyTheme() {
   document.documentElement.dataset.theme = theme.value
@@ -49,7 +51,8 @@ onMounted(async () => {
           <i class="dot"></i>
           API {{ apiOk === null ? '检测中' : apiOk ? '正常' : '未连接' }}
         </span>
-        <span class="pill"><i class="dot ok-dot"></i>DeepSeek v4</span>
+        <span class="pill"><i class="dot ok-dot"></i>{{ usageState.model || 'DeepSeek' }}</span>
+        <button class="icon-btn" title="设置" @click="settingsOpen = true">⚙</button>
         <button class="theme-btn" :title="theme === 'light' ? '切换深色' : '切换浅色'" @click="toggleTheme">
           {{ theme === 'light' ? '🌙' : '☀️' }}
         </button>
@@ -61,6 +64,7 @@ onMounted(async () => {
     </main>
 
     <StatusBar />
+    <SettingsDialog v-if="settingsOpen" @close="settingsOpen = false" @saved="settingsOpen = false" />
   </div>
 </template>
 
@@ -149,7 +153,8 @@ onMounted(async () => {
   background: var(--danger);
 }
 
-.theme-btn {
+.theme-btn,
+.icon-btn {
   border: 1px solid var(--border);
   background: var(--bg-elev);
   border-radius: 8px;
@@ -160,8 +165,10 @@ onMounted(async () => {
   line-height: 1;
 }
 
-.theme-btn:hover {
+.theme-btn:hover,
+.icon-btn:hover {
   border-color: var(--primary);
+  color: var(--primary);
 }
 
 .content {
