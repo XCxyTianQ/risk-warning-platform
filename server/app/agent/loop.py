@@ -85,6 +85,13 @@ def _maybe_compact(db: DbSession, session: Session, client: LlmClient, messages:
     result = context.compact(db, session, client, messages, _registry.definitions())
     if result:
         store.add_usage(db, session, result.get("usage") or {})
+        # 压缩后前缀变化（system + 摘要）→ 立即预热新前缀，避免下一次请求全价处理
+        try:
+            from app.llm.preheat import warmer
+
+            warmer.warm(SYSTEM_PROMPT, _registry.definitions(), force=True, label="post-compaction")
+        except Exception:  # noqa: BLE001
+            pass
         yield AgentEvent("compaction", {
             "phase": "done",
             "folded": result["folded"],

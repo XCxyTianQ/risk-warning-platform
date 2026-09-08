@@ -16,6 +16,30 @@ const outTok = computed(() => usageState.session?.completion_tokens ?? usageStat
 const compacts = computed(() => usageState.session?.compact_count ?? usageState.global?.compact_count ?? 0)
 const calls = computed(() => usageState.session?.llm_calls ?? usageState.global?.llm_calls ?? 0)
 
+const preheatLabel = computed(() => {
+  const p = usageState.preheat
+  if (!p) return '—'
+  if (p.last_error) return '失败'
+  if (p.last_warm_ago === null) return '待预热'
+  if (p.last_warm_ago < p.ttl_seconds) return `就绪 ${Math.round(p.last_warm_ago)}s`
+  return `过期 ${Math.round(p.last_warm_ago / 60)}m`
+})
+
+const preheatTitle = computed(() => {
+  const p = usageState.preheat
+  if (!p) return ''
+  return [
+    `预热次数：${p.warm_count}`,
+    `最近一次：${p.last_label || '—'}（${p.last_warm_ago ?? '—'} 秒前）`,
+    `预热时命中 ${p.last_hit_tokens} token`,
+    `预热累计成本 ¥${p.warm_cost.toFixed(6)}`,
+    `新鲜期：${p.ttl_seconds}s（期内不重复预热）`,
+    p.last_error ? `最近错误：${p.last_error}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+})
+
 function fmtTokens(n: number) {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n)
 }
@@ -58,6 +82,13 @@ onUnmounted(() => {
     </div>
 
     <div class="sb-right">
+      <span
+        v-if="usageState.preheat?.enabled"
+        class="sb-item"
+        :title="preheatTitle"
+      >
+        🔥 预热 {{ preheatLabel }}
+      </span>
       <span class="sb-item clickable" title="缓存命中率（命中 token / 全部输入 token）" @click="expanded = !expanded">
         <i class="dot" :style="{ background: hitColor(sessionHit || globalHit) }"></i>
         缓存命中 {{ ((sessionHit || globalHit) * 100).toFixed(1) }}%
@@ -98,7 +129,8 @@ onUnmounted(() => {
         <div class="sd-note">
           缓存命中：相同前缀按缓存价计费（¥0.5/M）；未命中 ¥4/M；输出 ¥12/M。<br />
           上下文达窗口 {{ (usageState.contextWindow / 1000).toFixed(0) }}k 的 80% 时自动压缩历史为摘要，
-          摘要调用复用已预热前缀以保住缓存命中。
+          摘要调用复用已预热前缀以保住缓存命中。<br />
+          预热：启动/新会话时用相同 system+tools 发最小请求，把静态前缀提前写入提供方缓存。
         </div>
       </div>
     </div>

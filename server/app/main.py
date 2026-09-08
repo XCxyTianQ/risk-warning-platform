@@ -16,6 +16,17 @@ from app.db.database import init_db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    # 启动时预热提示词缓存（后台线程，不阻塞启动）
+    try:
+        from app.agent.prompt import SYSTEM_PROMPT
+        from app.agent.tools import build_registry
+        from app.core.config import settings as _s
+        from app.llm.preheat import warmer
+
+        if _s.preheat_on_startup:
+            warmer.warm_async(SYSTEM_PROMPT, build_registry().definitions(), label="startup")
+    except Exception:  # noqa: BLE001 —— 预热失败不影响服务
+        pass
     yield
 
 

@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     price_cache_miss: float = 4.0
     price_output: float = 12.0
 
+    # --- 提示词缓存预热 ---
+    preheat_enabled: bool = True
+    preheat_on_startup: bool = True
+    preheat_ttl_seconds: int = 600      # 缓存新鲜期：期内不重复预热
+
     # --- 数据库（原型 SQLite；正式换 PostgreSQL） ---
     database_url: str = "sqlite:///./data/platform.db"
 

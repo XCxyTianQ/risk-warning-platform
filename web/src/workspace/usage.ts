@@ -17,6 +17,17 @@ export interface GlobalUsage extends UsageStats {
   sessions: number
 }
 
+export interface PreheatStatus {
+  enabled: boolean
+  warm_count: number
+  last_warm_ago: number | null
+  last_label: string
+  last_hit_tokens: number
+  warm_cost: number
+  ttl_seconds: number
+  last_error: string
+}
+
 export const usageState = reactive({
   apiOk: null as boolean | null,
   model: '',
@@ -26,6 +37,7 @@ export const usageState = reactive({
   global: null as GlobalUsage | null,
   lastPromptTokens: 0,   // 最近一次调用的输入 token（用于上下文压力条）
   compacting: false,
+  preheat: null as PreheatStatus | null,
 })
 
 export function setSessionUsage(u: UsageStats | null, sessionId = '') {
@@ -37,6 +49,7 @@ export function setGlobalUsage(payload: any) {
   usageState.model = payload.model ?? usageState.model
   usageState.contextWindow = payload.context_window ?? usageState.contextWindow
   usageState.global = payload.global ?? null
+  usageState.preheat = payload.preheat ?? usageState.preheat
   if (payload.session) {
     usageState.session = payload.session
     usageState.sessionId = payload.session.session_id

@@ -120,7 +120,14 @@ def usage_summary(session_id: str | None = None, db: DbSession = Depends(get_db)
         "retain_ratio": settings.compaction_retain_ratio,
         "global": global_stats,
         "session": session_stats,
+        "preheat": _preheat_status(),
     }
+
+
+def _preheat_status() -> dict:
+    from app.llm.preheat import warmer
+
+    return warmer.status()
 
 
 @router.post("/stream")
@@ -134,6 +141,13 @@ def chat_stream(body: ChatIn):
         db = SessionLocal()
         try:
             session = store.get_or_create(db, body.session_id)
+            # 新会话首个请求：预热静态前缀（system+tools），让本次即命中缓存
+            if not session.messages:
+                from app.agent.prompt import SYSTEM_PROMPT
+                from app.agent.tools import build_registry
+                from app.llm.preheat import warmer
+
+                warmer.warm(SYSTEM_PROMPT, build_registry().definitions(), label="new-session")
             yield f"event: session\ndata: {json.dumps({'session_id': session.id, 'title': session.title}, ensure_ascii=False)}\n\n"
             for ev in run_agent(db, session, message):
                 yield ev.to_sse()
