@@ -68,7 +68,7 @@ server/app/
 | A2 | `agent/` 内核 + 6 个工具 + `/api/chat/stream` | curl 可见 token/tool/done 事件 |
 | A3 | 前端对话面板（流式 + 工具卡片 + 建议问题） | 页面提问"康美药业风险如何"→ 自动调工具并回答 | ✅ |
 | A4 | 会话持久化（DB）+ 布局持久化（localStorage） | 刷新后对话历史与面板编排均恢复 | ✅ |
-| A5 | 动作工具二次确认（run_risk_analysis 前询问用户） | 动作类工具执行前弹出确认 | 待做 |
+| A5 | 动作工具二次确认（run_risk_analysis / refresh_enterprise_data 前询问用户） | 动作类工具执行前弹出确认 | ✅ |
 
 ## 6. 不做的
 

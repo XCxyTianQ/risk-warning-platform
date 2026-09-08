@@ -19,8 +19,13 @@ class Settings(BaseSettings):
     llm_api_key: str = "mock-key"
     llm_model: str = "mock"
     llm_max_tokens: int = 1024
+    llm_analysis_max_tokens: int = 8192  # 风险研判输出（JSON + 推理 token 需要更大空间）
     llm_max_turns: int = 8      # Agent 循环上限（reasonmc 默认值）
     llm_short_term_window: int = 3  # 上下文中保留的最近轮数
+
+    # --- Agent 审批（动作工具） ---
+    agent_require_approval: bool = True   # 动作工具是否需用户确认
+    agent_approval_timeout: int = 300     # 等待确认超时（秒），超时视为拒绝
 
     # --- 数据库（原型 SQLite；正式换 PostgreSQL） ---
     database_url: str = "sqlite:///./data/platform.db"

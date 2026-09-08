@@ -19,6 +19,22 @@ class ChatIn(BaseModel):
     session_id: str | None = None
 
 
+class ApprovalIn(BaseModel):
+    approval_id: str
+    approved: bool
+
+
+@router.post("/approve")
+def approve(body: ApprovalIn):
+    """动作工具审批：前端确认后恢复被暂停的 Agent 循环。"""
+    from app.agent import approvals
+
+    ok = approvals.resolve(body.approval_id, body.approved)
+    if not ok:
+        raise HTTPException(404, "审批请求不存在或已处理（可能已超时）")
+    return {"approval_id": body.approval_id, "approved": body.approved}
+
+
 @router.get("/sessions")
 def list_sessions(limit: int = 20, db: DbSession = Depends(get_db)):
     return {"sessions": store.list(db, limit=limit)}

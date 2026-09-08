@@ -16,6 +16,7 @@ const snapshot = ref<RiskSnapshot | null>(null)
 const avgScore = ref<number | null>(null)
 const loading = ref(true)
 const analyzing = ref(false)
+const refreshing = ref(false)
 const error = ref('')
 const toast = ref('')
 
@@ -140,6 +141,27 @@ async function load() {
   }
 }
 
+async function refreshData() {
+  if (refreshing.value) return
+  refreshing.value = true
+  toast.value = ''
+  try {
+    const r = await api.refreshEnterprise(id.value)
+    const parts = Object.entries(r.dimensions).map(([k, v]) =>
+      v.ok
+        ? `${DIM_LABEL[k] ?? k} 新增${v.inserted ?? 0}/更新${v.updated ?? 0}`
+        : `${DIM_LABEL[k] ?? k} ${v.gap || v.error || '无数据'}`,
+    )
+    toast.value = '数据源刷新完成：' + parts.join('；')
+    await load()
+  } catch (e) {
+    toast.value = '刷新失败：' + (e instanceof Error ? e.message : String(e))
+  } finally {
+    refreshing.value = false
+    setTimeout(() => (toast.value = ''), 6000)
+  }
+}
+
 async function reAnalyze() {
   if (!profile.value || analyzing.value) return
   analyzing.value = true
@@ -168,11 +190,17 @@ onMounted(load)
         <p class="page-sub" v-if="profile">
           {{ profile.industry }} · 法定代表人 {{ profile.legal_rep }} · 注册资本 {{ profile.reg_capital_wan }} 万 ·
           成立 {{ profile.reg_date }}
+          <template v-if="profile.stock_code"> · 股票代码 {{ profile.stock_code }}</template>
         </p>
       </div>
-      <button class="btn primary" :disabled="analyzing" @click="reAnalyze">
-        {{ analyzing ? '研判中…' : '重新研判' }}
-      </button>
+      <div class="head-actions">
+        <button v-if="profile?.stock_code" class="btn ghost" :disabled="refreshing" @click="refreshData">
+          {{ refreshing ? '刷新中…' : '🔄 数据源刷新' }}
+        </button>
+        <button class="btn primary" :disabled="analyzing" @click="reAnalyze">
+          {{ analyzing ? '研判中…' : '重新研判' }}
+        </button>
+      </div>
     </div>
 
     <p v-if="error" class="error-box">{{ error }}</p>
@@ -309,6 +337,12 @@ onMounted(load)
 </template>
 
 <style scoped>
+.head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .score-head {
   display: flex;
   align-items: center;

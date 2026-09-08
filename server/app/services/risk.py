@@ -37,13 +37,13 @@ RISK_SYSTEM = (
 )
 
 
-def _llm_client() -> LlmClient:
+def _llm_client(max_tokens: int | None = None) -> LlmClient:
     return LlmClient(
         LlmConfig(
             base_url=settings.llm_base_url,
             api_key=settings.llm_api_key,
             model=settings.llm_model,
-            max_tokens=settings.llm_max_tokens,
+            max_tokens=max_tokens or settings.llm_max_tokens,
         )
     )
 
@@ -67,7 +67,7 @@ def _extract_json(text: str) -> dict | None:
 def _run_agent(reg, client: LlmClient, ent: Enterprise) -> tuple[str, dict | None]:
     messages = [
         {"role": "system", "content": RISK_SYSTEM},
-        {"role": "user", "content": f"请对【{ent.name}】（{ent.industry or '工商注册中'}）进行经营风险研判，先调用工具获取数据，再输出结论 JSON。"},
+        {"role": "user", "content": f"请对【{ent.name}】（{ent.industry or '工商注册中'}）进行经营风险研判，先调用工具获取数据，再输出结论 JSON。JSON 必须完整，evidence 最多 8 条。"},
     ]
     final_text = ""
     for _ in range(2):  # 阶段2：至多一轮工具 + 一轮结论
@@ -90,6 +90,21 @@ def _run_agent(reg, client: LlmClient, ent: Enterprise) -> tuple[str, dict | Non
         final_text = msg.get("content") or ""
         break
     verdict = _extract_json(final_text)
+
+    # 输出被截断/夹杂解释时，补一次"只输出完整 JSON"的重试
+    if verdict is None:
+        messages.append({"role": "assistant", "content": final_text})
+        messages.append({
+            "role": "user",
+            "content": "上面的输出不是完整 JSON。请只输出一个完整 JSON 对象（不要任何解释），"
+                       "字段 level/summary/dimensions/evidence，evidence 最多 6 条、每条不超过 60 字。",
+        })
+        try:
+            retry = client.chat(messages, tools=None)
+            final_text = retry.get("content") or final_text
+            verdict = _extract_json(final_text)
+        except Exception:  # noqa: BLE001 —— 重试失败则退回原始文本
+            pass
     return final_text, verdict
 
 
@@ -99,7 +114,7 @@ def analyze_enterprise(db: Session, enterprise_id: int) -> dict:
         raise KeyError(enterprise_id)
 
     reg = build_data_tools(db, enterprise_id)
-    client = _llm_client()
+    client = _llm_client(max_tokens=settings.llm_analysis_max_tokens)
     raw_text, llm_verdict = _run_agent(reg, client, ent)
 
     rules = rules_verdict(db, enterprise_id)

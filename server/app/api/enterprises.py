@@ -27,7 +27,9 @@ def _get_ent(db: Session, enterprise_id: int) -> Enterprise:
 def list_enterprises(db: Session = Depends(get_db)):
     rows = db.query(Enterprise).order_by(Enterprise.id).all()
     return {"total": len(rows), "items": [
-        {"id": e.id, "name": e.name, "industry": e.industry, "reg_date": e.reg_date} for e in rows
+        {"id": e.id, "name": e.name, "industry": e.industry, "reg_date": e.reg_date,
+         "stock_code": e.stock_code}
+        for e in rows
     ]}
 
 
@@ -36,6 +38,7 @@ def get_enterprise(enterprise_id: int, db: Session = Depends(get_db)):
     ent = _get_ent(db, enterprise_id)
     return {
         "id": ent.id, "name": ent.name, "unified_code": ent.unified_code,
+        "stock_code": ent.stock_code,
         "legal_rep": ent.legal_rep, "reg_capital_wan": ent.reg_capital_wan,
         "reg_date": ent.reg_date, "industry": ent.industry, "address": ent.address,
         "data_note": ent.data_note,
@@ -63,3 +66,19 @@ def analyze_by_name(body: AnalyzeByName, db: Session = Depends(get_db)):
 @router.get("/enterprise/{enterprise_id}/risk")
 def enterprise_risk(enterprise_id: int, db: Session = Depends(get_db)):
     return risk_snapshot(db, enterprise_id)
+
+
+@router.post("/enterprise/{enterprise_id}/refresh")
+def refresh_enterprise_data(
+    enterprise_id: int,
+    dimensions: str | None = None,
+    db: Session = Depends(get_db),
+):
+    """从公开数据源（AkShare）刷新企业数据：finance / news / legal。"""
+    from app.datasources import refresh_enterprise
+
+    dims = [d.strip() for d in dimensions.split(",") if d.strip()] if dimensions else None
+    try:
+        return refresh_enterprise(db, enterprise_id, dims)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(500, f"数据源刷新失败：{exc}") from exc

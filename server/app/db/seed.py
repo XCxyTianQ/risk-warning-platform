@@ -11,7 +11,7 @@ from app.db.models import Enterprise, Finance, LegalRecord, News, RiskFact
 
 SAMPLES_DIR = Path(__file__).resolve().parents[3] / "data" / "samples"
 ENTERPRISE_FIELDS = (
-    "name", "unified_code", "legal_rep", "reg_capital_wan",
+    "name", "unified_code", "stock_code", "legal_rep", "reg_capital_wan",
     "reg_date", "industry", "address", "data_note",
 )
 

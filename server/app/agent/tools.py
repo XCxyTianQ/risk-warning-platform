@@ -165,6 +165,21 @@ def build_registry() -> ToolRegistry:
             "news_sentiment": sentiment,
         }
 
+    def refresh_enterprise_data(db: Session, enterprise_id: int, dimensions: str = "") -> dict:
+        """动作工具：从公开数据源（AkShare）刷新企业财务/舆情/诉讼数据。"""
+        from app.datasources import refresh_enterprise
+
+        dims = [d.strip() for d in dimensions.split(",") if d.strip()] or None
+        result = refresh_enterprise(db, enterprise_id, dims)
+        if "error" in result:
+            return result
+        summary = {
+            dim: ({"ok": info["ok"], "fetched": info.get("fetched", 0), "inserted": info.get("inserted", 0),
+                   "updated": info.get("updated", 0), "gap": info.get("gap", ""), "error": info.get("error", "")})
+            for dim, info in result["dimensions"].items()
+        }
+        return {"enterprise_id": enterprise_id, "enterprise": result["enterprise"]["name"], "dimensions": summary}
+
     def run_risk_analysis(db: Session, enterprise_id: int) -> dict:
         """动作工具：触发一次完整研判（大模型 + 规则交叉校验），耗时 10~40 秒。"""
         from app.services.risk import analyze_enterprise
@@ -237,6 +252,20 @@ def build_registry() -> ToolRegistry:
         description="获取平台整体统计：企业总数、平均评分、各风险等级数量、风险事实总数。",
         parameters={"type": "object", "properties": {}, "required": []},
         handler=get_platform_overview,
+    ))
+    reg.register(Tool(
+        name="refresh_enterprise_data",
+        description="从公开数据源（AkShare：财报/新闻/诉讼统计）刷新指定企业的数据并入库。仅上市公司有效（需有股票代码）。这是写操作，需用户授权。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "enterprise_id": {"type": "integer"},
+                "dimensions": {"type": "string", "description": "可选：逗号分隔的维度 finance,news,legal；默认全部"},
+            },
+            "required": ["enterprise_id"],
+        },
+        handler=refresh_enterprise_data,
+        read_only=False,
     ))
     reg.register(Tool(
         name="run_risk_analysis",

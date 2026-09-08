@@ -10,6 +10,7 @@ from typing import Iterator
 
 from sqlalchemy.orm import Session as DbSession
 
+from app.agent import approvals
 from app.agent.events import AgentEvent
 from app.agent.prompt import SYSTEM_PROMPT
 from app.agent.session import Session, store
@@ -97,6 +98,39 @@ def run_agent(db: DbSession, session: Session, user_text: str) -> Iterator[Agent
                     "args": args,
                     "read_only": bool(tool and tool.read_only),
                 })
+
+                # 动作工具：先请求用户授权（Harness/Codex 的 approval 机制）
+                if tool and not tool.read_only and settings.agent_require_approval:
+                    pa = approvals.create(session.id, tc.get("id", ""), name, args, tool.description)
+                    yield AgentEvent("approval", {
+                        "approval_id": pa.id,
+                        "id": tc.get("id", ""),
+                        "name": name,
+                        "args": args,
+                        "description": tool.description,
+                        "timeout": settings.agent_approval_timeout,
+                    })
+                    decided = pa.event.wait(timeout=settings.agent_approval_timeout)
+                    approved = bool(decided and pa.approved)
+                    approvals.discard(pa.id)
+                    if not approved:
+                        rejected = {
+                            "error": "用户拒绝执行该操作"
+                            if decided else f"等待授权超时（{settings.agent_approval_timeout}s）"
+                        }
+                        store.append(db, session, {
+                            "role": "tool",
+                            "tool_call_id": tc.get("id", ""),
+                            "tool_name": name,
+                            "content": json.dumps(rejected, ensure_ascii=False),
+                        })
+                        yield AgentEvent("tool_result", {
+                            "id": tc.get("id", ""),
+                            "name": name,
+                            "result": {"ok": False, **rejected},
+                        })
+                        continue
+
                 result = _registry.call(name, args, db)
                 store.append(db, session, {
                     "role": "tool",

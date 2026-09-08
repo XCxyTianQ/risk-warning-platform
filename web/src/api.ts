@@ -98,6 +98,15 @@ export const api = {
       body: JSON.stringify({ name }),
     }),
 
+  // --- 数据源 ---
+  refreshEnterprise: (id: number, dimensions?: string) => {
+    const q = dimensions ? `?dimensions=${dimensions}` : ''
+    return request<{
+      enterprise: { id: number; name: string; stock_code?: string }
+      dimensions: Record<string, { ok: boolean; source?: string; fetched?: number; inserted?: number; updated?: number; gap?: string; error?: string }>
+    }>(`/api/enterprise/${id}/refresh${q}`, { method: 'POST' })
+  },
+
   // --- 对话会话（历史持久化） ---
   chatSessions: () =>
     request<{ sessions: { id: string; title: string; updated_at: string; message_count: number }[] }>(
@@ -112,6 +121,14 @@ export const api = {
     }>(`/api/chat/sessions/${id}`),
   chatDelete: (id: string) =>
     request<{ deleted: string }>(`/api/chat/sessions/${id}`, { method: 'DELETE' }),
+
+  /** 动作工具审批 */
+  chatApprove: (approvalId: string, approved: boolean) =>
+    request<{ approval_id: string; approved: boolean }>('/api/chat/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ approval_id: approvalId, approved }),
+    }),
 }
 
 /** 风险等级元数据 */

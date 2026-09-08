@@ -4,6 +4,12 @@ import { nextTick, onMounted, ref } from 'vue'
 import { api } from '../api'
 import { openForTool, workspace } from '../workspace/store'
 
+interface Approval {
+  id: string
+  description: string
+  status: 'pending' | 'approved' | 'rejected'
+}
+
 interface ToolCard {
   id: string
   name: string
@@ -12,6 +18,7 @@ interface ToolCard {
   running: boolean
   result?: Record<string, any>
   opened?: string
+  approval?: Approval
 }
 
 interface ChatMsg {
@@ -55,6 +62,19 @@ const TOOL_LABEL: Record<string, string> = {
   list_enterprises_by_level: '按等级筛选',
   get_platform_overview: '平台总览',
   run_risk_analysis: '触发完整研判',
+  refresh_enterprise_data: '数据源刷新',
+}
+
+/** 动作工具审批 */
+async function decide(card: ToolCard, approved: boolean) {
+  if (!card.approval || card.approval.status !== 'pending') return
+  try {
+    await api.chatApprove(card.approval.id, approved)
+    card.approval.status = approved ? 'approved' : 'rejected'
+  } catch (e) {
+    card.approval.status = 'rejected'
+    card.result = { ok: false, error: (e as Error).message }
+  }
 }
 
 async function scrollBottom() {
@@ -245,6 +265,11 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
       if (workspace.panels.length > before) card.opened = '已在新面板打开'
       else if (card.name === 'get_score_profile' || card.name === 'run_risk_analysis') card.opened = '已更新画像面板'
     }
+  } else if (event === 'approval') {
+    const card = reply.tools.find((t) => t.id === data.id)
+    if (card) {
+      card.approval = { id: data.approval_id, description: data.description, status: 'pending' }
+    }
   } else if (event === 'error') {
     reply.error = data.message
   } else if (event === 'done') {
@@ -323,6 +348,20 @@ function stop() {
                 </ul>
               </template>
               <span v-if="t.opened" class="opened-tag">↗ {{ t.opened }}</span>
+            </div>
+
+            <!-- 动作工具审批（Harness approval） -->
+            <div v-if="t.approval" class="approval" :class="t.approval.status">
+              <div class="ap-text">
+                <b>需要授权：</b>{{ t.approval.description }}
+              </div>
+              <div v-if="t.approval.status === 'pending'" class="ap-actions">
+                <button class="btn primary small" @click="decide(t, true)">允许执行</button>
+                <button class="btn ghost small" @click="decide(t, false)">拒绝</button>
+              </div>
+              <div v-else class="ap-status">
+                {{ t.approval.status === 'approved' ? '✅ 已授权执行' : '🚫 已拒绝（操作未执行）' }}
+              </div>
             </div>
           </div>
 
@@ -660,6 +699,41 @@ function stop() {
   display: inline-block;
   margin-left: 6px;
   color: var(--primary);
+  font-weight: 600;
+}
+
+/* 动作审批 */
+.approval {
+  margin-top: 7px;
+  border: 1px solid rgba(217, 119, 6, 0.45);
+  background: rgba(217, 119, 6, 0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.approval.approved {
+  border-color: rgba(22, 163, 74, 0.45);
+  background: rgba(22, 163, 74, 0.08);
+}
+
+.approval.rejected {
+  border-color: var(--border);
+  background: var(--hover);
+}
+
+.ap-text {
+  font-size: 11.5px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.ap-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.ap-status {
+  font-size: 11.5px;
   font-weight: 600;
 }
 

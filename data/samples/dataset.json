@@ -8,6 +8,7 @@
     {
       "name": "杭州深度求索人工智能基础技术研究有限公司",
       "unified_code": "_",
+      "stock_code": "",
       "legal_rep": "梁文锋",
       "reg_capital_wan": 1500,
       "reg_date": "2023-07-17",
@@ -43,6 +44,7 @@
     {
       "name": "贵州茅台酒股份有限公司",
       "unified_code": "9152000071430580XT",
+      "stock_code": "600519",
       "legal_rep": "张德芹",
       "reg_capital_wan": 125619.78,
       "reg_date": "1999-11-20",
@@ -68,6 +70,7 @@
     {
       "name": "宁德时代新能源科技股份有限公司",
       "unified_code": "9135090058753804XX",
+      "stock_code": "300750",
       "legal_rep": "曾毓群",
       "reg_capital_wan": 440000.0,
       "reg_date": "2011-12-16",
@@ -98,6 +101,7 @@
     {
       "name": "獐子岛集团股份有限公司",
       "unified_code": "91210200242361724Q",
+      "stock_code": "002069",
       "legal_rep": "唐艳",
       "reg_capital_wan": 71111.22,
       "reg_date": "2001-04-28",
@@ -131,6 +135,7 @@
     {
       "name": "康美药业股份有限公司",
       "unified_code": "91445200231220815R",
+      "stock_code": "600518",
       "legal_rep": "赖志坚",
       "reg_capital_wan": 1387000.0,
       "reg_date": "1997-06-18",

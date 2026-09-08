@@ -14,6 +14,7 @@ class Enterprise(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(200), unique=True, index=True)
     unified_code: Mapped[str] = mapped_column(String(40), default="", index=True)
+    stock_code: Mapped[str] = mapped_column(String(10), default="", index=True)  # A股代码（数据源标识）
     legal_rep: Mapped[str] = mapped_column(String(80), default="")
     reg_capital_wan: Mapped[float] = mapped_column(Float, default=0)
     reg_date: Mapped[str] = mapped_column(String(20), default="")
