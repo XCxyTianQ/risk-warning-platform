@@ -71,4 +71,43 @@ class LlmClient:
         tools: list[dict] | None = None,
         max_tokens: int | None = None,
     ) -> dict:
-        raise NotImplementedError("步骤2 实现：参考 reasonmc LlmClient.chat()（含解析防御链）")
+        """OpenAI 兼容 chat/completions（阶段2 实现：照搬 reasonmc 解析防御链）。"""
+        url = self._config.base_url.rstrip("/") + "/chat/completions"
+        body: dict = {
+            "model": self._config.model,
+            "messages": messages,
+            "max_tokens": max_tokens or self._config.max_tokens,
+        }
+        if tools:
+            body["tools"] = tools
+            body["tool_choice"] = "auto"
+        try:
+            resp = self._http.post(
+                url,
+                json=body,
+                headers={"Authorization": f"Bearer {self._config.api_key}"},
+            )
+        except httpx.HTTPError as exc:
+            raise LlmException(-1, f"LLM call failed: {exc}") from exc
+
+        # 先检查状态码再解析 body（非 2xx 可能是 HTML/空，给可读错误）
+        if resp.status_code // 100 != 2:
+            raise LlmException(resp.status_code, f"LLM HTTP {resp.status_code}: {resp.text[:500]}")
+        try:
+            data = resp.json()
+        except ValueError as exc:
+            raise LlmException(0, "LLM 响应体无效（非 JSON）: " + resp.text[:200]) from exc
+        if data is None or (isinstance(data, dict) and data.get("error")):
+            err = data.get("error") if isinstance(data, dict) else data
+            raise LlmException(0, f"LLM error: {err}")
+        # 记录 usage.prompt_tokens（上下文压缩触发用；缺失时保持上次值）
+        usage = data.get("usage") or {}
+        if isinstance(usage.get("prompt_tokens"), int):
+            self.last_prompt_tokens = usage["prompt_tokens"]
+        choices = data.get("choices") or []
+        if not choices:
+            raise LlmException(0, "LLM returned no choices: " + str(data)[:500])
+        msg = choices[0].get("message") or {}
+        if not msg:
+            raise LlmException(0, "LLM message missing")
+        return msg

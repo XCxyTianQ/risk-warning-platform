@@ -13,5 +13,9 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    watch: {
+      // 编辑器/写盘工具产生临时文件，避免 EBUSY 导致 watcher 崩溃
+      ignored: ['**/.App.vue.*.tmpdir/**', '**/*.tmp', '**/.git/**', '**/dist/**', '**/.venv/**'],
+    },
   },
 })

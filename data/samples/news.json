@@ -1,0 +1,20 @@
+[
+  {"title": "DeepSeek 发布新一代开源推理模型 R1，多项评测对标 OpenAI o1", "source": "公开报道", "url": "", "published_at": "2025-01-20", "sentiment": "positive", "content": "DeepSeek-R1 正式发布并开源，推理能力与成本优势引发全球关注。"},
+  {"title": "DeepSeek App 登顶美国 iOS 免费应用榜", "source": "公开报道", "url": "", "published_at": "2025-01-27", "sentiment": "positive", "content": "应用热度持续攀升，一度冲上美区免费榜第一。"},
+  {"title": "多国政府机构对 DeepSeek 采取限制或审查措施（意大利、美国海军、韩国等）", "source": "公开报道", "url": "", "published_at": "2025-01-28", "sentiment": "negative", "content": "因数据合规顾虑，部分机构限制使用或要求说明数据处理方式。"},
+  {"title": "DeepSeek 服务器高峰拥挤，API 暂停充值并限制调用", "source": "官方公告/公开报道", "url": "", "published_at": "2025-01-29", "sentiment": "neutral", "content": "访问量激增导致服务资源配置压力。"},
+  {"title": "DeepSeek-V3 开源发布，MoE 架构与训练成本引发行业讨论", "source": "公开报道", "url": "", "published_at": "2024-12-26", "sentiment": "positive", "content": "V3 以较低训练成本实现对标级性能。"},
+  {"title": "DeepSeek 创始人梁文锋入选《自然》2024年度十大人物", "source": "公开报道", "url": "", "published_at": "2024-12-09", "sentiment": "positive", "content": "国际科学界对 DeepSeek 技术路线的认可。"},
+  {"title": "多家云厂商与政企机构上线 DeepSeek 模型服务", "source": "公开报道", "url": "", "published_at": "2025-02-15", "sentiment": "positive", "content": "私有化部署与信创适配需求旺盛。"},
+  {"title": "DeepSeek 遭遇数据安全质疑，多家机构宣布禁用（数据合规担忧）", "source": "公开报道", "url": "", "published_at": "2025-02-01", "sentiment": "negative", "content": "围绕数据出境与训练语料展开讨论。"},
+  {"title": "DeepSeek 开源周：连续发布多个开源仓库与论文", "source": "官方公告", "url": "", "published_at": "2025-03-24", "sentiment": "positive", "content": "开源基础设施与训练方法论对外公开。"},
+  {"title": "关于 DeepSeek 训练数据版权争议的讨论升温", "source": "公开报道", "url": "", "published_at": "2025-03-10", "sentiment": "negative", "content": "行业对语料来源与版权的持续讨论。"},
+  {"title": "DeepSeek-V2 发布并大幅调低 API 价格，引发行业价格战", "source": "公开报道", "url": "", "published_at": "2024-05-16", "sentiment": "neutral", "content": "国产大模型价格竞争加剧。"},
+  {"title": "DeepSeek 开放平台计费调整与开发者生态建设", "source": "官方公告", "url": "", "published_at": "2025-04-05", "sentiment": "neutral", "content": "面向开发者的服务策略持续优化。"},
+  {"title": "DeepSeek 与英伟达/美股科技股波动关联引关注", "source": "公开报道", "url": "", "published_at": "2025-01-31", "sentiment": "neutral", "content": "市场对 AI 算力叙事再评估。"},
+  {"title": "DeepSeek 或已启动 IPO 筹备工作", "source": "新浪财经", "url": "https://finance.sina.com.cn/roll/2026-07-15/doc-inihxaey1166807.shtml", "published_at": "2026-07-15", "sentiment": "neutral", "content": "报道称公司已就上市筹备开展前期工作。"},
+  {"title": "DeepSeek 注册资本增至1500万元，梁文锋持股比例调整", "source": "搜狐财经", "url": "https://www.sohu.com/a/1015541031_121218495", "published_at": "2025-08-05", "sentiment": "positive", "content": "注册资本与股权结构调整，反映公司发展。"},
+  {"title": "DeepSeek 注册资本再增500万元，梁文锋合计持股超84%", "source": "凤凰网科技", "url": "https://tech.ifeng.com/c/8sgjLaqnj09", "published_at": "2026-07-08", "sentiment": "positive", "content": "公司治理结构进一步明确。"},
+  {"title": "国家知识产权局驳回 63 件“DEEPSEEK”恶意抢注商标申请", "source": "mondaq/国家知识产权局", "url": "https://webiis08.mondaq.com/china/trademark/1595452/", "published_at": "2025-02-14", "sentiment": "positive", "content": "商标保护获行政支持。"},
+  {"title": "2025年度商标行政保护典型案例公布，DeepSeek 商标保护入选（人工智能领域）", "source": "国家知识产权局/公开报道", "url": "https://mp.weixin.qq.com/s/DtxIR_nfOUtLv5pbezdxvw", "published_at": "2026-06-20", "sentiment": "positive", "content": "作为AI领域商标行政保护示范案例发布。"}
+]

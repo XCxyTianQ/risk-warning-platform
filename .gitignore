@@ -11,12 +11,11 @@ dist/
 dist-ssr/
 *.local
 
-# ===== 数据与产物（不入库） =====
+# ===== 数据与产物（不入库；samples 为公开信源演示数据，随仓库提交） =====
 data/*.csv
 data/*.jsonl
 data/*.db
 data/*.sqlite*
-data/samples/
 !data/README.md
 
 # ===== IDE / OS =====

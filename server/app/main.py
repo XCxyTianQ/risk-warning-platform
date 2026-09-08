@@ -1,11 +1,22 @@
-"""FastAPI 入口：/api/health + CORS（骨架阶段）。"""
+"""FastAPI 入口：健康检查 + CORS + 企业/研判路由（阶段2）。"""
+
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.enterprises import router as enterprise_router
 from app.core.config import settings
+from app.db.database import init_db
 
-app = FastAPI(title=settings.app_name, version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(title=settings.app_name, version="0.2.0", lifespan=lifespan)
 
 # 开发期允许 Vite dev server 跨域访问（生产改为同源/反代）
 app.add_middleware(
@@ -16,7 +27,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(enterprise_router)
+
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"status": "ok", "service": settings.app_name, "version": "0.1.0"}
+    return {"status": "ok", "service": settings.app_name, "version": "0.2.0"}

@@ -1,0 +1,93 @@
+"""数据模型（阶段2 纵向切片所需子集；alert 表阶段4 建）。"""
+
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.db.database import Base
+
+
+class Enterprise(Base):
+    __tablename__ = "enterprise"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    unified_code: Mapped[str] = mapped_column(String(40), default="", index=True)
+    legal_rep: Mapped[str] = mapped_column(String(80), default="")
+    reg_capital_wan: Mapped[float] = mapped_column(Float, default=0)
+    reg_date: Mapped[str] = mapped_column(String(20), default="")
+    industry: Mapped[str] = mapped_column(String(80), default="")
+    address: Mapped[str] = mapped_column(String(300), default="")
+    data_note: Mapped[str] = mapped_column(Text, default="")  # 信源与数据说明
+
+    legal_records: Mapped[list["LegalRecord"]] = relationship(back_populates="enterprise")
+    news: Mapped[list["News"]] = relationship(back_populates="enterprise")
+    finances: Mapped[list["Finance"]] = relationship(back_populates="enterprise")
+    facts: Mapped[list["RiskFact"]] = relationship(back_populates="enterprise")
+
+
+class LegalRecord(Base):
+    __tablename__ = "legal_record"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    enterprise_id: Mapped[int] = mapped_column(ForeignKey("enterprise.id"), index=True)
+    case_no: Mapped[str] = mapped_column(String(60), default="")
+    doc_type: Mapped[str] = mapped_column(String(40), default="")  # 判决/裁定/行政决定/处罚
+    title: Mapped[str] = mapped_column(String(300))
+    court: Mapped[str] = mapped_column(String(120), default="")
+    cause: Mapped[str] = mapped_column(String(120), default="")
+    amount: Mapped[float] = mapped_column(Float, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="")
+    judgment_date: Mapped[str] = mapped_column(String(20), default="")
+    source: Mapped[str] = mapped_column(String(200), default="")
+
+    enterprise: Mapped[Enterprise] = relationship(back_populates="legal_records")
+
+
+class News(Base):
+    __tablename__ = "news"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    enterprise_id: Mapped[int] = mapped_column(ForeignKey("enterprise.id"), index=True)
+    title: Mapped[str] = mapped_column(String(300))
+    content: Mapped[str] = mapped_column(Text, default="")
+    source: Mapped[str] = mapped_column(String(120), default="")
+    url: Mapped[str] = mapped_column(String(400), default="")
+    published_at: Mapped[str] = mapped_column(String(20), default="")
+    sentiment: Mapped[str] = mapped_column(String(20), default="neutral")  # positive/neutral/negative
+
+    enterprise: Mapped[Enterprise] = relationship(back_populates="news")
+
+
+class Finance(Base):
+    __tablename__ = "finance"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    enterprise_id: Mapped[int] = mapped_column(ForeignKey("enterprise.id"), index=True)
+    year: Mapped[str] = mapped_column(String(10), default="")
+    report_type: Mapped[str] = mapped_column(String(40), default="")
+    total_assets: Mapped[float] = mapped_column(Float, default=0)
+    total_liabilities: Mapped[float] = mapped_column(Float, default=0)
+    revenue: Mapped[float] = mapped_column(Float, default=0)
+    net_profit: Mapped[float] = mapped_column(Float, default=0)
+    debt_ratio: Mapped[float] = mapped_column(Float, default=0)
+    source: Mapped[str] = mapped_column(String(200), default="")
+
+    enterprise: Mapped[Enterprise] = relationship(back_populates="finances")
+
+
+class RiskFact(Base):
+    """风险信号事实（memory 落库）：供证据引用与人工复核。"""
+
+    __tablename__ = "risk_fact"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    enterprise_id: Mapped[int] = mapped_column(ForeignKey("enterprise.id"), index=True)
+    dimension: Mapped[str] = mapped_column(String(30), default="")  # finance/legal/news/other
+    text: Mapped[str] = mapped_column(Text)
+    evidence_json: Mapped[str] = mapped_column(Text, default="")  # 源头/时间/文章引用
+    confidence: Mapped[float] = mapped_column(Float, default=0)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    enterprise: Mapped[Enterprise] = relationship(back_populates="facts")
