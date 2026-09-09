@@ -1,12 +1,12 @@
 /**
- * 企业经营风险预警平台 · Electron 主进程
+ * 企业经营风险预警平台 · Electron 主进程（Windows / macOS）
  *
  * 职责：
  *  1. 单实例锁 + 动态端口
- *  2. 拉起 Python 后端（开发=venv python，打包=resources/backend/risk-api.exe）
+ *  2. 拉起 Python 后端（开发=venv python，打包=resources/backend/risk-api[.exe]）
  *  3. 等待 /api/health 就绪后创建窗口，加载 http://127.0.0.1:<port>
  *  4. 托盘 / 菜单 / 外链用系统浏览器打开
- *  5. 退出时优雅关闭后端进程树
+ *  5. 退出时优雅关闭后端进程树（Windows 用 taskkill，POSIX 用进程组信号）
  *
  * 环境变量：
  *  RWP_SMOKE=1      只做"拉起后端 + 健康检查"，成功后退出（用于 CI/自检）
@@ -22,8 +22,11 @@ const path = require('node:path')
 
 const SMOKE = process.env.RWP_SMOKE || ''   // '' | '1'（只测后端）| '2'（连窗口一起测）
 const isDev = process.env.RWP_DEV === '1' || !app.isPackaged
+const isWin = process.platform === 'win32'
+const isMac = process.platform === 'darwin'
 
 // 固定使用 ASCII 数据目录，便于排查与跨语言环境
+// Windows: %APPDATA%\RiskWarningPlatform ；macOS: ~/Library/Application Support/RiskWarningPlatform
 app.setName('RiskWarningPlatform')
 app.setPath('userData', path.join(app.getPath('appData'), 'RiskWarningPlatform'))
 
@@ -57,11 +60,13 @@ function backendCommand() {
   if (process.env.RWP_BACKEND) {
     return { cmd: process.env.RWP_BACKEND, args: [], cwd: path.dirname(process.env.RWP_BACKEND) }
   }
-  // PyInstaller 可能是 onedir（backend/risk-api/risk-api.exe）或单文件（backend/risk-api.exe）
-  const candidates = [
-    resourcePath('backend', 'risk-api', 'risk-api.exe'),
-    resourcePath('backend', 'risk-api.exe'),
-  ]
+  // PyInstaller 可能是 onedir（backend/risk-api/risk-api[.exe]）或单文件（backend/risk-api[.exe]）
+  const names = isWin ? ['risk-api.exe', 'risk-api'] : ['risk-api']
+  const candidates = []
+  for (const n of names) {
+    candidates.push(resourcePath('backend', 'risk-api', n))
+    candidates.push(resourcePath('backend', n))
+  }
   if (!isDev) {
     for (const exe of candidates) {
       if (fs.existsSync(exe)) return { cmd: exe, args: [], cwd: path.dirname(exe) }
@@ -69,11 +74,18 @@ function backendCommand() {
   }
   // 开发模式：用 venv 的 python 跑 desktop_entry.py
   const repo = path.resolve(__dirname, '..')
-  const py = path.join(repo, 'server', '.venv', 'Scripts', 'python.exe')
+  const pyCandidates = isWin
+    ? [path.join(repo, 'server', '.venv', 'Scripts', 'python.exe')]
+    : [path.join(repo, 'server', '.venv', 'bin', 'python3'), path.join(repo, 'server', '.venv', 'bin', 'python')]
+  const py = pyCandidates.find((p) => fs.existsSync(p))
   const entry = path.join(repo, 'server', 'desktop_entry.py')
-  if (!fs.existsSync(py)) {
-    dialog.showErrorBox('后端缺失', `未找到 Python 运行环境：\n${py}\n请先在 server 目录创建 venv 并安装依赖。`)
+  if (!py) {
+    dialog.showErrorBox(
+      '后端缺失',
+      `未找到 Python 运行环境：\n${pyCandidates.join('\n')}\n请先在 server 目录创建 venv 并安装依赖。`,
+    )
     app.quit()
+    return { cmd: '', args: [], cwd: repo }
   }
   return { cmd: py, args: [entry], cwd: path.join(repo, 'server') }
 }
@@ -115,10 +127,20 @@ function killBackend() {
   if (!backend || backend.killed) return
   const pid = backend.pid
   try {
-    if (process.platform === 'win32') {
+    if (isWin) {
       spawnSync('taskkill', ['/pid', String(pid), '/T', '/F'], { stdio: 'ignore' })
     } else {
-      process.kill(-pid, 'SIGTERM')
+      // POSIX：spawn 时已 detached（自成进程组），先 SIGTERM 再兜底 SIGKILL
+      try {
+        process.kill(-pid, 'SIGTERM')
+      } catch {
+        process.kill(pid, 'SIGTERM')
+      }
+      setTimeout(() => {
+        try {
+          process.kill(-pid, 'SIGKILL')
+        } catch { /* 已退出 */ }
+      }, 1500)
     }
   } catch { /* 忽略 */ }
   backend = null
@@ -142,6 +164,7 @@ async function startBackend() {
     env: { ...process.env, RWP_SAMPLES_DIR: samplesDir(), PYTHONIOENCODING: 'utf-8' },
     stdio: ['ignore', 'pipe', 'pipe'],
     windowsHide: true,
+    detached: !isWin,   // POSIX 下自成进程组，便于整组终止
   })
   backend.stdout.on('data', (d) => { fs.writeSync(logFile, d); console.log('[backend]', String(d).trim()) })
   backend.stderr.on('data', (d) => { fs.writeSync(logFile, d) })
@@ -206,7 +229,13 @@ function createWindow() {
 }
 
 function buildMenu() {
-  const template = [
+  const template = []
+  // macOS：首项必须是应用菜单（含退出），并保留编辑菜单，否则输入框不支持 Cmd+C/V
+  if (isMac) {
+    template.push({ role: 'appMenu' })
+    template.push({ role: 'editMenu' })
+  }
+  template.push(
     {
       label: '文件',
       submenu: [
@@ -239,26 +268,35 @@ function buildMenu() {
             type: 'info',
             title: '关于',
             message: '企业经营风险预警平台',
-            detail: `版本 ${app.getVersion()}\n后端端口 ${backendPort}\n数据目录 ${path.join(app.getPath('userData'), 'data')}`,
+            detail: `版本 ${app.getVersion()}\n平台 ${process.platform}/${process.arch}\n后端端口 ${backendPort}\n数据目录 ${path.join(app.getPath('userData'), 'data')}`,
           }),
         },
       ],
     },
-  ]
+  )
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
 }
 
 function createTray() {
   const iconPath = path.join(__dirname, 'build', 'icon.png')
   if (!fs.existsSync(iconPath)) return
-  tray = new Tray(nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 }))
+  let image = nativeImage.createFromPath(iconPath)
+  if (isMac) {
+    image = image.resize({ width: 18, height: 18 })
+    image.setTemplateImage(true)   // macOS 菜单栏随明暗主题自动反色
+  } else {
+    image = image.resize({ width: 16, height: 16 })
+  }
+  tray = new Tray(image)
   tray.setToolTip('企业经营风险预警平台')
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: '显示主窗口', click: () => (win ? (win.show(), win.focus()) : createWindow()) },
     { type: 'separator' },
     { label: '退出', click: () => { quitting = true; app.quit() } },
   ]))
-  tray.on('double-click', () => (win ? (win.show(), win.focus()) : createWindow()))
+  // macOS 菜单栏图标单击即弹菜单，双击事件不触发
+  if (isMac) tray.on('click', () => tray.popUpContextMenu())
+  else tray.on('double-click', () => (win ? (win.show(), win.focus()) : createWindow()))
 }
 
 // ---------- 生命周期 ----------
@@ -290,6 +328,7 @@ if (!gotLock) {
   })
 
   app.on('window-all-closed', () => { quitting = true; app.quit() })
+  app.on('activate', () => { if (!win) createWindow() })   // macOS 点击 Dock 图标
   app.on('before-quit', () => { quitting = true; killBackend() })
   app.on('will-quit', () => killBackend())
   process.on('exit', () => killBackend())

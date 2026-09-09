@@ -1,0 +1,23 @@
+# 统一换行符：脚本/源码/文档一律 LF，避免 macOS 下 shebang 变成 CRLF 导致无法执行
+* text=auto
+*.command text eol=lf
+*.sh      text eol=lf
+*.py      text eol=lf
+*.js      text eol=lf
+*.ts      text eol=lf
+*.vue     text eol=lf
+*.json    text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.md      text eol=lf
+*.txt     text eol=lf
+*.css     text eol=lf
+*.html    text eol=lf
+
+# 二进制资源
+*.png binary
+*.ico binary
+*.icns binary
+*.exe binary
+*.dmg binary
+*.zip binary
