@@ -158,6 +158,17 @@ jobs:
             exit 1
           fi
 
+      - name: Inspect app bundle (backend executable present)
+        working-directory: desktop/release
+        run: |
+          set -e
+          ZIP=$(ls RiskWarningPlatform-*-mac-arm64.zip)
+          echo "== 关键内容 =="
+          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
+          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
+            echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
+          echo "OK: 后端可执行文件与前端资源均已打入 app 包"
+
       - name: Compute checksums
         working-directory: desktop/release
         run: shasum -a 256 *.dmg *.zip > SHA256SUMS-macos-arm64.txt && cat SHA256SUMS-macos-arm64.txt
@@ -233,6 +244,17 @@ jobs:
             echo "::error::x64 任务不应产出 arm64 包（其内嵌后端为 x86_64，在 Apple Silicon 上无法运行）"
             exit 1
           fi
+
+      - name: Inspect app bundle (backend executable present)
+        working-directory: desktop/release
+        run: |
+          set -e
+          ZIP=$(ls RiskWarningPlatform-*-mac-x64.zip)
+          echo "== 关键内容 =="
+          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
+          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
+            echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
+          echo "OK: 后端可执行文件与前端资源均已打入 app 包"
 
       - name: Compute checksums
         working-directory: desktop/release

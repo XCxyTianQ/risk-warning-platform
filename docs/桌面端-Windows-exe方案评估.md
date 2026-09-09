@@ -2,6 +2,10 @@
 
 > 评估对象：把现有「Vue 前端 + FastAPI 后端 + SQLite」打包成 Windows 桌面应用。
 > 评估基准：本机实测（2026-09-08）+ 现有代码结构。
+>
+> **后续进展（2026-09-09，v0.4.0）**：桌面端已扩展为 Windows + macOS 双平台，
+> 构建方式与目录约定见 `desktop/README.md`；macOS 产物由 GitHub Actions 的
+> `macos-26`（arm64）与 `macos-15-intel`（x64）runner 分别构建。
 
 ## 1. 现状盘点（决定工期的硬事实）
 
