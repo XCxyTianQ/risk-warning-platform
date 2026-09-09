@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     llm_analysis_max_tokens: int = 8192  # 风险研判输出（JSON + 推理 token 需要更大空间）
     llm_max_turns: int = 8      # Agent 循环上限（reasonmc 默认值）
     llm_short_term_window: int = 3  # 上下文中保留的最近轮数
+    # 关闭推理型模型的思考过程（更快，但复杂分析质量可能下降）；对不支持的端点无副作用
+    llm_disable_thinking: bool = False
 
     # --- Agent 审批（动作工具） ---
     agent_require_approval: bool = True   # 动作工具是否需用户确认

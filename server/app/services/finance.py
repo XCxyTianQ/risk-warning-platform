@@ -15,8 +15,8 @@
 """
 
 import json
+import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 
 from sqlalchemy.orm import Session as DbSession
 
@@ -348,45 +348,46 @@ def _comp(value, source: str, label: str = "") -> dict:
     return {"value": _r(value, 4), "source": source, "label": label}
 
 
-_MARKET_CAP_CACHE: dict[str, tuple[float, float | None]] = {}
-_MARKET_CAP_TTL = 1800.0  # 成功/失败都缓存，避免每次分析都触发一次失败的网络请求
+_SPOT_CACHE: dict = {"ts": 0.0, "map": {}, "inflight": False}
+_SPOT_TTL = 1800.0  # 全市场市值表缓存 30 分钟
 
 
-def _market_cap_wan(code: str, timeout: float = 2.5) -> float | None:
-    """总市值（万元）：东财全市场快照，失败/超时返回 None（不阻塞分析）。
-
-    - 结果（含失败）按代码缓存 30 分钟；
-    - 使用非阻塞 shutdown，超时线程自行结束，不拖慢请求。
-    """
-    if not code:
-        return None
-    now = time.time()
-    cached = _MARKET_CAP_CACHE.get(code)
-    if cached and now - cached[0] < _MARKET_CAP_TTL:
-        return cached[1]
-
-    def _fetch() -> float | None:
+def _load_spot() -> None:
+    """后台拉取东财全市场快照（一次调用覆盖所有代码，失败也记时间避免频繁重试）。"""
+    try:
         import akshare as ak
 
         df = ak.stock_zh_a_spot_em()
-        row = df[df["代码"].astype(str).str.zfill(6) == code.zfill(6)]
-        if row.empty:
-            return None
-        v = _f(row.iloc[0].get("总市值"))
-        return None if v is None else round(v / 1e4, 2)
-
-    pool = ThreadPoolExecutor(max_workers=1)
-    value: float | None = None
-    try:
-        value = pool.submit(_fetch).result(timeout=timeout)
-    except FutureTimeout:
-        value = None
-    except Exception:  # noqa: BLE001 —— 市值仅影响 Z 的 X4，失败不阻断
-        value = None
+        mapping: dict[str, float] = {}
+        for _, r in df.iterrows():
+            code = str(r.get("代码") or "").zfill(6)
+            cap = _f(r.get("总市值"))
+            if code and cap:
+                mapping[code] = cap
+        if mapping:
+            _SPOT_CACHE["map"] = mapping
+        _SPOT_CACHE["ts"] = time.time()
+    except Exception:  # noqa: BLE001 —— 市值仅影响 Altman Z 的 X4
+        _SPOT_CACHE["ts"] = time.time()
     finally:
-        pool.shutdown(wait=False)
-    _MARKET_CAP_CACHE[code] = (now, value)
-    return value
+        _SPOT_CACHE["inflight"] = False
+
+
+def _market_cap_wan(code: str) -> float | None:
+    """总市值（万元）：命中全市场缓存则返回，否则**不阻塞**——后台拉取，本次返回 None。
+
+    这样 Altman Z（市值口径）最多"本次不可计算"（前端会标注），
+    而不会让每次分析都等一次失败的网络请求（实测 2.5s/次）。
+    """
+    code = (code or "").strip().zfill(6)
+    if not code or code == "000000":
+        return None
+    now = time.time()
+    if now - _SPOT_CACHE["ts"] > _SPOT_TTL and not _SPOT_CACHE["inflight"]:
+        _SPOT_CACHE["inflight"] = True
+        threading.Thread(target=_load_spot, daemon=True, name="spot-market-cap").start()
+    cap = _SPOT_CACHE["map"].get(code)
+    return round(cap / 1e4, 2) if cap else None
 
 
 def build_altman(p: dict, market_cap: float | None) -> dict:

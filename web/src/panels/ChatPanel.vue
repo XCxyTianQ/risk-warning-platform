@@ -20,6 +20,7 @@ interface ToolCard {
   result?: Record<string, any>
   opened?: string
   approval?: Approval
+  latencyMs?: number
 }
 
 interface ChatMsg {
@@ -29,6 +30,10 @@ interface ChatMsg {
   streaming?: boolean
   error?: string
   notice?: string
+  reasoning?: string        // 推理型模型的思考过程（reasoning_content）
+  reasoningOpen?: boolean
+  elapsedMs?: number       // 本轮端到端耗时
+  timing?: { latency_ms: number; ttft_ms: number; tokens_per_sec: number; completion_tokens: number }
 }
 
 interface UsageStats {
@@ -110,6 +115,15 @@ async function decide(card: ToolCard, approved: boolean) {
 async function scrollBottom() {
   await nextTick()
   listEl.value?.scrollTo({ top: listEl.value.scrollHeight, behavior: 'smooth' })
+}
+
+/** 毫秒 → 可读耗时（如 850ms / 2.3s / 1m05s） */
+function fmtMs(ms?: number | null) {
+  if (ms === undefined || ms === null) return '—'
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
+  const m = Math.floor(ms / 60000)
+  return `${m}m${String(Math.round((ms % 60000) / 1000)).padStart(2, '0')}s`
 }
 
 function render(text: string) {
@@ -296,9 +310,14 @@ async function send(text?: string) {
   input.value = ''
   busy.value = true
   messages.value.push({ role: 'user', text: content, tools: [] })
-  const reply: ChatMsg = { role: 'assistant', text: '', tools: [], streaming: true }
+  const reply: ChatMsg = { role: 'assistant', text: '', tools: [], streaming: true, reasoningOpen: true }
   messages.value.push(reply)
   await scrollBottom()
+
+  const startedAt = Date.now()
+  const ticker = window.setInterval(() => {
+    if (reply.streaming) reply.elapsedMs = Date.now() - startedAt
+  }, 200)
 
   abort = new AbortController()
   try {
@@ -336,6 +355,9 @@ async function send(text?: string) {
     if ((e as Error).name !== 'AbortError') reply.error = (e as Error).message
   } finally {
     reply.streaming = false
+    reply.elapsedMs = Date.now() - startedAt
+    if (reply.reasoning) reply.reasoningOpen = false
+    window.clearInterval(ticker)
     busy.value = false
     abort = null
     await scrollBottom()
@@ -348,6 +370,8 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
     localStorage.setItem(SESSION_KEY, data.session_id)
   } else if (event === 'token') {
     reply.text += data.text ?? ''
+  } else if (event === 'reasoning') {
+    reply.reasoning = (reply.reasoning ?? '') + (data.text ?? '')
   } else if (event === 'tool') {
     reply.tools.push({
       id: data.id,
@@ -361,6 +385,7 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
     if (card) {
       card.running = false
       card.result = data.result
+      card.latencyMs = data.latency_ms
       // ★ Agent ↔ 界面协作：按工具结果自动在画布开窗
       const before = workspace.panels.length
       openForTool(card.name, data.result)
@@ -386,6 +411,7 @@ function handleEvent(event: string, data: any, reply: ChatMsg) {
     setSessionUsage(usage.value, sessionId.value ?? '')
     usageState.lastPromptTokens = data.call?.prompt_tokens ?? usageState.lastPromptTokens
     usageState.compacting = false
+    if (data.timing) reply.timing = data.timing
   } else if (event === 'compaction') {
     if (data.phase === 'start') {
       reply.notice = `上下文接近上限（约 ${data.estimated_tokens} tok / 窗口 ${data.window}），正在压缩历史…`
@@ -505,12 +531,22 @@ function stop() {
       <div v-for="(m, i) in messages" :key="i" class="msg" :class="m.role">
         <div v-if="m.role === 'assistant'" class="avatar">险</div>
         <div class="bubble-wrap">
+          <!-- 推理型模型的思考过程（先于正文到达，减少"黑屏等待"） -->
+          <div v-if="m.reasoning" class="reasoning" :class="{ live: m.streaming }">
+            <button class="reasoning-head" @click="m.reasoningOpen = !m.reasoningOpen">
+              <span>{{ m.streaming ? '🧠 正在思考…' : '🧠 思考过程' }}</span>
+              <span class="reasoning-meta">{{ m.reasoning.length }} 字 {{ m.reasoningOpen ? '▾' : '▸' }}</span>
+            </button>
+            <div v-if="m.reasoningOpen" class="reasoning-body">{{ m.reasoning }}</div>
+          </div>
+
           <div v-for="t in m.tools" :key="t.id" class="tool-card" :class="{ running: t.running }">
             <div class="tool-head">
               <span>{{ t.running ? '⏳' : t.result?.ok === false ? '⚠️' : '🔧' }}</span>
               <span class="tool-name">{{ TOOL_LABEL[t.name] ?? t.name }}</span>
               <code class="tool-args">{{ JSON.stringify(t.args) }}</code>
               <span v-if="t.readOnly === false" class="tool-tag">动作</span>
+              <span v-if="t.latencyMs !== undefined" class="tool-ms">{{ fmtMs(t.latencyMs) }}</span>
             </div>
             <div v-if="t.result" class="tool-result">
               <template v-if="t.result.ok === false">
@@ -544,8 +580,15 @@ function stop() {
 
           <div v-if="m.text" class="bubble" v-html="render(m.text)"></div>
           <div v-else-if="m.streaming && !m.tools.length" class="bubble typing"><i></i><i></i><i></i></div>
+          <div v-if="m.streaming && m.elapsedMs" class="stream-timer">⏱ 已用时 {{ fmtMs(m.elapsedMs) }}</div>
           <div v-if="m.notice" class="notice">🗜️ {{ m.notice }}</div>
           <div v-if="m.error" class="bubble error-bubble">{{ m.error }}</div>
+          <div v-if="!m.streaming && (m.elapsedMs || m.timing)" class="msg-foot">
+            <span v-if="m.elapsedMs">⏱ {{ fmtMs(m.elapsedMs) }}</span>
+            <span v-if="m.timing">首字 {{ fmtMs(m.timing.ttft_ms) }}</span>
+            <span v-if="m.timing && m.timing.tokens_per_sec">{{ m.timing.tokens_per_sec }} tok/s</span>
+            <span v-if="m.timing">末次输出 {{ m.timing.completion_tokens }} tok</span>
+          </div>
         </div>
       </div>
     </div>
@@ -641,8 +684,7 @@ function stop() {
   white-space: nowrap;
 }
 
-.notice {  font-size: 11.5px;
-  color: var(--warn);
+.notice {  font-size: 11.5px;  color: var(--warn);
   background: rgba(217, 119, 6, 0.08);
   border: 1px solid rgba(217, 119, 6, 0.3);
   border-radius: 8px;
@@ -1083,5 +1125,73 @@ function stop() {
 
 .composer textarea:focus {
   border-color: var(--primary);
+}
+
+/* ---------- 思考过程 / 耗时展示 ---------- */
+.reasoning {
+  margin-bottom: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--hover);
+  overflow: hidden;
+}
+
+.reasoning.live {
+  border-color: var(--primary);
+}
+
+.reasoning-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 11.5px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.reasoning-head:hover {
+  color: var(--text);
+}
+
+.reasoning-meta {
+  font-size: 11px;
+}
+
+.reasoning-body {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0 10px 8px;
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--text-sub);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tool-ms {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.stream-timer {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+.msg-foot {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-sub);
 }
 </style>

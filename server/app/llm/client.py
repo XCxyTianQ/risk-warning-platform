@@ -13,6 +13,7 @@ TODO(步骤2)：实现 chat() 的请求/响应逻辑；支持流式留到 P1。
 
 from dataclasses import dataclass
 import json
+import time
 
 import httpx
 
@@ -37,6 +38,11 @@ class LlmException(RuntimeError):
         )
 
 
+def _retryable_status(status_code: int) -> bool:
+    """408/429/5xx 可重试（与 LlmException.retryable() 保持一致）。"""
+    return status_code in (408, 429) or status_code >= 500
+
+
 @dataclass(frozen=True)
 class LlmConfig:
     """LLM 端点三参数（从 app.core.config.settings 构造）。"""
@@ -45,8 +51,9 @@ class LlmConfig:
     api_key: str
     model: str
     max_tokens: int = 1024
-    timeout_s: float = 90.0
-    max_retries: int = 2  # 退避重试次数上限（reasonmc 默认 2）
+    timeout_s: float = 60.0
+    max_retries: int = 1  # 网络/超时可重试次数（仅在尚未输出任何内容时重试）
+    disable_thinking: bool = False  # True 时对支持的端点发送 thinking={"type":"disabled"}
 
 
 class LlmClient:
@@ -63,6 +70,8 @@ class LlmClient:
         self.last_prompt_tokens = 0  # 最近一次 usage.prompt_tokens（0=未知）
         # 最近一次调用的完整用量（含缓存命中/未命中 token，用于成本统计）
         self.last_usage: dict = {}
+        # 最近一次调用的耗时指标：latency_ms / ttft_ms / completion_tokens / tokens_per_sec
+        self.last_timing: dict = {}
 
     def _capture_usage(self, data: dict) -> None:
         usage = (data or {}).get("usage") or {}
@@ -98,14 +107,27 @@ class LlmClient:
         if tools:
             body["tools"] = tools
             body["tool_choice"] = "auto"
-        try:
-            resp = self._http.post(
-                url,
-                json=body,
-                headers={"Authorization": f"Bearer {self._config.api_key}"},
-            )
-        except httpx.HTTPError as exc:
-            raise LlmException(-1, f"LLM call failed: {exc}") from exc
+        if self._config.disable_thinking:
+            body["thinking"] = {"type": "disabled"}
+
+        resp = None
+        last_exc: Exception | None = None
+        for attempt in range(self._config.max_retries + 1):
+            try:
+                resp = self._http.post(
+                    url,
+                    json=body,
+                    headers={"Authorization": f"Bearer {self._config.api_key}"},
+                )
+                if resp.status_code // 100 == 2 or not _retryable_status(resp.status_code):
+                    break
+            except httpx.HTTPError as exc:
+                last_exc = exc
+                resp = None
+            if attempt < self._config.max_retries:
+                time.sleep(0.8 * (attempt + 1))
+        if resp is None:
+            raise LlmException(-1, f"LLM call failed: {last_exc}") from last_exc
 
         # 先检查状态码再解析 body（非 2xx 可能是 HTML/空，给可读错误）
         if resp.status_code // 100 != 2:
@@ -151,57 +173,96 @@ class LlmClient:
         if tools:
             body["tools"] = tools
             body["tool_choice"] = "auto"
+        if self._config.disable_thinking:
+            body["thinking"] = {"type": "disabled"}
 
         tool_calls: dict[int, dict] = {}
-        try:
-            with self._http.stream(
-                "POST",
-                url,
-                json=body,
-                headers={"Authorization": f"Bearer {self._config.api_key}"},
-            ) as resp:
-                if resp.status_code // 100 != 2:
-                    detail = resp.read().decode("utf-8", "ignore")[:500]
-                    raise LlmException(resp.status_code, f"LLM HTTP {resp.status_code}: {detail}")
-                for raw in resp.iter_lines():
-                    if not raw:
-                        continue
-                    line = raw if isinstance(raw, str) else raw.decode("utf-8", "ignore")
-                    if line.startswith("data:"):
-                        data = line[5:].strip()
-                    else:
-                        continue
-                    if data == "[DONE]":
-                        break
-                    try:
-                        chunk = json.loads(data)
-                    except ValueError:
-                        continue
-                    usage = chunk.get("usage") or {}
-                    if usage:
-                        self._capture_usage(chunk)
-                    choices = chunk.get("choices") or []
-                    if not choices:
-                        continue
-                    delta = choices[0].get("delta") or {}
-                    content = delta.get("content")
-                    if content:
-                        yield {"type": "text", "text": content}
-                    for tc in delta.get("tool_calls") or []:
-                        idx = tc.get("index", 0)
-                        slot = tool_calls.setdefault(
-                            idx,
-                            {"id": "", "type": "function", "function": {"name": "", "arguments": ""}},
-                        )
-                        if tc.get("id"):
-                            slot["id"] = tc["id"]
-                        fn = tc.get("function") or {}
-                        if fn.get("name"):
-                            slot["function"]["name"] = fn["name"]
-                        if fn.get("arguments"):
-                            slot["function"]["arguments"] += fn["arguments"]
-        except httpx.HTTPError as exc:
-            raise LlmException(-1, f"LLM stream failed: {exc}") from exc
+        t0 = time.perf_counter()
+        ttft_ms: int | None = None
+        reasoning_chars = 0
+        emitted = False
+        attempt = 0
+        while True:
+            emitted = False
+            tool_calls = {}
+            try:
+                with self._http.stream(
+                    "POST",
+                    url,
+                    json=body,
+                    headers={"Authorization": f"Bearer {self._config.api_key}"},
+                ) as resp:
+                    if resp.status_code // 100 != 2:
+                        detail = resp.read().decode("utf-8", "ignore")[:500]
+                        raise LlmException(resp.status_code, f"LLM HTTP {resp.status_code}: {detail}")
+                    for raw in resp.iter_lines():
+                        if not raw:
+                            continue
+                        line = raw if isinstance(raw, str) else raw.decode("utf-8", "ignore")
+                        if line.startswith("data:"):
+                            data = line[5:].strip()
+                        else:
+                            continue
+                        if data == "[DONE]":
+                            break
+                        try:
+                            chunk = json.loads(data)
+                        except ValueError:
+                            continue
+                        usage = chunk.get("usage") or {}
+                        if usage:
+                            self._capture_usage(chunk)
+                        choices = chunk.get("choices") or []
+                        if not choices:
+                            continue
+                        delta = choices[0].get("delta") or {}
+                        # 推理型模型（如 deepseek-v4-flash-vision-exp）先输出 reasoning_content，
+                        # 转发给前端展示"思考过程"，避免长时间黑屏等待
+                        reasoning = delta.get("reasoning_content")
+                        if reasoning:
+                            if ttft_ms is None:
+                                ttft_ms = int((time.perf_counter() - t0) * 1000)
+                            reasoning_chars += len(reasoning)
+                            emitted = True
+                            yield {"type": "reasoning", "text": reasoning}
+                        content = delta.get("content")
+                        if content:
+                            if ttft_ms is None:
+                                ttft_ms = int((time.perf_counter() - t0) * 1000)
+                            emitted = True
+                            yield {"type": "text", "text": content}
+                        for tc in delta.get("tool_calls") or []:
+                            emitted = True
+                            idx = tc.get("index", 0)
+                            slot = tool_calls.setdefault(
+                                idx,
+                                {"id": "", "type": "function", "function": {"name": "", "arguments": ""}},
+                            )
+                            if tc.get("id"):
+                                slot["id"] = tc["id"]
+                            fn = tc.get("function") or {}
+                            if fn.get("name"):
+                                slot["function"]["name"] = fn["name"]
+                            if fn.get("arguments"):
+                                slot["function"]["arguments"] += fn["arguments"]
+                break
+            except httpx.HTTPError as exc:
+                # 网络/超时：仅在"尚未输出任何内容"时重试，避免重复 token
+                if emitted or attempt >= self._config.max_retries:
+                    raise LlmException(-1, f"LLM stream failed: {exc}") from exc
+                attempt += 1
+                time.sleep(0.8 * attempt)
+                continue
+
+        latency_ms = int((time.perf_counter() - t0) * 1000)
+        completion = self.last_usage.get("completion_tokens", 0) or 0
+        self.last_timing = {
+            "latency_ms": latency_ms,
+            "ttft_ms": ttft_ms if ttft_ms is not None else latency_ms,
+            "completion_tokens": completion,
+            "reasoning_chars": reasoning_chars,
+            "tokens_per_sec": round(completion / (latency_ms / 1000), 1) if latency_ms > 0 and completion else 0.0,
+        }
 
         if tool_calls:
             yield {"type": "tool_calls", "tool_calls": [tool_calls[i] for i in sorted(tool_calls)]}

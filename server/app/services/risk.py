@@ -44,6 +44,7 @@ def _llm_client(max_tokens: int | None = None) -> LlmClient:
             api_key=settings.llm_api_key,
             model=settings.llm_model,
             max_tokens=max_tokens or settings.llm_max_tokens,
+            disable_thinking=settings.llm_disable_thinking,
         )
     )
 

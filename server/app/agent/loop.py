@@ -10,6 +10,8 @@
 """
 
 import json
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Iterator
 
 from sqlalchemy.orm import Session as DbSession
@@ -48,6 +50,7 @@ def _client() -> LlmClient:
         api_key=settings.llm_api_key,
         model=settings.llm_model,
         max_tokens=settings.llm_max_tokens,
+        disable_thinking=settings.llm_disable_thinking,
     ))
 
 
@@ -97,6 +100,50 @@ def _dump_tool_result(result: dict, limit: int = MAX_TOOL_RESULT_CHARS) -> str:
         "summary": _summarize(result),
     }
     return json.dumps(payload, ensure_ascii=False)[:limit]
+
+
+def _tool_result_event(db: DbSession, session: Session, tc: dict, name: str,
+                       result: dict, latency_ms: int) -> AgentEvent:
+    """落库工具结果并生成前端事件（含耗时）。"""
+    store.append(db, session, {
+        "role": "tool",
+        "tool_call_id": tc.get("id", ""),
+        "tool_name": name,
+        "content": _dump_tool_result(result),
+    })
+    return AgentEvent("tool_result", {
+        "id": tc.get("id", ""),
+        "name": name,
+        "result": _summarize(result),
+        "latency_ms": latency_ms,
+    })
+
+
+def _run_parallel(db: DbSession, session: Session, reg, batch: list[tuple[dict, str, dict]]):
+    """同一轮内的多个**只读**工具并行执行（每个线程独立 DB 会话）。
+
+    典型场景：模型一次调用两家企业的 get_financial_analysis，串行需 2×2.5s。
+    """
+    from app.db.database import SessionLocal
+
+    def call_one(name: str, args: dict):
+        db2 = SessionLocal()
+        try:
+            t = time.perf_counter()
+            result = reg.call(name, args, db2)
+            return result, int((time.perf_counter() - t) * 1000)
+        finally:
+            db2.close()
+
+    with ThreadPoolExecutor(max_workers=min(4, len(batch))) as pool:
+        futures = {pool.submit(call_one, name, args): (tc, name) for tc, name, args in batch}
+        for fut in as_completed(futures):
+            tc, name = futures[fut]
+            try:
+                result, latency_ms = fut.result()
+            except Exception as exc:  # noqa: BLE001 —— 单个工具失败不影响其他
+                result, latency_ms = {"error": f"{type(exc).__name__}: {exc}"}, 0
+            yield _tool_result_event(db, session, tc, name, result, latency_ms)
 
 
 def _maybe_compact(db: DbSession, session: Session, client: LlmClient, reg, messages: list[dict],
@@ -159,6 +206,7 @@ def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | 
         client = LlmClient(LlmConfig(
             base_url=settings.llm_base_url, api_key=settings.llm_api_key,
             model=preset_row.model_override, max_tokens=settings.llm_max_tokens,
+            disable_thinking=settings.llm_disable_thinking,
         ))
     reg = _registry_for(db, preset)
 
@@ -182,12 +230,18 @@ def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | 
                     if ev["type"] == "text":
                         text_parts.append(ev["text"])
                         yield AgentEvent("token", {"text": ev["text"]})
+                    elif ev["type"] == "reasoning":
+                        yield AgentEvent("reasoning", {"text": ev["text"]})
                     elif ev["type"] == "tool_calls":
                         tool_calls = ev["tool_calls"]
-                # 每次调用后累计用量（缓存命中率/成本）
+                # 每次调用后累计用量（缓存命中率/成本）与耗时（首字延迟/总耗时/tokens 速度）
                 if client.last_usage:
                     stats = store.add_usage(db, session, client.last_usage)
-                    yield AgentEvent("usage", {"call": dict(client.last_usage), **stats})
+                    yield AgentEvent("usage", {
+                        "call": dict(client.last_usage),
+                        "timing": dict(client.last_timing),
+                        **stats,
+                    })
                 break
             except Exception as exc:  # noqa: BLE001
                 # 兜底一：工具消息序列非法（窗口裁剪/会话中断）→ 用无工具历史重试一次
@@ -217,6 +271,7 @@ def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | 
                 "content": "".join(text_parts),
                 "tool_calls": tool_calls,
             })
+            readonly_batch: list[tuple[dict, str, dict]] = []
             for tc in tool_calls:
                 fn = tc.get("function", {})
                 name = fn.get("name", "")
@@ -264,18 +319,24 @@ def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | 
                         })
                         continue
 
+                if tool is not None and not tool.read_only:
+                    # 写操作：顺序执行（避免并发写库）
+                    t_tool = time.perf_counter()
+                    result = reg.call(name, args, db)
+                    yield _tool_result_event(db, session, tc, name, result,
+                                             int((time.perf_counter() - t_tool) * 1000))
+                    continue
+                readonly_batch.append((tc, name, args))
+
+            # 只读工具：同一轮内的多个调用并行执行（如同时分析两家企业的财务）
+            if len(readonly_batch) == 1:
+                tc, name, args = readonly_batch[0]
+                t_tool = time.perf_counter()
                 result = reg.call(name, args, db)
-                store.append(db, session, {
-                    "role": "tool",
-                    "tool_call_id": tc.get("id", ""),
-                    "tool_name": name,
-                    "content": _dump_tool_result(result),
-                })
-                yield AgentEvent("tool_result", {
-                    "id": tc.get("id", ""),
-                    "name": name,
-                    "result": _summarize(result),
-                })
+                yield _tool_result_event(db, session, tc, name, result,
+                                         int((time.perf_counter() - t_tool) * 1000))
+            elif len(readonly_batch) > 1:
+                yield from _run_parallel(db, session, reg, readonly_batch)
             continue
 
         final_text = "".join(text_parts)

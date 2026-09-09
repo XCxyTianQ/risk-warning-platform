@@ -31,6 +31,8 @@ FIELDS: dict[str, list[dict]] = {
         {"key": "llm_model", "label": "模型名称", "type": "text", "desc": "点击「获取可用模型」后从列表选择"},
         {"key": "llm_max_tokens", "label": "单次输出上限", "type": "int", "desc": "普通对话的 max_tokens"},
         {"key": "llm_analysis_max_tokens", "label": "研判输出上限", "type": "int", "desc": "风险研判（需输出完整 JSON）的 max_tokens"},
+        {"key": "llm_disable_thinking", "label": "关闭模型思考", "type": "bool",
+         "desc": "推理型模型（如 deepseek-v4-flash-vision-exp）会先输出思考内容，关闭后响应更快，但复杂分析质量可能下降"},
     ],
     "上下文与压缩": [
         {"key": "llm_context_window", "label": "上下文窗口", "type": "int", "desc": "模型窗口 token 数，压缩阈值按它缩放"},

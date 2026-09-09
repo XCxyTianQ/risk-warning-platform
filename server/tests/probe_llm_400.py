@@ -52,6 +52,13 @@ call_api("孤立 tool", [SYS, {"role": "tool", "tool_call_id": "call_1", "conten
 call_api("assistant.tool_calls 缺结果", [SYS, {"role": "user", "content": "查 600518"},
                                      {"role": "assistant", "content": "", "tool_calls": [TOOL_CALL]},
                                      {"role": "user", "content": "只回复 ok"}])
+call_api("空 assistant 消息", [SYS, {"role": "user", "content": "你好"},
+                           {"role": "assistant", "content": ""},
+                           {"role": "user", "content": "只回复 ok"}])
+call_api("连续两条 user", [SYS, {"role": "user", "content": "你好"},
+                        {"role": "user", "content": "只回复 ok"}])
+call_api("首条不是 user（assistant 开头）", [SYS, {"role": "assistant", "content": "你好"},
+                                      {"role": "user", "content": "只回复 ok"}])
 
 print("\n== 二、窗口裁剪复现（14 条消息 → 最近 12 条从 tool 开始）==")
 s = Session(id="probe")
