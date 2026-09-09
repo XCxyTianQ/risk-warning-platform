@@ -59,7 +59,7 @@ function startResize(zone: Zone, e: PointerEvent) {
 // ---------- 命令面板 ----------
 const paletteOpen = ref(false)
 const paletteQuery = ref('')
-const enterpriseHits = ref<{ id: number; name: string; industry: string }[]>([])
+const enterpriseHits = ref<{ id: number; name: string; industry: string; stock_code?: string }[]>([])
 
 const commands = computed(() => {
   const q = paletteQuery.value.trim().toLowerCase()
@@ -67,8 +67,13 @@ const commands = computed(() => {
     .filter((t) => !q || PANEL_META[t].title.includes(q) || PANEL_META[t].desc.toLowerCase().includes(q))
     .map((t) => ({ kind: 'panel' as const, type: t, label: PANEL_META[t].title, desc: PANEL_META[t].desc }))
   const ents = enterpriseHits.value
-    .filter((e) => !q || e.name.toLowerCase().includes(q))
-    .map((e) => ({ kind: 'enterprise' as const, id: e.id, label: e.name, desc: e.industry }))
+    .filter((e) => !q || e.name.toLowerCase().includes(q) || (e.stock_code ?? '').includes(q))
+    .map((e) => ({
+      kind: 'enterprise' as const,
+      id: e.id,
+      label: e.name,
+      desc: [e.industry, e.stock_code].filter(Boolean).join(' · '),
+    }))
   return [...panels, ...ents].slice(0, 12)
 })
 

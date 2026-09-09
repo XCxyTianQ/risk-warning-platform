@@ -7,7 +7,7 @@ import json
 
 from sqlalchemy.orm import Session as DbSession
 
-from app.datasources.codes import name_of, resolve_code, resolve_code_strict
+from app.datasources.codes import name_of, normalize_code, resolve_code, resolve_code_strict
 from app.datasources.registry import refresh_enterprise
 from app.db.models import Enterprise, Finance, LegalRecord, News, RiskFact
 
@@ -19,7 +19,10 @@ def create_enterprise(
     auto_fetch: bool = True,
     industry: str = "",
 ) -> dict:
-    """新建企业；未给股票代码时按名称严格解析。auto_fetch=True 时若无任何数据则回滚并报错。"""
+    """新建企业；未给股票代码时按名称/代码严格解析。auto_fetch=True 时若无任何数据则回滚并报错。
+
+    `name` 支持直接填股票代码（600518 / SH600519 / 600519.SH），此时会自动解析出证券简称建档。
+    """
     name = (name or "").strip()
     if not name:
         return {"error": "企业名称不能为空"}
@@ -28,7 +31,14 @@ def create_enterprise(
     if existing is not None:
         return {"error": f"企业已存在：{existing.name}（id={existing.id}）", "enterprise_id": existing.id}
 
-    code = (stock_code or "").strip()
+    # 输入即代码时，先归一并查重（避免"600518"与"康美药业股份有限公司"重复建档）
+    input_code = normalize_code(name)
+    if input_code:
+        dup = db.query(Enterprise).filter(Enterprise.stock_code == input_code).first()
+        if dup is not None:
+            return {"error": f"企业已存在：{dup.name}（{dup.stock_code}，id={dup.id}）", "enterprise_id": dup.id}
+
+    code = normalize_code(stock_code) or (stock_code or "").strip()
     resolved_from = ""
     matched_name = ""
     if code:
@@ -39,7 +49,7 @@ def create_enterprise(
         if hit:
             code = hit["code"]
             matched_name = hit["name"]
-            resolved_from = "名称解析"
+            resolved_from = "代码解析" if input_code else "名称解析"
 
     if not code:
         candidates = resolve_code(name, limit=5)
@@ -111,8 +121,15 @@ def delete_enterprise(db: DbSession, enterprise_id: int) -> dict:
 
 
 def lookup_stock(name: str) -> dict:
-    """名称 → 股票代码候选（供前端"添加企业"确认）。"""
-    return {"query": name, "candidates": resolve_code(name)}
+    """名称 / 股票代码 → 标的候选（供前端"添加企业"与检索确认）。"""
+    query = (name or "").strip()
+    candidates = resolve_code(query)
+    out: dict = {"query": query, "candidates": candidates}
+    code = normalize_code(query)
+    if code:
+        out["stock_code"] = code
+        out["resolved_name"] = candidates[0]["name"] if candidates else name_of(code)
+    return out
 
 
 def stock_name(code: str) -> str:

@@ -136,17 +136,53 @@ def build_registry(preset: dict | None = None) -> ToolRegistry:
     ALWAYS = {"list_skills", "load_skill"}
 
     def search_enterprise(db: Session, keyword: str = "", limit: int = 5) -> dict:
-        q = db.query(Enterprise)
-        if keyword:
-            q = q.filter(
-                (Enterprise.name.contains(keyword)) | (Enterprise.industry.contains(keyword))
+        """按名称、行业或股票代码检索企业。
+
+        股票代码优先精确匹配（600519 / SH600519 / 600519.SH 均可）；
+        未建档的代码会返回"可添加"的提示。
+        """
+        from app.datasources.codes import name_of, normalize_code
+
+        kw = (keyword or "").strip()
+        code = normalize_code(kw)
+        rows: list[Enterprise] = []
+        if code:
+            exact = db.query(Enterprise).filter(Enterprise.stock_code == code).first()
+            if exact is not None:
+                rows = [exact]
+        if not rows:
+            rows = (
+                db.query(Enterprise)
+                .filter(
+                    (Enterprise.name.contains(kw))
+                    | (Enterprise.industry.contains(kw))
+                    | (Enterprise.stock_code.contains(kw))
+                    | (Enterprise.unified_code.contains(kw))
+                )
+                .limit(limit)
+                .all()
             )
-        rows = q.limit(limit).all()
-        return {
+        result: dict = {
             "count": len(rows),
             "enterprises": [_brief(e, rules_verdict(db, e.id)) for e in rows],
-            "hint": "如需详细画像请调用 get_score_profile(enterprise_id)" if rows else "未找到企业，可尝试其他关键词",
         }
+        if rows:
+            result["hint"] = "如需详细画像请调用 get_score_profile(enterprise_id)"
+            return result
+        # 未建档：若是有效代码，给出该代码对应的证券简称与添加建议
+        if code:
+            listed = name_of(code)
+            result["hint"] = (
+                f"平台内未找到股票代码 {code}（{listed}）对应的企业，可调用 add_enterprise 添加建档"
+                if listed else
+                f"平台内未找到股票代码 {code} 对应的企业；请确认代码是否正确（仅支持沪深京 A 股）"
+            )
+            result["stock_code"] = code
+            if listed:
+                result["resolved_name"] = listed
+            return result
+        result["hint"] = "未找到企业，可尝试其他关键词，或直接输入股票代码"
+        return result
 
     def get_score_profile(db: Session, enterprise_id: int) -> dict:
         ent = db.get(Enterprise, enterprise_id)
@@ -262,7 +298,7 @@ def build_registry(preset: dict | None = None) -> ToolRegistry:
         return {"enterprise_id": enterprise_id, "enterprise": result["enterprise"]["name"], "dimensions": summary}
 
     def resolve_stock_code(db: Session, name: str) -> dict:
-        """名称 → 股票代码候选（添加企业前确认）。"""
+        """名称或股票代码 → 股票代码候选（添加企业前确认；输入代码时返回对应证券简称）。"""
         from app.services.enterprise import lookup_stock
 
         return lookup_stock(name)
@@ -435,11 +471,11 @@ def build_registry(preset: dict | None = None) -> ToolRegistry:
 
     reg.register(Tool(
         name="search_enterprise",
-        description="按企业名称或行业关键词搜索企业，返回 id/名称/行业/评分/等级。首次接触某企业时先调用它拿到 id。",
+        description="按企业名称、行业关键词或股票代码搜索企业（如「康美药业」「600518」「SH600519」），返回 id/名称/行业/评分/等级。首次接触某企业时先调用它拿到 id。",
         parameters={
             "type": "object",
             "properties": {
-                "keyword": {"type": "string", "description": "企业名称或行业关键词"},
+                "keyword": {"type": "string", "description": "企业名称、行业关键词或股票代码（6 位数字，可带 SH/SZ 前后缀）"},
                 "limit": {"type": "integer", "description": "返回条数，默认 5"},
             },
             "required": ["keyword"],
@@ -543,10 +579,10 @@ def build_registry(preset: dict | None = None) -> ToolRegistry:
     ))
     reg.register(Tool(
         name="resolve_stock_code",
-        description="按企业名称查询 A 股股票代码候选（用于添加企业前确认标的）。",
+        description="按企业名称或股票代码查询 A 股标的（用于添加企业前确认）：输入名称返回代码，输入代码返回证券简称。",
         parameters={
             "type": "object",
-            "properties": {"name": {"type": "string", "description": "企业/上市公司名称关键词"}},
+            "properties": {"name": {"type": "string", "description": "企业名称关键词，或 6 位股票代码（可带 SH/SZ 前后缀）"}},
             "required": ["name"],
         },
         handler=resolve_stock_code,

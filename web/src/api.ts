@@ -3,6 +3,7 @@
 export interface EnterpriseRow {
   id: number
   name: string
+  stock_code?: string
   industry: string
   level: string
   score: number | null

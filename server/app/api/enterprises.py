@@ -31,8 +31,24 @@ def _get_ent(db: Session, enterprise_id: int) -> Enterprise:
 
 
 @router.get("/enterprises")
-def list_enterprises(db: Session = Depends(get_db)):
-    rows = db.query(Enterprise).order_by(Enterprise.id).all()
+def list_enterprises(q: str = "", db: Session = Depends(get_db)):
+    """企业列表；`q` 可按名称、行业或股票代码过滤。"""
+    from app.datasources.codes import normalize_code
+
+    query = db.query(Enterprise)
+    kw = (q or "").strip()
+    if kw:
+        code = normalize_code(kw)
+        cond = (
+            (Enterprise.name.contains(kw))
+            | (Enterprise.industry.contains(kw))
+            | (Enterprise.stock_code.contains(kw))
+            | (Enterprise.unified_code.contains(kw))
+        )
+        if code:
+            cond = cond | (Enterprise.stock_code == code)
+        query = query.filter(cond)
+    rows = query.order_by(Enterprise.id).all()
     return {"total": len(rows), "items": [
         {"id": e.id, "name": e.name, "industry": e.industry, "reg_date": e.reg_date,
          "stock_code": e.stock_code}
@@ -91,14 +107,28 @@ def datasources():
 
 @router.post("/enterprises/analyze_by_name")
 def analyze_by_name(body: AnalyzeByName, db: Session = Depends(get_db)):
-    ent = (
-        db.query(Enterprise)
-        .filter(func.instr(Enterprise.name, body.name.strip()) > 0)
-        .first()
-    )
+    """按名称或股票代码发起研判。"""
+    from app.datasources.codes import normalize_code
+
+    raw = body.name.strip()
+    ent = None
+    code = normalize_code(raw)
+    if code:
+        ent = db.query(Enterprise).filter(Enterprise.stock_code == code).first()
+        if ent is None:
+            raise HTTPException(
+                404,
+                f"平台内未找到股票代码 {raw} 对应的企业；请先在「企业档案」中添加建档。",
+            )
+    if ent is None:
+        ent = (
+            db.query(Enterprise)
+            .filter(func.instr(Enterprise.name, raw) > 0)
+            .first()
+        )
     if ent is None:
         # 尝试精确匹配后再给 404
-        ent = db.query(Enterprise).filter(Enterprise.name == body.name.strip()).first()
+        ent = db.query(Enterprise).filter(Enterprise.name == raw).first()
     if ent is None:
         raise HTTPException(404, f"企业不存在：{body.name}（请先 seed 样例数据）")
     try:

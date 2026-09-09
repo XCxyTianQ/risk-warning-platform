@@ -30,6 +30,7 @@ def dashboard_summary(db: Session = Depends(get_db)):
         rows.append({
             "id": ent.id,
             "name": ent.name,
+            "stock_code": ent.stock_code,
             "industry": ent.industry,
             "level": verdict["level"],
             "score": verdict["score"],

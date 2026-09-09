@@ -61,7 +61,7 @@ async function run() {
     <div class="search-bar">
       <input
         v-model="keyword"
-        placeholder="输入企业名称，例如：深度求索 / 康美药业 / 贵州茅台"
+        placeholder="输入企业名称或股票代码，例如：康美药业 / 600518 / 贵州茅台"
         @keyup.enter="run"
       />
       <button class="btn primary" :disabled="loading" @click="run">

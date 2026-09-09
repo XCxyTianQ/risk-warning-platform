@@ -28,7 +28,15 @@ const rows = computed(() => {
   let list = data.value?.enterprises ?? []
   if (levelFilter.value !== 'all') list = list.filter((e) => e.level === levelFilter.value)
   const kw = keyword.value.trim()
-  if (kw) list = list.filter((e) => e.name.includes(kw) || (e.industry ?? '').includes(kw))
+  if (kw) {
+    const k = kw.toLowerCase()
+    list = list.filter(
+      (e) =>
+        e.name.includes(kw) ||
+        (e.industry ?? '').includes(kw) ||
+        (e.stock_code ?? '').toLowerCase().includes(k),
+    )
+  }
   return [...list].sort((a, b) =>
     sortKey.value === 'name'
       ? a.name.localeCompare(b.name, 'zh-CN')
@@ -127,7 +135,7 @@ onMounted(load)
     <p v-if="error" class="error-box">{{ error }}</p>
 
     <div class="toolbar">
-      <input v-model="keyword" class="toolbar-input" placeholder="搜索企业名称 / 行业" />
+      <input v-model="keyword" class="toolbar-input" placeholder="搜索企业名称 / 股票代码 / 行业" />
       <div class="chips">
         <button class="chip-btn" :class="{ active: levelFilter === 'all' }" @click="levelFilter = 'all'">
           全部 {{ data?.enterprise_total ?? 0 }}
