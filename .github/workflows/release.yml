@@ -15,7 +15,7 @@ permissions:
 
 env:
   PYTHON_VERSION: '3.12'
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   # ------------------------------------------------------------------
@@ -25,15 +25,15 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -73,7 +73,7 @@ jobs:
           } | Tee-Object -FilePath SHA256SUMS-windows.txt
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: windows-x64
           path: |
@@ -90,15 +90,15 @@ jobs:
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -146,12 +146,24 @@ jobs:
           zip -rq "../desktop/release/RiskWarningPlatform-${VERSION}-macos-source.zip" RiskWarningPlatform-macos
           echo "fallback package:"; unzip -l "../desktop/release/RiskWarningPlatform-${VERSION}-macos-source.zip" | tail -3
 
+      - name: Verify single-arch output
+        working-directory: desktop/release
+        run: |
+          set -e
+          ls -lh
+          ls RiskWarningPlatform-*-mac-arm64.dmg >/dev/null
+          ls RiskWarningPlatform-*-mac-arm64.zip >/dev/null
+          if ls RiskWarningPlatform-*-mac-x64.dmg >/dev/null 2>&1; then
+            echo "::error::arm64 任务不应产出 x64 包（其内嵌后端为 arm64，在 Intel Mac 上无法运行）"
+            exit 1
+          fi
+
       - name: Compute checksums
         working-directory: desktop/release
         run: shasum -a 256 *.dmg *.zip > SHA256SUMS-macos-arm64.txt && cat SHA256SUMS-macos-arm64.txt
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: macos-arm64
           path: |
@@ -171,15 +183,15 @@ jobs:
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -210,12 +222,24 @@ jobs:
         working-directory: desktop
         run: npx electron-builder --mac --x64 --publish never
 
+      - name: Verify single-arch output
+        working-directory: desktop/release
+        run: |
+          set -e
+          ls -lh
+          ls RiskWarningPlatform-*-mac-x64.dmg >/dev/null
+          ls RiskWarningPlatform-*-mac-x64.zip >/dev/null
+          if ls RiskWarningPlatform-*-mac-arm64.dmg >/dev/null 2>&1; then
+            echo "::error::x64 任务不应产出 arm64 包（其内嵌后端为 x86_64，在 Apple Silicon 上无法运行）"
+            exit 1
+          fi
+
       - name: Compute checksums
         working-directory: desktop/release
         run: shasum -a 256 *.dmg *.zip > SHA256SUMS-macos-x64.txt && cat SHA256SUMS-macos-x64.txt
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: macos-x64
           path: |
@@ -233,10 +257,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist
           merge-multiple: true
