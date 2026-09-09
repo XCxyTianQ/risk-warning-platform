@@ -44,15 +44,17 @@ jobs:
           pip install -r server/requirements.txt
           pip install pyinstaller
 
-      - name: Build frontend
+      - name: Install web deps
         working-directory: web
-        run: |
-          npm ci
-          npm run build
+        run: npm ci
 
       - name: Install desktop deps
         working-directory: desktop
         run: npm ci
+
+      - name: Build frontend into desktop/resources/web
+        working-directory: desktop
+        run: node scripts/build-web.js
 
       - name: Package backend (PyInstaller onedir)
         working-directory: desktop
@@ -60,9 +62,27 @@ jobs:
           RWP_PYTHON: python
         run: node scripts/build-backend.js
 
+      - name: Verify resources before packaging
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          if (!(Test-Path 'resources/web/index.html')) { throw 'resources/web 缺失：前端未构建' }
+          if (!(Test-Path 'resources/backend/risk-api/risk-api.exe')) { throw 'resources/backend 缺失：后端未打包' }
+          Write-Output 'resources OK'
+
       - name: Package Electron app
         working-directory: desktop
         run: npx electron-builder --win --x64 --publish never
+
+      - name: Inspect packaged app (web + backend present)
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          $app = 'release/win-unpacked/resources'
+          if (!(Test-Path "$app/web/index.html")) { throw '安装包内缺少前端资源（应用会白屏）' }
+          if (!(Test-Path "$app/backend/risk-api/risk-api.exe")) { throw '安装包内缺少后端可执行文件' }
+          if (!(Test-Path "$app/samples/dataset.json")) { throw '安装包内缺少样例数据' }
+          Write-Output 'OK: 前端/后端/样例均已打入应用'
 
       - name: Compute checksums
         working-directory: desktop/release
@@ -109,15 +129,17 @@ jobs:
           pip install -r server/requirements.txt
           pip install pyinstaller
 
-      - name: Build frontend
+      - name: Install web deps
         working-directory: web
-        run: |
-          npm ci
-          npm run build
+        run: npm ci
 
       - name: Install desktop deps
         working-directory: desktop
         run: npm ci
+
+      - name: Build frontend into desktop/resources/web
+        working-directory: desktop
+        run: node scripts/build-web.js
 
       - name: Package backend (PyInstaller onedir)
         working-directory: desktop
@@ -125,9 +147,41 @@ jobs:
           RWP_PYTHON: python
         run: node scripts/build-backend.js
 
+      - name: Verify resources before packaging
+        working-directory: desktop
+        run: |
+          test -f resources/web/index.html || { echo "::error::resources/web 缺失：前端未构建"; exit 1; }
+          test -x resources/backend/risk-api/risk-api || { echo "::error::resources/backend 缺失或不可执行"; exit 1; }
+          echo "resources OK"
+
       - name: Package Electron app
         working-directory: desktop
         run: npx electron-builder --mac --arm64 --publish never
+
+      - name: Verify single-arch output
+        working-directory: desktop/release
+        run: |
+          set -e
+          ls -lh
+          ls RiskWarningPlatform-*-mac-arm64.dmg >/dev/null
+          ls RiskWarningPlatform-*-mac-arm64.zip >/dev/null
+          if ls RiskWarningPlatform-*-mac-x64.dmg >/dev/null 2>&1; then
+            echo "::error::arm64 任务不应产出 x64 包（其内嵌后端为 arm64，在 Intel Mac 上无法运行）"
+            exit 1
+          fi
+
+      - name: Inspect app bundle (web + backend present, backend executable)
+        working-directory: desktop/release
+        run: |
+          set -e
+          ZIP=$(ls RiskWarningPlatform-*-mac-arm64.zip)
+          echo "== 关键内容 =="
+          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
+          zipinfo -l "$ZIP" | grep -E "^-.*Contents/Resources/web/index\.html$" >/dev/null || {
+            echo "::error::app 内缺少前端资源 web/index.html（应用会白屏）"; exit 1; }
+          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
+            echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
+          echo "OK: 前端资源与后端可执行文件均已打入 app 包"
 
       - name: Package macOS source fallback (no Gatekeeper needed)
         run: |
@@ -145,29 +199,6 @@ jobs:
           cd dist-fallback
           zip -rq "../desktop/release/RiskWarningPlatform-${VERSION}-macos-source.zip" RiskWarningPlatform-macos
           echo "fallback package:"; unzip -l "../desktop/release/RiskWarningPlatform-${VERSION}-macos-source.zip" | tail -3
-
-      - name: Verify single-arch output
-        working-directory: desktop/release
-        run: |
-          set -e
-          ls -lh
-          ls RiskWarningPlatform-*-mac-arm64.dmg >/dev/null
-          ls RiskWarningPlatform-*-mac-arm64.zip >/dev/null
-          if ls RiskWarningPlatform-*-mac-x64.dmg >/dev/null 2>&1; then
-            echo "::error::arm64 任务不应产出 x64 包（其内嵌后端为 arm64，在 Intel Mac 上无法运行）"
-            exit 1
-          fi
-
-      - name: Inspect app bundle (backend executable present)
-        working-directory: desktop/release
-        run: |
-          set -e
-          ZIP=$(ls RiskWarningPlatform-*-mac-arm64.zip)
-          echo "== 关键内容 =="
-          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
-          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
-            echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
-          echo "OK: 后端可执行文件与前端资源均已打入 app 包"
 
       - name: Compute checksums
         working-directory: desktop/release
@@ -213,21 +244,30 @@ jobs:
           pip install -r server/requirements.txt
           pip install pyinstaller
 
-      - name: Build frontend
+      - name: Install web deps
         working-directory: web
-        run: |
-          npm ci
-          npm run build
+        run: npm ci
 
       - name: Install desktop deps
         working-directory: desktop
         run: npm ci
+
+      - name: Build frontend into desktop/resources/web
+        working-directory: desktop
+        run: node scripts/build-web.js
 
       - name: Package backend (PyInstaller onedir)
         working-directory: desktop
         env:
           RWP_PYTHON: python
         run: node scripts/build-backend.js
+
+      - name: Verify resources before packaging
+        working-directory: desktop
+        run: |
+          test -f resources/web/index.html || { echo "::error::resources/web 缺失：前端未构建"; exit 1; }
+          test -x resources/backend/risk-api/risk-api || { echo "::error::resources/backend 缺失或不可执行"; exit 1; }
+          echo "resources OK"
 
       - name: Package Electron app
         working-directory: desktop
@@ -245,16 +285,18 @@ jobs:
             exit 1
           fi
 
-      - name: Inspect app bundle (backend executable present)
+      - name: Inspect app bundle (web + backend present, backend executable)
         working-directory: desktop/release
         run: |
           set -e
           ZIP=$(ls RiskWarningPlatform-*-mac-x64.zip)
           echo "== 关键内容 =="
           zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
+          zipinfo -l "$ZIP" | grep -E "^-.*Contents/Resources/web/index\.html$" >/dev/null || {
+            echo "::error::app 内缺少前端资源 web/index.html（应用会白屏）"; exit 1; }
           zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
             echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
-          echo "OK: 后端可执行文件与前端资源均已打入 app 包"
+          echo "OK: 前端资源与后端可执行文件均已打入 app 包"
 
       - name: Compute checksums
         working-directory: desktop/release
