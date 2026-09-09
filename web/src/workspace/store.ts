@@ -2,7 +2,7 @@
 
 import { reactive } from 'vue'
 
-export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze' | 'mcp' | 'presets'
+export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze' | 'finance' | 'mcp' | 'presets'
 export type DockZone = 'left' | 'right' | 'bottom'
 
 export interface Panel {
@@ -20,6 +20,7 @@ export const PANEL_META: Record<PanelType, { title: string; icon: string; desc: 
   enterprises: { title: '企业档案', icon: '🏢', desc: '企业列表与筛选', singleton: true },
   alerts: { title: '风险线索', icon: '🚨', desc: '大模型产出的风险事实', singleton: true },
   analyze: { title: '智能研判', icon: '🧠', desc: '单企业一键研判', singleton: true },
+  finance: { title: '金融分析', icon: '📈', desc: '杜邦分解 + Z/F/M 模型 + 同业对标', singleton: true },
   mcp: { title: 'MCP 服务', icon: '🔌', desc: '外部 MCP 工具接入与同步', singleton: true },
   presets: { title: 'Agent 预设', icon: '🧩', desc: '预设组合 + 手搓插件/技能', singleton: true },
 }
@@ -149,6 +150,15 @@ export function openForTool(name: string, result: Record<string, any>) {
   }
   if (name === 'search_enterprise' || name === 'list_enterprises_by_level') {
     openPanel('enterprises', { dock: 'right' })
+    return
+  }
+  if (name === 'get_financial_analysis' || name === 'compare_financials' || name === 'screen_by_financial_metric') {
+    const id = result.enterprise_id ?? result.enterprise?.id ?? result.rows?.[0]?.enterprise_id
+    openPanel('finance', {
+      props: id ? { enterpriseId: id } : {},
+      title: result.enterprise?.name ?? '金融分析',
+      dock: 'right',
+    })
     return
   }
   if (name === 'get_platform_overview') {

@@ -41,6 +41,17 @@ BUILTIN_PRESETS = [
                                   "list_enterprises_by_level", "get_platform_overview", "list_skills", "load_skill"]),
         "skills_json": json.dumps(["企业风险评估报告", "多企业对比分析", "舆情专项研判"]),
     },
+    {
+        "name": "财务分析师",
+        "description": "聚焦财报：杜邦分解 + Z/F/M 模型 + 同业对标 + 异常勾稽，输出财务分析结论",
+        "prompt_extra": "你是财务分析师：所有数字必须来自工具返回的财报指标，并标注年份与单位；"
+                       "模型结论要写明阈值与输入完整度（可计算/近似/缺失），缺失即说明缺失，不得推测；"
+                       "对异常信号要给出可能原因与需进一步核实的材料清单；不构成投资建议。",
+        "tools_json": json.dumps(["search_enterprise", "get_financial_analysis", "compare_financials",
+                                  "screen_by_financial_metric", "get_score_profile", "get_risk_facts",
+                                  "refresh_enterprise_data", "list_skills", "load_skill"]),
+        "skills_json": json.dumps(["财务分析", "多企业对比分析", "企业风险评估报告"]),
+    },
 ]
 
 

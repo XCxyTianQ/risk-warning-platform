@@ -5,6 +5,7 @@ import type { EChartsOption } from 'echarts'
 
 import { api, DIM_LABEL, fmtTime, gradeColor, levelOf, scoreColor, type RiskSnapshot } from '../api'
 import BaseChart from '../components/BaseChart.vue'
+import { openPanel } from '../workspace/store'
 
 const route = useRoute()
 const router = useRouter()
@@ -188,6 +189,13 @@ async function reAnalyze() {
   }
 }
 
+/** 打开金融分析面板（同一企业），停靠在右侧 */
+function openFinance() {
+  const eid = id.value
+  if (!eid) return
+  openPanel('finance', { props: { enterpriseId: eid }, title: profile.value?.name ?? '金融分析', dock: 'right' })
+}
+
 onMounted(load)
 </script>
 
@@ -204,6 +212,7 @@ onMounted(load)
         </p>
       </div>
       <div class="head-actions">
+        <button class="btn ghost" @click="openFinance">📈 金融分析</button>
         <button v-if="profile?.stock_code" class="btn ghost" :disabled="refreshing" @click="refreshData">
           {{ refreshing ? '刷新中…' : '🔄 数据源刷新' }}
         </button>

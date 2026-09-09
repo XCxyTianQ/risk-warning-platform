@@ -1,5 +1,7 @@
 """数据源注册表：按维度选择数据源 + 降级链 + 多信源合并 + 幂等入库。"""
 
+import json
+
 from sqlalchemy.orm import Session as DbSession
 
 from app.datasources.akshare_src import akshare_source
@@ -8,13 +10,15 @@ from app.datasources.base import DataSource, FetchResult, NormalizedRecord
 from app.datasources.sina_src import sina_source
 from app.db.models import Enterprise, Finance, LegalRecord, News
 
-# 维度 → 数据源优先级（靠前者优先；news 维度多信源合并）
+# 维度 → 数据源优先级（靠前者优先；news/finance 维度多信源合并）
+# finance 合并的意义：东财摘要提供比率类指标，新浪三表提供绝对值科目（Z/F/M 模型输入），
+# 二者按 (年份, 报告类型) 做字段级合并，任一信源缺失都不影响另一信源的贡献。
 SOURCES: dict[str, list[DataSource]] = {
-    "finance": [akshare_source, sina_source],       # 东财 → 新浪（降级）
+    "finance": [akshare_source, sina_source],       # 东财摘要 + 新浪三表（字段级合并）
     "news": [akshare_source, announcement_source],  # 东财个股新闻 + 东财公告（合并）
     "legal": [akshare_source],                      # 巨潮诉讼统计
 }
-MERGE_DIMS = {"news"}
+MERGE_DIMS = {"news", "finance"}
 
 
 def source_status() -> list[dict]:
@@ -62,26 +66,52 @@ def fetch_dimension(db: DbSession, enterprise: Enterprise, dimension: str) -> Fe
     return FetchResult(dimension, "none", error="; ".join(errors), gap=gap)
 
 
+def _load_json(raw: str) -> dict:
+    """安全解析 JSON 对象（脏数据/空值返回空字典）。"""
+    try:
+        data = json.loads(raw or "{}")
+    except ValueError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
 def upsert_records(db: DbSession, enterprise_id: int, result: FetchResult) -> dict:
-    """幂等入库：财务按 (企业, 年份, 报告类型) 覆盖；新闻/法律按标题去重。"""
+    """幂等入库：财务按 (企业, 年份, 报告类型) 覆盖并做指标字段级合并；新闻/法律按标题去重。"""
     inserted = updated = 0
     for rec in result.records:
         if rec.kind == "finance":
+            payload = dict(rec.payload)
+            incoming = _load_json(payload.pop("metrics_json", ""))
             row = (
                 db.query(Finance)
                 .filter(
                     Finance.enterprise_id == enterprise_id,
-                    Finance.year == rec.payload["year"],
-                    Finance.report_type == rec.payload["report_type"],
+                    Finance.year == payload["year"],
+                    Finance.report_type == payload["report_type"],
                 )
                 .first()
             )
             if row is None:
-                db.add(Finance(enterprise_id=enterprise_id, **rec.payload))
+                db.add(Finance(
+                    enterprise_id=enterprise_id,
+                    metrics_json=json.dumps(incoming, ensure_ascii=False),
+                    **payload,
+                ))
+                db.flush()  # 立即可见：多信源在同一次刷新内按 (年份, 报告类型) 合并到同一行
                 inserted += 1
             else:
-                for k, v in rec.payload.items():
-                    setattr(row, k, v)
+                merged = _load_json(row.metrics_json)
+                merged.update(incoming)
+                row.metrics_json = json.dumps(merged, ensure_ascii=False)
+                for k, v in payload.items():
+                    if k == "source":
+                        # 多信源合并：保留两段来源说明
+                        if v and v not in (row.source or ""):
+                            row.source = (f"{row.source}+{v}" if row.source else v)[:200]
+                        continue
+                    # 顶层字段：非零值才覆盖，避免缺失信源把已有数据清零
+                    if v or not getattr(row, k, 0):
+                        setattr(row, k, v)
                 updated += 1
         elif rec.kind == "news":
             exists = (

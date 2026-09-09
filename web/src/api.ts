@@ -70,8 +70,129 @@ export interface AnalyzeResp {
   }
 }
 
-export interface AlertRow {
-  id: number
+// ---------- 金融分析模块 ----------
+
+export interface FinanceKpi {
+  key: string
+  label: string
+  unit: string
+  group: string
+  value: number | null
+  prev: number | null
+  yoy: number | null
+  trend: 'up' | 'down' | 'flat'
+  higher_better: boolean
+  available: boolean
+  year: string | null
+  note: string
+}
+
+export interface FinanceSeries {
+  key: string
+  label: string
+  unit: string
+  points: { year: string; value: number | null }[]
+}
+
+export interface FinanceTrendGroup {
+  label: string
+  series: FinanceSeries[]
+}
+
+export interface DupontRow {
+  year: string
+  roe: number | null
+  net_margin: number | null
+  asset_turnover: number | null
+  equity_multiplier: number | null
+  complete: boolean
+}
+
+export interface AltmanModel {
+  score: number | null
+  verdict: string | null
+  available: boolean
+  basis: string
+  thresholds: string
+  components: Record<string, { value: number | null; source: string; label: string }>
+  missing: string[]
+  note: string
+}
+
+export interface FinanceAnalysis {
+  enterprise: { id: number; name: string; industry: string; stock_code: string; legal_rep?: string; reg_date?: string; data_note?: string }
+  available: boolean
+  reason?: string
+  latest_year?: string
+  data_status?: string
+  market_cap_wan?: number | null
+  kpi: FinanceKpi[]
+  trends: Record<string, FinanceTrendGroup>
+  dupont: {
+    formula: string
+    rows: DupontRow[]
+    attribution: {
+      from_year: string
+      to_year: string
+      roe_delta: number
+      items: { key: string; label: string; contrib: number }[]
+      note: string
+    } | null
+  }
+  models: {
+    altman: { key: string; name: string; period: string; z: AltmanModel; z2: AltmanModel }
+    piotroski: {
+      key: string; name: string; period?: string; available: boolean; reason?: string
+      score: number | null; max_score: number; full_score: number; verdict: string | null
+      complete?: boolean
+      signals: { name: string; group: string; pass: boolean | null; detail: string }[]
+      note?: string
+    }
+    beneish: {
+      key: string; name: string; period?: string; available: boolean; reason?: string
+      score: number | null; thresholds?: string; verdict: string | null
+      indices: { key: string; label: string; value: number | null; source: string; detail: string }[]
+      missing: string[]; approx?: string[]; note?: string
+    }
+  }
+  peers: {
+    industry: string
+    rows: {
+      enterprise_id: number; name: string; industry: string; is_self: boolean; year: string
+      metrics: Record<string, number | null>
+      percentiles?: Record<string, number | null>
+    }[]
+    metrics: { key: string; label: string; unit: string; higher_better: boolean }[]
+    note: string
+  } | null
+  peer_median?: Record<string, number>
+  anomalies: { code: string; level: string; title: string; detail: string; evidence: Record<string, any> }[]
+  data_quality: {
+    years: number
+    periods: { year: string; report_type: string; source: string; derived: string[] }[]
+    missing_metrics: string[]
+    notes: string[]
+  }
+}
+
+export interface FinanceOverviewRow {
+  enterprise_id: number
+  name: string
+  industry: string
+  stock_code: string
+  has_finance: boolean
+  years: number
+  latest_year: string | null
+  revenue: number | null
+  net_profit: number | null
+  revenue_growth: number | null
+  gross_margin: number | null
+  net_margin: number | null
+  roe: number | null
+  debt_ratio: number | null
+}
+
+export interface AlertRow {  id: number
   enterprise_id: number
   enterprise: string
   level: string
@@ -177,6 +298,13 @@ export const api = {
       body: JSON.stringify({ action, handler, note }),
     }),
   alertReportUrl: (id: number) => `/api/alerts/${id}/report`,
+
+  // --- 金融分析模块 ---
+  financeOverview: () =>
+    request<{ total: number; items: FinanceOverviewRow[] }>('/api/finance/overview'),
+  financeAnalysis: (id: number, years = 5, peers = true) =>
+    request<FinanceAnalysis>(`/api/finance/${id}/analysis?years=${years}&peers=${peers}`),
+  financeReportUrl: (id: number, years = 5) => `/api/finance/${id}/report?years=${years}`,
 
   // --- 设置 ---
   settings: () =>

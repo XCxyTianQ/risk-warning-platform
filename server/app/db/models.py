@@ -77,6 +77,9 @@ class Finance(Base):
     net_profit: Mapped[float] = mapped_column(Float, default=0)
     debt_ratio: Mapped[float] = mapped_column(Float, default=0)
     source: Mapped[str] = mapped_column(String(200), default="")
+    # 金融分析指标快照（键值对，单位见 key 后缀约定：_ratio 为百分比，其余为万元/元）
+    # 多信源按 (year, report_type) 字段级合并，供杜邦分解与 Z/F/M 模型计算
+    metrics_json: Mapped[str] = mapped_column(Text, default="{}")
 
     enterprise: Mapped[Enterprise] = relationship(back_populates="finances")
 

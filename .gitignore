@@ -21,6 +21,8 @@ data/*.sqlite*
 # ===== 运行产物 =====
 server/analyze_result.json
 *.result.json
+# 探针输出（本地生成，可随时重跑）
+server/tests/_*
 
 # ===== IDE / OS =====
 .idea/

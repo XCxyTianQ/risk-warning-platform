@@ -56,7 +56,39 @@ def get_db():
 
 
 def init_db() -> None:
-    """建表（骨架期自动建；正式版换 Alembic 迁移）。"""
+    """建表 + 轻量迁移（骨架期自动建；正式版换 Alembic 迁移）。"""
     from app.db import models  # noqa: F401 —— 注册模型
 
     Base.metadata.create_all(bind=engine)
+    _ensure_columns()
+
+
+def _ensure_columns() -> None:
+    """SQLite 轻量迁移：为已存在的表补齐模型中新增的列（幂等，可重复执行）。
+
+    场景：老版本数据库缺少新字段（如 finance.metrics_json），
+    升级后无需手工迁移脚本即可继续使用。
+    """
+    from sqlalchemy import inspect, text
+
+    if not engine.url.drivername.startswith("sqlite"):
+        return
+    insp = inspect(engine)
+    with engine.begin() as conn:
+        for table in Base.metadata.sorted_tables:
+            if not insp.has_table(table.name):
+                continue
+            existing = {c["name"] for c in insp.get_columns(table.name)}
+            for col in table.columns:
+                if col.name in existing:
+                    continue
+                ddl = f'ALTER TABLE "{table.name}" ADD COLUMN "{col.name}" {col.type.compile(engine.dialect)}'
+                default = getattr(col.default, "arg", None) if col.default is not None else None
+                if default is not None and not callable(default):
+                    if isinstance(default, str):
+                        ddl += " DEFAULT '" + default.replace("'", "''") + "'"
+                    elif isinstance(default, bool):
+                        ddl += f" DEFAULT {1 if default else 0}"
+                    elif isinstance(default, (int, float)):
+                        ddl += f" DEFAULT {default}"
+                conn.execute(text(ddl))

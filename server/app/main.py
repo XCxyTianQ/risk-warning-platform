@@ -9,6 +9,7 @@ from app.api.alerts import router as alert_router
 from app.api.chat import router as chat_router
 from app.api.dashboard import router as dashboard_router
 from app.api.enterprises import router as enterprise_router
+from app.api.finance import router as finance_router
 from app.api.mcp import router as mcp_router
 from app.api.plugins import router as plugins_router
 from app.api.settings import router as settings_router
@@ -66,7 +67,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=settings.app_name, version="0.2.0", lifespan=lifespan)
+app = FastAPI(title=settings.app_name, version="0.4.0", lifespan=lifespan)
 
 # 开发期允许 Vite dev server 跨域访问（生产改为同源/反代）
 app.add_middleware(
@@ -81,6 +82,7 @@ app.include_router(enterprise_router)
 app.include_router(dashboard_router)
 app.include_router(chat_router)
 app.include_router(alert_router)
+app.include_router(finance_router)
 app.include_router(settings_router)
 app.include_router(mcp_router)
 app.include_router(skills_router)
@@ -90,7 +92,7 @@ app.include_router(share_router)
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"status": "ok", "service": settings.app_name, "version": "0.3.0"}
+    return {"status": "ok", "service": settings.app_name, "version": "0.4.0"}
 
 
 # ---------------------------------------------------------------------------

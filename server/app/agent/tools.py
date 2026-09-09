@@ -324,6 +324,115 @@ def build_registry(preset: dict | None = None) -> ToolRegistry:
             "evidence": v["evidence"][:8],
         }
 
+    # ---------- 金融分析模块 ----------
+
+    def _models_brief(models: dict) -> dict:
+        """模型结论摘要（去掉逐项输入，避免上下文膨胀）。"""
+        alt = models.get("altman", {})
+        z, z2 = alt.get("z", {}), alt.get("z2", {})
+        f, b = models.get("piotroski", {}), models.get("beneish", {})
+        return {
+            "altman_z": {"score": z.get("score"), "verdict": z.get("verdict"), "available": z.get("available"),
+                         "missing": z.get("missing", [])},
+            "altman_z2": {"score": z2.get("score"), "verdict": z2.get("verdict"), "available": z2.get("available")},
+            "piotroski_f": {"score": f.get("score"), "max_score": f.get("max_score"), "verdict": f.get("verdict"),
+                            "failed": [s["name"] for s in f.get("signals", []) if s.get("pass") is False],
+                            "note": f.get("note", "")},
+            "beneish_m": {"score": b.get("score"), "verdict": b.get("verdict"), "available": b.get("available"),
+                          "missing": b.get("missing", []), "note": b.get("note", "")},
+        }
+
+    def get_financial_analysis(db: Session, enterprise_id: int, include_peers: bool = True) -> dict:
+        """金融分析模块：KPI / 杜邦分解 / Altman Z、Piotroski F、Beneish M / 同业对标 / 异常勾稽。"""
+        from app.services.finance import analysis as _analysis
+
+        a = _analysis(db, enterprise_id, with_peers=include_peers)
+        if a.get("error"):
+            return a
+        if not a.get("available"):
+            return {"enterprise": a["enterprise"], "available": False,
+                    "reason": a.get("reason"), "data_status": a.get("data_status"),
+                    "hint": "可用 refresh_enterprise_data 拉取公开财报，或确认企业是否有股票代码"}
+        peers = a.get("peers") or {}
+        return {
+            "enterprise": a["enterprise"],
+            "available": True,
+            "latest_year": a["latest_year"],
+            "kpi": [{k: v for k, v in item.items() if k != "note"} for item in a["kpi"] if item["available"]],
+            "dupont": a["dupont"],
+            "models": _models_brief(a["models"]),
+            "anomalies": a["anomalies"],
+            "peers": {
+                "industry": peers.get("industry"),
+                "note": peers.get("note"),
+                "rows": [
+                    {"name": r["name"], "is_self": r["is_self"], "year": r["year"],
+                     "metrics": r["metrics"], "percentiles": r.get("percentiles", {})}
+                    for r in peers.get("rows", [])
+                ],
+            } if peers else None,
+            "data_quality": a["data_quality"],
+        }
+
+    def compare_financials(db: Session, enterprise_ids: list[int]) -> dict:
+        """多家企业财务横向对比（最多 5 家）：规模、盈利、杠杆、现金流与模型结论。"""
+        from app.services.finance import analysis as _analysis
+
+        ids = [int(i) for i in (enterprise_ids or [])][:5]
+        if len(ids) < 2:
+            return {"error": "至少需要 2 个 enterprise_id"}
+        rows = []
+        for eid in ids:
+            a = _analysis(db, eid, with_peers=False)
+            if a.get("error") or not a.get("available"):
+                rows.append({"enterprise_id": eid, "name": a.get("enterprise", {}).get("name", str(eid)),
+                             "available": False, "reason": a.get("reason", "无数据")})
+                continue
+            kpi = {k["key"]: k["value"] for k in a["kpi"] if k["available"]}
+            rows.append({
+                "enterprise_id": eid,
+                "name": a["enterprise"]["name"],
+                "industry": a["enterprise"]["industry"],
+                "available": True,
+                "latest_year": a["latest_year"],
+                "metrics": {k: kpi.get(k) for k in (
+                    "revenue", "net_profit", "revenue_growth", "gross_margin", "net_margin",
+                    "roe", "debt_ratio", "ocf", "ocf_to_profit")},
+                "models": _models_brief(a["models"]),
+                "anomaly_count": len(a["anomalies"]),
+            })
+        return {"count": len(rows), "rows": rows,
+                "hint": "数值单位见各指标：万元 / % / 倍；模型结论需结合数据完整度判断"}
+
+    def screen_by_financial_metric(db: Session, metric: str, op: str = "lt", value: float = 0, limit: int = 10) -> dict:
+        """按财务指标筛选企业（如毛利率低于 20%、资产负债率高于 70%）。"""
+        from app.services.finance import METRIC_META, overview as _overview
+
+        alias = {"revenue_growth": "revenue_growth", "gross_margin": "gross_margin", "net_margin": "net_margin",
+                 "roe": "roe", "debt_ratio": "debt_ratio", "revenue": "revenue", "net_profit": "net_profit"}
+        key = alias.get(metric.strip(), metric.strip())
+        if key not in alias:
+            return {"error": f"不支持的指标：{metric}", "supported": sorted(alias)}
+        ops = {"lt": lambda x: x < value, "le": lambda x: x <= value,
+               "gt": lambda x: x > value, "ge": lambda x: x >= value}
+        if op not in ops:
+            return {"error": f"不支持的比较符：{op}", "supported": sorted(ops)}
+        data = _overview(db)
+        hit = []
+        for item in data["items"]:
+            v = item.get(key)
+            if v is None:
+                continue
+            if ops[op](float(v)):
+                hit.append({"enterprise_id": item["enterprise_id"], "name": item["name"],
+                            "industry": item["industry"], "year": item["latest_year"], "value": v})
+        hit.sort(key=lambda x: x["value"])
+        label, unit = METRIC_META.get(key, (key, ""))[:2]
+        return {"metric": key, "metric_label": label, "unit": unit, "op": op, "threshold": value,
+                "count": len(hit), "items": hit[: max(1, min(limit, 50))],
+                "scanned": len(data["items"])}
+
+
     reg.register(Tool(
         name="search_enterprise",
         description="按企业名称或行业关键词搜索企业，返回 id/名称/行业/评分/等级。首次接触某企业时先调用它拿到 id。",
@@ -456,6 +565,47 @@ def build_registry(preset: dict | None = None) -> ToolRegistry:
         },
         handler=add_enterprise,
         read_only=False,
+    ))
+    reg.register(Tool(
+        name="get_financial_analysis",
+        description="金融分析模块：返回企业的财务 KPI、杜邦分解、Altman Z/Z''、Piotroski F、Beneish M 模型结论、同业对标分位与异常勾稽信号。用户问财务/财报/盈利质量/偿债能力/是否可能财务造假时使用。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "enterprise_id": {"type": "integer", "description": "企业 id（来自 search_enterprise）"},
+                "include_peers": {"type": "boolean", "description": "是否返回同业对标，默认 true"},
+            },
+            "required": ["enterprise_id"],
+        },
+        handler=get_financial_analysis,
+    ))
+    reg.register(Tool(
+        name="compare_financials",
+        description="多家企业财务横向对比（最多 5 家）：营收/利润/增速/毛利率/净利率/ROE/资产负债率/现金流与模型结论。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "enterprise_ids": {"type": "array", "items": {"type": "integer"},
+                                   "description": "2~5 个企业 id"},
+            },
+            "required": ["enterprise_ids"],
+        },
+        handler=compare_financials,
+    ))
+    reg.register(Tool(
+        name="screen_by_financial_metric",
+        description="按财务指标筛选企业，例如'毛利率低于 20%''资产负债率高于 70%''营收负增长'。可用指标：revenue/net_profit/revenue_growth/gross_margin/net_margin/roe/debt_ratio。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "metric": {"type": "string", "description": "指标 key"},
+                "op": {"type": "string", "description": "lt/le/gt/ge，默认 lt"},
+                "value": {"type": "number", "description": "阈值"},
+                "limit": {"type": "integer", "description": "返回条数，默认 10"},
+            },
+            "required": ["metric", "op", "value"],
+        },
+        handler=screen_by_financial_metric,
     ))
     reg.register(Tool(
         name="list_skills",
