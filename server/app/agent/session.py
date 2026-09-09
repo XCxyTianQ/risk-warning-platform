@@ -39,6 +39,59 @@ def estimate_cost(cache_hit: int, cache_miss: int, output: int) -> float:  # noq
     return 0.0
 
 
+def _missing_tool_result(tool_call_id: str) -> dict:
+    """补齐缺失的工具结果：会话中断/窗口裁剪时使用，保证消息序列合法。"""
+    return {
+        "role": "tool",
+        "tool_call_id": tool_call_id,
+        "content": json.dumps(
+            {"error": "工具结果缺失（会话中断或已被裁剪），请重新调用该工具获取数据"},
+            ensure_ascii=False,
+        ),
+    }
+
+
+def sanitize_tool_pairs(messages: list[dict]) -> list[dict]:
+    """把消息序列整理成提供方要求的合法形态（否则会 400）：
+
+    1. `tool` 消息必须紧跟其 `assistant(tool_calls)`——孤立的 `tool` 直接丢弃；
+    2. `assistant(tool_calls)` 的每个 tool_call_id 都必须有对应的 `tool` 结果——
+       缺失的用占位结果补齐（而不是删掉，尽量保留上下文）。
+
+    触发场景：最近 N 条窗口把工具调用对从中间切开；或用户在工具执行中途中断会话。
+    """
+    out: list[dict] = []
+    pending: set[str] = set()
+
+    def flush_pending() -> None:
+        for tcid in list(pending):
+            out.append(_missing_tool_result(tcid))
+        pending.clear()
+
+    for m in messages:
+        role = m.get("role")
+        if role == "tool":
+            tcid = m.get("tool_call_id") or ""
+            if tcid in pending:
+                out.append(m)
+                pending.discard(tcid)
+            # 孤立 tool（其 assistant 不在窗口内）→ 丢弃，避免 400
+            continue
+        if role == "assistant" and m.get("tool_calls"):
+            flush_pending()  # 上一个 assistant 的结果没回全，先补齐
+            out.append(m)
+            for tc in m["tool_calls"]:
+                tcid = tc.get("id") or ""
+                if tcid:
+                    pending.add(tcid)
+            continue
+        flush_pending()
+        out.append(m)
+
+    flush_pending()  # 末尾 assistant(tool_calls) 缺结果 → 补齐
+    return out
+
+
 class SessionStore:
     def create(self, db: DbSession, title: str = "新对话") -> Session:
         sid = uuid.uuid4().hex[:12]
@@ -120,11 +173,13 @@ class SessionStore:
         db.commit()
         return message
 
-    def context(self, session: Session) -> list[dict]:
+    def context(self, session: Session, tool_free: bool = False) -> list[dict]:
         """构建送入模型的上下文：system 摘要（若有）+ 压缩点之后的最近消息。
 
         - 只保留 role/content/tool_calls/tool_call_id（剥离内部 id 等字段）
         - 上下文体积恒定：更早的内容已被摘要替代
+        - 工具消息成对性由 sanitize_tool_pairs 保证（窗口裁剪/会话中断后不会 400）
+        - tool_free=True：仅保留 user / 纯文本 assistant（工具序列出错时的兜底重试）
         """
         out: list[dict] = []
         if session.summary:
@@ -133,7 +188,15 @@ class SessionStore:
                 "content": "[会话摘要（更早的对话已压缩，视为已知信息）]\n" + session.summary,
             })
         recent = [m for m in session.messages if (m.get("id") or 0) > session.compacted_until]
-        for m in recent[-WINDOW:]:
+        if tool_free:
+            recent = [
+                m for m in recent
+                if m.get("role") in ("user", "system")
+                or (m.get("role") == "assistant" and not m.get("tool_calls"))
+            ]
+        else:
+            recent = sanitize_tool_pairs(recent[-WINDOW:])
+        for m in recent:
             item = {"role": m.get("role"), "content": m.get("content") or ""}
             if m.get("tool_calls"):
                 item["tool_calls"] = m["tool_calls"]

@@ -59,6 +59,19 @@ def is_overflow_error(exc: Exception) -> bool:
     return any(h in text for h in OVERFLOW_HINTS)
 
 
+TOOL_SEQUENCE_HINTS = (
+    "role 'tool'", 'role "tool"', "tool_calls", "tool messages", "tool_call_id",
+)
+
+
+def is_tool_sequence_error(exc: Exception) -> bool:
+    """是否为"工具消息序列不合法"类 400（可退化为无工具上下文重试一次）。"""
+    text = str(exc).lower()
+    if "400" not in text:
+        return False
+    return any(h in text for h in TOOL_SEQUENCE_HINTS)
+
+
 def _split_for_compaction(session: Session) -> tuple[list[dict], int]:
     """按 retainRatio 切分：返回 (待折叠消息, 折叠到的消息 id)。
 

@@ -82,8 +82,21 @@ def _summarize(result: dict) -> dict:
     return {"ok": True, **summary}
 
 
-def _build_messages(session: Session, system_prompt: str = SYSTEM_PROMPT) -> list[dict]:
-    return [{"role": "system", "content": system_prompt}, *store.context(session)]
+def _build_messages(session: Session, system_prompt: str = SYSTEM_PROMPT, tool_free: bool = False) -> list[dict]:
+    return [{"role": "system", "content": system_prompt}, *store.context(session, tool_free=tool_free)]
+
+
+def _dump_tool_result(result: dict, limit: int = MAX_TOOL_RESULT_CHARS) -> str:
+    """工具结果序列化：超长时给出**合法 JSON** 的截断说明，而不是把 JSON 截成半截。"""
+    text = json.dumps(result, ensure_ascii=False)
+    if len(text) <= limit:
+        return text
+    payload = {
+        "truncated": True,
+        "note": f"结果过大（{len(text)} 字符）已截断；如需完整数据请缩小查询范围或分企业查询",
+        "summary": _summarize(result),
+    }
+    return json.dumps(payload, ensure_ascii=False)[:limit]
 
 
 def _maybe_compact(db: DbSession, session: Session, client: LlmClient, reg, messages: list[dict],
@@ -155,33 +168,48 @@ def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | 
         yield ev
         messages = _build_messages(session, system_prompt)
 
+    tool_free_retry = False
     for step in range(MAX_STEPS):
-        messages = _build_messages(session, system_prompt)
+        messages = _build_messages(session, system_prompt, tool_free=tool_free_retry)
         text_parts: list[str] = []
         tool_calls: list[dict] | None = None
 
-        try:
-            for ev in client.chat_stream(messages, tools=reg.definitions()):
-                if ev["type"] == "text":
-                    text_parts.append(ev["text"])
-                    yield AgentEvent("token", {"text": ev["text"]})
-                elif ev["type"] == "tool_calls":
-                    tool_calls = ev["tool_calls"]
-            # 每次调用后累计用量（缓存命中率/成本）
-            if client.last_usage:
-                stats = store.add_usage(db, session, client.last_usage)
-                yield AgentEvent("usage", {"call": dict(client.last_usage), **stats})
-        except Exception as exc:  # noqa: BLE001
-            # 溢出恢复：上下文超限 → 强制压缩一次并重试（DSH overflow recovery）
-            if context.is_overflow_error(exc) and settings.compaction_enabled:
-                forced = False
-                for ev in _maybe_compact(db, session, client, reg, messages, force=True):
-                    yield ev
-                    forced = True
-                if forced:
+        while True:
+            text_parts = []
+            tool_calls = None
+            try:
+                for ev in client.chat_stream(messages, tools=reg.definitions()):
+                    if ev["type"] == "text":
+                        text_parts.append(ev["text"])
+                        yield AgentEvent("token", {"text": ev["text"]})
+                    elif ev["type"] == "tool_calls":
+                        tool_calls = ev["tool_calls"]
+                # 每次调用后累计用量（缓存命中率/成本）
+                if client.last_usage:
+                    stats = store.add_usage(db, session, client.last_usage)
+                    yield AgentEvent("usage", {"call": dict(client.last_usage), **stats})
+                break
+            except Exception as exc:  # noqa: BLE001
+                # 兜底一：工具消息序列非法（窗口裁剪/会话中断）→ 用无工具历史重试一次
+                if context.is_tool_sequence_error(exc) and not tool_free_retry:
+                    tool_free_retry = True
+                    messages = _build_messages(session, system_prompt, tool_free=True)
+                    yield AgentEvent("compaction", {
+                        "phase": "skipped",
+                        "reason": "工具消息序列异常，已改用精简上下文重试",
+                    })
                     continue
-            yield AgentEvent("error", {"message": f"模型调用失败：{exc}"})
-            return
+                # 兜底二：上下文超限 → 强制压缩一次并重试（DSH overflow recovery）
+                if context.is_overflow_error(exc) and settings.compaction_enabled:
+                    forced = False
+                    for ev in _maybe_compact(db, session, client, reg, messages, force=True):
+                        yield ev
+                        forced = True
+                    if forced:
+                        messages = _build_messages(session, system_prompt, tool_free=tool_free_retry)
+                        continue
+                yield AgentEvent("error", {"message": f"模型调用失败：{exc}"})
+                return
 
         if tool_calls:
             store.append(db, session, {
@@ -241,7 +269,7 @@ def run_agent(db: DbSession, session: Session, user_text: str, preset_id: int | 
                     "role": "tool",
                     "tool_call_id": tc.get("id", ""),
                     "tool_name": name,
-                    "content": json.dumps(result, ensure_ascii=False)[:MAX_TOOL_RESULT_CHARS],
+                    "content": _dump_tool_result(result),
                 })
                 yield AgentEvent("tool_result", {
                     "id": tc.get("id", ""),

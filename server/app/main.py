@@ -67,7 +67,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title=settings.app_name, version="0.4.1", lifespan=lifespan)
+app = FastAPI(title=settings.app_name, version="0.4.2", lifespan=lifespan)
 
 # 开发期允许 Vite dev server 跨域访问（生产改为同源/反代）
 app.add_middleware(
@@ -92,7 +92,7 @@ app.include_router(share_router)
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"status": "ok", "service": settings.app_name, "version": "0.4.1"}
+    return {"status": "ok", "service": settings.app_name, "version": "0.4.2"}
 
 
 # ---------------------------------------------------------------------------
