@@ -620,6 +620,49 @@ pub fn build_registry() -> ToolRegistry {
         false,
     );
 
+    reg.register(
+        "get_financial_analysis",
+        "金融分析模块：返回企业的财务 KPI、杜邦分解、Altman Z/Z''、Piotroski F、Beneish M 模型结论、同业对标分位与异常勾稽信号。用户问财务/财报/盈利质量/偿债能力/是否可能财务造假时使用。",
+        json!({
+            "type": "object",
+            "properties": {
+                "enterprise_id": { "type": "integer", "description": "企业 id（来自 search_enterprise）" },
+                "include_peers": { "type": "boolean", "description": "是否返回同业对标，默认 true" }
+            },
+            "required": ["enterprise_id"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "compare_financials",
+        "多家企业财务横向对比（最多 5 家）：营收/利润/增速/毛利率/净利率/ROE/资产负债率/现金流与模型结论。",
+        json!({
+            "type": "object",
+            "properties": {
+                "enterprise_ids": { "type": "array", "items": { "type": "integer" }, "description": "2~5 个企业 id" }
+            },
+            "required": ["enterprise_ids"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "screen_by_financial_metric",
+        "按财务指标筛选企业，例如'毛利率低于 20%''资产负债率高于 70%''营收负增长'。可用指标：revenue/net_profit/revenue_growth/gross_margin/net_margin/roe/debt_ratio。",
+        json!({
+            "type": "object",
+            "properties": {
+                "metric": { "type": "string", "description": "指标 key" },
+                "op": { "type": "string", "description": "lt/le/gt/ge，默认 lt" },
+                "value": { "type": "number", "description": "阈值" },
+                "limit": { "type": "integer", "description": "返回条数，默认 10" }
+            },
+            "required": ["metric", "op", "value"]
+        }),
+        true,
+    );
+
     reg
 }
 
@@ -633,6 +676,9 @@ pub fn call_tool(db: &Db, name: &str, args: &Value) -> Value {
         "get_platform_overview" => get_platform_overview(db, args),
         "list_alerts" => list_alerts(db, args),
         "get_alert_report" => get_alert_report(db, args),
+        "get_financial_analysis" => get_financial_analysis(db, args),
+        "compare_financials" => compare_financials(db, args),
+        "screen_by_financial_metric" => screen_by_financial_metric(db, args),
         "list_skills" => list_skills(db, args),
         "load_skill" => load_skill(db, args),
         other => json!({ "error": format!("unknown tool: {other}") }),
@@ -647,6 +693,199 @@ pub fn get_alert_report(db: &Db, args: &Value) -> Value {
         Ok(_) => json!({ "error": format!("预警不存在: {alert_id}") }),
         Err(err) => json!({ "error": format!("生成报告失败: {err}") }),
     }
+}
+
+
+/// 金融分析模块：KPI / 杜邦 / Z·F·M 模型 / 同业对标 / 异常勾稽（精简返回，避免上下文膨胀）
+pub fn get_financial_analysis(db: &Db, args: &Value) -> Value {
+    let id = arg_i64(args, "enterprise_id", 0);
+    let include_peers = arg_bool(args, "include_peers", true);
+    match crate::services::finance::analysis(db, id, 5, include_peers) {
+        Ok(a) if a.get("error").is_some() => a,
+        Ok(a) if a.get("available") != Some(&json!(true)) => json!({
+            "enterprise": a.get("enterprise"),
+            "available": false,
+            "reason": a.get("reason"),
+            "data_status": a.get("data_status"),
+            "hint": "可用 refresh_enterprise_data 拉取公开财报，或确认企业是否有股票代码",
+        }),
+        Ok(a) => {
+            let m = &a["models"];
+            let kpi: Vec<Value> = a["kpi"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|k| k["available"] == json!(true))
+                .map(|k| {
+                    json!({
+                        "key": k["key"], "label": k["label"], "unit": k["unit"],
+                        "value": k["value"], "prev": k["prev"], "yoy": k["yoy"], "trend": k["trend"],
+                    })
+                })
+                .collect();
+            let failed: Vec<Value> = m["piotroski"]["signals"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|s| s["pass"] == json!(false))
+                .map(|s| json!(s["name"]))
+                .collect();
+            json!({
+                "enterprise": a["enterprise"],
+                "available": true,
+                "latest_year": a["latest_year"],
+                "kpi": kpi,
+                "dupont": a["dupont"],
+                "models": {
+                    "altman_z": { "score": m["altman"]["z"]["score"], "verdict": m["altman"]["z"]["verdict"],
+                                  "available": m["altman"]["z"]["available"], "missing": m["altman"]["z"]["missing"] },
+                    "altman_z2": { "score": m["altman"]["z2"]["score"], "verdict": m["altman"]["z2"]["verdict"],
+                                   "available": m["altman"]["z2"]["available"] },
+                    "piotroski_f": { "score": m["piotroski"]["score"], "max_score": m["piotroski"]["max_score"],
+                                     "verdict": m["piotroski"]["verdict"], "failed": failed,
+                                     "note": m["piotroski"]["note"] },
+                    "beneish_m": { "score": m["beneish"]["score"], "verdict": m["beneish"]["verdict"],
+                                   "available": m["beneish"]["available"], "missing": m["beneish"]["missing"],
+                                   "note": m["beneish"]["note"] },
+                },
+                "anomalies": a["anomalies"],
+                "peers": if include_peers {
+                    json!({
+                        "industry": a["peers"]["industry"],
+                        "note": a["peers"]["note"],
+                        "rows": a["peers"]["rows"].as_array().cloned().unwrap_or_default().into_iter()
+                            .map(|r| json!({ "name": r["name"], "is_self": r["is_self"], "year": r["year"],
+                                             "metrics": r["metrics"], "percentiles": r["percentiles"] }))
+                            .collect::<Vec<_>>(),
+                    })
+                } else { Value::Null },
+                "data_quality": a["data_quality"],
+            })
+        }
+        Err(err) => json!({ "error": format!("金融分析失败: {err}") }),
+    }
+}
+
+/// 多家企业财务横向对比（最多 5 家）
+pub fn compare_financials(db: &Db, args: &Value) -> Value {
+    let ids: Vec<i64> = args
+        .get("enterprise_ids")
+        .and_then(|v| v.as_array())
+        .map(|a| a.iter().filter_map(|x| x.as_i64()).take(5).collect())
+        .unwrap_or_default();
+    if ids.len() < 2 {
+        return json!({ "error": "至少需要 2 个 enterprise_id" });
+    }
+    let mut rows = Vec::new();
+    for id in ids {
+        match crate::services::finance::analysis(db, id, 5, false) {
+            Ok(a) if a.get("available") == Some(&json!(true)) => {
+                let kpi: std::collections::BTreeMap<String, Value> = a["kpi"]
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default()
+                    .into_iter()
+                    .filter(|k| k["available"] == json!(true))
+                    .map(|k| (k["key"].as_str().unwrap_or("").to_string(), k["value"].clone()))
+                    .collect();
+                let pick = |k: &str| kpi.get(k).cloned().unwrap_or(Value::Null);
+                let m = &a["models"];
+                rows.push(json!({
+                    "enterprise_id": id,
+                    "name": a["enterprise"]["name"],
+                    "industry": a["enterprise"]["industry"],
+                    "available": true,
+                    "latest_year": a["latest_year"],
+                    "metrics": {
+                        "revenue": pick("revenue"), "net_profit": pick("net_profit"),
+                        "revenue_growth": pick("revenue_growth"), "gross_margin": pick("gross_margin"),
+                        "net_margin": pick("net_margin"), "roe": pick("roe"),
+                        "debt_ratio": pick("debt_ratio"), "ocf": pick("ocf"),
+                        "ocf_to_profit": pick("ocf_to_profit"),
+                    },
+                    "models": {
+                        "altman_z2": { "score": m["altman"]["z2"]["score"], "verdict": m["altman"]["z2"]["verdict"] },
+                        "piotroski_f": { "score": m["piotroski"]["score"], "max_score": m["piotroski"]["max_score"] },
+                        "beneish_m": { "score": m["beneish"]["score"], "verdict": m["beneish"]["verdict"] },
+                    },
+                    "anomaly_count": a["anomalies"].as_array().map(|x| x.len()).unwrap_or(0),
+                }));
+            }
+            Ok(a) => rows.push(json!({
+                "enterprise_id": id,
+                "name": a["enterprise"]["name"],
+                "available": false,
+                "reason": a.get("reason").cloned().unwrap_or(json!("无数据")),
+            })),
+            Err(err) => rows.push(json!({ "enterprise_id": id, "available": false, "reason": err.to_string() })),
+        }
+    }
+    json!({
+        "count": rows.len(),
+        "rows": rows,
+        "hint": "数值单位见各指标：万元 / % / 倍；模型结论需结合数据完整度判断",
+    })
+}
+
+/// 按财务指标筛选企业
+pub fn screen_by_financial_metric(db: &Db, args: &Value) -> Value {
+    let metric = arg_str(args, "metric");
+    let op = {
+        let o = arg_str(args, "op");
+        if o.is_empty() { "lt".to_string() } else { o }
+    };
+    let value = args.get("value").and_then(|v| v.as_f64()).unwrap_or(0.0);
+    let limit = arg_i64(args, "limit", 10).clamp(1, 50);
+    let supported = ["revenue", "net_profit", "revenue_growth", "gross_margin", "net_margin", "roe", "debt_ratio"];
+    if !supported.contains(&metric.as_str()) {
+        return json!({ "error": format!("不支持的指标：{metric}"), "supported": supported });
+    }
+    let ok = |v: f64| match op.as_str() {
+        "lt" => v < value,
+        "le" => v <= value,
+        "gt" => v > value,
+        "ge" => v >= value,
+        _ => false,
+    };
+    if !["lt", "le", "gt", "ge"].contains(&op.as_str()) {
+        return json!({ "error": format!("不支持的比较符：{op}"), "supported": ["lt", "le", "gt", "ge"] });
+    }
+    let data = match crate::services::finance::overview(db, 5) {
+        Ok(v) => v,
+        Err(err) => return json!({ "error": format!("筛选失败: {err}") }),
+    };
+    let items = data["items"].as_array().cloned().unwrap_or_default();
+    let mut hits: Vec<Value> = items
+        .iter()
+        .filter_map(|it| {
+            let v = it.get(&metric).and_then(|x| x.as_f64())?;
+            if ok(v) {
+                Some(json!({
+                    "enterprise_id": it["enterprise_id"], "name": it["name"],
+                    "industry": it["industry"], "year": it["latest_year"], "value": v,
+                }))
+            } else {
+                None
+            }
+        })
+        .collect();
+    hits.sort_by(|a, b| {
+        a["value"].as_f64().unwrap_or(0.0).partial_cmp(&b["value"].as_f64().unwrap_or(0.0))
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    let (label, unit, _g, _h) = crate::services::finance::METRIC_META
+        .iter()
+        .find(|(k, _, _, _, _)| *k == metric)
+        .map(|(_, l, u, g, h)| (*l, *u, *g, *h))
+        .unwrap_or(("", "", "", true));
+    json!({
+        "metric": metric, "metric_label": label, "unit": unit, "op": op, "threshold": value,
+        "count": hits.len(),
+        "items": hits.into_iter().take(limit as usize).collect::<Vec<_>>(),
+        "scanned": items.len(),
+    })
 }
 
 /// 需要网络或写库的异步工具

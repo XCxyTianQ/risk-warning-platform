@@ -6,6 +6,7 @@ pub mod alerts;
 pub mod chat;
 pub mod dashboard;
 pub mod enterprises;
+pub mod finance;
 
 use axum::response::Json;
 use axum::routing::{get, post};
@@ -30,6 +31,10 @@ pub fn router(state: AppState) -> Router {
         .route("/datasources", get(enterprises::datasources_status))
         // 风险总览
         .route("/dashboard/summary", get(dashboard::summary))
+        // 金融分析
+        .route("/finance/overview", get(finance::overview))
+        .route("/finance/{id}/analysis", get(finance::analysis))
+        .route("/finance/{id}/report", get(finance::report))
         // 预警中心
         .route("/alerts", get(alerts::list))
         .route("/alerts/summary", get(alerts::summary))

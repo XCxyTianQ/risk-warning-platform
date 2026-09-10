@@ -2,4 +2,5 @@
 
 pub mod alerts;
 pub mod enterprise;
+pub mod finance;
 pub mod rules;
