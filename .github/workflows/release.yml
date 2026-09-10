@@ -16,6 +16,9 @@ permissions:
 env:
   PYTHON_VERSION: '3.12'
   NODE_VERSION: '22'
+  # CI 的 Windows runner 控制台默认 cp1252，统一 UTF-8 避免中文输出报错
+  PYTHONIOENCODING: 'utf-8'
+  PYTHONUTF8: '1'
 
 jobs:
   # ------------------------------------------------------------------

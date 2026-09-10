@@ -12,6 +12,12 @@ import ast
 import pathlib
 import sys
 
+# 控制台编码兜底：CI 的 Windows runner 默认 cp1252，直接 print 中文会 UnicodeEncodeError
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:  # noqa: BLE001
+    pass
+
 BUILTINS = {
     "list", "dict", "set", "tuple", "str", "int", "float", "bool", "bytes",
     "type", "object", "id", "input", "format", "filter", "map", "vars", "hash",
