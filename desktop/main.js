@@ -3,14 +3,15 @@
  *
  * 职责：
  *  1. 单实例锁 + 动态端口
- *  2. 拉起 Python 后端（开发=venv python，打包=resources/backend/risk-api[.exe]）
+ *  2. 拉起 Rust 后端（打包=resources/backend/risk-warning-backend[.exe]，
+ *     开发=backend/target/{release,debug}/…；旧包 Python risk-api 与 venv 仍可兜底）
  *  3. 等待 /api/health 就绪后创建窗口，加载 http://127.0.0.1:<port>
  *  4. 托盘 / 菜单 / 外链用系统浏览器打开
  *  5. 退出时优雅关闭后端进程树（Windows 用 taskkill，POSIX 用进程组信号）
  *
  * 环境变量：
  *  RWP_SMOKE=1      只做"拉起后端 + 健康检查"，成功后退出（用于 CI/自检）
- *  RWP_DEV=1        强制使用开发模式后端（venv 中的 python + desktop_entry.py）
+ *  RWP_DEV=1        强制使用开发模式后端
  *  RWP_BACKEND     指定后端可执行文件路径（覆盖自动探测）
  */
 const { app, BrowserWindow, Menu, Tray, dialog, shell, nativeImage } = require('electron')
@@ -60,34 +61,47 @@ function backendCommand() {
   if (process.env.RWP_BACKEND) {
     return { cmd: process.env.RWP_BACKEND, args: [], cwd: path.dirname(process.env.RWP_BACKEND) }
   }
-  // PyInstaller 可能是 onedir（backend/risk-api/risk-api[.exe]）或单文件（backend/risk-api[.exe]）
-  const names = isWin ? ['risk-api.exe', 'risk-api'] : ['risk-api']
-  const candidates = []
+  const repo = path.resolve(__dirname, '..')
+  // Rust 后端：单个静态二进制（risk-warning-backend[.exe]）
+  const names = isWin ? ['risk-warning-backend.exe', 'risk-warning-backend'] : ['risk-warning-backend']
+  const rustCandidates = []
   for (const n of names) {
-    candidates.push(resourcePath('backend', 'risk-api', n))
-    candidates.push(resourcePath('backend', n))
+    rustCandidates.push(resourcePath('backend', n))
+    // 开发模式：直接用仓库里的 target/{release,debug}
+    rustCandidates.push(path.join(repo, 'backend', 'target', 'release', n))
+    rustCandidates.push(path.join(repo, 'backend', 'target', 'debug', n))
   }
-  if (!isDev) {
-    for (const exe of candidates) {
-      if (fs.existsSync(exe)) return { cmd: exe, args: [], cwd: path.dirname(exe) }
+  const rust = rustCandidates.find((p) => fs.existsSync(p))
+  if (rust) return { cmd: rust, args: [], cwd: path.dirname(rust) }
+
+  // 兼容旧包：PyInstaller 产物（onedir 或单文件）
+  const legacyNames = isWin ? ['risk-api.exe', 'risk-api'] : ['risk-api']
+  for (const n of legacyNames) {
+    for (const p of [resourcePath('backend', 'risk-api', n), resourcePath('backend', n)]) {
+      if (fs.existsSync(p)) {
+        console.warn('[main] 使用旧版 Python 后端包（建议用 scripts/build-backend.js 重新打包）')
+        return { cmd: p, args: [], cwd: path.dirname(p) }
+      }
     }
   }
-  // 开发模式：用 venv 的 python 跑 desktop_entry.py
-  const repo = path.resolve(__dirname, '..')
+
+  // 最后兜底：开发期用 venv 的 python 跑 desktop_entry.py
   const pyCandidates = isWin
     ? [path.join(repo, 'server', '.venv', 'Scripts', 'python.exe')]
     : [path.join(repo, 'server', '.venv', 'bin', 'python3'), path.join(repo, 'server', '.venv', 'bin', 'python')]
   const py = pyCandidates.find((p) => fs.existsSync(p))
   const entry = path.join(repo, 'server', 'desktop_entry.py')
-  if (!py) {
-    dialog.showErrorBox(
-      '后端缺失',
-      `未找到 Python 运行环境：\n${pyCandidates.join('\n')}\n请先在 server 目录创建 venv 并安装依赖。`,
-    )
-    app.quit()
-    return { cmd: '', args: [], cwd: repo }
+  if (py && fs.existsSync(entry)) {
+    console.warn('[main] 未找到 Rust 后端二进制，回退到 Python 后端（仅开发期）')
+    return { cmd: py, args: [entry], cwd: path.join(repo, 'server') }
   }
-  return { cmd: py, args: [entry], cwd: path.join(repo, 'server') }
+  dialog.showErrorBox(
+    '后端缺失',
+    `未找到后端二进制。请先构建：\n  cd backend && cargo build --release\n` +
+      `或执行：node scripts/build-backend.js\n\n查找路径：\n${rustCandidates.join('\n')}`,
+  )
+  app.quit()
+  return { cmd: '', args: [], cwd: repo }
 }
 
 // ---------- 工具 ----------

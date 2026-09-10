@@ -7,14 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '版本号（如 v0.4.0），留空则用当前时间戳'
+        description: '版本号（如 v0.5.0），留空则用当前时间戳'
         required: false
 
 permissions:
   contents: write
 
 env:
-  PYTHON_VERSION: '3.12'
   NODE_VERSION: '22'
   # CI 的 Windows runner 控制台默认 cp1252，统一 UTF-8 避免中文输出报错
   PYTHONIOENCODING: 'utf-8'
@@ -23,10 +22,14 @@ env:
 jobs:
   # ------------------------------------------------------------------
   # Windows x64：NSIS 安装包 + 便携版
+  # 后端为 Rust 单文件二进制（x86_64-pc-windows-msvc），不再依赖 Python 解释器
   # ------------------------------------------------------------------
   build-windows:
     runs-on: windows-latest
     timeout-minutes: 90
+    env:
+      RWP_TARGET: x86_64-pc-windows-msvc
+      BACKEND_EXE: desktop/resources/backend/risk-warning-backend.exe
     steps:
       - uses: actions/checkout@v5
 
@@ -35,23 +38,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          targets: x86_64-pc-windows-msvc
 
-      - name: Install backend deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r server/requirements.txt
-          pip install pyinstaller
-
-      - name: Backend checks (imports + builtin shadowing)
-        working-directory: server
-        run: |
-          python tests/check_imports.py
-          python tests/scan_builtin_shadowing.py
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: backend
 
       - name: Install web deps
         working-directory: web
@@ -65,23 +60,22 @@ jobs:
         working-directory: desktop
         run: node scripts/build-web.js
 
-      - name: Package backend (PyInstaller onedir)
+      - name: Build backend (cargo release)
         working-directory: desktop
-        env:
-          RWP_PYTHON: python
         run: node scripts/build-backend.js
 
-      - name: Smoke-test packaged backend
-        working-directory: server
-        run: python tests/smoke_backend.py --dir ../desktop/resources/backend/risk-api
+      - name: Smoke-test packaged backend binary
+        working-directory: desktop
+        run: node scripts/smoke-backend.js
 
       - name: Verify resources before packaging
         working-directory: desktop
         shell: pwsh
         run: |
           if (!(Test-Path 'resources/web/index.html')) { throw 'resources/web 缺失：前端未构建' }
-          if (!(Test-Path 'resources/backend/risk-api/risk-api.exe')) { throw 'resources/backend 缺失：后端未打包' }
-          Write-Output 'resources OK'
+          if (!(Test-Path 'resources/backend/risk-warning-backend.exe')) { throw 'resources/backend 缺失：后端未构建' }
+          $size = (Get-Item 'resources/backend/risk-warning-backend.exe').Length / 1MB
+          Write-Output ("resources OK（后端 {0:N1} MB）" -f $size)
 
       - name: Package Electron app
         working-directory: desktop
@@ -93,7 +87,7 @@ jobs:
         run: |
           $app = 'release/win-unpacked/resources'
           if (!(Test-Path "$app/web/index.html")) { throw '安装包内缺少前端资源（应用会白屏）' }
-          if (!(Test-Path "$app/backend/risk-api/risk-api.exe")) { throw '安装包内缺少后端可执行文件' }
+          if (!(Test-Path "$app/backend/risk-warning-backend.exe")) { throw '安装包内缺少后端可执行文件' }
           if (!(Test-Path "$app/samples/dataset.json")) { throw '安装包内缺少样例数据' }
           Write-Output 'OK: 前端/后端/样例均已打入应用'
 
@@ -122,6 +116,9 @@ jobs:
     timeout-minutes: 90
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      RWP_TARGET: aarch64-apple-darwin
+      BACKEND_BIN: desktop/resources/backend/risk-warning-backend
+      EXPECTED_ARCH: arm64
     steps:
       - uses: actions/checkout@v5
 
@@ -130,23 +127,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          targets: aarch64-apple-darwin
 
-      - name: Install backend deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r server/requirements.txt
-          pip install pyinstaller
-
-      - name: Backend checks (imports + builtin shadowing)
-        working-directory: server
-        run: |
-          python tests/check_imports.py
-          python tests/scan_builtin_shadowing.py
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: backend
 
       - name: Install web deps
         working-directory: web
@@ -160,22 +149,24 @@ jobs:
         working-directory: desktop
         run: node scripts/build-web.js
 
-      - name: Package backend (PyInstaller onedir)
+      - name: Build backend (cargo release)
         working-directory: desktop
-        env:
-          RWP_PYTHON: python
         run: node scripts/build-backend.js
 
-      - name: Smoke-test packaged backend
-        working-directory: server
-        run: python tests/smoke_backend.py --dir ../desktop/resources/backend/risk-api
+      - name: Smoke-test packaged backend binary
+        working-directory: desktop
+        run: node scripts/smoke-backend.js
 
-      - name: Verify resources before packaging
+      - name: Verify resources + backend architecture
         working-directory: desktop
         run: |
+          set -e
           test -f resources/web/index.html || { echo "::error::resources/web 缺失：前端未构建"; exit 1; }
-          test -x resources/backend/risk-api/risk-api || { echo "::error::resources/backend 缺失或不可执行"; exit 1; }
-          echo "resources OK"
+          test -x resources/backend/risk-warning-backend || { echo "::error::resources/backend 缺失或不可执行"; exit 1; }
+          file resources/backend/risk-warning-backend
+          file resources/backend/risk-warning-backend | grep -q "$EXPECTED_ARCH" || {
+            echo "::error::后端架构不是 $EXPECTED_ARCH（会与 Electron 包架构不匹配）"; exit 1; }
+          echo "resources OK（$EXPECTED_ARCH）"
 
       - name: Package Electron app
         working-directory: desktop
@@ -199,12 +190,12 @@ jobs:
           set -e
           ZIP=$(ls RiskWarningPlatform-*-mac-arm64.zip)
           echo "== 关键内容 =="
-          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
+          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-warning-backend)" || true
           zipinfo -l "$ZIP" | grep -E "^-.*Contents/Resources/web/index\.html$" >/dev/null || {
             echo "::error::app 内缺少前端资源 web/index.html（应用会白屏）"; exit 1; }
-          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
-            echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
-          echo "OK: 前端资源与后端可执行文件均已打入 app 包"
+          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-warning-backend$" >/dev/null || {
+            echo "::error::app 内缺少可执行的后端二进制，或执行权限位丢失"; exit 1; }
+          echo "OK: 前端资源与后端二进制均已打入 app 包"
 
       - name: Package macOS source fallback (no Gatekeeper needed)
         run: |
@@ -247,6 +238,8 @@ jobs:
     timeout-minutes: 90
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      RWP_TARGET: x86_64-apple-darwin
+      EXPECTED_ARCH: x86_64
     steps:
       - uses: actions/checkout@v5
 
@@ -255,23 +248,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          targets: x86_64-apple-darwin
 
-      - name: Install backend deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r server/requirements.txt
-          pip install pyinstaller
-
-      - name: Backend checks (imports + builtin shadowing)
-        working-directory: server
-        run: |
-          python tests/check_imports.py
-          python tests/scan_builtin_shadowing.py
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: backend
 
       - name: Install web deps
         working-directory: web
@@ -285,22 +270,24 @@ jobs:
         working-directory: desktop
         run: node scripts/build-web.js
 
-      - name: Package backend (PyInstaller onedir)
+      - name: Build backend (cargo release)
         working-directory: desktop
-        env:
-          RWP_PYTHON: python
         run: node scripts/build-backend.js
 
-      - name: Smoke-test packaged backend
-        working-directory: server
-        run: python tests/smoke_backend.py --dir ../desktop/resources/backend/risk-api
+      - name: Smoke-test packaged backend binary
+        working-directory: desktop
+        run: node scripts/smoke-backend.js
 
-      - name: Verify resources before packaging
+      - name: Verify resources + backend architecture
         working-directory: desktop
         run: |
+          set -e
           test -f resources/web/index.html || { echo "::error::resources/web 缺失：前端未构建"; exit 1; }
-          test -x resources/backend/risk-api/risk-api || { echo "::error::resources/backend 缺失或不可执行"; exit 1; }
-          echo "resources OK"
+          test -x resources/backend/risk-warning-backend || { echo "::error::resources/backend 缺失或不可执行"; exit 1; }
+          file resources/backend/risk-warning-backend
+          file resources/backend/risk-warning-backend | grep -q "$EXPECTED_ARCH" || {
+            echo "::error::后端架构不是 $EXPECTED_ARCH（会与 Electron 包架构不匹配）"; exit 1; }
+          echo "resources OK（$EXPECTED_ARCH）"
 
       - name: Package Electron app
         working-directory: desktop
@@ -324,12 +311,12 @@ jobs:
           set -e
           ZIP=$(ls RiskWarningPlatform-*-mac-x64.zip)
           echo "== 关键内容 =="
-          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-api/risk-api)" || true
+          zipinfo -l "$ZIP" | grep -E "Contents/Resources/(web/index\.html|samples/dataset\.json|backend/risk-warning-backend)" || true
           zipinfo -l "$ZIP" | grep -E "^-.*Contents/Resources/web/index\.html$" >/dev/null || {
             echo "::error::app 内缺少前端资源 web/index.html（应用会白屏）"; exit 1; }
-          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-api/risk-api$" >/dev/null || {
-            echo "::error::app 内缺少可执行的后端 risk-api，或执行权限位丢失"; exit 1; }
-          echo "OK: 前端资源与后端可执行文件均已打入 app 包"
+          zipinfo -l "$ZIP" | grep -E "^-rwx.*Contents/Resources/backend/risk-warning-backend$" >/dev/null || {
+            echo "::error::app 内缺少可执行的后端二进制，或执行权限位丢失"; exit 1; }
+          echo "OK: 前端资源与后端二进制均已打入 app 包"
 
       - name: Compute checksums
         working-directory: desktop/release
