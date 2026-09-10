@@ -29,3 +29,5 @@ server/tests/_*
 .vscode/
 .DS_Store
 Thumbs.db
+# ===== Rust 后端 =====
+backend/target/
