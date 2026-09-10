@@ -29,7 +29,7 @@ pub async fn stream(
     Json(req): Json<StreamReq>,
 ) -> AppResult<Sse<impl Stream<Item = Result<Event, Infallible>>>> {
     if req.message.trim().is_empty() {
-        return Err(AppError(anyhow::anyhow!("message 不能为空")));
+        return Err(AppError::bad_request("message 不能为空"));
     }
     let store = SessionStore::new();
     let session = store.get_or_create(&st.db, req.session_id.as_deref())?;
@@ -68,7 +68,7 @@ pub async fn get_session(
     let store = SessionStore::new();
     let session = store
         .get(&st.db, &id)?
-        .ok_or_else(|| AppError(anyhow::anyhow!("会话不存在: {id}")))?;
+        .ok_or_else(|| AppError::not_found(format!("会话不存在: {id}")))?;
     let messages: Vec<Value> = session
         .messages
         .iter()

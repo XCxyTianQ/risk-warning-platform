@@ -2,6 +2,7 @@
 //!
 //! 与 Python 版保持一致：后端同时托管 `web/dist`，未知路径回落到 `index.html`。
 
+pub mod alerts;
 pub mod chat;
 pub mod dashboard;
 pub mod enterprises;
@@ -19,10 +20,22 @@ pub fn router(state: AppState) -> Router {
     let api = Router::new()
         .route("/health", get(health))
         // 企业档案
-        .route("/enterprises", get(enterprises::list))
-        .route("/enterprise/{id}", get(enterprises::get_one))
+        .route("/enterprises", get(enterprises::list).post(enterprises::create))
+        .route(
+            "/enterprise/{id}",
+            get(enterprises::get_one).delete(enterprises::delete),
+        )
+        .route("/enterprise/{id}/refresh", post(enterprises::refresh))
+        .route("/resolve_stock", get(enterprises::resolve_stock))
+        .route("/datasources", get(enterprises::datasources_status))
         // 风险总览
         .route("/dashboard/summary", get(dashboard::summary))
+        // 预警中心
+        .route("/alerts", get(alerts::list))
+        .route("/alerts/summary", get(alerts::summary))
+        .route("/alerts/generate", post(alerts::generate))
+        .route("/alerts/{id}/handle", post(alerts::handle))
+        .route("/alerts/{id}/report", get(alerts::report))
         // 对话（SSE）
         .route("/chat/stream", post(chat::stream))
         .route("/chat/sessions", get(chat::list_sessions))
