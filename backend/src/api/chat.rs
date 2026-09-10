@@ -219,3 +219,18 @@ pub async fn usage(
         "pressure": pressure,
     })))
 }
+
+#[derive(Deserialize)]
+pub struct ApproveReq {
+    pub approval_id: String,
+    pub approved: bool,
+}
+
+/// POST /api/chat/approve —— 动作工具授权决策
+pub async fn approve(Json(req): Json<ApproveReq>) -> AppResult<Json<Value>> {
+    let hit = crate::agent::approvals::resolve(&req.approval_id, req.approved);
+    if !hit {
+        return Err(AppError::not_found(format!("授权请求不存在或已超时: {}", req.approval_id)));
+    }
+    Ok(Json(json!({ "approval_id": req.approval_id, "approved": req.approved })))
+}

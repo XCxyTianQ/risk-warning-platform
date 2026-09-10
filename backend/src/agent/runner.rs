@@ -92,7 +92,14 @@ pub fn summarize(result: &Value) -> Value {
     if let Some(dims) = result.get("dimensions").and_then(|v| v.as_object()) {
         let brief: serde_json::Map<String, Value> = dims
             .iter()
-            .map(|(k, v)| (k.clone(), json!({ "score": v.get("score"), "label": v.get("label") })))
+            .map(|(k, v)| {
+                if v.is_object() {
+                    (k.clone(), json!({ "score": v.get("score"), "label": v.get("label") }))
+                } else {
+                    // 刷新类结果：dimension → 文本摘要（如"新增 3/更新 5"）
+                    (k.clone(), v.clone())
+                }
+            })
             .collect();
         out.insert("dimensions".into(), Value::Object(brief));
     }
@@ -244,7 +251,8 @@ pub fn run_agent(
                 let name = call.function.name.clone();
                 let args: Value = serde_json::from_str(&call.function.arguments)
                     .unwrap_or_else(|_| json!({}));
-                let read_only = reg.get(&name).map(|t| t.read_only).unwrap_or(true);
+                let tool = reg.get(&name);
+                let read_only = tool.map(|t| t.read_only).unwrap_or(true);
                 yield AgentEvent::new("tool", json!({
                     "id": call.id,
                     "name": name,
@@ -252,8 +260,48 @@ pub fn run_agent(
                     "read_only": read_only,
                 }));
 
+                // 写操作：先请求用户授权（Harness/Codex 的 approval 机制）
+                if !read_only && state.cfg.agent_require_approval {
+                    let description = tool.map(|t| t.description.clone()).unwrap_or_default();
+                    let slot = crate::agent::approvals::create(
+                        &session.id, &call.id, &name, args.clone(), &description,
+                    );
+                    let approval_id = slot.lock().expect("approval lock").id.clone();
+                    yield AgentEvent::new("approval", json!({
+                        "approval_id": approval_id,
+                        "id": call.id,
+                        "name": name,
+                        "args": args,
+                        "description": description,
+                        "timeout": state.cfg.agent_approval_timeout,
+                    }));
+                    let approved = crate::agent::approvals::wait_for(&slot, state.cfg.agent_approval_timeout).await;
+                    crate::agent::approvals::discard(&approval_id);
+
+                    if !approved {
+                        let rejected = json!({
+                            "error": format!("用户拒绝执行该操作（或等待授权超时 {}s）", state.cfg.agent_approval_timeout)
+                        });
+                        let mut tool_msg = Msg::new("tool", dump_tool_result(&rejected));
+                        tool_msg.tool_call_id = call.id.clone();
+                        tool_msg.tool_name = name.clone();
+                        let _ = store.append(&db, &mut session, tool_msg);
+                        yield AgentEvent::new("tool_result", json!({
+                            "id": call.id,
+                            "name": name,
+                            "result": { "ok": false, "error": rejected["error"] },
+                            "latency_ms": 0,
+                        }));
+                        continue;
+                    }
+                }
+
                 let started = Instant::now();
-                let result = call_tool(&db, &name, &args);
+                let result = if crate::agent::tools::is_async_tool(&name) {
+                    crate::agent::tools::call_tool_async(&state, &name, &args).await
+                } else {
+                    call_tool(&db, &name, &args)
+                };
                 let latency_ms = started.elapsed().as_millis() as u64;
 
                 let mut tool_msg = Msg::new("tool", dump_tool_result(&result));

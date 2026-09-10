@@ -553,10 +553,77 @@ pub fn build_registry() -> ToolRegistry {
         true,
     );
 
+    reg.register(
+        "get_alert_report",
+        "生成指定预警的处置报告（Markdown 文本，含证据链与处理流水）。",
+        json!({
+            "type": "object",
+            "properties": { "alert_id": { "type": "integer" } },
+            "required": ["alert_id"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "resolve_stock_code",
+        "按企业名称或股票代码查询 A 股标的（用于添加企业前确认）：输入名称返回代码，输入代码返回证券简称。",
+        json!({
+            "type": "object",
+            "properties": { "name": { "type": "string", "description": "企业名称关键词，或 6 位股票代码（可带 SH/SZ 前后缀）" } },
+            "required": ["name"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "add_enterprise",
+        "添加一家新企业到平台（可自动解析股票代码并拉取公开数据：财报/公告/诉讼）。这是写操作，需用户授权。",
+        json!({
+            "type": "object",
+            "properties": {
+                "name": { "type": "string", "description": "企业全称或常用名，也可直接填股票代码" },
+                "stock_code": { "type": "string", "description": "可选：A股代码（不填则按名称自动解析）" },
+                "auto_fetch": { "type": "boolean", "description": "是否自动拉取公开数据，默认 true" }
+            },
+            "required": ["name"]
+        }),
+        false,
+    );
+
+    reg.register(
+        "refresh_enterprise_data",
+        "从公开数据源刷新指定企业的数据并入库（finance/news/legal）。写操作，需用户授权。",
+        json!({
+            "type": "object",
+            "properties": {
+                "enterprise_id": { "type": "integer" },
+                "dimensions": { "type": "string", "description": "可选：逗号分隔的维度 finance,news,legal；默认全部" }
+            },
+            "required": ["enterprise_id"]
+        }),
+        false,
+    );
+
+    reg.register(
+        "handle_alert",
+        "处置预警工单（写操作，需授权）：start=开始处理，resolve=标记已处置，ignore=忽略，reopen=重新打开。",
+        json!({
+            "type": "object",
+            "properties": {
+                "alert_id": { "type": "integer" },
+                "action": { "type": "string", "description": "start/resolve/ignore/reopen" },
+                "handler": { "type": "string", "description": "处理人" },
+                "note": { "type": "string", "description": "处置说明" }
+            },
+            "required": ["alert_id", "action"]
+        }),
+        false,
+    );
+
     reg
 }
 
-/// 同步工具分发（P1 全部为只读且无网络）
+/// 同步工具分发（只读且无网络的工具）
 pub fn call_tool(db: &Db, name: &str, args: &Value) -> Value {
     match name {
         "search_enterprise" => search_enterprise(db, args),
@@ -565,9 +632,123 @@ pub fn call_tool(db: &Db, name: &str, args: &Value) -> Value {
         "list_enterprises_by_level" => list_enterprises_by_level(db, args),
         "get_platform_overview" => get_platform_overview(db, args),
         "list_alerts" => list_alerts(db, args),
+        "get_alert_report" => get_alert_report(db, args),
         "list_skills" => list_skills(db, args),
         "load_skill" => load_skill(db, args),
         other => json!({ "error": format!("unknown tool: {other}") }),
+    }
+}
+
+/// 预警报告（Markdown，只读）
+pub fn get_alert_report(db: &Db, args: &Value) -> Value {
+    let alert_id = arg_i64(args, "alert_id", 0);
+    match crate::services::alerts::report_markdown(db, alert_id) {
+        Ok(text) if !text.is_empty() => json!({ "alert_id": alert_id, "report_markdown": text }),
+        Ok(_) => json!({ "error": format!("预警不存在: {alert_id}") }),
+        Err(err) => json!({ "error": format!("生成报告失败: {err}") }),
+    }
+}
+
+/// 需要网络或写库的异步工具
+pub fn is_async_tool(name: &str) -> bool {
+    matches!(
+        name,
+        "resolve_stock_code" | "add_enterprise" | "refresh_enterprise_data" | "handle_alert"
+    )
+}
+
+/// 异步工具分发（网络 + 写操作）
+pub async fn call_tool_async(state: &crate::state::AppState, name: &str, args: &Value) -> Value {
+    match name {
+        "resolve_stock_code" => {
+            let query = arg_str(args, "name");
+            crate::services::enterprise::lookup_stock_async(&query).await
+        }
+        "add_enterprise" => {
+            let name = arg_str(args, "name");
+            let code = args.get("stock_code").and_then(|v| v.as_str()).map(|s| s.to_string());
+            let auto_fetch = arg_bool(args, "auto_fetch", true);
+            match crate::services::enterprise::create_enterprise(
+                &state.db, &name, code.as_deref(), auto_fetch, "",
+            )
+            .await
+            {
+                Ok(v) if v.get("refresh").is_some() => json!({
+                    "ok": true,
+                    "enterprise_id": v.get("enterprise_id"),
+                    "name": v.get("name"),
+                    "stock_code": v.get("stock_code"),
+                    "resolved_from": v.get("resolved_from"),
+                    "dimensions": v.get("refresh").and_then(|r| r.get("dimensions")).cloned().unwrap_or(json!({})),
+                    "hint": "可继续调用 get_score_profile 查看评分",
+                }),
+                Ok(v) => v,
+                Err(err) => json!({ "error": format!("添加失败: {err}") }),
+            }
+        }
+        "refresh_enterprise_data" => {
+            let enterprise_id = arg_i64(args, "enterprise_id", 0);
+            let dims = {
+                let raw = arg_str(args, "dimensions");
+                let list: Vec<String> = raw
+                    .split(',')
+                    .map(|s| s.trim().to_string())
+                    .filter(|s| !s.is_empty())
+                    .collect();
+                if list.is_empty() { None } else { Some(list) }
+            };
+            match crate::datasources::refresh_enterprise(&state.db, enterprise_id, dims).await {
+                Ok(v) => {
+                    if let Some(err) = v.get("error") {
+                        return json!({ "error": err });
+                    }
+                    let summary: serde_json::Map<String, Value> = v
+                        .get("dimensions")
+                        .and_then(|d| d.as_object())
+                        .map(|m| {
+                            m.iter()
+                                .map(|(k, info)| {
+                                    let text = if info.get("ok").and_then(|x| x.as_bool()) == Some(true) {
+                                        format!(
+                                            "新增 {}/更新 {}",
+                                            info.get("inserted").and_then(|x| x.as_i64()).unwrap_or(0),
+                                            info.get("updated").and_then(|x| x.as_i64()).unwrap_or(0)
+                                        )
+                                    } else {
+                                        info.get("error")
+                                            .or_else(|| info.get("gap"))
+                                            .and_then(|x| x.as_str())
+                                            .unwrap_or("无数据")
+                                            .to_string()
+                                    };
+                                    (k.clone(), json!(text))
+                                })
+                                .collect()
+                        })
+                        .unwrap_or_default();
+                    json!({
+                        "ok": true,
+                        "enterprise_id": enterprise_id,
+                        "enterprise": v.get("enterprise").and_then(|e| e.get("name")),
+                        "dimensions": summary,
+                        "data_status": v.get("data_status"),
+                        "alerts_created": v.get("alerts_created"),
+                    })
+                }
+                Err(err) => json!({ "error": format!("刷新失败: {err}") }),
+            }
+        }
+        "handle_alert" => {
+            let alert_id = arg_i64(args, "alert_id", 0);
+            let action = arg_str(args, "action");
+            let handler = arg_str(args, "handler");
+            let note = arg_str(args, "note");
+            match crate::services::alerts::handle_alert(&state.db, alert_id, &action, &handler, &note) {
+                Ok(v) => v,
+                Err(err) => json!({ "error": format!("处置失败: {err}") }),
+            }
+        }
+        other => json!({ "error": format!("unknown async tool: {other}") }),
     }
 }
 

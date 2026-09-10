@@ -26,9 +26,8 @@ pub struct Config {
     pub compaction_threshold_ratio: f64,
     pub compaction_retain_ratio: f64,
     pub compaction_summary_max_tokens: i64,
-    /// P2 起用于写操作授权（当前仅解析，尚未使用）
-    #[allow(dead_code)]
     pub agent_require_approval: bool,
+    pub agent_approval_timeout: u64,
 }
 
 fn env_or(key: &str, default: &str) -> String {
@@ -129,6 +128,7 @@ impl Config {
             compaction_retain_ratio: env_parse("RWP_COMPACTION_RETAIN_RATIO", 0.16),
             compaction_summary_max_tokens: env_parse("RWP_COMPACTION_SUMMARY_MAX_TOKENS", 1024),
             agent_require_approval: env_parse("RWP_AGENT_REQUIRE_APPROVAL", true),
+            agent_approval_timeout: env_parse("RWP_AGENT_APPROVAL_TIMEOUT", 300),
         })
     }
 

@@ -38,6 +38,7 @@ pub fn router(state: AppState) -> Router {
         .route("/alerts/{id}/report", get(alerts::report))
         // 对话（SSE）
         .route("/chat/stream", post(chat::stream))
+        .route("/chat/approve", post(chat::approve))
         .route("/chat/sessions", get(chat::list_sessions))
         .route(
             "/chat/sessions/{id}",
