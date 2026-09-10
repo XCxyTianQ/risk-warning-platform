@@ -8,10 +8,13 @@
 //!   - 端口 0：自动分配，并在 stdout 打印 `RWP_PORT=<port>`
 //!   - 数据目录：SQLite 落在 `<data-dir>/platform.db`
 
+mod agent;
 mod api;
 mod config;
 mod db;
 mod error;
+mod llm;
+mod services;
 mod state;
 
 use std::sync::Arc;

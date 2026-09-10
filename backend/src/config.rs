@@ -26,6 +26,8 @@ pub struct Config {
     pub compaction_threshold_ratio: f64,
     pub compaction_retain_ratio: f64,
     pub compaction_summary_max_tokens: i64,
+    /// P2 起用于写操作授权（当前仅解析，尚未使用）
+    #[allow(dead_code)]
     pub agent_require_approval: bool,
 }
 
