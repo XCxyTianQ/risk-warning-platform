@@ -4,6 +4,7 @@ use std::convert::Infallible;
 
 use axum::extract::{Path, Query, State};
 use axum::response::sse::{Event, KeepAlive, Sse};
+use axum::response::IntoResponse;
 use axum::Json;
 use futures_util::{Stream, StreamExt};
 use serde::Deserialize;
@@ -69,6 +70,7 @@ pub async fn get_session(
     let session = store
         .get(&st.db, &id)?
         .ok_or_else(|| AppError::not_found(format!("会话不存在: {id}")))?;
+    let usage = store.usage_stats(&st.db, &id)?;
     let messages: Vec<Value> = session
         .messages
         .iter()
@@ -76,7 +78,7 @@ pub async fn get_session(
             json!({
                 "role": m.role,
                 "content": m.content,
-                "tool_calls": m.tool_calls,
+                "tool_calls": m.tool_calls.clone().unwrap_or_default(),
                 "tool_call_id": m.tool_call_id,
                 "tool_name": m.tool_name,
             })
@@ -87,6 +89,7 @@ pub async fn get_session(
         "title": session.title,
         "updated_at": session.updated_at,
         "summary": session.summary,
+        "usage": usage,
         "messages": messages,
     })))
 }
@@ -152,6 +155,102 @@ pub async fn batch_delete(
 }
 
 #[derive(Deserialize)]
+pub struct ExportQuery {
+    #[serde(default = "default_format")]
+    pub format: String,
+}
+
+fn default_format() -> String {
+    "md".into()
+}
+
+/// GET /api/chat/sessions/{id}/export —— md（可读报告）/ json（可再导入）
+pub async fn export_session(
+    State(st): State<AppState>,
+    Path(id): Path<String>,
+    Query(q): Query<ExportQuery>,
+) -> AppResult<axum::response::Response> {
+    let store = SessionStore::new();
+    if q.format == "json" {
+        let data = store
+            .export_json(&st.db, &id)?
+            .ok_or_else(|| AppError::not_found("会话不存在"))?;
+        return Ok(Json(data).into_response());
+    }
+    let text = store.export_markdown(&st.db, &id)?;
+    if text.is_empty() {
+        return Err(AppError::not_found("会话不存在"));
+    }
+    let resp = (
+        [
+            ("content-type", "text/markdown; charset=utf-8".to_string()),
+            (
+                "content-disposition",
+                format!("attachment; filename=\"session-{id}.md\""),
+            ),
+        ],
+        text,
+    )
+        .into_response();
+    Ok(resp)
+}
+
+#[derive(Deserialize)]
+pub struct ImportReq {
+    pub data: Value,
+}
+
+/// POST /api/chat/import —— 导入会话 JSON，生成新会话
+pub async fn import_session(
+    State(st): State<AppState>,
+    Json(req): Json<ImportReq>,
+) -> AppResult<Json<Value>> {
+    let store = SessionStore::new();
+    let result = store.import_session(&st.db, &req.data)?;
+    if let Some(err) = result.get("error").and_then(|v| v.as_str()) {
+        return Err(AppError::bad_request(err));
+    }
+    Ok(Json(result))
+}
+
+/// POST /api/chat/sessions/{id}/share
+pub async fn share_session(
+    State(st): State<AppState>,
+    Path(id): Path<String>,
+) -> AppResult<Json<Value>> {
+    let store = SessionStore::new();
+    let result = store.share(&st.db, &id)?;
+    if let Some(err) = result.get("error").and_then(|v| v.as_str()) {
+        return Err(AppError::not_found(err));
+    }
+    Ok(Json(result))
+}
+
+/// DELETE /api/chat/sessions/{id}/share
+pub async fn revoke_share(
+    State(st): State<AppState>,
+    Path(id): Path<String>,
+) -> AppResult<Json<Value>> {
+    let store = SessionStore::new();
+    let result = store.revoke_share(&st.db, &id)?;
+    if let Some(err) = result.get("error").and_then(|v| v.as_str()) {
+        return Err(AppError::not_found(err));
+    }
+    Ok(Json(result))
+}
+
+/// POST /api/chat/sessions —— 新建空会话
+pub async fn create_session(State(st): State<AppState>) -> AppResult<Json<Value>> {
+    let store = SessionStore::new();
+    let s = store.create(&st.db, "新对话")?;
+    Ok(Json(json!({
+        "session_id": s.id,
+        "title": s.title,
+        "created_at": s.created_at,
+    })))
+}
+
+#[derive(Deserialize)]
 pub struct UsageQuery {
     #[serde(default)]
     pub session_id: Option<String>,
@@ -163,27 +262,8 @@ pub async fn usage(
     Query(q): Query<UsageQuery>,
 ) -> AppResult<Json<Value>> {
     let store = SessionStore::new();
-    let global = st.db.with(|conn| {
-        let row = conn.query_row(
-            "SELECT COUNT(*), COALESCE(SUM(llm_calls),0), COALESCE(SUM(prompt_tokens),0),
-                    COALESCE(SUM(completion_tokens),0), COALESCE(SUM(cache_hit_tokens),0),
-                    COALESCE(SUM(cache_miss_tokens),0)
-             FROM chat_session",
-            [],
-            |r| {
-                Ok((
-                    r.get::<_, i64>(0)?,
-                    r.get::<_, i64>(1)?,
-                    r.get::<_, i64>(2)?,
-                    r.get::<_, i64>(3)?,
-                    r.get::<_, i64>(4)?,
-                    r.get::<_, i64>(5)?,
-                ))
-            },
-        )?;
-        Ok(row)
-    })?;
-    let total = global.4 + global.5;
+    let rt = st.rt();
+    let global = store.global_usage(&st.db)?;
     let session_stats = match q.session_id.as_deref() {
         Some(id) => Some(store.usage_stats(&st.db, id)?),
         None => None,
@@ -193,19 +273,11 @@ pub async fn usage(
         None => None,
     };
     Ok(Json(json!({
-        "model": st.cfg.llm_model,
-        "context_window": st.cfg.llm_context_window,
-        "threshold_ratio": st.cfg.compaction_threshold_ratio,
-        "retain_ratio": st.cfg.compaction_retain_ratio,
-        "global": {
-            "sessions": global.0,
-            "llm_calls": global.1,
-            "prompt_tokens": global.2,
-            "completion_tokens": global.3,
-            "cache_hit_tokens": global.4,
-            "cache_miss_tokens": global.5,
-            "cache_hit_rate": if total > 0 { ((global.4 as f64 / total as f64) * 10000.0).round() / 10000.0 } else { 0.0 },
-        },
+        "model": rt.llm_model,
+        "context_window": rt.llm_context_window,
+        "threshold_ratio": rt.compaction_threshold_ratio,
+        "retain_ratio": rt.compaction_retain_ratio,
+        "global": global,
         "session": session_stats.map(|s| json!({
             "session_id": q.session_id,
             "llm_calls": s.llm_calls,
@@ -217,6 +289,7 @@ pub async fn usage(
             "compact_count": s.compact_count,
         })),
         "pressure": pressure,
+        "preheat": crate::llm::preheat::status(&st),
     })))
 }
 

@@ -51,7 +51,7 @@ pub fn generate_for_enterprise(db: &Db, enterprise_id: i64, source: &str) -> Res
         return Ok(json!({ "error": format!("企业不存在: {enterprise_id}") }));
     }
     let verdict = rules_verdict(db, enterprise_id)?;
-    let now = chrono::Utc::now().to_rfc3339();
+    let now = crate::util::now_db();
 
     let mut created: Vec<Value> = Vec::new();
     let mut skipped = 0i64;
@@ -253,9 +253,9 @@ pub fn list_alerts(
                         "status_label": status_label(&status),
                         "status": status,
                         "handler": r.get::<_, String>(9)?,
-                        "created_at": r.get::<_, String>(10)?,
-                        "updated_at": r.get::<_, String>(11)?,
-                        "handled_at": r.get::<_, Option<String>>(12)?,
+                        "created_at": crate::util::db_to_iso(&r.get::<_, String>(10)?),
+                        "updated_at": crate::util::db_to_iso(&r.get::<_, String>(11)?),
+                        "handled_at": crate::util::opt_db_to_iso(r.get::<_, Option<String>>(12)?),
                         "notes": serde_json::from_str::<Value>(&notes).unwrap_or(json!([])),
                         "evidence": serde_json::from_str::<Value>(&evidence).unwrap_or(json!([])),
                     }))
@@ -329,14 +329,14 @@ pub fn handle_alert(db: &Db, alert_id: i64, action: &str, handler: &str, note: &
         }));
     }
 
-    let now = chrono::Utc::now().to_rfc3339();
+    let now = crate::util::now_db();
     let notes = db.with(|conn| {
         let raw: String = conn
             .query_row("SELECT notes_json FROM alert WHERE id = ?1", [alert_id], |r| r.get(0))
             .unwrap_or_else(|_| "[]".into());
         let mut notes: Vec<Value> = serde_json::from_str(&raw).unwrap_or_default();
         notes.push(json!({
-            "ts": now,
+            "ts": crate::util::db_to_iso(&now),
             "action": action,
             "status": new_status,
             "status_label": status_label(new_status),
@@ -415,7 +415,7 @@ pub fn report_markdown(db: &Db, alert_id: i64) -> Result<String> {
             score.map(|s| s.to_string()).unwrap_or_else(|| "—".into())
         ),
         format!("- **状态**：{}｜处理人：{}", status_label(&status), if handler.is_empty() { "—" } else { &handler }),
-        format!("- **生成时间**：{created_at}"),
+        format!("- **生成时间**：{}", crate::util::db_to_iso(&created_at)),
         "- **数据来源**：公开信源（东方财富 / 新浪财经 / 巨潮资讯，直连接口）".to_string(),
         String::new(),
         "## 预警摘要".to_string(),

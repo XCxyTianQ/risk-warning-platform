@@ -1,12 +1,40 @@
 //! 风险总览接口（前端 Dashboard 使用）：企业评分分布 + 维度分布 + 风险事实 + 舆情情感。
 
-use axum::extract::State;
+use axum::extract::{Query, State};
 use axum::Json;
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 use crate::error::AppResult;
 use crate::services::rules;
 use crate::state::AppState;
+
+#[derive(Deserialize)]
+pub struct FactsQuery {
+    #[serde(default)]
+    pub dimension: Option<String>,
+    #[serde(default)]
+    pub enterprise_id: Option<i64>,
+    #[serde(default = "default_facts_limit")]
+    pub limit: i64,
+}
+
+fn default_facts_limit() -> i64 {
+    100
+}
+
+/// GET /api/risk-facts —— 风险事实（可按维度/企业筛选）
+pub async fn risk_facts(
+    State(st): State<AppState>,
+    Query(q): Query<FactsQuery>,
+) -> AppResult<Json<Value>> {
+    Ok(Json(crate::services::risk::list_risk_facts(
+        &st.db,
+        q.dimension.as_deref(),
+        q.enterprise_id,
+        q.limit,
+    )?))
+}
 
 /// GET /api/dashboard/summary
 pub async fn summary(State(st): State<AppState>) -> AppResult<Json<Value>> {
@@ -79,7 +107,7 @@ pub async fn summary(State(st): State<AppState>) -> AppResult<Json<Value>> {
                     "enterprise": r.get::<_, String>(3)?,
                     "dimension": r.get::<_, String>(0)?,
                     "text": r.get::<_, String>(1)?,
-                    "ts": r.get::<_, String>(2)?,
+                    "ts": crate::util::db_to_iso(&r.get::<_, String>(2)?),
                 }))
             })?
             .collect::<Result<Vec<_>, _>>()?;

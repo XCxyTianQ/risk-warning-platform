@@ -94,6 +94,27 @@ async fn main() -> Result<()> {
     // 先建库（空库时灌样例），再绑定端口，最后打印端口供 Electron 读取
     let db = db::init(&cfg).context("数据库初始化失败")?;
 
+    // 设置覆盖（DB）→ 立即生效；内置技能与预设入库（幂等）
+    {
+        let mut rt = cfg.runtime.clone();
+        match services::settings::load_and_apply(&db, &mut rt) {
+            Ok(applied) if !applied.is_empty() => {
+                println!("[settings] 已应用 DB 覆盖：{}", applied.join(", "));
+            }
+            Ok(_) => {}
+            Err(err) => eprintln!("[settings] 覆盖加载失败（忽略）：{err:#}"),
+        }
+        match (services::skills::seed_builtin(&db), services::presets::seed_builtin_presets(&db)) {
+            (Ok(s), Ok(p)) => println!("[seed] 内置技能 +{s}，内置预设 +{p}"),
+            (s, p) => eprintln!("[seed] 内置技能/预设入库异常（忽略）：{s:?} {p:?}"),
+        }
+        let mut cfg = cfg;
+        cfg.runtime = rt;
+        run_server(cfg, db).await
+    }
+}
+
+async fn run_server(cfg: Config, db: db::Db) -> Result<()> {
     let addr = format!("{}:{}", cfg.host, cfg.bind_port());
     let listener = TcpListener::bind(&addr)
         .await
@@ -108,8 +129,18 @@ async fn main() -> Result<()> {
         cfg.web_dist.join("index.html").exists()
     );
 
-    let state = AppState { db, cfg: Arc::new(cfg) };
-    let app = api::router(state);
+    let state = AppState::new(db, Arc::new(cfg));
+    let app = api::router(state.clone());
+
+    // 启动时后台预热提示词缓存（不阻塞启动，失败不影响服务）
+    if state.rt().preheat_on_startup {
+        crate::llm::preheat::warm_background(
+            state.clone(),
+            crate::agent::prompt::SYSTEM_PROMPT.to_string(),
+            crate::agent::tools::build_registry().definitions(),
+            "startup",
+        );
+    }
 
     println!("[server] listening on http://127.0.0.1:{port}");
     axum::serve(listener, app).await.context("HTTP 服务异常退出")?;

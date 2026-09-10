@@ -17,7 +17,7 @@ impl AgentEvent {
     pub fn to_sse(&self) -> Event {
         let mut data = self.data.clone();
         if let Some(obj) = data.as_object_mut() {
-            obj.insert("ts".into(), Value::String(chrono::Utc::now().to_rfc3339()));
+            obj.insert("ts".into(), Value::String(crate::util::now_iso()));
         }
         Event::default().event(self.event.clone()).data(data.to_string())
     }

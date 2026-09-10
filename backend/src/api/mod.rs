@@ -7,9 +7,14 @@ pub mod chat;
 pub mod dashboard;
 pub mod enterprises;
 pub mod finance;
+pub mod mcp;
+pub mod plugins;
+pub mod settings;
+pub mod share;
+pub mod skills;
 
 use axum::response::Json;
-use axum::routing::{get, post};
+use axum::routing::{get, patch, post};
 use axum::Router;
 use serde_json::json;
 use tower_http::cors::{Any, CorsLayer};
@@ -27,10 +32,16 @@ pub fn router(state: AppState) -> Router {
             get(enterprises::get_one).delete(enterprises::delete),
         )
         .route("/enterprise/{id}/refresh", post(enterprises::refresh))
+        .route("/enterprise/{id}/risk", get(enterprises::risk))
+        .route(
+            "/enterprises/analyze_by_name",
+            post(enterprises::analyze_by_name),
+        )
         .route("/resolve_stock", get(enterprises::resolve_stock))
         .route("/datasources", get(enterprises::datasources_status))
         // 风险总览
         .route("/dashboard/summary", get(dashboard::summary))
+        .route("/risk-facts", get(dashboard::risk_facts))
         // 金融分析
         .route("/finance/overview", get(finance::overview))
         .route("/finance/{id}/analysis", get(finance::analysis))
@@ -44,14 +55,70 @@ pub fn router(state: AppState) -> Router {
         // 对话（SSE）
         .route("/chat/stream", post(chat::stream))
         .route("/chat/approve", post(chat::approve))
-        .route("/chat/sessions", get(chat::list_sessions))
+        .route(
+            "/chat/sessions",
+            get(chat::list_sessions).post(chat::create_session),
+        )
+        .route("/chat/sessions/batch_delete", post(chat::batch_delete))
         .route(
             "/chat/sessions/{id}",
-            get(chat::get_session).patch(chat::patch_session).delete(chat::delete_session),
+            get(chat::get_session)
+                .patch(chat::patch_session)
+                .delete(chat::delete_session),
         )
         .route("/chat/sessions/{id}/clear", post(chat::clear_session))
-        .route("/chat/sessions/batch_delete", post(chat::batch_delete))
+        .route("/chat/sessions/{id}/export", get(chat::export_session))
+        .route(
+            "/chat/sessions/{id}/share",
+            post(chat::share_session).delete(chat::revoke_share),
+        )
+        .route("/chat/import", post(chat::import_session))
         .route("/chat/usage", get(chat::usage))
+        .route("/share/{token}", get(share::get_shared))
+        // 设置
+        .route("/settings", get(settings::get).put(settings::update))
+        .route("/settings/providers", get(settings::providers))
+        .route("/settings/models", post(settings::models))
+        .route(
+            "/settings/preheat",
+            get(settings::preheat_status).post(settings::trigger_preheat),
+        )
+        .route("/settings/reset", post(settings::reset))
+        // 技能库
+        .route("/skills", get(skills::list).post(skills::create))
+        .route("/skills/seed", post(skills::seed))
+        .route("/skills/{id}", patch(skills::update).delete(skills::delete))
+        // 插件（手搓工具）与 Agent 预设
+        .route(
+            "/plugins/tools",
+            get(plugins::list_tools).post(plugins::create_tool),
+        )
+        .route(
+            "/plugins/tools/{id}",
+            patch(plugins::update_tool).delete(plugins::delete_tool),
+        )
+        .route("/plugins/tools/{id}/test", post(plugins::test_tool))
+        .route(
+            "/plugins/presets",
+            get(plugins::list_presets).post(plugins::create_preset),
+        )
+        .route("/plugins/presets/seed", post(plugins::seed_presets))
+        .route(
+            "/plugins/presets/{id}",
+            patch(plugins::update_preset).delete(plugins::delete_preset),
+        )
+        .route("/plugins/presets/{id}/export", get(plugins::export_preset))
+        .route("/plugins/export", get(plugins::export_all))
+        .route("/plugins/import", post(plugins::import_bundle))
+        // MCP
+        .route("/mcp/servers", get(mcp::list).post(mcp::create))
+        .route(
+            "/mcp/servers/{id}",
+            patch(mcp::update).delete(mcp::delete),
+        )
+        .route("/mcp/servers/{id}/test", post(mcp::test_server))
+        .route("/mcp/servers/{id}/sync", post(mcp::sync_server))
+        .route("/mcp", post(mcp::rpc_endpoint))
         .with_state(state.clone());
 
     let index = state.cfg.web_dist.join("index.html");

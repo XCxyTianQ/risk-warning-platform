@@ -17,10 +17,24 @@ pub struct Config {
     pub data_dir: PathBuf,
     pub web_dist: PathBuf,
     pub samples_dir: PathBuf,
+    /// 运行时可变子集（LLM / 压缩 / 审批 / 预热）的启动默认值
+    pub runtime: RuntimeCfg,
+}
+
+/// 可在设置面板热修改的运行时配置子集。
+///
+/// Python 版把 `settings` 做成可变单例后 `setattr`；Rust 版等价做法是把这一组字段
+/// 放进 `AppState.rt`（`RwLock`），保存设置后立即生效，无需重启。
+#[derive(Debug, Clone)]
+pub struct RuntimeCfg {
     pub llm_base_url: String,
     pub llm_api_key: String,
     pub llm_model: String,
     pub llm_max_tokens: i64,
+    /// 风险研判（需输出完整 JSON）的 max_tokens
+    pub llm_analysis_max_tokens: i64,
+    /// 关闭推理型模型的思考过程（更快，复杂分析质量可能下降）
+    pub llm_disable_thinking: bool,
     pub llm_context_window: i64,
     pub compaction_enabled: bool,
     pub compaction_threshold_ratio: f64,
@@ -28,6 +42,46 @@ pub struct Config {
     pub compaction_summary_max_tokens: i64,
     pub agent_require_approval: bool,
     pub agent_approval_timeout: u64,
+    pub preheat_enabled: bool,
+    pub preheat_on_startup: bool,
+    /// 缓存新鲜期（秒）：期内不重复预热
+    pub preheat_ttl_seconds: i64,
+}
+
+impl Default for RuntimeCfg {
+    fn default() -> Self {
+        Self::from_env()
+    }
+}
+
+impl RuntimeCfg {
+    pub fn from_env() -> Self {
+        Self {
+            llm_base_url: env_or("RWP_LLM_BASE_URL", "http://127.0.0.1:9000/v1"),
+            llm_api_key: env_or("RWP_LLM_API_KEY", "mock-key"),
+            llm_model: env_or("RWP_LLM_MODEL", "mock"),
+            llm_max_tokens: env_parse("RWP_LLM_MAX_TOKENS", 4096),
+            llm_analysis_max_tokens: env_parse("RWP_LLM_ANALYSIS_MAX_TOKENS", 8192),
+            llm_disable_thinking: env_parse("RWP_LLM_DISABLE_THINKING", false),
+            llm_context_window: env_parse("RWP_LLM_CONTEXT_WINDOW", 128_000),
+            compaction_enabled: env_parse("RWP_COMPACTION_ENABLED", true),
+            compaction_threshold_ratio: env_parse("RWP_COMPACTION_THRESHOLD_RATIO", 0.8),
+            compaction_retain_ratio: env_parse("RWP_COMPACTION_RETAIN_RATIO", 0.16),
+            compaction_summary_max_tokens: env_parse("RWP_COMPACTION_SUMMARY_MAX_TOKENS", 1024),
+            agent_require_approval: env_parse("RWP_AGENT_REQUIRE_APPROVAL", true),
+            agent_approval_timeout: env_parse("RWP_AGENT_APPROVAL_TIMEOUT", 300),
+            preheat_enabled: env_parse("RWP_PREHEAT_ENABLED", true),
+            preheat_on_startup: env_parse("RWP_PREHEAT_ON_STARTUP", true),
+            preheat_ttl_seconds: env_parse("RWP_PREHEAT_TTL_SECONDS", 600),
+        }
+    }
+
+    /// 本地 mock 端点无需预热（与 Python 版 `_is_local_endpoint` 一致）
+    pub fn is_local_endpoint(&self) -> bool {
+        ["127.0.0.1", "localhost", "0.0.0.0"]
+            .iter()
+            .any(|h| self.llm_base_url.contains(h))
+    }
 }
 
 fn env_or(key: &str, default: &str) -> String {
@@ -118,17 +172,7 @@ impl Config {
             data_dir,
             web_dist,
             samples_dir,
-            llm_base_url: env_or("RWP_LLM_BASE_URL", "http://127.0.0.1:9000/v1"),
-            llm_api_key: env_or("RWP_LLM_API_KEY", "mock-key"),
-            llm_model: env_or("RWP_LLM_MODEL", "mock"),
-            llm_max_tokens: env_parse("RWP_LLM_MAX_TOKENS", 4096),
-            llm_context_window: env_parse("RWP_LLM_CONTEXT_WINDOW", 128_000),
-            compaction_enabled: env_parse("RWP_COMPACTION_ENABLED", true),
-            compaction_threshold_ratio: env_parse("RWP_COMPACTION_THRESHOLD_RATIO", 0.8),
-            compaction_retain_ratio: env_parse("RWP_COMPACTION_RETAIN_RATIO", 0.16),
-            compaction_summary_max_tokens: env_parse("RWP_COMPACTION_SUMMARY_MAX_TOKENS", 1024),
-            agent_require_approval: env_parse("RWP_AGENT_REQUIRE_APPROVAL", true),
-            agent_approval_timeout: env_parse("RWP_AGENT_APPROVAL_TIMEOUT", 300),
+            runtime: RuntimeCfg::from_env(),
         })
     }
 

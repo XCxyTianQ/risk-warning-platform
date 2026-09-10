@@ -158,6 +158,37 @@ pub struct ResolveQuery {
     pub name: String,
 }
 
+/// GET /api/enterprise/{id}/risk —— 读侧快照（不触发 LLM）
+pub async fn risk(State(st): State<AppState>, Path(id): Path<i64>) -> AppResult<Json<Value>> {
+    match crate::services::risk::risk_snapshot(&st.db, id) {
+        Ok(v) => Ok(Json(v)),
+        Err(err) => Err(AppError::not_found(err.to_string())),
+    }
+}
+
+#[derive(Deserialize)]
+pub struct AnalyzeIn {
+    pub name: String,
+}
+
+/// POST /api/enterprises/analyze_by_name —— 按名称或股票代码发起完整研判
+pub async fn analyze_by_name(
+    State(st): State<AppState>,
+    Json(body): Json<AnalyzeIn>,
+) -> AppResult<Json<Value>> {
+    let raw = body.name.trim().to_string();
+    if raw.is_empty() {
+        return Err(AppError::bad_request("企业名称不能为空"));
+    }
+    match crate::services::risk::analyze_by_name(&st, &raw).await {
+        Ok(v) if v.get("not_found").is_some() => Err(AppError::not_found(format!(
+            "企业不存在：{raw}（请先在「企业档案」中添加建档）"
+        ))),
+        Ok(v) => Ok(Json(v)),
+        Err(err) => Err(AppError::internal(format!("研判失败：{err}"))),
+    }
+}
+
 /// GET /api/resolve_stock?name=康美药业 或 600518
 pub async fn resolve_stock(
     State(_st): State<AppState>,

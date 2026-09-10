@@ -16,22 +16,23 @@ use serde_json::{json, Value};
 use crate::agent::events::AgentEvent;
 use crate::agent::prompt::SYSTEM_PROMPT;
 use crate::agent::session::{estimate_tokens, Msg, Session, SessionStore};
-use crate::agent::tools::{build_registry, call_tool};
+use crate::agent::tools::{build_registry_for, call_tool};
 use crate::llm::{LlmClient, LlmConfig, StreamEvent};
 use crate::state::AppState;
 
 pub const MAX_STEPS: usize = 5;
 pub const MAX_TOOL_RESULT_CHARS: usize = 6000;
 
-fn client_for(state: &AppState) -> LlmClient {
+fn client_for(state: &AppState, preset_model: Option<&str>, max_tokens: Option<i64>) -> LlmClient {
+    let rt = state.rt();
     LlmClient::new(LlmConfig {
-        base_url: state.cfg.llm_base_url.clone(),
-        api_key: state.cfg.llm_api_key.clone(),
-        model: state.cfg.llm_model.clone(),
-        max_tokens: state.cfg.llm_max_tokens,
+        base_url: rt.llm_base_url.clone(),
+        api_key: rt.llm_api_key.clone(),
+        model: preset_model.filter(|m| !m.is_empty()).unwrap_or(&rt.llm_model).to_string(),
+        max_tokens: max_tokens.unwrap_or(rt.llm_max_tokens),
         timeout_s: 60,
         max_retries: 1,
-        disable_thinking: false,
+        disable_thinking: rt.llm_disable_thinking,
     })
 }
 
@@ -117,13 +118,35 @@ pub fn run_agent(
     state: AppState,
     mut session: Session,
     user_text: String,
-    _preset_id: Option<i64>,
+    preset_id: Option<i64>,
 ) -> impl Stream<Item = AgentEvent> {
     stream! {
         let store = SessionStore::new();
         let db = state.db.clone();
-        let client = client_for(&state);
-        let reg = build_registry();
+        let rt = state.rt();
+
+        // 载入 Agent 预设（提示词补充 + 工具白名单 + 技能白名单 + 模型覆盖）
+        let preset = match crate::services::presets::get_preset(&db, preset_id) {
+            Ok(p) => p,
+            Err(err) => {
+                yield AgentEvent::new("error", json!({ "message": format!("加载预设失败：{err}") }));
+                return;
+            }
+        };
+        let allowed_skills: Vec<String> = preset.as_ref().map(|p| p.skills.clone()).unwrap_or_default();
+        let system_prompt = match &preset {
+            Some(p) if !p.prompt_extra.is_empty() => {
+                format!("{SYSTEM_PROMPT}\n\n[当前预设：{}]\n{}", p.name, p.prompt_extra)
+            }
+            _ => SYSTEM_PROMPT.to_string(),
+        };
+
+        let client = client_for(
+            &state,
+            preset.as_ref().map(|p| p.model_override.as_str()),
+            None,
+        );
+        let reg = build_registry_for(&db, preset.as_ref());
 
         if let Err(err) = store.append(&db, &mut session, Msg::new("user", user_text)) {
             yield AgentEvent::new("error", json!({ "message": format!("写入消息失败：{err}") }));
@@ -136,25 +159,24 @@ pub fn run_agent(
         }));
 
         let mut tool_free_retry = false;
-        let mut system_prompt = SYSTEM_PROMPT.to_string();
 
         // 主动压缩检查
         let messages = build_messages(&session, &store, &system_prompt, false);
         let (over, est) = store.should_compact(
             &session.messages,
             &reg.definitions(),
-            state.cfg.llm_context_window,
-            state.cfg.compaction_threshold_ratio,
+            rt.llm_context_window,
+            rt.compaction_threshold_ratio,
         );
-        if state.cfg.compaction_enabled && over {
+        if rt.compaction_enabled && over {
             yield AgentEvent::new("compaction", json!({
                 "phase": "start", "estimated_tokens": est,
-                "window": state.cfg.llm_context_window, "forced": false,
+                "window": rt.llm_context_window, "forced": false,
             }));
             match store.compact(
                 &db, &mut session, &client, &messages, &reg.definitions(),
-                state.cfg.llm_context_window, state.cfg.compaction_retain_ratio,
-                state.cfg.compaction_summary_max_tokens,
+                rt.llm_context_window, rt.compaction_retain_ratio,
+                rt.compaction_summary_max_tokens,
             ).await {
                 Ok(Some(result)) => {
                     let _ = store.add_usage(&db, &session, &client.last_usage());
@@ -171,7 +193,6 @@ pub fn run_agent(
                     }));
                 }
             }
-            system_prompt = SYSTEM_PROMPT.to_string();
         }
 
         for step in 0..MAX_STEPS {
@@ -252,7 +273,7 @@ pub fn run_agent(
                 let args: Value = serde_json::from_str(&call.function.arguments)
                     .unwrap_or_else(|_| json!({}));
                 let tool = reg.get(&name);
-                let read_only = tool.map(|t| t.read_only).unwrap_or(true);
+                let read_only = reg.is_read_only(&name);
                 yield AgentEvent::new("tool", json!({
                     "id": call.id,
                     "name": name,
@@ -261,7 +282,7 @@ pub fn run_agent(
                 }));
 
                 // 写操作：先请求用户授权（Harness/Codex 的 approval 机制）
-                if !read_only && state.cfg.agent_require_approval {
+                if !read_only && rt.agent_require_approval {
                     let description = tool.map(|t| t.description.clone()).unwrap_or_default();
                     let slot = crate::agent::approvals::create(
                         &session.id, &call.id, &name, args.clone(), &description,
@@ -273,14 +294,14 @@ pub fn run_agent(
                         "name": name,
                         "args": args,
                         "description": description,
-                        "timeout": state.cfg.agent_approval_timeout,
+                        "timeout": rt.agent_approval_timeout,
                     }));
-                    let approved = crate::agent::approvals::wait_for(&slot, state.cfg.agent_approval_timeout).await;
+                    let approved = crate::agent::approvals::wait_for(&slot, rt.agent_approval_timeout).await;
                     crate::agent::approvals::discard(&approval_id);
 
                     if !approved {
                         let rejected = json!({
-                            "error": format!("用户拒绝执行该操作（或等待授权超时 {}s）", state.cfg.agent_approval_timeout)
+                            "error": format!("用户拒绝执行该操作（或等待授权超时 {}s）", rt.agent_approval_timeout)
                         });
                         let mut tool_msg = Msg::new("tool", dump_tool_result(&rejected));
                         tool_msg.tool_call_id = call.id.clone();
@@ -300,7 +321,7 @@ pub fn run_agent(
                 let result = if crate::agent::tools::is_async_tool(&name) {
                     crate::agent::tools::call_tool_async(&state, &name, &args).await
                 } else {
-                    call_tool(&db, &name, &args)
+                    call_tool(&db, &name, &args, &allowed_skills)
                 };
                 let latency_ms = started.elapsed().as_millis() as u64;
 
@@ -326,13 +347,14 @@ pub fn run_agent(
 
 /// 供 /api/chat/usage 使用的上下文压力
 pub fn context_pressure(state: &AppState, session: &Session) -> Value {
-    let reg = build_registry();
+    let rt = state.rt();
+    let reg = build_registry_for(&state.db, None);
     let est = estimate_tokens(&session.messages, &reg.definitions());
     json!({
         "estimated_tokens": est,
-        "window": state.cfg.llm_context_window,
-        "ratio": if state.cfg.llm_context_window > 0 {
-            ((est as f64 / state.cfg.llm_context_window as f64) * 1000.0).round() / 1000.0
+        "window": rt.llm_context_window,
+        "ratio": if rt.llm_context_window > 0 {
+            ((est as f64 / rt.llm_context_window as f64) * 1000.0).round() / 1000.0
         } else { 0.0 },
     })
 }

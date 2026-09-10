@@ -60,7 +60,7 @@ pub fn seed_from_samples(db: &Db, samples_dir: &Path) -> Result<usize> {
         .with_context(|| format!("读取样例数据失败：{}", path.display()))?;
     let dataset: Dataset = serde_json::from_str(&raw).context("解析 dataset.json 失败")?;
 
-    let now = chrono::Utc::now().to_rfc3339();
+    let now = crate::util::now_db();
     let mut count = 0usize;
 
     db.with(|conn| {

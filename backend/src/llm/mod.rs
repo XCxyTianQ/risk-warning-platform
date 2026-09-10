@@ -6,6 +6,8 @@
 //! - 记录首字延迟（TTFT）、总耗时、tokens/s
 //! - 网络错误/超时在"尚未输出任何内容"时重试（避免重复 token）
 
+pub mod preheat;
+
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};

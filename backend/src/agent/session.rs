@@ -7,6 +7,7 @@
 use std::sync::Mutex;
 
 use anyhow::Result;
+use rusqlite::OptionalExtension;
 use serde::Serialize;
 use serde_json::{json, Value};
 
@@ -172,7 +173,7 @@ impl SessionStore {
 
     pub fn create(&self, db: &Db, title: &str) -> Result<Session> {
         let id = uuid::Uuid::new_v4().simple().to_string()[..12].to_string();
-        let now = chrono::Utc::now().to_rfc3339();
+        let now = crate::util::now_db();
         db.with(|conn| {
             conn.execute(
                 "INSERT INTO chat_session (id, title, created_at, updated_at) VALUES (?1, ?2, ?3, ?3)",
@@ -206,8 +207,9 @@ impl SessionStore {
                         summary: r.get(2)?,
                         compacted_until: r.get(3)?,
                         compact_count: r.get(4)?,
-                        created_at: r.get(5)?,
-                        updated_at: r.get(6)?,
+                        // 读库时间统一转 ISO（T 分隔），与 Python `.isoformat()` 一致
+                        created_at: crate::util::db_to_iso(&r.get::<_, String>(5)?),
+                        updated_at: crate::util::db_to_iso(&r.get::<_, String>(6)?),
                     })
                 },
             );
@@ -251,7 +253,7 @@ impl SessionStore {
 
     /// 追加消息（落库并回填 id）
     pub fn append(&self, db: &Db, session: &mut Session, msg: Msg) -> Result<Msg> {
-        let now = chrono::Utc::now().to_rfc3339();
+        let now = crate::util::now_db();
         let calls_json = msg
             .tool_calls
             .as_ref()
@@ -345,7 +347,7 @@ impl SessionStore {
         session.summary = summary.to_string();
         session.compacted_until = until_id;
         session.compact_count += 1;
-        let now = chrono::Utc::now().to_rfc3339();
+        let now = crate::util::now_db();
         let (summary, until, count, id) =
             (summary.to_string(), until_id, session.compact_count, session.id.clone());
         db.with(|conn| {
@@ -426,11 +428,13 @@ impl SessionStore {
             let like = format!("%{q}%");
             let sql = if q.trim().is_empty() {
                 "SELECT id, title, pinned, created_at, updated_at, share_token,
-                        (SELECT COUNT(*) FROM chat_message m WHERE m.session_id = s.id)
+                        (SELECT COUNT(*) FROM chat_message m WHERE m.session_id = s.id),
+                        cache_hit_tokens, cache_miss_tokens
                  FROM chat_session s ORDER BY pinned DESC, updated_at DESC LIMIT ?1"
             } else {
                 "SELECT id, title, pinned, created_at, updated_at, share_token,
-                        (SELECT COUNT(*) FROM chat_message m WHERE m.session_id = s.id)
+                        (SELECT COUNT(*) FROM chat_message m WHERE m.session_id = s.id),
+                        cache_hit_tokens, cache_miss_tokens
                  FROM chat_session s
                  WHERE title LIKE ?2
                     OR EXISTS (SELECT 1 FROM chat_message m WHERE m.session_id = s.id AND m.content LIKE ?2)
@@ -438,14 +442,19 @@ impl SessionStore {
             };
             let mut stmt = conn.prepare(sql)?;
             let map_row = |r: &rusqlite::Row<'_>| {
+                let hit = r.get::<_, i64>(7)?;
+                let miss = r.get::<_, i64>(8)?;
                 Ok(json!({
                     "id": r.get::<_, String>(0)?,
                     "title": r.get::<_, String>(1)?,
                     "pinned": r.get::<_, i64>(2)? != 0,
-                    "created_at": r.get::<_, String>(3)?,
-                    "updated_at": r.get::<_, String>(4)?,
+                    "created_at": crate::util::db_to_iso(&r.get::<_, String>(3)?),
+                    "updated_at": crate::util::db_to_iso(&r.get::<_, String>(4)?),
                     "shared": !r.get::<_, String>(5)?.is_empty(),
                     "message_count": r.get::<_, i64>(6)?,
+                    "cache_hit_rate": if hit + miss > 0 {
+                        ((hit as f64 / (hit + miss) as f64) * 10_000.0).round() / 10_000.0
+                    } else { 0.0 },
                 }))
             };
             let rows = if q.trim().is_empty() {
@@ -460,7 +469,7 @@ impl SessionStore {
     }
 
     pub fn rename(&self, db: &Db, session_id: &str, title: &str) -> Result<Value> {
-        let now = chrono::Utc::now().to_rfc3339();
+        let now = crate::util::now_db();
         let title = title.trim().chars().take(120).collect::<String>();
         db.with(|conn| {
             let n = conn.execute(
@@ -511,6 +520,270 @@ impl SessionStore {
             }
         }
         Ok(deleted)
+    }
+
+    // ---------------- 会话导出 / 导入 / 分享 ----------------
+
+    /// 导出为可读 Markdown（适合贴到报告/答辩材料）
+    pub fn export_markdown(&self, db: &Db, session_id: &str) -> Result<String> {
+        let Some(s) = self.get(db, session_id)? else {
+            return Ok(String::new());
+        };
+        let stats = self.usage_stats(db, session_id)?;
+        let user_assistant = s
+            .messages
+            .iter()
+            .filter(|m| m.role == "user" || m.role == "assistant")
+            .count();
+        let mut lines: Vec<String> = vec![
+            format!("# {}", s.title),
+            String::new(),
+            format!("- 会话 ID：`{}`", s.id),
+            format!("- 创建时间：{}", s.created_at),
+            format!("- 最后更新：{}", s.updated_at),
+            format!("- 消息数：{user_assistant}"),
+            format!(
+                "- LLM 调用：{} 次 · 输入 {} tok（缓存命中 {}）· 输出 {} tok",
+                stats.llm_calls, stats.prompt_tokens, stats.cache_hit_tokens, stats.completion_tokens
+            ),
+            String::new(),
+            "---".into(),
+            String::new(),
+        ];
+        let mut tool_names: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+        for m in &s.messages {
+            for tc in m.tool_calls.iter().flatten() {
+                if !tc.id.is_empty() {
+                    tool_names.insert(tc.id.clone(), tc.function.name.clone());
+                }
+            }
+        }
+        for m in &s.messages {
+            let content = m.content.trim().to_string();
+            match m.role.as_str() {
+                "user" => {
+                    lines.push("## 🧑 用户".into());
+                    lines.push(String::new());
+                    lines.push(content);
+                    lines.push(String::new());
+                }
+                "assistant" => {
+                    if !content.is_empty() {
+                        lines.push("## 🤖 助手".into());
+                        lines.push(String::new());
+                        lines.push(content);
+                        lines.push(String::new());
+                    }
+                    for tc in m.tool_calls.iter().flatten() {
+                        lines.push(format!(
+                            "> 🔧 调用工具 `{}`：`{}`",
+                            tc.function.name, tc.function.arguments
+                        ));
+                        lines.push(String::new());
+                    }
+                }
+                "tool" => {
+                    let name = if m.tool_name.is_empty() {
+                        tool_names.get(&m.tool_call_id).cloned().unwrap_or_else(|| "tool".into())
+                    } else {
+                        m.tool_name.clone()
+                    };
+                    let snippet: String = content.chars().take(400).collect::<String>().replace('\n', " ");
+                    let ellipsis = if content.chars().count() > 400 { "…" } else { "" };
+                    lines.push(format!("> ↩️ `{name}` 返回：{snippet}{ellipsis}"));
+                    lines.push(String::new());
+                }
+                _ => {}
+            }
+        }
+        lines.push("---".into());
+        lines.push(String::new());
+        lines.push("> 由「企业经营风险预警平台」导出；数据来自公开信源，不构成投资建议。".into());
+        Ok(lines.join("\n"))
+    }
+
+    /// 导出为可再导入的 JSON（全保真）
+    pub fn export_json(&self, db: &Db, session_id: &str) -> Result<Option<Value>> {
+        let Some(s) = self.get(db, session_id)? else {
+            return Ok(None);
+        };
+        let stats = self.usage_stats(db, session_id)?;
+        Ok(Some(json!({
+            "kind": "risk-warning-chat-session",
+            "version": 1,
+            "exported_at": crate::util::now_iso(),
+            "title": s.title,
+            "usage": stats,
+            "messages": s.messages.iter().map(|m| json!({
+                "role": m.role,
+                "content": m.content,
+                "tool_calls": m.tool_calls.clone().unwrap_or_default(),
+                "tool_call_id": m.tool_call_id,
+                "tool_name": m.tool_name,
+            })).collect::<Vec<_>>(),
+        })))
+    }
+
+    /// 导入会话 JSON，生成新会话（保留消息与工具调用）
+    pub fn import_session(&self, db: &Db, data: &Value) -> Result<Value> {
+        if data.get("kind").and_then(|v| v.as_str()) != Some("risk-warning-chat-session") {
+            return Ok(json!({ "error": "不是有效的会话导出文件（kind 应为 risk-warning-chat-session）" }));
+        }
+        let base: String = data
+            .get("title")
+            .and_then(|v| v.as_str())
+            .unwrap_or("导入的对话")
+            .chars()
+            .take(120)
+            .collect();
+        let exists: Option<String> = db.with(|conn| {
+            Ok(conn
+                .query_row("SELECT id FROM chat_session WHERE title = ?1", [&base], |r| r.get(0))
+                .optional()?)
+        })?;
+        let title = if exists.is_some() { format!("{base}（导入）") } else { base };
+        let mut session = self.create(db, &title)?;
+        let mut count = 0usize;
+        for m in data.get("messages").and_then(|v| v.as_array()).cloned().unwrap_or_default() {
+            let role = m.get("role").and_then(|v| v.as_str()).unwrap_or("");
+            if !matches!(role, "user" | "assistant" | "tool") {
+                continue;
+            }
+            let mut msg = Msg::new(role, m.get("content").and_then(|v| v.as_str()).unwrap_or(""));
+            let calls = m.get("tool_calls").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+            if !calls.is_empty() {
+                msg.tool_calls = serde_json::from_value(Value::Array(calls)).ok();
+            }
+            msg.tool_call_id = m.get("tool_call_id").and_then(|v| v.as_str()).unwrap_or("").to_string();
+            msg.tool_name = m.get("tool_name").and_then(|v| v.as_str()).unwrap_or("").to_string();
+            self.append(db, &mut session, msg)?;
+            count += 1;
+        }
+        Ok(json!({
+            "ok": true,
+            "session_id": session.id,
+            "title": title,
+            "messages": count,
+        }))
+    }
+
+    /// 创建（或复用）分享链接
+    pub fn share(&self, db: &Db, session_id: &str) -> Result<Value> {
+        let existing: Option<(String, Option<String>)> = db.with(|conn| {
+            Ok(conn
+                .query_row(
+                    "SELECT share_token, share_created_at FROM chat_session WHERE id = ?1",
+                    [session_id],
+                    |r| Ok((r.get::<_, String>(0)?, r.get::<_, Option<String>>(1)?)),
+                )
+                .optional()?)
+        })?;
+        let Some((mut token, mut created_at)) = existing else {
+            return Ok(json!({ "error": format!("会话不存在: {session_id}") }));
+        };
+        if token.is_empty() {
+            token = uuid::Uuid::new_v4().simple().to_string()[..20].to_string();
+            created_at = Some(crate::util::now_db());
+            let token_clone = token.clone();
+            let created_clone = created_at.clone();
+            db.with(|conn| {
+                conn.execute(
+                    "UPDATE chat_session SET share_token = ?1, share_created_at = ?2 WHERE id = ?3",
+                    rusqlite::params![token_clone, created_clone, session_id],
+                )?;
+                Ok(())
+            })?;
+        }
+        Ok(json!({
+            "ok": true,
+            "session_id": session_id,
+            "token": token,
+            "url": format!("/share/{token}"),
+            "created_at": crate::util::opt_db_to_iso(created_at).unwrap_or_else(crate::util::now_iso),
+        }))
+    }
+
+    pub fn revoke_share(&self, db: &Db, session_id: &str) -> Result<Value> {
+        let n = db.with(|conn| {
+            Ok(conn.execute(
+                "UPDATE chat_session SET share_token = '', share_created_at = NULL WHERE id = ?1",
+                [session_id],
+            )?)
+        })?;
+        if n == 0 {
+            return Ok(json!({ "error": format!("会话不存在: {session_id}") }));
+        }
+        Ok(json!({ "ok": true, "session_id": session_id }))
+    }
+
+    /// 读取分享内容（只读视图）
+    pub fn get_shared(&self, db: &Db, token: &str) -> Result<Option<Value>> {
+        let session_id: Option<String> = db.with(|conn| {
+            Ok(conn
+                .query_row(
+                    "SELECT id FROM chat_session WHERE share_token = ?1 AND share_token != ''",
+                    [token],
+                    |r| r.get(0),
+                )
+                .optional()?)
+        })?;
+        let Some(session_id) = session_id else {
+            return Ok(None);
+        };
+        let Some(s) = self.get(db, &session_id)? else {
+            return Ok(None);
+        };
+        let stats = self.usage_stats(db, &session_id)?;
+        Ok(Some(json!({
+            "session_id": s.id,
+            "title": s.title,
+            "created_at": s.created_at,
+            "updated_at": s.updated_at,
+            "usage": stats,
+            "messages": s.messages.iter()
+                .filter(|m| matches!(m.role.as_str(), "user" | "assistant" | "tool"))
+                .map(|m| json!({
+                    "role": m.role,
+                    "content": m.content,
+                    "tool_calls": m.tool_calls.clone().unwrap_or_default(),
+                    "tool_name": m.tool_name,
+                }))
+                .collect::<Vec<_>>(),
+        })))
+    }
+
+    /// 全局用量汇总（常驻状态栏数据源）
+    pub fn global_usage(&self, db: &Db) -> Result<Value> {
+        db.with(|conn| {
+            let row = conn.query_row(
+                "SELECT COUNT(id), COALESCE(SUM(llm_calls), 0), COALESCE(SUM(prompt_tokens), 0),
+                        COALESCE(SUM(completion_tokens), 0), COALESCE(SUM(cache_hit_tokens), 0),
+                        COALESCE(SUM(cache_miss_tokens), 0), COALESCE(SUM(compact_count), 0)
+                 FROM chat_session",
+                [],
+                |r| {
+                    Ok((
+                        r.get::<_, i64>(0)?, r.get::<_, i64>(1)?, r.get::<_, i64>(2)?,
+                        r.get::<_, i64>(3)?, r.get::<_, i64>(4)?, r.get::<_, i64>(5)?,
+                        r.get::<_, i64>(6)?,
+                    ))
+                },
+            )?;
+            let (sessions, calls, prompt, completion, hit, miss, compacts) = row;
+            let cache_total = hit + miss;
+            Ok(json!({
+                "sessions": sessions,
+                "llm_calls": calls,
+                "prompt_tokens": prompt,
+                "completion_tokens": completion,
+                "cache_hit_tokens": hit,
+                "cache_miss_tokens": miss,
+                "cache_hit_rate": if cache_total > 0 {
+                    ((hit as f64 / cache_total as f64) * 10_000.0).round() / 10_000.0
+                } else { 0.0 },
+                "compact_count": compacts,
+            }))
+        })
     }
 
     // ---------------- 上下文压缩 ----------------

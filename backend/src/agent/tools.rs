@@ -90,6 +90,24 @@ impl ToolRegistry {
         self.tools.get(name)
     }
 
+    pub fn is_read_only(&self, name: &str) -> bool {
+        self.tools.get(name).map(|t| t.read_only).unwrap_or(true)
+    }
+
+    /// 预设工具白名单过滤：`list_skills` / `load_skill` 始终保留（便于技能发现）
+    pub fn retain_whitelist(&mut self, allowed: &[String]) {
+        if allowed.is_empty() {
+            return;
+        }
+        const ALWAYS: [&str; 2] = ["list_skills", "load_skill"];
+        self.tools
+            .retain(|name, _| allowed.iter().any(|a| a == name) || ALWAYS.contains(&name.as_str()));
+    }
+
+    pub fn contains(&self, name: &str) -> bool {
+        self.tools.contains_key(name)
+    }
+
     #[allow(dead_code)]
     pub fn names(&self) -> Vec<String> {
         self.tools.keys().cloned().collect()
@@ -392,8 +410,8 @@ pub fn list_alerts(db: &Db, args: &Value) -> Value {
                         "summary": r.get::<_, String>(6)?,
                         "score": r.get::<_, Option<f64>>(7)?,
                         "status": r.get::<_, String>(8)?,
-                        "created_at": r.get::<_, String>(9)?,
-                        "updated_at": r.get::<_, String>(10)?,
+                        "created_at": crate::util::db_to_iso(&r.get::<_, String>(9)?),
+                        "updated_at": crate::util::db_to_iso(&r.get::<_, String>(10)?),
                     }))
                 })?
                 .collect::<Result<Vec<_>, _>>()?;
@@ -403,21 +421,19 @@ pub fn list_alerts(db: &Db, args: &Value) -> Value {
     json!({ "total": rows.len(), "items": rows })
 }
 
-/// 列出技能（只给名称与描述，避免污染上下文）
-pub fn list_skills(db: &Db, _args: &Value) -> Value {
-    let rows = db
-        .with(|conn| {
-            let mut stmt = conn.prepare(
-                "SELECT name, description FROM skill WHERE enabled = 1 ORDER BY id",
-            )?;
-            let rows = stmt
-                .query_map([], |r| {
-                    Ok(json!({ "name": r.get::<_, String>(0)?, "description": r.get::<_, String>(1)? }))
-                })?
-                .collect::<Result<Vec<_>, _>>()?;
-            Ok(rows)
+/// 列出技能（只给名称与描述，避免污染上下文）；预设技能白名单生效时只列白名单内技能
+pub fn list_skills(db: &Db, _args: &Value, allowed_skills: &[String]) -> Value {
+    let rows = crate::services::skills::skills_for_tool(db).unwrap_or_default();
+    let rows: Vec<Value> = rows
+        .into_iter()
+        .filter(|s| {
+            allowed_skills.is_empty()
+                || s.get("name")
+                    .and_then(|v| v.as_str())
+                    .map(|n| allowed_skills.iter().any(|a| a == n))
+                    .unwrap_or(false)
         })
-        .unwrap_or_default();
+        .collect();
     json!({
         "count": rows.len(),
         "skills": rows,
@@ -426,8 +442,16 @@ pub fn list_skills(db: &Db, _args: &Value) -> Value {
 }
 
 /// 载入技能全文
-pub fn load_skill(db: &Db, args: &Value) -> Value {
+pub fn load_skill(db: &Db, args: &Value, allowed_skills: &[String]) -> Value {
     let name = arg_str(args, "name");
+    if !allowed_skills.is_empty() && !allowed_skills.iter().any(|a| a == &name) {
+        let mut available = allowed_skills.to_vec();
+        available.sort();
+        return json!({
+            "error": format!("当前预设未启用该技能：{name}"),
+            "available": available,
+        });
+    }
     let row = db.with(|conn| {
         let r = conn.query_row(
             "SELECT name, description, content FROM skill WHERE name = ?1 AND enabled = 1",
@@ -450,7 +474,22 @@ pub fn load_skill(db: &Db, args: &Value) -> Value {
         Some((name, description, content)) => {
             json!({ "skill": name, "description": description, "instructions": content })
         }
-        None => json!({ "error": format!("技能不存在或已停用：{name}") }),
+        None => {
+            let available = db
+                .with(|conn| {
+                    let mut stmt =
+                        conn.prepare("SELECT name FROM skill WHERE enabled = 1 ORDER BY id")?;
+                    let rows = stmt
+                        .query_map([], |r| r.get::<_, String>(0))?
+                        .collect::<Result<Vec<_>, _>>()?;
+                    Ok(rows)
+                })
+                .unwrap_or_default();
+            json!({
+                "error": format!("技能不存在或已停用：{name}"),
+                "available": available,
+            })
+        }
     }
 }
 
@@ -551,6 +590,17 @@ pub fn build_registry() -> ToolRegistry {
             "required": ["name"]
         }),
         true,
+    );
+
+    reg.register(
+        "run_risk_analysis",
+        "触发指定企业的完整风险研判（调用多模态大模型取数推理 + 规则引擎交叉校验），耗时 10~40 秒。仅在用户明确要求分析/重新研判时使用。",
+        json!({
+            "type": "object",
+            "properties": { "enterprise_id": { "type": "integer" } },
+            "required": ["enterprise_id"]
+        }),
+        false,
     );
 
     reg.register(
@@ -666,8 +716,68 @@ pub fn build_registry() -> ToolRegistry {
     reg
 }
 
+/// 每次运行构建注册表：内置工具（按预设白名单过滤）+ 用户手搓插件 + 启用的 MCP 工具。
+///
+/// 顺序稳定性：`BTreeMap` 按名称排序输出，前缀缓存友好（新增插件会改变 tools 数组，
+/// 此时前缀缓存失效一次，属预期）。
+pub fn build_registry_for(
+    db: &Db,
+    preset: Option<&crate::services::presets::Preset>,
+) -> ToolRegistry {
+    let mut reg = build_registry();
+    if let Some(p) = preset {
+        reg.retain_whitelist(&p.tools);
+    }
+    // 插件（自定义 HTTP 工具）：预设白名单非空时同样受过滤
+    for tool in crate::services::presets::enabled_custom_tools(db).unwrap_or_default() {
+        let name = format!("custom_{}", tool.name);
+        let name: String = name.chars().take(64).collect();
+        if reg.contains(&name) {
+            continue; // 与内置工具重名：保留内置
+        }
+        if let Some(p) = preset {
+            if !p.tools.is_empty() && !p.tools.iter().any(|t| t == &name || t == &tool.name) {
+                continue;
+            }
+        }
+        reg.register(
+            &name,
+            &format!("[插件] {}", if tool.description.is_empty() { tool.name.clone() } else { tool.description.clone() }),
+            if tool.parameters.is_object() && tool.parameters.as_object().map(|o| !o.is_empty()).unwrap_or(false) {
+                tool.parameters.clone()
+            } else {
+                json!({ "type": "object", "properties": {} })
+            },
+            !tool.require_approval,
+        );
+    }
+    // MCP 外部工具
+    for item in crate::services::mcp::enabled_tools(db).unwrap_or_default() {
+        if reg.contains(&item.openai_name) {
+            continue;
+        }
+        if let Some(p) = preset {
+            if !p.tools.is_empty() && !p.tools.iter().any(|t| t == &item.openai_name) {
+                continue;
+            }
+        }
+        let description = if item.description.is_empty() {
+            format!("[MCP:{}] {}", item.server_name, item.name)
+        } else {
+            format!("[MCP:{}] {}", item.server_name, item.description)
+        };
+        reg.register(
+            &item.openai_name,
+            &description,
+            if item.input_schema.is_object() { item.input_schema.clone() } else { json!({ "type": "object", "properties": {} }) },
+            !item.require_approval,
+        );
+    }
+    reg
+}
+
 /// 同步工具分发（只读且无网络的工具）
-pub fn call_tool(db: &Db, name: &str, args: &Value) -> Value {
+pub fn call_tool(db: &Db, name: &str, args: &Value, allowed_skills: &[String]) -> Value {
     match name {
         "search_enterprise" => search_enterprise(db, args),
         "get_score_profile" => get_score_profile(db, args),
@@ -679,8 +789,8 @@ pub fn call_tool(db: &Db, name: &str, args: &Value) -> Value {
         "get_financial_analysis" => get_financial_analysis(db, args),
         "compare_financials" => compare_financials(db, args),
         "screen_by_financial_metric" => screen_by_financial_metric(db, args),
-        "list_skills" => list_skills(db, args),
-        "load_skill" => load_skill(db, args),
+        "list_skills" => list_skills(db, args, allowed_skills),
+        "load_skill" => load_skill(db, args, allowed_skills),
         other => json!({ "error": format!("unknown tool: {other}") }),
     }
 }
@@ -888,17 +998,57 @@ pub fn screen_by_financial_metric(db: &Db, args: &Value) -> Value {
     })
 }
 
-/// 需要网络或写库的异步工具
+/// 需要网络或写库的异步工具（含手搓插件 `custom_*` 与 MCP `mcp_*`）
 pub fn is_async_tool(name: &str) -> bool {
     matches!(
         name,
-        "resolve_stock_code" | "add_enterprise" | "refresh_enterprise_data" | "handle_alert"
-    )
+        "resolve_stock_code"
+            | "add_enterprise"
+            | "refresh_enterprise_data"
+            | "handle_alert"
+            | "run_risk_analysis"
+    ) || name.starts_with("custom_")
+        || name.starts_with("mcp_")
 }
 
-/// 异步工具分发（网络 + 写操作）
+/// 异步工具分发（网络 + 写操作 + 插件 + MCP）
 pub async fn call_tool_async(state: &crate::state::AppState, name: &str, args: &Value) -> Value {
+    // 手搓插件（声明式 HTTP）
+    if let Some(raw) = name.strip_prefix("custom_") {
+        return match crate::services::presets::custom_tool_by_name(&state.db, raw) {
+            Ok(Some(row)) => crate::services::presets::run_custom_tool(&row, args).await,
+            Ok(None) => json!({ "error": format!("插件不存在或已停用：{raw}") }),
+            Err(err) => json!({ "error": format!("插件查询失败: {err}") }),
+        };
+    }
+    // MCP 外部工具：名称形如 mcp_{server_id}_{tool_name}
+    if let Some(item) = crate::services::mcp::parse_tool_name(&state.db, name) {
+        return crate::services::mcp::call_tool(&item.server_url, &item.auth_header, &item.name, args).await;
+    }
     match name {
+        "run_risk_analysis" => {
+            let enterprise_id = arg_i64(args, "enterprise_id", 0);
+            match crate::services::risk::analyze_enterprise(state, enterprise_id).await {
+                Ok(v) => {
+                    let verdict = v.get("verdict").cloned().unwrap_or(json!({}));
+                    let evidence = verdict.get("evidence").and_then(|e| e.as_array()).cloned().unwrap_or_default();
+                    json!({
+                        "enterprise_id": enterprise_id,
+                        "enterprise": v.get("enterprise").and_then(|e| e.get("name")),
+                        "score": verdict.get("score"),
+                        "grade": verdict.get("grade"),
+                        "level": verdict.get("level"),
+                        "llm_level": verdict.get("llm_level"),
+                        "rules_level": verdict.get("rules_level"),
+                        "cross_check_ok": verdict.get("cross_check_ok"),
+                        "summary": verdict.get("summary"),
+                        "evidence_count": evidence.len(),
+                        "evidence": evidence.into_iter().take(8).collect::<Vec<_>>(),
+                    })
+                }
+                Err(err) => json!({ "error": format!("研判失败: {err}") }),
+            }
+        }
         "resolve_stock_code" => {
             let query = arg_str(args, "name");
             crate::services::enterprise::lookup_stock_async(&query).await
