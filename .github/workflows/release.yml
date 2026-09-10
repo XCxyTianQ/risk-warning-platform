@@ -44,6 +44,12 @@ jobs:
           pip install -r server/requirements.txt
           pip install pyinstaller
 
+      - name: Backend checks (imports + builtin shadowing)
+        working-directory: server
+        run: |
+          python tests/check_imports.py
+          python tests/scan_builtin_shadowing.py
+
       - name: Install web deps
         working-directory: web
         run: npm ci
@@ -61,6 +67,10 @@ jobs:
         env:
           RWP_PYTHON: python
         run: node scripts/build-backend.js
+
+      - name: Smoke-test packaged backend
+        working-directory: server
+        run: python tests/smoke_backend.py --dir ../desktop/resources/backend/risk-api
 
       - name: Verify resources before packaging
         working-directory: desktop
@@ -129,6 +139,12 @@ jobs:
           pip install -r server/requirements.txt
           pip install pyinstaller
 
+      - name: Backend checks (imports + builtin shadowing)
+        working-directory: server
+        run: |
+          python tests/check_imports.py
+          python tests/scan_builtin_shadowing.py
+
       - name: Install web deps
         working-directory: web
         run: npm ci
@@ -146,6 +162,10 @@ jobs:
         env:
           RWP_PYTHON: python
         run: node scripts/build-backend.js
+
+      - name: Smoke-test packaged backend
+        working-directory: server
+        run: python tests/smoke_backend.py --dir ../desktop/resources/backend/risk-api
 
       - name: Verify resources before packaging
         working-directory: desktop
@@ -244,6 +264,12 @@ jobs:
           pip install -r server/requirements.txt
           pip install pyinstaller
 
+      - name: Backend checks (imports + builtin shadowing)
+        working-directory: server
+        run: |
+          python tests/check_imports.py
+          python tests/scan_builtin_shadowing.py
+
       - name: Install web deps
         working-directory: web
         run: npm ci
@@ -261,6 +287,10 @@ jobs:
         env:
           RWP_PYTHON: python
         run: node scripts/build-backend.js
+
+      - name: Smoke-test packaged backend
+        working-directory: server
+        run: python tests/smoke_backend.py --dir ../desktop/resources/backend/risk-api
 
       - name: Verify resources before packaging
         working-directory: desktop

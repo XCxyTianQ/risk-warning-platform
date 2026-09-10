@@ -38,7 +38,7 @@ def approve(body: ApprovalIn):
 
 @router.get("/sessions")
 def list_sessions(limit: int = 50, q: str = "", db: DbSession = Depends(get_db)):
-    return {"sessions": store.list(db, limit=limit, q=q)}
+    return {"sessions": store.list_sessions(db, limit=limit, q=q)}
 
 
 class SessionPatch(BaseModel):

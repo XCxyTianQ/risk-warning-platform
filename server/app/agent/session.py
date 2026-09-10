@@ -256,7 +256,13 @@ class SessionStore:
             "compact_count": session.compact_count,
         }
 
-    def list(self, db: DbSession, limit: int = 50, q: str = "") -> list[dict]:
+    def list_sessions(self, db: DbSession, limit: int = 50, q: str = "") -> list[dict]:
+        """会话列表（置顶优先，支持标题/内容检索）。
+
+        注意：本方法原名 `list`，会在类体作用域内遮蔽内置 `list`，
+        导致后续方法注解 `list[str]` 在 Python ≤3.13 上于**导入时**抛
+        TypeError: 'function' object is not subscriptable（3.14 惰性注解会掩盖该问题）。
+        """
         counts = dict(
             db.query(ChatMessage.session_id, func.count(ChatMessage.id))
             .group_by(ChatMessage.session_id)
