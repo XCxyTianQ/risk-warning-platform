@@ -119,7 +119,13 @@ export function openPanel(
   }
   workspace.panels.push(panel)
   workspace.active[dock] = panel.id
-  workspace.maximized = null
+  // 表格工作簿需要大空间：首次打开直接最大化（可用面板头部「还原」退出）
+  if (type === 'tables') {
+    workspace.maximized = panel.id
+    if (workspace.sizes.right < 640) workspace.sizes.right = 720
+  } else {
+    workspace.maximized = null
+  }
   return panel
 }
 
@@ -155,7 +161,8 @@ export function toggleMaximize(id: string) {
 
 export function setSize(zone: DockZone, px: number) {
   const min = zone === 'bottom' ? 140 : 260
-  const max = zone === 'bottom' ? 640 : 760
+  // 表格/金融分析这类宽面板需要更大空间，上限放宽到窗口级别
+  const max = zone === 'bottom' ? 900 : Math.max(760, window.innerWidth - 280)
   workspace.sizes[zone] = Math.max(min, Math.min(max, Math.round(px)))
 }
 

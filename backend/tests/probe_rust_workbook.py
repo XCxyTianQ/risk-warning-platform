@@ -95,10 +95,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8264)
     ap.add_argument("--data-dir", default="E:/IUC/rwp-workbook")
+    ap.add_argument("--seed-legacy", action="store_true",
+                    help="先往库里写一条旧版单表结构记录，验证升级后的自动归一化")
     args = ap.parse_args()
     port = args.port
 
     print(f"=== 工作簿验证（rust:{port}）===")
+    if args.seed_legacy:
+        try:
+            tid = seed_legacy(args.data_dir)
+            print(f"  [seed] 已写入旧版单表记录 id={tid}")
+        except Exception as exc:  # 已存在同名记录等
+            print(f"  [seed] 跳过：{exc}")
 
     # ---------- 1) 空白表格 ----------
     print("\n[1] 空白表格为默认入口")

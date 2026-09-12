@@ -298,6 +298,88 @@ pub fn extract(grid: &Grid) -> Result<Extracted> {
         .ok_or_else(|| anyhow!("未能识别表格结构（需要表头含年份，或含「年度/科目/数值」三列）"))
 }
 
+/// 保持原样的**扁平表**：第一行当表头，其余每行原样落成一格一格。
+///
+/// 用途：长表（年度|科目|数值）如果不希望被自动透视，可以先原样导入，
+/// 之后再用「数据透视表」按自己的口径分组汇总。
+pub fn build_flat(
+    db: &Db,
+    grid: &Grid,
+    enterprise_id: Option<i64>,
+    title: &str,
+    unit: &str,
+    scope: &str,
+) -> Result<Value> {
+    if grid.is_empty() {
+        return Err(anyhow!("表格内容为空"));
+    }
+    let header = grid[0].clone();
+    let width = grid.iter().map(|r| r.len()).max().unwrap_or(0).min(60);
+    let columns: Vec<Value> = (0..width)
+        .map(|i| {
+            let label = header.get(i).cloned().unwrap_or_default();
+            let is_period = looks_like_period(&label);
+            json!({
+                "key": format!("c{}", i + 1),
+                "label": label,
+                "period": if is_period { period_of(&header.get(i).cloned().unwrap_or_default()) } else { String::new() },
+                "report_type": if is_period { "年报" } else { "" },
+                "type": if is_period { "number" } else { "text" },
+            })
+        })
+        .collect();
+
+    let mut rows: Vec<Value> = Vec::new();
+    for (ri, line) in grid.iter().enumerate().skip(1) {
+        if line.iter().all(|c| c.trim().is_empty()) {
+            continue;
+        }
+        let mut cells = serde_json::Map::new();
+        for (ci, raw) in line.iter().enumerate() {
+            if ci >= width {
+                break;
+            }
+            let text = raw.trim();
+            if text.is_empty() {
+                continue;
+            }
+            let value = match to_number(text) {
+                Some(n) => json!(n),
+                None => json!(text),
+            };
+            cells.insert(
+                format!("c{}", ci + 1),
+                json!({ "value": value, "source": "file", "confidence": 1.0 }),
+            );
+        }
+        rows.push(json!({
+            "key": format!("r{}", ri),
+            "label": line.first().cloned().unwrap_or_default(),
+            "field": tables::match_field(line.first().map(|s| s.as_str()).unwrap_or("")).unwrap_or(""),
+            "cells": Value::Object(cells),
+        }));
+    }
+
+    let created = tables::create(db, enterprise_id, title, "blank", &[], unit, scope, "年报", "file")?;
+    let table_id = created
+        .get("table_id")
+        .and_then(|v| v.as_i64())
+        .ok_or_else(|| anyhow!("建表失败"))?;
+    let sheet = json!({ "columns": columns, "rows": rows, "meta": { "import": "flat" } });
+    let mapping = tables::auto_map(&sheet);
+    tables::update(db, table_id, &json!({ "sheet": sheet, "mapping": mapping }))?;
+    Ok(json!({
+        "ok": true,
+        "table_id": table_id,
+        "title": title,
+        "direction": "flat",
+        "columns": (0..width).map(|i| header.get(i).cloned().unwrap_or_default()).collect::<Vec<_>>(),
+        "rows": rows.len(),
+        "mapped_fields": mapping.len(),
+        "note": "原样导入（未自动透视），可用「⊞ 透视表」按自己的口径汇总",
+    }))
+}
+
 /// 抽取结果 → TableDoc（新建表格并写入单元格）
 #[allow(clippy::too_many_arguments)]
 pub fn build_table(

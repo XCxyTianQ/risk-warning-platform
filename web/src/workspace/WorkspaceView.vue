@@ -4,7 +4,6 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { api } from '../api'
 import ChatPanel from '../panels/ChatPanel.vue'
 import DockZone from './DockZone.vue'
-import { COMPONENTS, panelProps } from './registry'
 import {
   drag,
   dropOn,
@@ -35,7 +34,6 @@ async function loadTableCount() {
 const leftPanels = computed(() => panelsOf('left'))
 const rightPanels = computed(() => panelsOf('right'))
 const bottomPanels = computed(() => panelsOf('bottom'))
-const maximizedPanel = computed(() => workspace.panels.find((p) => p.id === workspace.maximized) ?? null)
 
 const stageStyle = computed(() => ({
   '--left-w': `${workspace.sizes.left}px`,
@@ -145,7 +143,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     <!-- 停靠舞台 -->
     <div class="stage" :style="stageStyle">
       <div class="stage-top">
-        <DockZone v-if="leftPanels.length" zone="left" class="area area-left" />
+        <DockZone v-if="leftPanels.length" zone="left" class="area area-left" :maximized-id="workspace.maximized" />
         <div v-if="leftPanels.length" class="split split-v" @pointerdown="startResize('left', $event)"></div>
 
         <!-- 主区：LLM 对话工作区 -->
@@ -154,11 +152,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </section>
 
         <div v-if="rightPanels.length" class="split split-v" @pointerdown="startResize('right', $event)"></div>
-        <DockZone v-if="rightPanels.length" zone="right" class="area area-right" />
+        <DockZone v-if="rightPanels.length" zone="right" class="area area-right" :maximized-id="workspace.maximized" />
       </div>
 
       <div v-if="bottomPanels.length" class="split split-h" @pointerdown="startResize('bottom', $event)"></div>
-      <DockZone v-if="bottomPanels.length" zone="bottom" class="area area-bottom" />
+      <DockZone v-if="bottomPanels.length" zone="bottom" class="area area-bottom" :maximized-id="workspace.maximized" />
 
       <!-- 拖拽停靠落点（拖动标签时出现） -->
       <template v-if="drag.panelId">
@@ -192,20 +190,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       </template>
     </div>
 
-    <!-- 最大化面板 -->
-    <div v-if="maximizedPanel" class="max-overlay">
-      <header class="max-head">
-        <span>{{ PANEL_META[maximizedPanel.type].icon }} {{ maximizedPanel.title }}</span>
-        <button class="btn ghost small" @click="workspace.maximized = null">还原 ✕</button>
-      </header>
-      <div class="max-body">
-        <component
-          :is="COMPONENTS[maximizedPanel.type]"
-          v-bind="panelProps(maximizedPanel)"
-          :key="maximizedPanel.id"
-        />
-      </div>
-    </div>
+    <!-- 最大化不再另开一个覆盖层：由对应的停靠区自己放大铺满窗口（见 DockZone 的 .zone-maxed） -->
 
     <!-- 命令面板 -->
     <div v-if="paletteOpen" class="palette-mask" @click.self="paletteOpen = false">
@@ -429,36 +414,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   height: 26%;
 }
 
-/* ---------- 最大化 ---------- */
-.max-overlay {
-  position: fixed;
-  inset: 68px 16px 16px 16px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.max-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-elev);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.max-body {
-  flex: 1;
-  overflow: auto;
-  padding: 16px 18px;
-}
+/* 最大化样式见 DockZone.vue 的 .zone-maxed（停靠区自己放大，不再另开覆盖层） */
 
 /* ---------- 命令面板 ---------- */
 .palette-mask {

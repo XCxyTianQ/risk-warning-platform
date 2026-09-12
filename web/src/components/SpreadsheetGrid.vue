@@ -146,8 +146,15 @@ function startEdit(r: number, c: number, initial?: string) {
   editText.value = initial ?? (formulaOf(r, c) || display(r, c))
   nextTick(() => {
     const el = container.value?.querySelector<HTMLInputElement>('input.cell-input')
-    el?.focus()
-    el?.select()
+    if (!el) return
+    el.focus()
+    if (initial !== undefined) {
+      // 打字直接进入编辑：光标放到末尾，后续按键要接在后面（'1'→'12'→'123'）
+      const n = el.value.length
+      el.setSelectionRange(n, n)
+    } else {
+      el.select()
+    }
   })
 }
 
@@ -436,8 +443,20 @@ function onPaste(e: ClipboardEvent) {
 }
 
 // ---------- 鼠标 ----------
+// 再次点击"已选中"的单元格 → 进入编辑（不必非得双击）；但必须先确认这一下是"点击"而不是"拖拽选区"
+const pendingEdit = ref<{ r: number; c: number } | null>(null)
+
 function onCellMouseDown(r: number, c: number, e: MouseEvent) {
-  if (editing.value) commitEdit()
+  // 编辑框内部的点击不能触发"提交并关闭"——否则刚双击出来的光标会被自己的点击关掉
+  const target = e.target as HTMLElement | null
+  if (target && (target.classList?.contains('cell-input') || target.closest?.('input.cell-input'))) {
+    return
+  }
+  if (editing.value) {
+    if (editing.value.r === r && editing.value.c === c) return
+    commitEdit()
+  }
+  const wasActive = activeCell.value.r === r && activeCell.value.c === c
   if (e.shiftKey) {
     sel.value = { ...sel.value, r1: r, c1: c }
   } else {
@@ -445,20 +464,39 @@ function onCellMouseDown(r: number, c: number, e: MouseEvent) {
     anchor.value = { r, c }
   }
   dragging.value = true
+  pendingEdit.value = wasActive && !e.shiftKey && r > 0 && c > 0 && !props.readonly ? { r, c } : null
+  // 让容器拿到焦点：选中后可直接打字进入编辑
+  nextTick(() => container.value?.focus({ preventScroll: true }))
   emit('select', { rows: r, cols: c })
 }
 
 function onCellMouseEnter(r: number, c: number) {
   if (!dragging.value) return
+  // 拖拽扩选时取消"进入编辑"的意图
+  pendingEdit.value = null
   sel.value = { ...sel.value, r1: r, c1: c }
 }
 
 function onCellDblClick(r: number, c: number) {
+  pendingEdit.value = null
   startEdit(r, c)
 }
 
 function onDocMouseUp() {
   dragging.value = false
+  const p = pendingEdit.value
+  pendingEdit.value = null
+  // 单击（没有拖动）落在同一个单元格上 → 开始编辑
+  if (
+    p &&
+    !editing.value &&
+    sel.value.r0 === p.r &&
+    sel.value.r1 === p.r &&
+    sel.value.c0 === p.c &&
+    sel.value.c1 === p.c
+  ) {
+    startEdit(p.r, p.c)
+  }
 }
 
 watch(
@@ -569,6 +607,9 @@ watch(
               v-if="editing && editing.r === ri + 1 && editing.c === ci + 1"
               v-model="editText"
               class="cell-input"
+              @mousedown.stop
+              @dblclick.stop
+              @keydown.stop
               @keydown.enter.prevent="commitEdit('down')"
               @keydown.tab.prevent="commitEdit('right')"
               @keydown.esc.prevent="editing = null"

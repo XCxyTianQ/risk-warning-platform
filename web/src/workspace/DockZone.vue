@@ -18,11 +18,13 @@ import {
   type DockZone,
 } from './store'
 
-const props = defineProps<{ zone: DockZone }>()
+const props = defineProps<{ zone: DockZone; maximizedId?: string | null }>()
 
 const list = computed(() => panelsOf(props.zone))
 const active = computed(() => activePanelOf(props.zone))
 const horizontal = computed(() => props.zone === 'bottom')
+// 最大化只是把这个停靠区"放大铺满窗口"：组件实例不重建，编辑到一半的状态不会丢
+const isMaxed = computed(() => !!active.value && active.value.id === props.maximizedId)
 
 const DOCK_ICON: Record<DockZone, string> = { left: '⇤', right: '⇥', bottom: '⇩' }
 const DOCK_TITLE: Record<DockZone, string> = { left: '停靠左侧', right: '停靠右侧', bottom: '停靠底部' }
@@ -39,13 +41,19 @@ function onTabDragStart(id: string, e: DragEvent) {
 <template>
   <section
     class="zone"
-    :class="[`zone-${zone}`, { 'drop-target': drag.panelId && drag.overZone === zone }]"
+    :class="[`zone-${zone}`, { 'drop-target': drag.panelId && drag.overZone === zone, 'zone-maxed': isMaxed }]"
     @dragover.prevent="setDragOver(zone)"
     @dragleave="setDragOver('')"
     @drop.prevent="dropOn(zone)"
   >
+    <!-- 最大化时换成标题条：和停靠态共用同一个组件实例，只是把外框放大铺满窗口 -->
+    <div v-if="isMaxed && active" class="maxed-head">
+      <span>{{ PANEL_META[active.type].icon }} {{ active.title }}</span>
+      <button class="btn ghost small" @click="toggleMaximize(active.id)">还原 ✕</button>
+    </div>
+
     <!-- 标签栏 -->
-    <div class="tabs">
+    <div v-else class="tabs">
       <button
         v-for="p in list"
         :key="p.id"
@@ -72,7 +80,7 @@ function onTabDragStart(id: string, e: DragEvent) {
       <span class="tabs-hint">{{ list.length }} 个标签</span>
     </div>
 
-    <!-- 内容 -->
+    <!-- 内容：始终挂载（最大化也是同一个实例，编辑状态不丢） -->
     <div class="zone-body" :class="{ horizontal }">
       <component :is="COMPONENTS[active.type]" v-if="active" v-bind="panelProps(active)" :key="active.id" />
     </div>
@@ -96,6 +104,33 @@ function onTabDragStart(id: string, e: DragEvent) {
 .zone.drop-target {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25), var(--shadow);
+}
+
+/* 最大化：同一个停靠区放大铺满窗口（不改 DOM 结构，组件实例与滚动/编辑状态都保留） */
+.zone.zone-maxed {
+  position: fixed;
+  inset: 68px 16px 16px 16px;
+  /* 覆盖停靠区自己的固定宽/高，否则 left/right 会被显式 width 压掉 */
+  width: auto;
+  height: auto;
+  z-index: 40;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.maxed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
+}
+
+.zone-maxed .zone-body {
+  padding: 14px 16px;
 }
 
 /* 标签栏 */

@@ -223,6 +223,9 @@ pub struct ImportReq {
     pub unit: Option<String>,
     #[serde(default)]
     pub scope: Option<String>,
+    /// true = 保持长表原样导入（不自动透视），便于后续用数据透视表处理
+    #[serde(default)]
+    pub keep_long: bool,
 }
 
 /// POST /api/tables/import —— 确定性解析（csv/xlsx/粘贴文本）→ 新建表格
@@ -251,7 +254,6 @@ pub async fn import(
     };
 
     let meta = sheet_import::detect_meta(&grid);
-    let ext = sheet_import::extract(&grid).map_err(|e| AppError::bad_request(e.to_string()))?;
     let unit = req
         .unit
         .filter(|u| !u.is_empty())
@@ -264,8 +266,14 @@ pub async fn import(
         .unwrap_or_else(|| "合并报表".into());
     let title = if req.title.trim().is_empty() { default_title } else { req.title.clone() };
 
-    let result = sheet_import::build_table(&st.db, &ext, req.enterprise_id, &title, &unit, &scope)
-        .map_err(|e| AppError::bad_request(e.to_string()))?;
+    let result = if req.keep_long {
+        sheet_import::build_flat(&st.db, &grid, req.enterprise_id, &title, &unit, &scope)
+            .map_err(|e| AppError::bad_request(e.to_string()))?
+    } else {
+        let ext = sheet_import::extract(&grid).map_err(|e| AppError::bad_request(e.to_string()))?;
+        sheet_import::build_table(&st.db, &ext, req.enterprise_id, &title, &unit, &scope)
+            .map_err(|e| AppError::bad_request(e.to_string()))?
+    };
     let id = result.get("table_id").and_then(|v| v.as_i64()).unwrap_or(0);
     let doc = tables::get(&st.db, id)?.ok_or_else(|| AppError::internal("导入后读取失败"))?;
     let mut out = result.as_object().cloned().unwrap_or_default();

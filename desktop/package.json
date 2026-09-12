@@ -1,7 +1,7 @@
 {
   "name": "risk-warning-desktop",
   "productName": "企业经营风险预警平台",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "基于多模态大模型的企业经营风险预警平台 · Windows / macOS 桌面端",
   "main": "main.js",
   "private": true,

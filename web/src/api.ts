@@ -501,6 +501,8 @@ export const api = {
     title?: string
     unit?: string
     scope?: string
+    /** true = 长表原样导入（不自动透视） */
+    keep_long?: boolean
   }) =>
     request<{
       ok: boolean

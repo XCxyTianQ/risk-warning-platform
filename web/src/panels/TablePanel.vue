@@ -57,7 +57,7 @@ const readingBusy = ref(false)
 // 文件/粘贴导入（确定性解析）
 const importOpen = ref(false)
 const importBusy = ref(false)
-const importForm = ref({ enterprise_id: null as number | null, title: '', unit: '', scope: '', text: '' })
+const importForm = ref({ enterprise_id: null as number | null, title: '', unit: '', scope: '', text: '', keep_long: false })
 const sheetInput = ref<HTMLInputElement | null>(null)
 
 // 撤销 / 重做栈（客户端快照，各 30 步）
@@ -112,6 +112,8 @@ const visionCells = computed(() => {
 })
 const visionCellCount = computed(() => visionCells.value.length)
 const hasVisionCells = computed(() => visionCellCount.value > 0)
+/** 校验详情默认折叠：长清单容易把表格挤到屏幕外 */
+const issuesOpen = ref(false)
 
 /** 当前活动单元格的公式（编辑栏显示） */
 const activeFormula = ref('')
@@ -390,6 +392,7 @@ async function onPickSheet(e: Event) {
       title: importForm.value.title,
       unit: importForm.value.unit || undefined,
       scope: importForm.value.scope || undefined,
+      keep_long: importForm.value.keep_long || undefined,
     })
     importOpen.value = false
     doc.value = r.table
@@ -416,6 +419,7 @@ async function importFromText() {
       title: importForm.value.title,
       unit: importForm.value.unit || undefined,
       scope: importForm.value.scope || undefined,
+      keep_long: importForm.value.keep_long || undefined,
     })
     importOpen.value = false
     importForm.value.text = ''
@@ -810,7 +814,7 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
 </script>
 
 <template>
-  <div class="page">
+  <div class="page" :class="{ 'editing-page': !!doc }">
     <!-- ============ 列表视图 ============ -->
     <template v-if="!doc">
       <div class="page-head">
@@ -940,11 +944,18 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
           >
             ✔ 确认识别结果（{{ visionCellCount }} 格）
           </button>
+          <button
+            v-if="validation.errors || validation.warnings"
+            class="btn ghost small"
+            @click="issuesOpen = !issuesOpen"
+          >
+            {{ issuesOpen ? '收起详情 ▴' : '展开详情 ▾' }}
+          </button>
         </div>
-        <ul v-if="errorIssues.length" class="issues">
-          <li v-for="(i, idx) in errorIssues.slice(0, 6)" :key="idx">⛔ {{ i.message }}</li>
+        <ul v-if="issuesOpen && errorIssues.length" class="issues">
+          <li v-for="(i, idx) in errorIssues.slice(0, 8)" :key="idx">⛔ {{ i.message }}</li>
         </ul>
-        <ul v-if="otherIssues.length" class="issues muted">
+        <ul v-if="issuesOpen && otherIssues.length" class="issues muted">
           <li v-for="(i, idx) in otherIssues" :key="idx">· {{ i.message }}</li>
         </ul>
       </div>
@@ -1006,9 +1017,8 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
           @set-period="(p) => setColumnPeriod(columns[p.index - 1]?.key ?? '', { period: p.period })"
           @select="onSelect"
         />
-        <p class="hint muted small">
-          双击或直接输入编辑 · Enter/Tab 移动 · Shift+点击或拖拽选区 · Ctrl+C/X/V 复制粘贴（与 Excel 互通）·
-          Ctrl+D 向下填充 · Ctrl+R 向右填充 · Delete 清空 · Ctrl+Z/Y 撤销重做
+        <p class="hint muted small" title="双击或直接输入编辑；Enter/Tab 移动；Shift+点击或拖拽选区；Ctrl+C/X/V 与 Excel 互通；Ctrl+D/R 填充；Delete 清空；Ctrl+Z/Y 撤销重做">
+          双击/直接输入编辑 · Ctrl+C/V 与 Excel 互通 · Ctrl+D/R 填充 · Ctrl+Z/Y 撤销重做
         </p>
       </div>
 
@@ -1210,6 +1220,10 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
             <select v-model="importForm.scope"><option value="">自动</option><option>合并报表</option><option>母公司</option></select>
           </label>
         </div>
+        <label class="chk-row">
+          <input v-model="importForm.keep_long" type="checkbox" />
+          长表原样导入（不自动透视）——勾上后整张长表照原样进来，再用工具栏「⊞ 透视表」自己挑行/列/值字段
+        </label>
         <input ref="sheetInput" type="file" accept=".csv,.xlsx,.xls" hidden @change="onPickSheet" />
         <button class="btn ghost small" :disabled="importBusy" @click="pickSheetFile">📎 选择文件（csv / xlsx）</button>
         <label>或粘贴表格内容
@@ -1306,6 +1320,56 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
 .issues li { color: var(--danger, #dc2626); }
 .issues.muted li { color: var(--text-sub); }
 
+/* 编辑态：页面撑满可用高度，表格区吃掉剩余空间（表格要尽可能大） */
+.page.editing-page { height: 100%; min-height: 0; gap: 8px; }
+.page.editing-page .page-head { align-items: center; }
+.page.editing-page .page-head > div:first-child { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.page.editing-page .page-head h2 { font-size: 16px; margin: 0; }
+.page.editing-page .page-sub { display: flex; align-items: center; gap: 6px; margin: 0; }
+.page.editing-page .grid-wrap {
+  flex: 1;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.page.editing-page .grid-wrap :deep(.sheet) { flex: 1; min-height: 260px; max-height: none; }
+.page.editing-page .card.meta,
+.page.editing-page .card.banner,
+.page.editing-page .card.toolbar,
+.page.editing-page .card.sheet-tabs { flex: none; }
+.page.editing-page .card.meta { padding: 5px 10px; gap: 4px 12px; }
+.page.editing-page .card.banner { padding: 5px 10px; }
+.page.editing-page .hint { flex: none; margin: 3px 8px; font-size: 10.5px; }
+
+/* 工具栏：紧凑一行，窄面板横向滚动而不是换行（换行会白吃掉几十像素高度） */
+.card.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.card.toolbar .tb-group { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.card.toolbar .tb-sep { width: 1px; height: 18px; background: var(--border); flex: none; }
+.card.toolbar .btn.small { padding: 3px 8px; font-size: 11.5px; }
+.card.toolbar .tb-fx { display: inline-flex; align-items: center; gap: 6px; flex: 1 1 200px; min-width: 170px; }
+.card.toolbar .tb-fx i { font-style: normal; font-weight: 700; font-size: 11.5px; color: var(--text-sub); }
+.card.toolbar .cell-ref { font-size: 11px; color: var(--text-sub); min-width: 34px; }
+.card.toolbar .fx-input {
+  flex: 1;
+  min-width: 120px;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+}
+
 .grid-wrap { overflow: auto; padding: 0; }
 .grid { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12.5px; }
 .grid th, .grid td { border-bottom: 1px solid var(--border-soft); border-right: 1px solid var(--border-soft); padding: 4px 8px; text-align: right; }
@@ -1346,8 +1410,7 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
 .modal-card textarea.paste-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; resize: vertical; }
 
 /* 工作表页签 */
-.sheet-tabs { display: flex; align-items: center; gap: 4px; padding: 4px 8px; flex-wrap: wrap; }
-.sheet-tab {
+.sheet-tabs { display: flex; align-items: center; gap: 4px; padding: 4px 8px; flex-wrap: wrap; }.sheet-tab {
   border: 1px solid var(--border);
   background: var(--bg-elev);
   color: var(--text-sub);
@@ -1393,6 +1456,7 @@ textarea.code-box {
 .macro-logs { margin: 0; padding-left: 16px; font-size: 11.5px; color: var(--text-sub); max-height: 90px; overflow: auto; }
 .modal-card h3 { margin: 0; font-size: 15px; }
 .modal-card label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-sub); }
+.modal-card label.chk-row { flex-direction: row; align-items: center; gap: 8px; font-size: 12px; color: var(--text); }
 .modal-card input, .modal-card select { font-family: inherit; font-size: 12.5px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); }
 .modal-card .row { display: flex; gap: 10px; }
 .modal-card .row label { flex: 1; }
