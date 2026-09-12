@@ -8,6 +8,7 @@ import EnterprisesView from '../views/EnterprisesView.vue'
 import FinanceView from '../views/FinanceView.vue'
 import McpPanel from '../panels/McpPanel.vue'
 import PresetPanel from '../panels/PresetPanel.vue'
+import TablePanel from '../panels/TablePanel.vue'
 import type { Panel, PanelType } from './store'
 
 export const COMPONENTS: Record<PanelType, any> = {
@@ -17,6 +18,7 @@ export const COMPONENTS: Record<PanelType, any> = {
   alerts: AlertsView,
   analyze: AnalyzeView,
   finance: FinanceView,
+  tables: TablePanel,
   mcp: McpPanel,
   presets: PresetPanel,
 }
@@ -24,5 +26,6 @@ export const COMPONENTS: Record<PanelType, any> = {
 export function panelProps(p: Panel | null): Record<string, any> {
   if (!p) return {}
   if (p.type === 'profile' || p.type === 'finance') return { enterpriseId: p.props.enterpriseId }
+  if (p.type === 'tables') return { tableId: p.props.tableId }
   return {}
 }

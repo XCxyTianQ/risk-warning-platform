@@ -193,6 +193,80 @@ export interface FinanceOverviewRow {
   debt_ratio: number | null
 }
 
+// --- 表格对象 ---
+export interface TableColumn {
+  key: string
+  label: string
+  period: string
+  report_type: string
+  type?: string
+}
+
+export interface TableCell {
+  value: number
+  raw?: any
+  source?: string
+  confidence?: number
+}
+
+export interface TableSheetRow {
+  key: string
+  label: string
+  field?: string
+  cells: Record<string, TableCell>
+}
+
+export interface TableDoc {
+  id: number
+  enterprise_id: number | null
+  title: string
+  kind: string
+  unit: string
+  scope: string
+  period_type: string
+  currency: string
+  sheet: { columns: TableColumn[]; rows: TableSheetRow[]; meta?: Record<string, any> }
+  mapping: Record<string, string>
+  status: 'draft' | 'confirmed' | 'ingested'
+  version: number
+  origin: string
+  note: string
+  created_at: string
+  updated_at: string
+}
+
+export interface TableRow {
+  id: number
+  enterprise_id: number | null
+  enterprise: string | null
+  title: string
+  kind: string
+  unit: string
+  scope: string
+  period_type: string
+  status: string
+  version: number
+  origin: string
+  updated_at: string
+  columns: number
+  rows: number
+}
+
+export interface TableIssue {
+  level: 'error' | 'warn' | 'info'
+  code: string
+  message: string
+  row: string
+  col: string
+}
+
+export interface TableValidation {
+  ok: boolean
+  errors: number
+  warnings: number
+  issues: TableIssue[]
+}
+
 export interface AlertRow {  id: number
   enterprise_id: number
   enterprise: string
@@ -306,6 +380,83 @@ export const api = {
   financeAnalysis: (id: number, years = 5, peers = true) =>
     request<FinanceAnalysis>(`/api/finance/${id}/analysis?years=${years}&peers=${peers}`),
   financeReportUrl: (id: number, years = 5) => `/api/finance/${id}/report?years=${years}`,
+
+  // --- 表格对象（在线创建 / 编辑 / 校验 / 入库） ---
+  tables: (params: { enterprise_id?: number; status?: string } = {}) => {
+    const q = new URLSearchParams()
+    if (params.enterprise_id) q.set('enterprise_id', String(params.enterprise_id))
+    if (params.status) q.set('status', params.status)
+    return request<{ total: number; items: TableRow[] }>(`/api/tables?${q.toString()}`)
+  },
+  tableTemplates: () =>
+    request<{
+      templates: { kind: string; title: string; rows: { field: string; label: string }[] }[]
+      fields: { key: string; label: string; kind: string; unit: string; aliases: string[] }[]
+    }>('/api/tables/templates'),
+  createTable: (body: {
+    enterprise_id?: number | null
+    title?: string
+    kind?: string
+    periods?: (string | string[])[]
+    unit?: string
+    scope?: string
+    period_type?: string
+    origin?: string
+  }) =>
+    request<{ table_id: number; title: string; kind: string; table: TableDoc }>('/api/tables', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  table: (id: number) => request<TableDoc>(`/api/tables/${id}`),
+  updateTable: (id: number, body: Record<string, any>) =>
+    request<{ ok: boolean; version: number }>(`/api/tables/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteTable: (id: number) =>
+    request<{ deleted: number }>(`/api/tables/${id}`, { method: 'DELETE' }),
+  writeTableCells: (
+    id: number,
+    body: {
+      row?: string
+      col?: string
+      value?: any
+      cells?: Record<string, any>
+      values?: any[][]
+      source?: string
+      confidence?: number
+    },
+  ) =>
+    request<{ ok: boolean; written: number; version: number }>(`/api/tables/${id}/cells`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  validateTable: (id: number) =>
+    request<TableValidation>(`/api/tables/${id}/validate`, { method: 'POST' }),
+  previewIngest: (id: number) =>
+    request<{
+      table_id: number
+      enterprise_id: number
+      unit: string
+      plan: { period: string; report_type: string; action: string; existing_source: string | null }[]
+      validation: TableValidation
+    }>(`/api/tables/${id}/preview`),
+  ingestTable: (id: number, overwrite = false) =>
+    request<{
+      ok: boolean
+      created: any[]
+      updated: any[]
+      skipped: any[]
+      conflicts: { period: string; reason: string; public_source: string; diff: any[] }[]
+      validation: TableValidation
+    }>(`/api/tables/${id}/ingest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ overwrite }),
+    }),
 
   // --- 设置 ---
   settings: () =>

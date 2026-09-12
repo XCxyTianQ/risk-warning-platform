@@ -2,7 +2,16 @@
 
 import { reactive } from 'vue'
 
-export type PanelType = 'profile' | 'dashboard' | 'enterprises' | 'alerts' | 'analyze' | 'finance' | 'mcp' | 'presets'
+export type PanelType =
+  | 'profile'
+  | 'dashboard'
+  | 'enterprises'
+  | 'alerts'
+  | 'analyze'
+  | 'finance'
+  | 'tables'
+  | 'mcp'
+  | 'presets'
 export type DockZone = 'left' | 'right' | 'bottom'
 
 export interface Panel {
@@ -21,6 +30,7 @@ export const PANEL_META: Record<PanelType, { title: string; icon: string; desc: 
   alerts: { title: '风险线索', icon: '🚨', desc: '大模型产出的风险事实', singleton: true },
   analyze: { title: '智能研判', icon: '🧠', desc: '单企业一键研判', singleton: true },
   finance: { title: '金融分析', icon: '📈', desc: '杜邦分解 + Z/F/M 模型 + 同业对标', singleton: true },
+  tables: { title: '财报表格', icon: '🧾', desc: '在线创建/编辑财报表格，校验后入库参与测算', singleton: false },
   mcp: { title: 'MCP 服务', icon: '🔌', desc: '外部 MCP 工具接入与同步', singleton: true },
   presets: { title: 'Agent 预设', icon: '🧩', desc: '预设组合 + 手搓插件/技能', singleton: true },
 }
@@ -77,6 +87,21 @@ export function openPanel(
       (p) => p.type === 'profile' && p.props.enterpriseId === props.enterpriseId,
     )
     if (dup) {
+      dup.dock = dock
+      workspace.active[dock] = dup.id
+      workspace.maximized = null
+      return dup
+    }
+  }
+
+  // 同一张表格只开一个标签；无 tableId 的列表视图也复用同一个
+  if (type === 'tables') {
+    const dup = workspace.panels.find(
+      (p) => p.type === 'tables' && (p.props.tableId ?? null) === (props.tableId ?? null),
+    )
+    if (dup) {
+      Object.assign(dup.props, props)
+      if (opts.title) dup.title = opts.title
       dup.dock = dock
       workspace.active[dock] = dup.id
       workspace.maximized = null
@@ -171,6 +196,16 @@ export function openForTool(name: string, result: Record<string, any>) {
   }
   if (name === 'list_skills' || name === 'load_skill') {
     openPanel('presets', { dock: 'right' })
+    return
+  }
+  // 表格对象：模型在对话里建表/写表/校验/入库时，把编辑器同步打开
+  if (name.startsWith('list_tables') || name === 'get_table' || name === 'create_table'
+      || name === 'write_table_cells' || name === 'validate_table' || name === 'ingest_table') {
+    const id = result.table_id ?? result.summary?.table_id
+    const title = result.title ?? result.summary?.title
+    if (id) openPanel('tables', { props: { tableId: id }, title: title || '财报表格', dock: 'right' })
+    else openPanel('tables', { dock: 'right' })
+    return
   }
 }
 
