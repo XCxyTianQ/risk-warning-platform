@@ -16,7 +16,32 @@
 | P2 | 数据源直连（新浪财务/三表、东财公告、巨潮诉讼、东财按需代码解析）、幂等入库与 data_status、企业添加/刷新 API、预警生成与处置闭环与报告、写操作授权 | ✅ 完成 |
 | P3 | 金融分析引擎（KPI / 杜邦 / Altman Z''、Piotroski F、Beneish M / 同业对标 / 异常勾稽 + Markdown 报告）+ 3 个金融工具 | ✅ 完成 |
 | P4 | 技能库与 Agent 预设、手搓插件（声明式 HTTP 工具）、MCP 双向、设置面板后端（DB 覆盖热生效）、会话导出/导入/分享、`run_risk_analysis`（LLM 研判）+ 风险事实接口 | ✅ 完成 |
-| P5 | 桌面端切换到 Rust 二进制、CI 四平台构建、发布 v0.5.0 | 待做 |
+| P5 | 桌面端切换到 Rust 二进制、CI 三平台构建、发布 v0.5.0 | ✅ 完成 |
+| P6 | **表格对象**（在线创建/编辑/撤销 + 勾稽校验 + 入库联动）与**多模态输入/读取**（附件、Reading、图片识别填表、CSV·XLSX·TSV 确定性导入） | ✅ 完成 |
+
+### P6 实测结论（表格对象与多模态）
+
+三组探针 + 两个 UI 冒烟，共 **89 项断言全部通过**：
+
+| 验证 | 覆盖 | 结果 |
+|---|---|---|
+| `probe_rust_tables.py` | 模板与字段字典（37 个引擎字段带别名）、在线创建、单格/按行/区域写入、勾稽拦截（BALANCE_MISMATCH 阻止入库）与修正通过、入库预览与入库、引擎联动（无财报企业录入后金融分析可用、KPI 等于录入值、六维 finance 可评分）、幂等更新、公开数据不被覆盖、6 个表格工具注册 | **36 项** |
+| `probe_rust_media.py` | 三种上传入口、sha256 内容寻址去重、类型/大小校验、原始字节预览、视觉读取（结构化字段 + meta + usage + 落库）、识图填表（vision 单元格）、**未确认阻止入库**（VISION_UNCONFIRMED）与确认后通过、对话 SSE attachment 事件与媒体 token、后续轮次历史文本化、删除与引用计数 | **32 项** |
+| `probe_rust_sheets.py` | 粘贴 TSV 建表、宽表/长表识别与透视、CSV 上传（单位自动识别）、XLSX 上传（calamine）、数值容错（千分位/括号负数/%）、确定性单元格 source=file/1.0、失败路径 400 | **21 项** |
+| `desktop/scripts/smoke-tables.js` | 面板打开 → 新建并绑定企业 → 录入 → 勾稽报错 → 修正 → 入库 → 状态变「已入库」 | Electron 全流程 |
+| `desktop/scripts/smoke-media.js` | 对话粘贴图片（前端压缩）→ chip → 发送 → 用户气泡缩略图 → 模型自动 `list_attachments` + `read_attachment` 作答；表格「从图片识别」（CDP 真实选文件）→ 识别 4 个科目并映射 → 3 格待确认 → 拦截 → 确认后可入库 | Electron 全流程 |
+| `desktop/scripts/smoke-import.js` | 粘贴 TSV 建表 → 表格渲染 6 科目 → 改值 → 撤销还原 → 校验通过 → 入库 | Electron 全流程 |
+
+设计要点（这三条决定了功能是否可用）：
+
+1. **表格是一等对象，不是附件**：上传/截图/粘贴只是它的三种"填充方式"；
+   `status: draft → confirmed → ingested`，入库后 `finance` 数据带「用户提供」溯源并参与六维评分与金融分析。
+2. **读取分两种可信度**：视觉识别（`source=vision`，**未确认不得入库**）与确定性解析
+   （`source=file`，可信度 1.0，免确认）；勾稽校验（资产=负债+权益、资产负债率一致性等）
+   对两者一视同仁 —— 平台对"数据"也做风险控制。
+3. **当期多模态、历史文本化**：只有最新一轮把图片展开成 `image_url` parts，
+   历史轮次自动降级为 Reading 文本投影；图片 token 按分辨率档位单独计入压缩估算。
+
 
 ### P4 实测结论（金标准比对）
 
@@ -129,6 +154,15 @@ python backend/tests/probe_rust_p4_tools.py --port 8240
 
 # 6) P4：研判与对话内 run_risk_analysis（需真实模型）
 python backend/tests/probe_rust_p4_risk.py --rust-port 8240 --py-port 8001 --with-agent
+
+# 7) P6：表格对象（在线创建/编辑/校验/入库）
+python backend/tests/probe_rust_tables.py --port 8250
+
+# 8) P6：多模态输入与读取（上传/去重/视觉读取/识图填表/对话附图，需真实模型）
+python backend/tests/probe_rust_media.py --port 8253
+
+# 9) P6：确定性导入（CSV/XLSX/粘贴 TSV，无需模型）
+python backend/tests/probe_rust_sheets.py --port 8257
 ```
 
 **金标准比对方法**：把 Python 版正在使用的数据库复制一份给 Rust 版使用
@@ -173,9 +207,13 @@ backend/src/
     alerts.rs        预警生成、处置流转、报告
     enterprise.rs    企业档案、股票代码解析、建档
     risk.rs          LLM 研判 + 风险事实 + 读侧快照
+    tables.rs        表格对象：模板/字段字典/映射/勾稽校验/入库/确认
+    sheet_import.rs  确定性读取：CSV·XLSX 解析、宽表/长表识别、透视、元数据识别
+    attachments.rs   多模态输入：内容寻址落盘、去重、Reading 形态与文本投影
+    reading.rs       多模态读取：视觉抽取 → 归一化 Reading → 填入表格
     skills.rs        技能库（内置 5 条 + CRUD）
     presets.rs       手搓插件（声明式 HTTP）+ Agent 预设 + 分享包导入导出
     mcp.rs           MCP 客户端（JSON-RPC）与服务管理
     settings.rs      设置元数据、DB 覆盖热生效、模型列表拉取
-  api/{mod,chat,dashboard,enterprises,finance,alerts,skills,plugins,mcp,settings,share}.rs
+  api/{mod,chat,dashboard,enterprises,finance,alerts,tables,attachments,skills,plugins,mcp,settings,share}.rs
 ```
