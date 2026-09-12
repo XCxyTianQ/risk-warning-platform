@@ -80,6 +80,7 @@ const pending = ref<ChatAttachment[]>([])
 const uploading = ref(false)
 const dragOver = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
+const uploadOpen = ref(false)
 const sessions = ref<SessionRow[]>([])
 const loadingHistory = ref(false)
 const usage = ref<UsageStats | null>(null)
@@ -417,8 +418,12 @@ function onDrop(e: DragEvent) {
   if (files.length) void uploadFiles(files)
 }
 
-function pickFiles() {
-  fileInput.value?.click()
+function pickFiles(kind: 'image' | 'sheet' | 'any' = 'any') {
+  const el = fileInput.value
+  if (!el) return
+  el.accept = kind === 'image' ? 'image/*' : kind === 'sheet' ? '.csv,.xlsx,.xls' : 'image/*,.csv,.xlsx,.xls'
+  uploadOpen.value = false
+  el.click()
 }
 
 function onPickFiles(e: Event) {
@@ -767,8 +772,15 @@ function stop() {
         @keydown.enter.exact.prevent="send()"
         @paste="onPaste"
       ></textarea>
-      <input ref="fileInput" type="file" multiple accept="image/*,.csv,.xlsx,.xls" hidden @change="onPickFiles" />
-      <button class="btn ghost attach-btn" title="添加图片或表格文件" @click="pickFiles">📎</button>
+      <input ref="fileInput" type="file" multiple hidden @change="onPickFiles" />
+      <div class="attach-wrap">
+        <button class="btn ghost attach-btn" title="上传文件（图片 / Excel / CSV）" @click="uploadOpen = !uploadOpen">＋</button>
+        <div v-if="uploadOpen" class="attach-menu" @mouseleave="uploadOpen = false">
+          <button @click="pickFiles('image')"><span>🖼️</span>图片 / 截图<small>png · jpg · webp</small></button>
+          <button @click="pickFiles('sheet')"><span>📊</span>Excel / CSV<small>xlsx · xls · csv</small></button>
+          <button @click="pickFiles('any')"><span>📎</span>任意文件<small>自动识别类型</small></button>
+        </div>
+      </div>
       <button v-if="busy" class="btn ghost" @click="stop">停止</button>
       <button v-else class="btn primary" :disabled="(!input.trim() && !pending.length) || uploading" @click="send()">发送</button>
     </div>
@@ -1334,7 +1346,44 @@ function stop() {
 
 .chip-hint { font-size: 11px; color: var(--text-sub); }
 
-.attach-btn { padding: 6px 9px; }
+.attach-btn { padding: 6px 11px; font-size: 16px; line-height: 1; }
+
+.attach-wrap { position: relative; }
+
+.attach-menu {
+  position: absolute;
+  bottom: 42px;
+  left: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 20;
+  min-width: 210px;
+}
+
+.attach-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  padding: 7px 9px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.attach-menu button:hover { background: var(--hover); }
+.attach-menu button span { font-size: 15px; }
+.attach-menu button small { margin-left: auto; color: var(--text-sub); font-size: 10.5px; }
 
 .msg-atts {
   display: flex;

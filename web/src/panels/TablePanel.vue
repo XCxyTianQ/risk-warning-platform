@@ -11,7 +11,8 @@
  */
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
-import { api, type TableDoc, type TableIssue, type TableRow, type TableValidation } from '../api'
+import { api, type TableDoc, type TableRow, type TableValidation } from '../api'
+import SpreadsheetGrid from '../components/SpreadsheetGrid.vue'
 import { openPanel } from '../workspace/store'
 
 const props = defineProps<{ tableId?: number }>()
@@ -38,8 +39,11 @@ const importBusy = ref(false)
 const importForm = ref({ enterprise_id: null as number | null, title: '', unit: '', scope: '', text: '' })
 const sheetInput = ref<HTMLInputElement | null>(null)
 
-// 撤销栈（客户端快照，最多 20 步）
+// 撤销 / 重做栈（客户端快照，各 30 步）
 const undoStack = ref<{ sheet: any; label: string }[]>([])
+const redoStack = ref<{ sheet: any; label: string }[]>([])
+const gridRef = ref<InstanceType<typeof SpreadsheetGrid> | null>(null)
+const selection = ref({ rows: 1, cols: 1 })
 
 // 新建表
 const newOpen = ref(false)
@@ -59,17 +63,15 @@ const previewOpen = ref(false)
 const preview = ref<{ plan: { period: string; report_type: string; action: string; existing_source: string | null }[] } | null>(null)
 const ingestNote = ref('')
 
-const editing = ref<{ row: string; col: string } | null>(null)
-const editValue = ref('')
-
 const columns = computed(() => doc.value?.sheet.columns ?? [])
 const rows = computed(() => doc.value?.sheet.rows ?? [])
-const issueMap = computed(() => {
-  const m = new Map<string, TableIssue>()
+/** 单元格级校验问题 → 栅格标红/标黄（key: `行key:列key`） */
+const cellIssues = computed<Record<string, string>>(() => {
+  const out: Record<string, string> = {}
   for (const i of validation.value?.issues ?? []) {
-    if (i.row && i.col) m.set(`${i.row}:${i.col}`, i)
+    if (i.row && i.col) out[`${i.row}:${i.col}`] = i.level
   }
-  return m
+  return out
 })
 const statusLabel = computed(() => {
   const s = doc.value?.status
@@ -90,16 +92,15 @@ const visionCells = computed(() => {
 const visionCellCount = computed(() => visionCells.value.length)
 const hasVisionCells = computed(() => visionCellCount.value > 0)
 
-function cellText(rowKey: string, colKey: string): string {
-  const cell = rows.value.find((r) => r.key === rowKey)?.cells?.[colKey]
-  if (!cell) return ''
-  const v = cell.value
-  if (v === null || v === undefined) return ''
-  return String(v)
-}
-
-function cellSource(rowKey: string, colKey: string): string {
-  return rows.value.find((r) => r.key === rowKey)?.cells?.[colKey]?.source ?? ''
+/** 当前活动单元格的公式（编辑栏显示） */
+const activeFormula = ref('')
+const activeRef = ref('A1')
+function onSelect(payload: { rows: number; cols: number }) {
+  selection.value = payload
+  const row = rows.value[payload.rows - 1]
+  const col = columns.value[payload.cols - 1]
+  activeRef.value = col ? `${col.period}${row ? ' · ' + row.label : ''}` : row ? row.label : ''
+  activeFormula.value = row && col ? (row.cells?.[col.key]?.formula ?? '') : ''
 }
 
 async function loadList() {
@@ -162,6 +163,7 @@ async function renameRow(rowKey: string, label: string) {
   if (!doc.value) return
   const target = doc.value.sheet.rows.find((r) => r.key === rowKey)
   if (!target || target.label === label) return
+  pushUndo('改科目名')
   target.label = label
   try {
     await api.updateTable(doc.value.id, { sheet: JSON.parse(JSON.stringify(doc.value.sheet)) })
@@ -187,99 +189,154 @@ async function setColumnPeriod(colKey: string, patch: { period?: string; report_
   }
 }
 
-async function persistCell(rowKey: string, colKey: string, value: any) {
-  if (!doc.value) return
-  try {
-    pushUndo('修改单元格')
-    await api.writeTableCells(doc.value.id, { row: rowKey, col: colKey, value, source: 'user' })
-    // 局部更新，避免整表重载导致光标丢失
-    const r = doc.value.sheet.rows.find((x) => x.key === rowKey)
-    if (r) {
-      if (value === null || value === '') delete r.cells[colKey]
-      else r.cells[colKey] = { value: Number(value), source: 'user', confidence: 1 }
+// ---------- 表格栅格事件（单元格编辑 / 公式 / 结构变更） ----------
+
+/** 保存定时器：连续编辑合并成一次 PATCH，避免频繁往返 */
+let saveTimer: number | undefined
+
+function scheduleSave(label: string) {
+  window.clearTimeout(saveTimer)
+  saveTimer = window.setTimeout(async () => {
+    if (!doc.value) return
+    try {
+      await api.updateTable(doc.value.id, { sheet: JSON.parse(JSON.stringify(doc.value.sheet)) })
+      await runValidate()
+    } catch (e) {
+      error.value = (e as Error).message
     }
-    await runValidate()
-  } catch (e) {
-    error.value = (e as Error).message
+  }, 500)
+  void label
+}
+
+/** 应用一批单元格变更（含公式重算结果），随后整表落库 */
+function onCellsChange(payload: { patch: { row: string; col: string; value: any; formula?: string }[] }) {
+  if (!doc.value || !payload.patch.length) return
+  pushUndo('编辑单元格')
+  for (const p of payload.patch) {
+    const row = doc.value.sheet.rows.find((r) => r.key === p.row)
+    if (!row) continue
+    if (p.value === null) {
+      delete row.cells[p.col]
+      continue
+    }
+    const prev = row.cells[p.col] ?? {}
+    const next: any = { ...prev, value: p.value, source: prev.source === 'vision' ? 'user' : (prev.source ?? 'user'), confidence: 1 }
+    // 人工改动过 → 视为已确认（vision 角标消失）
+    if (p.formula && p.formula.trim()) next.formula = p.formula
+    else delete next.formula
+    row.cells[p.col] = next
+  }
+  recalcFormulas()
+  scheduleSave('编辑')
+}
+
+/** 重算所有公式单元格（引用变化后联动） */
+function recalcFormulas() {
+  const patch = gridRef.value?.recalcAll?.() ?? []
+  if (!doc.value || !patch.length) return
+  for (const p of patch) {
+    const row = doc.value.sheet.rows.find((r) => r.key === p.row)
+    if (!row) continue
+    const prev = row.cells[p.col] ?? {}
+    row.cells[p.col] = { ...prev, value: p.value, ...(p.formula ? { formula: p.formula } : {}) }
   }
 }
 
-function startEdit(rowKey: string, colKey: string) {
-  editing.value = { row: rowKey, col: colKey }
-  editValue.value = cellText(rowKey, colKey)
-}
-
-// ---------- 撤销（在线编辑的一部分：改错了能退回去） ----------
-
-function pushUndo(label: string) {
+/** 结构变更：插入/删除行列、排序 */
+async function onStructure(payload: { action: string; index: number; asc?: boolean }) {
   if (!doc.value) return
-  undoStack.value.push({ sheet: JSON.parse(JSON.stringify(doc.value.sheet)), label })
-  if (undoStack.value.length > 20) undoStack.value.shift()
-}
-
-async function undo() {
-  if (!doc.value || !undoStack.value.length) return
-  const last = undoStack.value.pop()!
+  pushUndo(
+    payload.action === 'sort' ? '排序' : payload.action.startsWith('insert') ? '插入' : '删除',
+  )
+  const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
+  const { action, index } = payload
+  if (action === 'insert-row') {
+    sheet.rows.splice(index - 1, 0, { key: `r${Date.now().toString(36)}`, label: '新科目', field: '', cells: {} })
+  } else if (action === 'delete-row') {
+    sheet.rows.splice(index - 1, 1)
+  } else if (action === 'delete-col') {
+    if (sheet.columns.length <= 1) {
+      error.value = '至少保留一个期间列'
+      return
+    }
+    const col = sheet.columns[index - 1]
+    sheet.columns.splice(index - 1, 1)
+    for (const r of sheet.rows) if (col) delete r.cells?.[col.key]
+  } else if (action === 'sort') {
+    const col = sheet.columns[index - 1]
+    const asc = payload.asc !== false
+    const val = (r: any) => {
+      if (!col) return String(r.label)
+      const v = r.cells?.[col.key]?.value
+      return typeof v === 'number' ? v : Number.NEGATIVE_INFINITY
+    }
+    sheet.rows.sort((a: any, b: any) => (asc ? Number(val(a)) - Number(val(b)) : Number(val(b)) - Number(val(a))))
+  }
   try {
-    await api.updateTable(doc.value.id, { sheet: last.sheet })
+    await api.updateTable(doc.value.id, { sheet })
     await loadDoc(doc.value.id)
-    toast.value = `已撤销：${last.label}`
+    toast.value = `已应用：${action}`
   } catch (e) {
     error.value = (e as Error).message
   }
   setTimeout(() => (toast.value = ''), 3000)
 }
 
+// ---------- 撤销 / 重做 ----------
+
+function snapshot(): any {
+  return doc.value ? JSON.parse(JSON.stringify(doc.value.sheet)) : null
+}
+
+function pushUndo(label: string) {
+  const snap = snapshot()
+  if (!snap) return
+  undoStack.value.push({ sheet: snap, label })
+  if (undoStack.value.length > 30) undoStack.value.shift()
+  redoStack.value = []
+}
+
+async function restore(entry: { sheet: any; label: string }) {
+  if (!doc.value) return
+  try {
+    await api.updateTable(doc.value.id, { sheet: entry.sheet })
+    await loadDoc(doc.value.id)
+    toast.value = entry.label
+  } catch (e) {
+    error.value = (e as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 2500)
+}
+
+async function undo() {
+  if (!doc.value || !undoStack.value.length) return
+  const current = snapshot()
+  const last = undoStack.value.pop()!
+  if (current) redoStack.value.push({ sheet: current, label: `已重做：${last.label.replace('已撤销：', '')}` })
+  await restore({ sheet: last.sheet, label: `已撤销：${last.label}` })
+}
+
+async function redo() {
+  if (!doc.value || !redoStack.value.length) return
+  const current = snapshot()
+  const next = redoStack.value.pop()!
+  if (current) undoStack.value.push({ sheet: current, label: next.label.replace('已重做：', '') })
+  await restore(next)
+}
+
 function onUndoKey(e: KeyboardEvent) {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
-    const tag = (e.target as HTMLElement)?.tagName
-    if (tag === 'INPUT' || tag === 'TEXTAREA') return
+  const mod = e.ctrlKey || e.metaKey
+  if (!mod) return
+  const tag = (e.target as HTMLElement)?.tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return
+  const k = e.key.toLowerCase()
+  if (k === 'z' && !e.shiftKey) {
     e.preventDefault()
     void undo()
-  }
-}
-
-async function commitEdit() {
-  if (!editing.value) return
-  const { row, col } = editing.value
-  const raw = editValue.value.trim()
-  editing.value = null
-  await persistCell(row, col, raw === '' ? null : Number(raw.replace(/,/g, '')))
-}
-
-function onEditKey(e: KeyboardEvent) {
-  if (e.key === 'Enter') {
+  } else if ((k === 'z' && e.shiftKey) || k === 'y') {
     e.preventDefault()
-    commitEdit()
-  } else if (e.key === 'Escape') {
-    editing.value = null
+    void redo()
   }
-}
-
-/** 从 Excel 粘贴一块区域：按 TSV 解析，从当前单元格起铺开 */
-async function onPaste(e: ClipboardEvent, rowKey: string, colKey: string) {
-  const text = e.clipboardData?.getData('text/plain') ?? ''
-  if (!text.trim() || !doc.value) return
-  e.preventDefault()
-  const grid = text
-    .replace(/\r/g, '')
-    .split('\n')
-    .filter((l) => l.trim() !== '')
-    .map((line) => line.split('\t').map((c) => c.trim().replace(/,/g, '')))
-  try {
-    pushUndo('粘贴区域')
-    await api.writeTableCells(doc.value.id, {
-      row: rowKey,
-      col: colKey,
-      values: grid,
-      source: 'paste',
-    })
-    toast.value = `已粘贴 ${grid.length} 行 × ${grid[0]?.length ?? 0} 列`
-    await loadDoc(doc.value.id)
-  } catch (err) {
-    error.value = (err as Error).message
-  }
-  setTimeout(() => (toast.value = ''), 4000)
 }
 
 // ---------- 确定性导入：文件（csv/xlsx/xls）或粘贴整段文本 ----------
@@ -353,6 +410,24 @@ async function importFromText() {
   setTimeout(() => (toast.value = ''), 6000)
 }
 
+/** 从编辑栏输入公式应用到当前活动单元格 */
+function applyFormulaFromBar(text: string) {
+  if (!doc.value) return
+  const row = rows.value[selection.value.rows - 1]
+  const col = columns.value[selection.value.cols - 1]
+  if (!row || !col) return
+  const raw = text.trim()
+  if (!raw) return
+  onCellsChange({ patch: [{ row: row.key, col: col.key, value: raw.startsWith('=') ? '' : raw }] })
+  // 直接写入公式文本，由栅格重算
+  const target = doc.value.sheet.rows.find((r) => r.key === row.key)
+  if (target) {
+    target.cells[col.key] = { ...(target.cells[col.key] ?? {}), value: '', formula: raw.startsWith('=') ? raw : undefined, source: 'user', confidence: 1 }
+    recalcFormulas()
+    scheduleSave('公式')
+  }
+}
+
 async function saveMeta(patch: Record<string, any>) {
   if (!doc.value) return
   try {
@@ -366,42 +441,36 @@ async function saveMeta(patch: Record<string, any>) {
   setTimeout(() => (toast.value = ''), 3000)
 }
 
-async function addRow() {
-  if (!doc.value) return
-  const n = rows.value.length + 1
-  const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
-  sheet.rows.push({ key: `r${n}_${Date.now().toString(36)}`, label: '新科目', field: '', cells: {} })
-  await api.updateTable(doc.value.id, { sheet })
-  await loadDoc(doc.value.id)
-}
-
-async function removeRow(rowKey: string) {
-  if (!doc.value) return
-  const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
-  sheet.rows = sheet.rows.filter((r: any) => r.key !== rowKey)
-  await api.updateTable(doc.value.id, { sheet })
-  await loadDoc(doc.value.id)
-}
-
+/** 追加一个期间列 */
 async function addColumn() {
   if (!doc.value) return
   const period = prompt('新增期间的年份（如 2026）', String(CURRENT_YEAR))
   if (!period) return
+  pushUndo('新增期间')
   const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
-  const key = `c${sheet.columns.length + 1}_${Date.now().toString(36)}`
+  const key = `c_${Date.now().toString(36)}`
   sheet.columns.push({ key, label: `${period}年报`, period, report_type: '年报', type: 'number' })
   await api.updateTable(doc.value.id, { sheet })
   await loadDoc(doc.value.id)
 }
 
-async function removeColumn(colKey: string) {
-  if (!doc.value || columns.value.length <= 1) return
-  if (!confirm('删除该期间列及其数据？')) return
+/** 数字格式（当前列或整个表）：千分位/两位小数/百分比/整数/常规 */
+async function setFormat(mode: string) {
+  if (!doc.value) return
+  pushUndo('设置格式')
   const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
-  sheet.columns = sheet.columns.filter((c: any) => c.key !== colKey)
-  for (const r of sheet.rows) delete r.cells?.[colKey]
+  for (const r of sheet.rows) {
+    for (const cell of Object.values(r.cells ?? {}) as any[]) {
+      if (typeof cell?.value === 'number') {
+        if (mode === 'general') delete cell.format
+        else cell.format = mode
+      }
+    }
+  }
   await api.updateTable(doc.value.id, { sheet })
   await loadDoc(doc.value.id)
+  toast.value = `数字格式：${mode}`
+  setTimeout(() => (toast.value = ''), 2500)
 }
 
 async function runValidate() {
@@ -601,9 +670,6 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
           <button class="btn ghost small" :disabled="readingBusy" title="上传财报截图，自动识别并填入本表" @click="pickImage">
             {{ readingBusy ? '识别中…' : '📷 从图片识别' }}
           </button>
-          <button class="btn ghost small" @click="addRow">＋ 行</button>
-          <button class="btn ghost small" @click="addColumn">＋ 期间</button>
-          <button class="btn ghost small" :disabled="!undoStack.length" :title="undoStack.length ? `撤销：${undoStack[undoStack.length - 1].label}（Ctrl+Z）` : '无可撤销操作'" @click="undo">↶ 撤销</button>
           <button class="btn primary small" :disabled="validation?.ok !== true || saving" @click="openPreview">
             {{ validation?.ok ? '入库…' : '校验通过后可入库' }}
           </button>
@@ -674,67 +740,61 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
         </ul>
       </div>
 
-      <!-- 表格本体 -->
+      <!-- 工具栏（Excel 式操作） -->
+      <div class="card toolbar">
+        <span class="tb-group">
+          <button class="btn ghost small" :disabled="!undoStack.length" :title="undoStack.length ? `撤销：${undoStack[undoStack.length - 1].label}（Ctrl+Z）` : '无可撤销操作'" @click="undo">↶</button>
+          <button class="btn ghost small" :disabled="!redoStack.length" title="重做（Ctrl+Shift+Z / Ctrl+Y）" @click="redo">↷</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="btn ghost small" title="在选区插入行" @click="onStructure({ action: 'insert-row', index: selection.rows || 1 })">插入行</button>
+          <button class="btn ghost small" title="删除选中行" @click="onStructure({ action: 'delete-row', index: selection.rows || 1 })">删除行</button>
+          <button class="btn ghost small" @click="addColumn">＋ 期间</button>
+          <button class="btn ghost small" :disabled="columns.length <= 1" title="删除选中列" @click="onStructure({ action: 'delete-col', index: selection.cols || 1 })">删除列</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="btn ghost small" title="当前列升序" @click="onStructure({ action: 'sort', index: selection.cols || 1, asc: true })">↑ 排序</button>
+          <button class="btn ghost small" title="当前列降序" @click="onStructure({ action: 'sort', index: selection.cols || 1, asc: false })">↓ 排序</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="btn ghost small" title="千分位" @click="setFormat('money')">1,234.00</button>
+          <button class="btn ghost small" title="整数" @click="setFormat('int')">1,234</button>
+          <button class="btn ghost small" title="百分比" @click="setFormat('percent')">%</button>
+          <button class="btn ghost small" title="常规" @click="setFormat('general')">常规</button>
+        </span>
+        <span class="tb-sep"></span>
+        <span class="tb-fx">
+          <i>ƒx</i>
+          <span class="cell-ref">{{ activeRef || '—' }}</span>
+          <input
+            class="fx-input"
+            placeholder="输入公式，如 =B3/B2*100 或 =SUM(B2:B5)"
+            :value="activeFormula"
+            @keydown.enter="applyFormulaFromBar(($event.target as HTMLInputElement).value)"
+          />
+        </span>
+      </div>
+
+      <!-- 表格本体（Excel 式栅格：区域选择 / 公式 / 复制粘贴 / 填充 / 行列操作） -->
       <div class="card grid-wrap">
-        <table class="grid">
-          <thead>
-            <tr>
-              <th class="corner">科目</th>
-              <th v-for="c in columns" :key="c.key" class="col-head">
-                <div>{{ c.label }}</div>
-                <div class="col-sub">
-                  <input
-                    class="mini"
-                    :value="c.period"
-                    @change="setColumnPeriod(c.key, { period: ($event.target as HTMLInputElement).value })"
-                  />
-                  <i title="删除该期间" @click="removeColumn(c.key)">✕</i>
-                </div>
-              </th>
-              <th class="acts"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="r in rows" :key="r.key">
-              <th class="row-head">
-                <input
-                  class="mini label"
-                  :value="r.label"
-                  @change="renameRow(r.key, ($event.target as HTMLInputElement).value)"
-                />
-                <span v-if="r.field" class="mapped" :title="`已映射到引擎字段 ${r.field}`">已映射</span>
-              </th>
-              <td
-                v-for="c in columns"
-                :key="c.key"
-                class="cell"
-                tabindex="0"
-                :class="{
-                  err: issueMap.get(`${r.key}:${c.key}`)?.level === 'error',
-                  warn: issueMap.get(`${r.key}:${c.key}`)?.level === 'warn',
-                  empty: !cellText(r.key, c.key),
-                }"
-                @click="startEdit(r.key, c.key)"
-                @paste="onPaste($event, r.key, c.key)"
-                :title="issueMap.get(`${r.key}:${c.key}`)?.message ?? (cellSource(r.key, c.key) === 'vision' ? '模型识别，待确认' : '')"
-              >
-                <input
-                  v-if="editing && editing.row === r.key && editing.col === c.key"
-                  v-model="editValue"
-                  class="cell-input"
-                  autofocus
-                  @keydown="onEditKey"
-                  @blur="commitEdit"
-                />
-                <span v-else>{{ cellText(r.key, c.key) || '—' }}</span>
-                <i v-if="cellSource(r.key, c.key) === 'vision'" class="src vision" title="模型识别结果，请核对">AI</i>
-              </td>
-              <td class="acts">
-                <i title="删除该行" @click="removeRow(r.key)">✕</i>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <SpreadsheetGrid
+          ref="gridRef"
+          :columns="columns as any"
+          :rows="rows as any"
+          :issues="cellIssues"
+          @change="onCellsChange"
+          @structure="onStructure"
+          @rename-row="(p) => renameRow(rows[p.index - 1]?.key ?? '', p.label)"
+          @set-period="(p) => setColumnPeriod(columns[p.index - 1]?.key ?? '', { period: p.period })"
+          @select="onSelect"
+        />
+        <p class="hint muted small">
+          双击或直接输入编辑 · Enter/Tab 移动 · Shift+点击或拖拽选区 · Ctrl+C/X/V 复制粘贴（与 Excel 互通）·
+          Ctrl+D 向下填充 · Ctrl+R 向右填充 · Delete 清空 · Ctrl+Z/Y 撤销重做
+        </p>
       </div>
 
       <p class="muted small" v-if="doc.note">备注：{{ doc.note }}</p>

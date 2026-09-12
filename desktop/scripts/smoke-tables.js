@@ -95,14 +95,16 @@ app.on('ready', async () => {
       const setCell = async (tr, value) => {
         const td = tr.querySelector('td.cell')
         if (!td) return false
-        td.click()
-        await wait(120)
+        td.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+        td.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+        td.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+        await wait(200)
         const input = td.querySelector('input.cell-input')
         if (!input) return false
         const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
         setter.call(input, String(value))
         input.dispatchEvent(new Event('input', { bubbles: true }))
-        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+        input.dispatchEvent(new Event('change', { bubbles: true }))
         await wait(700)
         return true
       }
@@ -155,13 +157,15 @@ app.on('ready', async () => {
       const labelOf = (tr) => (tr.querySelector('th input')?.value || '').trim()
       const equity = rows.find((tr) => labelOf(tr).includes('所有者权益'))
       const td = equity.querySelector('td.cell')
-      td.click()
-      await wait(150)
+      td.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+      td.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }))
+      td.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+      await wait(200)
       const input = td.querySelector('input.cell-input')
       const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
       setter.call(input, '900')
       input.dispatchEvent(new Event('input', { bubbles: true }))
-      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+      input.dispatchEvent(new Event('change', { bubbles: true }))
       await wait(1500)
       const passed = (document.body.textContent || '').includes('勾稽校验通过')
       const openBtn = [...document.querySelectorAll('button')].find((b) => (b.innerText || '').includes('入库…'))

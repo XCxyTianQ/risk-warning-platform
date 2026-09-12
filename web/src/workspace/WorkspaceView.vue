@@ -21,6 +21,17 @@ import {
 
 const LAUNCHER: PanelType[] = ['dashboard', 'enterprises', 'alerts', 'analyze', 'profile', 'finance', 'tables', 'presets', 'mcp']
 
+/** 侧边栏表格按钮上的数量角标（让「已上传/已建的表格」一眼可见） */
+const tableCount = ref(0)
+async function loadTableCount() {
+  try {
+    const r = await api.tables()
+    tableCount.value = r.total
+  } catch {
+    tableCount.value = 0
+  }
+}
+
 const leftPanels = computed(() => panelsOf('left'))
 const rightPanels = computed(() => panelsOf('right'))
 const bottomPanels = computed(() => panelsOf('bottom'))
@@ -107,6 +118,7 @@ onMounted(() => {
   // 每次启动只显示对话区：清空上次的面板布局
   resetLayout()
   window.addEventListener('keydown', onKeydown)
+  void loadTableCount()
 })
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
@@ -119,10 +131,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         v-for="t in LAUNCHER"
         :key="t"
         class="rail-btn"
+        :class="{ 'has-dot': t === 'tables' && tableCount > 0 }"
         :title="`${PANEL_META[t].title} — ${PANEL_META[t].desc}`"
         @click="openPanel(t)"
       >
         <span>{{ PANEL_META[t].icon }}</span>
+        <i v-if="t === 'tables' && tableCount > 0" class="rail-badge">{{ tableCount }}</i>
       </button>
       <div class="rail-sep"></div>
       <button class="rail-btn" title="命令面板 (Ctrl+K)" @click="paletteOpen = true; loadEnterprises()">⌘</button>
@@ -248,11 +262,28 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   cursor: pointer;
   color: var(--text);
   transition: all 0.15s;
+  position: relative;
 }
 
 .rail-btn:hover {
   background: var(--hover);
   border-color: var(--primary);
+}
+
+.rail-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 9.5px;
+  font-style: normal;
+  line-height: 15px;
+  text-align: center;
 }
 
 .rail-sep {

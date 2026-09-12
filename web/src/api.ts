@@ -203,8 +203,10 @@ export interface TableColumn {
 }
 
 export interface TableCell {
-  value: number
+  value: number | string | null
   raw?: any
+  formula?: string
+  format?: string
   source?: string
   confidence?: number
 }
