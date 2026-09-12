@@ -191,4 +191,31 @@ CREATE TABLE IF NOT EXISTS app_setting (
     value      TEXT NOT NULL DEFAULT '',
     updated_at TEXT NOT NULL DEFAULT ''
 );
+
+-- 表格对象（TableDoc）：在线创建/编辑、上传读取（图片识别/xlsx/粘贴）三条入口的共同容器。
+-- 设计要点：
+--  * sheet_json 存结构化表格（列=期间，行=科目；单元格带来源与置信度）
+--  * mapping_json 存「引擎字段 → 行」的科目映射（含别名词典自动映射结果）
+--  * unit/scope/period_type 是元数据而非普通单元格（万元 vs 元差 10000 倍，必须显式）
+--  * status：draft（草稿）→ confirmed（已确认）→ ingested（已入库）
+CREATE TABLE IF NOT EXISTS table_doc (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    enterprise_id INTEGER REFERENCES enterprise(id) ON DELETE CASCADE,
+    title         TEXT NOT NULL DEFAULT '',
+    kind          TEXT NOT NULL DEFAULT 'custom',
+    unit          TEXT NOT NULL DEFAULT '万元',
+    scope         TEXT NOT NULL DEFAULT '合并报表',
+    period_type   TEXT NOT NULL DEFAULT '年报',
+    currency      TEXT NOT NULL DEFAULT 'CNY',
+    sheet_json    TEXT NOT NULL DEFAULT '{}',
+    mapping_json  TEXT NOT NULL DEFAULT '{}',
+    status        TEXT NOT NULL DEFAULT 'draft',
+    version       INTEGER NOT NULL DEFAULT 1,
+    origin        TEXT NOT NULL DEFAULT 'manual',
+    note          TEXT NOT NULL DEFAULT '',
+    created_at    TEXT NOT NULL DEFAULT '',
+    updated_at    TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_table_doc_ent ON table_doc(enterprise_id);
+CREATE INDEX IF NOT EXISTS idx_table_doc_status ON table_doc(status);
 "#;

@@ -250,9 +250,15 @@ pub fn dim_score(dim: &str, ind: &Value) -> (Option<i64>, String) {
     match dim {
         "finance" => {
             let fin = &ind["finance"];
-            if status_of(ind, "finance") != "ok" || fin.get("available").and_then(|v| v.as_bool()) != Some(true) {
+            let status = status_of(ind, "finance");
+            // manual = 用户提供（在线表格/截图识别）的数据：可参与测算，但如实标注来源
+            if status != "ok" && status != "manual" {
                 return (None, "无公开财报数据（未采集或数据不足）".into());
             }
+            if fin.get("available").and_then(|v| v.as_bool()) != Some(true) {
+                return (None, "财务数据不足，无法评分".into());
+            }
+            let manual = status == "manual";
             let mut s = 100.0f64;
             let debt = num_of(fin, "debt_ratio");
             if debt >= 85.0 {
@@ -271,10 +277,11 @@ pub fn dim_score(dim: &str, ind: &Value) -> (Option<i64>, String) {
             (
                 Some(clamp_score(s)),
                 format!(
-                    "资产负债率 {}% · 净利润 {} 万（{}）",
+                    "资产负债率 {}% · 净利润 {} 万（{}）{}",
                     debt,
                     num_of(fin, "net_profit"),
-                    str_of(fin, "year")
+                    str_of(fin, "year"),
+                    if manual { "｜数据由用户提供（在线表格），未经公开信源核验" } else { "" }
                 ),
             )
         }

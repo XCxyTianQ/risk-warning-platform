@@ -12,6 +12,7 @@ pub mod plugins;
 pub mod settings;
 pub mod share;
 pub mod skills;
+pub mod tables;
 
 use axum::response::Json;
 use axum::routing::{get, patch, post};
@@ -119,6 +120,17 @@ pub fn router(state: AppState) -> Router {
         .route("/mcp/servers/{id}/test", post(mcp::test_server))
         .route("/mcp/servers/{id}/sync", post(mcp::sync_server))
         .route("/mcp", post(mcp::rpc_endpoint))
+        // 表格对象（在线创建 / 编辑 / 入库）
+        .route("/tables", get(tables::list).post(tables::create))
+        .route("/tables/templates", get(tables::templates))
+        .route(
+            "/tables/{id}",
+            get(tables::get_one).patch(tables::update).delete(tables::delete),
+        )
+        .route("/tables/{id}/cells", post(tables::write_cells))
+        .route("/tables/{id}/validate", post(tables::validate))
+        .route("/tables/{id}/preview", get(tables::preview))
+        .route("/tables/{id}/ingest", post(tables::ingest))
         .with_state(state.clone());
 
     let index = state.cfg.web_dist.join("index.html");

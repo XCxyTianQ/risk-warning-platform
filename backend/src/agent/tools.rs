@@ -713,6 +713,94 @@ pub fn build_registry() -> ToolRegistry {
         true,
     );
 
+    // ---------- 表格对象（在线创建 / 编辑 / 校验 / 入库） ----------
+    reg.register(
+        "list_tables",
+        "列出平台内的表格对象（用户在线创建、或从图片/文件读取进来的财报表格），可按企业筛选。用户提到\"那张表\"\"我上传的表\"\"我刚建的表\"时先用它定位。",
+        json!({
+            "type": "object",
+            "properties": {
+                "enterprise_id": { "type": "integer", "description": "可选：按企业筛选" },
+                "status": { "type": "string", "description": "可选：draft/confirmed/ingested" }
+            },
+            "required": []
+        }),
+        true,
+    );
+
+    reg.register(
+        "get_table",
+        "读取指定表格的内容、科目映射结果与各期关键数值。需要用户表格里的具体数字时必须调用它，不要凭上下文复述。",
+        json!({
+            "type": "object",
+            "properties": { "table_id": { "type": "integer", "description": "表格 id（来自 list_tables）" } },
+            "required": ["table_id"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "create_table",
+        "为用户在线创建一张财报表格（利润表/资产负债表/现金流量表/关键指标表），可绑定企业与期间。用户说\"帮我建一张表\"\"我要手工录一期数据\"时使用。",
+        json!({
+            "type": "object",
+            "properties": {
+                "enterprise_id": { "type": "integer", "description": "可选：绑定企业 id" },
+                "enterprise_name": { "type": "string", "description": "可选：按名称绑定（与 enterprise_id 二选一）" },
+                "title": { "type": "string", "description": "表格标题" },
+                "kind": { "type": "string", "description": "income/balance/cashflow/kpi，默认 kpi" },
+                "periods": { "type": "array", "items": { "type": "string" }, "description": "期间年份，如 [\"2025\",\"2024\"]" },
+                "unit": { "type": "string", "description": "万元/元/亿元，默认万元" },
+                "scope": { "type": "string", "description": "合并报表/母公司，默认合并报表" }
+            },
+            "required": []
+        }),
+        false,
+    );
+
+    reg.register(
+        "write_table_cells",
+        "写入表格单元格（在线编辑）。支持单格（row/col/value）、按行（row/cells）、按区域（row/col/values 二维数组）。改了科目名会自动重新映射。",
+        json!({
+            "type": "object",
+            "properties": {
+                "table_id": { "type": "integer" },
+                "row": { "type": "string", "description": "起始行 key（如 r1）" },
+                "col": { "type": "string", "description": "起始列 key（如 c1）" },
+                "value": { "description": "单格值" },
+                "cells": { "type": "object", "description": "按行写：{列key: 值}" },
+                "values": { "type": "array", "items": { "type": "array" }, "description": "按区域写：二维数组" }
+            },
+            "required": ["table_id"]
+        }),
+        false,
+    );
+
+    reg.register(
+        "validate_table",
+        "对表格做勾稽校验（资产=负债+所有者权益、资产负债率一致性、必填科目、期数是否够算模型），返回错误与提示清单。入库前应先校验。",
+        json!({
+            "type": "object",
+            "properties": { "table_id": { "type": "integer" } },
+            "required": ["table_id"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "ingest_table",
+        "把已确认的表格数据入库（写操作，需用户授权）：入库后该企业的财务数据即可参与六维评分与金融分析。默认不覆盖已存在的公开信源数据，只报告差异。",
+        json!({
+            "type": "object",
+            "properties": {
+                "table_id": { "type": "integer" },
+                "overwrite": { "type": "boolean", "description": "是否覆盖已存在的公开信源数据，默认 false" }
+            },
+            "required": ["table_id"]
+        }),
+        false,
+    );
+
     reg
 }
 
@@ -791,7 +879,142 @@ pub fn call_tool(db: &Db, name: &str, args: &Value, allowed_skills: &[String]) -
         "screen_by_financial_metric" => screen_by_financial_metric(db, args),
         "list_skills" => list_skills(db, args, allowed_skills),
         "load_skill" => load_skill(db, args, allowed_skills),
+        "list_tables" => tool_list_tables(db, args),
+        "get_table" => tool_get_table(db, args),
+        "create_table" => tool_create_table(db, args),
+        "write_table_cells" => tool_write_table_cells(db, args),
+        "validate_table" => tool_validate_table(db, args),
+        "ingest_table" => tool_ingest_table(db, args),
         other => json!({ "error": format!("unknown tool: {other}") }),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 表格对象工具
+// ---------------------------------------------------------------------------
+
+fn tool_list_tables(db: &Db, args: &Value) -> Value {
+    let ent = args.get("enterprise_id").and_then(|v| v.as_i64());
+    let status = args.get("status").and_then(|v| v.as_str());
+    let mut out = crate::services::tables::list(db, ent, status).unwrap_or_else(|e| json!({ "error": e.to_string() }));
+    if let Some(items) = out.get_mut("items").and_then(|v| v.as_array_mut()) {
+        // 精简列表：工具场景只需要定位信息
+        for it in items.iter_mut() {
+            if let Some(obj) = it.as_object_mut() {
+                obj.remove("version");
+                obj.remove("origin");
+            }
+        }
+    }
+    out
+}
+
+fn tool_get_table(db: &Db, args: &Value) -> Value {
+    let id = arg_i64(args, "table_id", 0);
+    match crate::services::tables::summary_by_id(db, id) {
+        Ok(summary) => {
+            let doc = crate::services::tables::get(db, id).ok().flatten();
+            let sheet = doc.as_ref().map(|d| d.sheet.clone()).unwrap_or(json!({}));
+            json!({ "ok": true, "summary": summary, "sheet": sheet })
+        }
+        Err(err) => json!({ "error": err.to_string() }),
+    }
+}
+
+fn tool_create_table(db: &Db, args: &Value) -> Value {
+    let mut ent_id = args.get("enterprise_id").and_then(|v| v.as_i64());
+    if ent_id.is_none() {
+        let name = arg_str(args, "enterprise_name");
+        if !name.is_empty() {
+            ent_id = db
+                .with(|conn| {
+                    Ok(conn
+                        .query_row(
+                            "SELECT id FROM enterprise WHERE name LIKE ?1 ORDER BY id LIMIT 1",
+                            [format!("%{name}%")],
+                            |r| r.get::<_, i64>(0),
+                        )
+                        .ok())
+                })
+                .unwrap_or(None);
+            if ent_id.is_none() {
+                return json!({ "error": format!("未找到企业：{name}") });
+            }
+        }
+    }
+    let periods: Vec<(String, String)> = args
+        .get("periods")
+        .and_then(|v| v.as_array())
+        .map(|a| {
+            a.iter()
+                .filter_map(|p| p.as_str().map(|s| (s.to_string(), "年报".to_string())))
+                .collect()
+        })
+        .filter(|v: &Vec<(String, String)>| !v.is_empty())
+        .unwrap_or_else(|| vec![("2025".to_string(), "年报".to_string())]);
+    let kind = {
+        let k = arg_str(args, "kind");
+        if k.is_empty() { "kpi".to_string() } else { k }
+    };
+    let unit = {
+        let u = arg_str(args, "unit");
+        if u.is_empty() { "万元".to_string() } else { u }
+    };
+    let scope = {
+        let s = arg_str(args, "scope");
+        if s.is_empty() { "合并报表".to_string() } else { s }
+    };
+    match crate::services::tables::create(
+        db,
+        ent_id,
+        &arg_str(args, "title"),
+        &kind,
+        &periods,
+        &unit,
+        &scope,
+        "年报",
+        "manual",
+    ) {
+        Ok(v) => {
+            let id = v.get("table_id").and_then(|x| x.as_i64()).unwrap_or(0);
+            let doc = crate::services::tables::get(db, id).ok().flatten();
+            json!({
+                "ok": true,
+                "table_id": id,
+                "title": v.get("title"),
+                "kind": kind,
+                "columns": doc.as_ref().and_then(|d| d.sheet.get("columns")).cloned().unwrap_or(json!([])),
+                "rows": doc.as_ref().and_then(|d| d.sheet.get("rows")).cloned().unwrap_or(json!([])),
+                "hint": "用 write_table_cells 填数，validate_table 校验，ingest_table 入库（需授权）",
+            })
+        }
+        Err(err) => json!({ "error": err.to_string() }),
+    }
+}
+
+fn tool_write_table_cells(db: &Db, args: &Value) -> Value {
+    let id = arg_i64(args, "table_id", 0);
+    match crate::services::tables::write_cells(db, id, args) {
+        Ok(v) => v,
+        Err(err) => json!({ "error": err.to_string() }),
+    }
+}
+
+fn tool_validate_table(db: &Db, args: &Value) -> Value {
+    let id = arg_i64(args, "table_id", 0);
+    match crate::services::tables::get(db, id) {
+        Ok(Some(doc)) => crate::services::tables::validate(&doc),
+        Ok(None) => json!({ "error": format!("表格不存在: {id}") }),
+        Err(err) => json!({ "error": err.to_string() }),
+    }
+}
+
+fn tool_ingest_table(db: &Db, args: &Value) -> Value {
+    let id = arg_i64(args, "table_id", 0);
+    let overwrite = arg_bool(args, "overwrite", false);
+    match crate::services::tables::ingest(db, id, overwrite) {
+        Ok(v) => v,
+        Err(err) => json!({ "error": err.to_string() }),
     }
 }
 
