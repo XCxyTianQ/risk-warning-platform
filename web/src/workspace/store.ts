@@ -207,6 +207,12 @@ export function openForTool(name: string, result: Record<string, any>) {
     else openPanel('tables', { dock: 'right' })
     return
   }
+  // 多模态读取：填了表就打开表格面板，让用户核对识别结果
+  if (name === 'read_attachment') {
+    const tid = result.fill?.table_id
+    if (tid) openPanel('tables', { props: { tableId: tid }, title: '图片识别结果', dock: 'right' })
+    return
+  }
 }
 
 /** 拖拽停靠状态（HTML5 DnD） */

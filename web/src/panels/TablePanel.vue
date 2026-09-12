@@ -610,7 +610,17 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
         </div>
       </div>
 
-      <p v-if="toast" class="toast">{{ toast }}</p>
+      <p v-if="toast" class="toast">
+        {{ toast }}
+        <button
+          v-if="doc?.enterprise_id"
+          class="btn ghost small"
+          title="用刚入库的数据跑金融分析（KPI / 杜邦 / Z·F·M）"
+          @click="openPanel('finance', { props: { enterpriseId: doc.enterprise_id }, title: '金融分析', dock: 'right' })"
+        >
+          📈 查看金融分析
+        </button>
+      </p>
       <p v-if="error" class="error-box">{{ error }}</p>
 
       <!-- 表头元数据：单位/口径/期间，直接决定数值量级 -->
