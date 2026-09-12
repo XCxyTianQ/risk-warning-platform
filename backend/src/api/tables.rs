@@ -3,7 +3,7 @@
 use axum::extract::{Path, Query, State};
 use axum::Json;
 use serde::Deserialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 
 use crate::error::{AppError, AppResult};
 use crate::services::tables;
@@ -205,4 +205,71 @@ pub async fn confirm(
         return Err(AppError::not_found(err));
     }
     Ok(Json(result))
+}
+
+#[derive(Deserialize)]
+pub struct ImportReq {
+    /// 已上传的表格文件（csv/xlsx/xls）附件 id
+    #[serde(default)]
+    pub attachment_id: Option<String>,
+    /// 或直接给文本（从 Excel 复制粘贴的 TSV/CSV）
+    #[serde(default)]
+    pub text: Option<String>,
+    #[serde(default)]
+    pub enterprise_id: Option<i64>,
+    #[serde(default)]
+    pub title: String,
+    #[serde(default)]
+    pub unit: Option<String>,
+    #[serde(default)]
+    pub scope: Option<String>,
+}
+
+/// POST /api/tables/import —— 确定性解析（csv/xlsx/粘贴文本）→ 新建表格
+pub async fn import(
+    State(st): State<AppState>,
+    Json(req): Json<ImportReq>,
+) -> AppResult<Json<Value>> {
+    use crate::services::sheet_import;
+
+    let (grid, default_title) = if let Some(text) = req.text.as_deref().filter(|t| !t.trim().is_empty()) {
+        (sheet_import::parse_delimited(text), "粘贴导入的表格".to_string())
+    } else if let Some(aid) = req.attachment_id.as_deref() {
+        let att = crate::services::attachments::get(&st.db, aid)?
+            .ok_or_else(|| AppError::not_found(format!("附件不存在: {aid}")))?;
+        let bytes = crate::services::attachments::read_bytes(&st.cfg.data_dir, &att)?;
+        let lower = att.filename.to_lowercase();
+        let grid = if lower.ends_with(".csv") || att.mime.contains("csv") {
+            sheet_import::parse_delimited(&String::from_utf8_lossy(&bytes))
+        } else {
+            sheet_import::parse_workbook(&bytes).map_err(|e| AppError::bad_request(e.to_string()))?
+        };
+        let title = att.filename.clone();
+        (grid, title)
+    } else {
+        return Err(AppError::bad_request("需要 attachment_id 或 text"));
+    };
+
+    let meta = sheet_import::detect_meta(&grid);
+    let ext = sheet_import::extract(&grid).map_err(|e| AppError::bad_request(e.to_string()))?;
+    let unit = req
+        .unit
+        .filter(|u| !u.is_empty())
+        .or_else(|| meta.get("unit").and_then(|v| v.as_str()).filter(|u| !u.is_empty()).map(|s| s.to_string()))
+        .unwrap_or_else(|| "万元".into());
+    let scope = req
+        .scope
+        .filter(|s| !s.is_empty())
+        .or_else(|| meta.get("scope").and_then(|v| v.as_str()).filter(|s| !s.is_empty()).map(|s| s.to_string()))
+        .unwrap_or_else(|| "合并报表".into());
+    let title = if req.title.trim().is_empty() { default_title } else { req.title.clone() };
+
+    let result = sheet_import::build_table(&st.db, &ext, req.enterprise_id, &title, &unit, &scope)
+        .map_err(|e| AppError::bad_request(e.to_string()))?;
+    let id = result.get("table_id").and_then(|v| v.as_i64()).unwrap_or(0);
+    let doc = tables::get(&st.db, id)?.ok_or_else(|| AppError::internal("导入后读取失败"))?;
+    let mut out = result.as_object().cloned().unwrap_or_default();
+    out.insert("table".into(), doc.to_json());
+    out.insert("detected".into(), json!({ "unit": unit, "scope": scope, "meta": meta }));
+    Ok(Json(Value::Object(out)))
 }

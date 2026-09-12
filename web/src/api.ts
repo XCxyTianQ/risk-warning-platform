@@ -483,6 +483,31 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     }),
+  /** 确定性导入：csv/xlsx 附件 或 粘贴的 TSV/CSV 文本 */
+  importTable: (body: {
+    attachment_id?: string
+    text?: string
+    enterprise_id?: number | null
+    title?: string
+    unit?: string
+    scope?: string
+  }) =>
+    request<{
+      ok: boolean
+      table_id: number
+      title: string
+      direction: string
+      columns: string[]
+      rows: number
+      mapped_fields: number
+      unmapped: string[]
+      detected: { unit?: string; scope?: string }
+      table: TableDoc
+    }>('/api/tables/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
   table: (id: number) => request<TableDoc>(`/api/tables/${id}`),
   updateTable: (id: number, body: Record<string, any>) =>
     request<{ ok: boolean; version: number }>(`/api/tables/${id}`, {

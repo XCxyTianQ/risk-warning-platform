@@ -10,5 +10,6 @@ pub mod reading;
 pub mod risk;
 pub mod rules;
 pub mod settings;
+pub mod sheet_import;
 pub mod skills;
 pub mod tables;

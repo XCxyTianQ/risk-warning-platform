@@ -9,7 +9,7 @@
  *  - 勾稽校验不通过 → 后端拒绝入库，错误在表头横幅与单元格上标出
  *  - 入库默认不覆盖公开信源数据，冲突逐期提示
  */
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import { api, type TableDoc, type TableIssue, type TableRow, type TableValidation } from '../api'
 import { openPanel } from '../workspace/store'
@@ -31,6 +31,15 @@ const imageInput = ref<HTMLInputElement | null>(null)
 const reading = ref<import('../api').Reading | null>(null)
 const readingOpen = ref(false)
 const readingBusy = ref(false)
+
+// 文件/粘贴导入（确定性解析）
+const importOpen = ref(false)
+const importBusy = ref(false)
+const importForm = ref({ enterprise_id: null as number | null, title: '', unit: '', scope: '', text: '' })
+const sheetInput = ref<HTMLInputElement | null>(null)
+
+// 撤销栈（客户端快照，最多 20 步）
+const undoStack = ref<{ sheet: any; label: string }[]>([])
 
 // 新建表
 const newOpen = ref(false)
@@ -181,6 +190,7 @@ async function setColumnPeriod(colKey: string, patch: { period?: string; report_
 async function persistCell(rowKey: string, colKey: string, value: any) {
   if (!doc.value) return
   try {
+    pushUndo('修改单元格')
     await api.writeTableCells(doc.value.id, { row: rowKey, col: colKey, value, source: 'user' })
     // 局部更新，避免整表重载导致光标丢失
     const r = doc.value.sheet.rows.find((x) => x.key === rowKey)
@@ -197,6 +207,36 @@ async function persistCell(rowKey: string, colKey: string, value: any) {
 function startEdit(rowKey: string, colKey: string) {
   editing.value = { row: rowKey, col: colKey }
   editValue.value = cellText(rowKey, colKey)
+}
+
+// ---------- 撤销（在线编辑的一部分：改错了能退回去） ----------
+
+function pushUndo(label: string) {
+  if (!doc.value) return
+  undoStack.value.push({ sheet: JSON.parse(JSON.stringify(doc.value.sheet)), label })
+  if (undoStack.value.length > 20) undoStack.value.shift()
+}
+
+async function undo() {
+  if (!doc.value || !undoStack.value.length) return
+  const last = undoStack.value.pop()!
+  try {
+    await api.updateTable(doc.value.id, { sheet: last.sheet })
+    await loadDoc(doc.value.id)
+    toast.value = `已撤销：${last.label}`
+  } catch (e) {
+    error.value = (e as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 3000)
+}
+
+function onUndoKey(e: KeyboardEvent) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    const tag = (e.target as HTMLElement)?.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return
+    e.preventDefault()
+    void undo()
+  }
 }
 
 async function commitEdit() {
@@ -227,6 +267,7 @@ async function onPaste(e: ClipboardEvent, rowKey: string, colKey: string) {
     .filter((l) => l.trim() !== '')
     .map((line) => line.split('\t').map((c) => c.trim().replace(/,/g, '')))
   try {
+    pushUndo('粘贴区域')
     await api.writeTableCells(doc.value.id, {
       row: rowKey,
       col: colKey,
@@ -239,6 +280,77 @@ async function onPaste(e: ClipboardEvent, rowKey: string, colKey: string) {
     error.value = (err as Error).message
   }
   setTimeout(() => (toast.value = ''), 4000)
+}
+
+// ---------- 确定性导入：文件（csv/xlsx/xls）或粘贴整段文本 ----------
+
+async function pickSheetFile() {
+  sheetInput.value?.click()
+}
+
+async function onPickSheet(e: Event) {
+  const el = e.target as HTMLInputElement
+  const f = el.files?.[0]
+  el.value = ''
+  if (!f) return
+  importBusy.value = true
+  error.value = ''
+  try {
+    const buf = await f.arrayBuffer()
+    let bin = ''
+    const bytes = new Uint8Array(buf)
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i])
+    const up = await api.uploadAttachment({
+      filename: f.name,
+      mime: f.type || 'application/octet-stream',
+      data_base64: btoa(bin),
+      origin: 'upload',
+    })
+    const r = await api.importTable({
+      attachment_id: up.attachment.id,
+      enterprise_id: importForm.value.enterprise_id,
+      title: importForm.value.title,
+      unit: importForm.value.unit || undefined,
+      scope: importForm.value.scope || undefined,
+    })
+    importOpen.value = false
+    doc.value = r.table
+    toast.value = `已解析 ${r.rows} 个科目 × ${r.columns.length} 期（映射 ${r.mapped_fields} 项）`
+    await loadList()
+    await runValidate()
+  } catch (e2) {
+    error.value = (e2 as Error).message
+  } finally {
+    importBusy.value = false
+  }
+  setTimeout(() => (toast.value = ''), 6000)
+}
+
+/** 粘贴的整段文本（从 Excel 直接复制）→ 新建表格 */
+async function importFromText() {
+  if (!importForm.value.text.trim()) return
+  importBusy.value = true
+  error.value = ''
+  try {
+    const r = await api.importTable({
+      text: importForm.value.text,
+      enterprise_id: importForm.value.enterprise_id,
+      title: importForm.value.title,
+      unit: importForm.value.unit || undefined,
+      scope: importForm.value.scope || undefined,
+    })
+    importOpen.value = false
+    importForm.value.text = ''
+    doc.value = r.table
+    toast.value = `已解析 ${r.rows} 个科目 × ${r.columns.length} 期（映射 ${r.mapped_fields} 项）`
+    await loadList()
+    await runValidate()
+  } catch (e) {
+    error.value = (e as Error).message
+  } finally {
+    importBusy.value = false
+  }
+  setTimeout(() => (toast.value = ''), 6000)
 }
 
 async function saveMeta(patch: Record<string, any>) {
@@ -413,7 +525,10 @@ watch(
 onMounted(async () => {
   await Promise.all([loadList(), loadMeta()])
   if (props.tableId) await loadDoc(props.tableId)
+  window.addEventListener('keydown', onUndoKey)
 })
+
+onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
 </script>
 
 <template>
@@ -426,7 +541,8 @@ onMounted(async () => {
           <p class="page-sub">在线创建 / 编辑财报表格 · 勾稽校验后入库，参与评分与金融分析</p>
         </div>
         <div class="head-actions">
-          <button class="btn primary small" @click="newOpen = true">＋ 新建表格</button>
+          <button class="btn ghost small" @click="newOpen = true">📋 新建表格</button>
+          <button class="btn ghost small" @click="importOpen = true">📄 导入文件 / 粘贴</button>
           <button class="btn ghost small" @click="loadList">刷新</button>
         </div>
       </div>
@@ -487,6 +603,7 @@ onMounted(async () => {
           </button>
           <button class="btn ghost small" @click="addRow">＋ 行</button>
           <button class="btn ghost small" @click="addColumn">＋ 期间</button>
+          <button class="btn ghost small" :disabled="!undoStack.length" :title="undoStack.length ? `撤销：${undoStack[undoStack.length - 1].label}（Ctrl+Z）` : '无可撤销操作'" @click="undo">↶ 撤销</button>
           <button class="btn primary small" :disabled="validation?.ok !== true || saving" @click="openPreview">
             {{ validation?.ok ? '入库…' : '校验通过后可入库' }}
           </button>
@@ -647,6 +764,45 @@ onMounted(async () => {
       </div>
     </div>
 
+    <!-- 导入（文件 / 粘贴）弹窗 -->
+    <div v-if="importOpen" class="modal" @click.self="importOpen = false">
+      <div class="modal-card wide">
+        <h3>导入表格（确定性解析，不经模型）</h3>
+        <p class="muted small">
+          支持 Excel（.xlsx/.xls）与 CSV；也可以直接从 Excel 复制整块区域粘贴到下面。
+          表头含年份 → 识别为「列=期间」；含「年度/科目/数值」三列 → 自动透视。
+        </p>
+        <div class="row">
+          <label>绑定企业
+            <select v-model="importForm.enterprise_id">
+              <option :value="null">未绑定</option>
+              <option v-for="e in enterprises" :key="e.id" :value="e.id">{{ e.name }}</option>
+            </select>
+          </label>
+          <label>标题<input v-model="importForm.title" placeholder="留空则用文件名" /></label>
+        </div>
+        <div class="row">
+          <label>单位（留空则从表头自动识别）
+            <select v-model="importForm.unit"><option value="">自动</option><option>万元</option><option>元</option><option>亿元</option></select>
+          </label>
+          <label>口径
+            <select v-model="importForm.scope"><option value="">自动</option><option>合并报表</option><option>母公司</option></select>
+          </label>
+        </div>
+        <input ref="sheetInput" type="file" accept=".csv,.xlsx,.xls" hidden @change="onPickSheet" />
+        <button class="btn ghost small" :disabled="importBusy" @click="pickSheetFile">📎 选择文件（csv / xlsx）</button>
+        <label>或粘贴表格内容
+          <textarea v-model="importForm.text" rows="6" class="paste-box" placeholder="科目&#9;2025年报&#9;2024年报&#10;营业总收入&#9;128600&#9;96300"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="btn ghost small" @click="importOpen = false">取消</button>
+          <button class="btn primary small" :disabled="importBusy || !importForm.text.trim()" @click="importFromText">
+            {{ importBusy ? '解析中…' : '解析并建表' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 识别结果弹窗 -->
     <div v-if="readingOpen" class="modal" @click.self="readingOpen = false">
       <div class="modal-card">
@@ -765,6 +921,8 @@ onMounted(async () => {
 
 .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); display: flex; align-items: center; justify-content: center; z-index: 50; }
 .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; width: min(520px, 92vw); display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.modal-card.wide { width: min(680px, 94vw); }
+.modal-card textarea.paste-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; resize: vertical; }
 .modal-card h3 { margin: 0; font-size: 15px; }
 .modal-card label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-sub); }
 .modal-card input, .modal-card select { font-family: inherit; font-size: 12.5px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); }

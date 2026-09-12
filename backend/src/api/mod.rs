@@ -129,6 +129,7 @@ pub fn router(state: AppState) -> Router {
             get(tables::get_one).patch(tables::update).delete(tables::delete),
         )
         .route("/tables/{id}/cells", post(tables::write_cells))
+        .route("/tables/import", post(tables::import))
         .route("/tables/{id}/validate", post(tables::validate))
         .route("/tables/{id}/preview", get(tables::preview))
         .route("/tables/{id}/ingest", post(tables::ingest))
