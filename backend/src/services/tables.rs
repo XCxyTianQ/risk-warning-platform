@@ -214,7 +214,7 @@ fn template_rows(kind: &str) -> Vec<&'static str> {
 // ---------------------------------------------------------------------------
 
 /// 空表结构：给定模板行 + 若干期间列
-pub fn build_sheet(kind: &str, periods: &[(String, String)]) -> (Value, Value) {
+pub fn build_sheet(kind: &str, periods: &[(String, String)]) -> (Value, Map<String, Value>) {
     let columns: Vec<Value> = periods
         .iter()
         .enumerate()
@@ -254,8 +254,92 @@ pub fn build_sheet(kind: &str, periods: &[(String, String)]) -> (Value, Value) {
 
     (
         json!({ "columns": columns, "rows": rows, "meta": {} }),
-        Value::Object(mapping),
+        mapping,
     )
+}
+
+// ---------------------------------------------------------------------------
+// 工作簿（多工作表）：sheet_json 存 {"sheets":[…],"active":"s1"}
+// ---------------------------------------------------------------------------
+
+/// 空白工作表：列标题与行标题全部留空，由用户自己填（不再强制模板）
+pub fn blank_sheet(rows: usize, cols: usize) -> Value {
+    let columns: Vec<Value> = (0..cols)
+        .map(|i| {
+            json!({
+                "key": format!("c{}", i + 1),
+                "label": "",
+                "period": "",
+                "report_type": "",
+                "type": "number",
+            })
+        })
+        .collect();
+    let rows: Vec<Value> = (0..rows)
+        .map(|i| json!({ "key": format!("r{}", i + 1), "label": "", "field": "", "cells": {} }))
+        .collect();
+    json!({ "columns": columns, "rows": rows, "meta": {} })
+}
+
+/// 把任意来源的 sheet_json 归一化成工作簿：
+///  * 已是工作簿 → 原样（补 key/name）
+///  * 旧单表 `{columns,rows}` → 包成一个名为「Sheet1」的工作表
+pub fn normalize_workbook(raw: &Value) -> Value {
+    if let Some(arr) = raw.get("sheets").and_then(|v| v.as_array()) {
+        let sheets: Vec<Value> = arr
+            .iter()
+            .enumerate()
+            .map(|(i, s)| {
+                let key = s.get("key").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                let key = if key.is_empty() { format!("s{}", i + 1) } else { key };
+                let name = s.get("name").and_then(|v| v.as_str()).unwrap_or("").to_string();
+                let name = if name.is_empty() { format!("Sheet{}", i + 1) } else { name };
+                json!({
+                    "key": key,
+                    "name": name,
+                    "columns": s.get("columns").cloned().unwrap_or(json!([])),
+                    "rows": s.get("rows").cloned().unwrap_or(json!([])),
+                    "mapping": s.get("mapping").cloned().unwrap_or(json!({})),
+                })
+            })
+            .collect();
+        let sheets = if sheets.is_empty() {
+            vec![json!({ "key": "s1", "name": "Sheet1", "columns": [], "rows": [], "mapping": {} })]
+        } else {
+            sheets
+        };
+        let active = raw.get("active").and_then(|v| v.as_str()).unwrap_or("").to_string();
+        let active = if sheets.iter().any(|s| s.get("key").and_then(|v| v.as_str()) == Some(active.as_str())) {
+            active
+        } else {
+            sheets[0].get("key").and_then(|v| v.as_str()).unwrap_or("s1").to_string()
+        };
+        return json!({ "sheets": sheets, "active": active });
+    }
+    // 旧结构
+    json!({
+        "sheets": [{
+            "key": "s1",
+            "name": "Sheet1",
+            "columns": raw.get("columns").cloned().unwrap_or(json!([])),
+            "rows": raw.get("rows").cloned().unwrap_or(json!([])),
+            "mapping": {},
+        }],
+        "active": "s1",
+    })
+}
+
+/// 取工作簿里的当前工作表（不存在时返回空表）
+pub fn sheet_of(workbook: &Value, key: &str) -> Value {
+    workbook
+        .get("sheets")
+        .and_then(|v| v.as_array())
+        .and_then(|arr| {
+            arr.iter()
+                .find(|s| s.get("key").and_then(|v| v.as_str()) == Some(key))
+                .cloned()
+        })
+        .unwrap_or_else(|| json!({ "key": key, "name": "Sheet1", "columns": [], "rows": [], "mapping": {} }))
 }
 
 /// 依据行标题重建/补全科目映射（用户改过标题时也能自动跟上）
@@ -502,8 +586,14 @@ pub struct TableDoc {
     pub scope: String,
     pub period_type: String,
     pub currency: String,
+    /// 当前工作表（columns/rows）—— 所有既有逻辑都只面对它
     pub sheet: Value,
+    /// 工作簿：{"sheets":[…],"active":"s1"}
+    pub workbook: Value,
+    /// 当前 sheet 的科目映射
     pub mapping: Map<String, Value>,
+    /// 表格级脚本宏：[{name, code, updated_at}]
+    pub macros: Value,
     pub status: String,
     pub version: i64,
     pub origin: String,
@@ -513,6 +603,82 @@ pub struct TableDoc {
 }
 
 impl TableDoc {
+    pub fn active_key(&self) -> String {
+        self.workbook
+            .get("active")
+            .and_then(|v| v.as_str())
+            .unwrap_or("s1")
+            .to_string()
+    }
+
+    /// 工作表清单（供前端页签）
+    pub fn sheet_list(&self) -> Vec<Value> {
+        self.workbook
+            .get("sheets")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .map(|s| {
+                        let cols = s.get("columns").and_then(|v| v.as_array()).map(|a| a.len()).unwrap_or(0);
+                        let rows = s.get("rows").and_then(|v| v.as_array()).map(|a| a.len()).unwrap_or(0);
+                        json!({
+                            "key": s.get("key"),
+                            "name": s.get("name"),
+                            "columns": cols,
+                            "rows": rows,
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    /// 把当前 sheet 写回工作簿里对应的槽位
+    pub fn write_back(&mut self) {
+        let key = self.active_key();
+        if let Some(arr) = self.workbook.get_mut("sheets").and_then(|v| v.as_array_mut()) {
+            for s in arr.iter_mut() {
+                if s.get("key").and_then(|v| v.as_str()) == Some(key.as_str()) {
+                    let sheet_mapping = self.mapping.clone();
+                    if let Some(obj) = s.as_object_mut() {
+                        obj.insert("columns".into(), self.sheet.get("columns").cloned().unwrap_or(json!([])));
+                        obj.insert("rows".into(), self.sheet.get("rows").cloned().unwrap_or(json!([])));
+                        obj.insert("mapping".into(), Value::Object(sheet_mapping));
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    /// 切换当前工作表（先把当前 sheet 写回）
+    pub fn switch_sheet(&mut self, key: &str) {
+        self.write_back();
+        let exists = self
+            .workbook
+            .get("sheets")
+            .and_then(|v| v.as_array())
+            .map(|arr| arr.iter().any(|s| s.get("key").and_then(|v| v.as_str()) == Some(key)))
+            .unwrap_or(false);
+        if !exists {
+            return;
+        }
+        if let Some(obj) = self.workbook.as_object_mut() {
+            obj.insert("active".into(), json!(key));
+        }
+        let sheet = sheet_of(&self.workbook, key);
+        self.sheet = json!({
+            "columns": sheet.get("columns").cloned().unwrap_or(json!([])),
+            "rows": sheet.get("rows").cloned().unwrap_or(json!([])),
+            "meta": sheet.get("meta").cloned().unwrap_or(json!({})),
+        });
+        self.mapping = sheet
+            .get("mapping")
+            .and_then(|v| v.as_object().cloned())
+            .filter(|m| !m.is_empty())
+            .unwrap_or_else(|| auto_map(&self.sheet));
+    }
+
     pub fn to_json(&self) -> Value {
         json!({
             "id": self.id,
@@ -524,7 +690,11 @@ impl TableDoc {
             "period_type": self.period_type,
             "currency": self.currency,
             "sheet": self.sheet,
+            "sheets": self.sheet_list(),
+            "workbook": self.workbook,
+            "active": self.active_key(),
             "mapping": self.mapping,
+            "macros": self.macros,
             "status": self.status,
             "version": self.version,
             "origin": self.origin,
@@ -536,11 +706,29 @@ impl TableDoc {
 }
 
 const COLS: &str = "id, enterprise_id, title, kind, unit, scope, period_type, currency,
-                    sheet_json, mapping_json, status, version, origin, note, created_at, updated_at";
+                    sheet_json, mapping_json, macro_json, status, version, origin, note, created_at, updated_at";
 
 fn map_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<TableDoc> {
-    let sheet: String = r.get(8)?;
+    let sheet_raw: String = r.get(8)?;
     let mapping: String = r.get(9)?;
+    let macros_raw: String = r.get(10)?;
+    let raw: Value = serde_json::from_str(&sheet_raw).unwrap_or_else(|_| json!({}));
+    let workbook = normalize_workbook(&raw);
+    let active = workbook
+        .get("active")
+        .and_then(|v| v.as_str())
+        .unwrap_or("s1")
+        .to_string();
+    let active_sheet = sheet_of(&workbook, &active);
+    let sheet = json!({
+        "columns": active_sheet.get("columns").cloned().unwrap_or(json!([])),
+        "rows": active_sheet.get("rows").cloned().unwrap_or(json!([])),
+        "meta": active_sheet.get("meta").cloned().unwrap_or(json!({})),
+    });
+    let mapping_map = serde_json::from_str::<Value>(&mapping)
+        .ok()
+        .and_then(|v| v.as_object().cloned())
+        .unwrap_or_default();
     Ok(TableDoc {
         id: r.get(0)?,
         enterprise_id: r.get(1)?,
@@ -550,17 +738,16 @@ fn map_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<TableDoc> {
         scope: r.get(5)?,
         period_type: r.get(6)?,
         currency: r.get(7)?,
-        sheet: serde_json::from_str(&sheet).unwrap_or_else(|_| json!({"columns":[],"rows":[]})),
-        mapping: serde_json::from_str::<Value>(&mapping)
-            .ok()
-            .and_then(|v| v.as_object().cloned())
-            .unwrap_or_default(),
-        status: r.get(10)?,
-        version: r.get(11)?,
-        origin: r.get(12)?,
-        note: r.get(13)?,
-        created_at: r.get(14)?,
-        updated_at: r.get(15)?,
+        sheet,
+        workbook,
+        mapping: mapping_map,
+        macros: serde_json::from_str(&macros_raw).unwrap_or_else(|_| json!([])),
+        status: r.get(11)?,
+        version: r.get(12)?,
+        origin: r.get(13)?,
+        note: r.get(14)?,
+        created_at: r.get(15)?,
+        updated_at: r.get(16)?,
     })
 }
 
@@ -578,8 +765,12 @@ pub fn list(db: &Db, enterprise_id: Option<i64>, status: Option<&str>) -> Result
         let mut sql = String::from(
             "SELECT t.id, t.enterprise_id, e.name, t.title, t.kind, t.unit, t.scope, t.period_type,
                     t.status, t.version, t.origin, t.updated_at,
-                    (SELECT COUNT(*) FROM json_each(json_extract(t.sheet_json, '$.columns'))) AS cols,
-                    (SELECT COUNT(*) FROM json_each(json_extract(t.sheet_json, '$.rows'))) AS rows
+                    json_array_length(json_extract(t.sheet_json, '$.sheets[0].columns')),
+                    json_array_length(json_extract(t.sheet_json, '$.sheets[0].rows')),
+                    json_array_length(json_extract(t.sheet_json, '$.sheets')),
+                    json_extract(t.sheet_json, '$.active'),
+                    json_array_length(json_extract(t.sheet_json, '$.columns')),
+                    json_array_length(json_extract(t.sheet_json, '$.rows'))
              FROM table_doc t LEFT JOIN enterprise e ON e.id = t.enterprise_id WHERE 1 = 1",
         );
         let mut args: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
@@ -611,8 +802,10 @@ pub fn list(db: &Db, enterprise_id: Option<i64>, status: Option<&str>) -> Result
                     "version": r.get::<_, i64>(9)?,
                     "origin": r.get::<_, String>(10)?,
                     "updated_at": crate::util::db_to_iso(&r.get::<_, String>(11)?),
-                    "columns": r.get::<_, i64>(12)?,
-                    "rows": r.get::<_, i64>(13)?,
+                    "columns": r.get::<_, Option<i64>>(12)?.or(r.get::<_, Option<i64>>(16)?).unwrap_or(0),
+                    "rows": r.get::<_, Option<i64>>(13)?.or(r.get::<_, Option<i64>>(17)?).unwrap_or(0),
+                    "sheet_count": r.get::<_, Option<i64>>(14)?.unwrap_or(1),
+                    "active": r.get::<_, Option<String>>(15)?,
                 }))
             })?
             .collect::<Result<Vec<_>, _>>()?;
@@ -633,14 +826,38 @@ pub fn create(
     period_type: &str,
     origin: &str,
 ) -> Result<Value> {
-    let (sheet, mapping) = build_sheet(kind, periods);
+    // 空白表格（默认）：列标题与行标题都留空，用户自己填；模板仅在显式选择模板时使用
+    let (sheet, mapping) = if kind == "blank" || kind.is_empty() {
+        (blank_sheet(8, 4), Map::<String, Value>::new())
+    } else {
+        build_sheet(kind, periods)
+    };
+    let sheet_name = if kind == "blank" || kind.is_empty() {
+        "Sheet1"
+    } else {
+        TEMPLATES
+            .iter()
+            .find(|(k, _, _)| *k == kind)
+            .map(|(_, t, _)| *t)
+            .unwrap_or("Sheet1")
+    };
+    let workbook = json!({
+        "sheets": [{
+            "key": "s1",
+            "name": sheet_name,
+            "columns": sheet.get("columns").cloned().unwrap_or(json!([])),
+            "rows": sheet.get("rows").cloned().unwrap_or(json!([])),
+            "mapping": Value::Object(mapping.clone()),
+        }],
+        "active": "s1",
+    });
     let now = now_db();
     let title = if title.trim().is_empty() {
         TEMPLATES
             .iter()
             .find(|(k, _, _)| *k == kind)
             .map(|(_, t, _)| format!("{t}（新建）"))
-            .unwrap_or_else(|| "自定义表格".to_string())
+            .unwrap_or_else(|| "空白表格".to_string())
     } else {
         title.trim().to_string()
     };
@@ -648,8 +865,8 @@ pub fn create(
         conn.execute(
             "INSERT INTO table_doc
                (enterprise_id, title, kind, unit, scope, period_type, currency, sheet_json,
-                mapping_json, status, version, origin, note, created_at, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'CNY', ?7, ?8, 'draft', 1, ?9, '', ?10, ?10)",
+                mapping_json, macro_json, status, version, origin, note, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'CNY', ?7, ?8, '[]', 'draft', 1, ?9, '', ?10, ?10)",
             params![
                 enterprise_id,
                 title,
@@ -657,7 +874,7 @@ pub fn create(
                 unit,
                 scope,
                 period_type,
-                serde_json::to_string(&sheet).unwrap_or_else(|_| "{}".into()),
+                serde_json::to_string(&workbook).unwrap_or_else(|_| "{}".into()),
                 serde_json::to_string(&mapping).unwrap_or_else(|_| "{}".into()),
                 origin,
                 now,
@@ -665,7 +882,7 @@ pub fn create(
         )?;
         Ok(conn.last_insert_rowid())
     })?;
-    Ok(json!({ "table_id": id, "title": title, "kind": kind }))
+    Ok(json!({ "table_id": id, "title": title, "kind": kind, "sheets": ["Sheet1"] }))
 }
 
 /// 局部更新：传入的字段才改；sheet/mapping 变化时 version 自增
@@ -695,10 +912,42 @@ pub fn update(db: &Db, id: i64, body: &Value) -> Result<Value> {
     if let Some(v) = body.get("enterprise_id") {
         doc.enterprise_id = v.as_i64();
     }
-    if let Some(sheet) = body.get("sheet") {
+    // 工作表切换（先把当前 sheet 写回再切）
+    if let Some(key) = body.get("active").and_then(|v| v.as_str()) {
+        doc.switch_sheet(key);
+    }
+    // 整簿替换（前端做页签增删改/透视插入时提交）
+    if let Some(wb) = body.get("sheets").cloned() {
+        if wb.is_array() {
+            let normalized = normalize_workbook(&json!({
+                "sheets": wb,
+                "active": body.get("active").and_then(|v| v.as_str()).unwrap_or(""),
+            }));
+            doc.workbook = normalized;
+            let key = doc.active_key();
+            let sheet = sheet_of(&doc.workbook, &key);
+            doc.sheet = json!({
+                "columns": sheet.get("columns").cloned().unwrap_or(json!([])),
+                "rows": sheet.get("rows").cloned().unwrap_or(json!([])),
+                "meta": sheet.get("meta").cloned().unwrap_or(json!({})),
+            });
+            doc.mapping = sheet
+                .get("mapping")
+                .and_then(|v| v.as_object().cloned())
+                .filter(|m| !m.is_empty())
+                .unwrap_or_else(|| auto_map(&doc.sheet));
+            version_bump = true;
+        }
+    } else if let Some(sheet) = body.get("sheet") {
         if sheet.is_object() {
             doc.sheet = sheet.clone();
             version_bump = true;
+        }
+    }
+    // 宏（整组保存）
+    if let Some(macros) = body.get("macros") {
+        if macros.is_array() {
+            doc.macros = macros.clone();
         }
     }
     // 映射：显式给的优先；否则按行标题自动映射（用户改了标题也能跟上）
@@ -712,6 +961,7 @@ pub fn update(db: &Db, id: i64, body: &Value) -> Result<Value> {
         }
         _ => {}
     }
+    doc.write_back();
 
     let now = now_db();
     let version = if version_bump { doc.version + 1 } else { doc.version };
@@ -729,7 +979,7 @@ pub fn update(db: &Db, id: i64, body: &Value) -> Result<Value> {
                 doc.scope,
                 doc.period_type,
                 doc.currency,
-                serde_json::to_string(&doc.sheet).unwrap_or_else(|_| "{}".into()),
+                serde_json::to_string(&doc.workbook).unwrap_or_else(|_| "{}".into()),
                 serde_json::to_string(&doc.mapping).unwrap_or_else(|_| "{}".into()),
                 version,
                 doc.note,
@@ -810,6 +1060,7 @@ pub fn write_cells(db: &Db, id: i64, body: &Value) -> Result<Value> {
     }
     // 重新自动映射，保证"改了科目名 → 映射跟上"
     doc.mapping = auto_map(&doc.sheet);
+    doc.write_back();
     let now = now_db();
     let version = doc.version + 1;
     db.with(|conn| {
@@ -818,7 +1069,7 @@ pub fn write_cells(db: &Db, id: i64, body: &Value) -> Result<Value> {
                     status = CASE WHEN status = 'ingested' THEN 'confirmed' ELSE status END
              WHERE id = ?5",
             params![
-                serde_json::to_string(&doc.sheet).unwrap_or_else(|_| "{}".into()),
+                serde_json::to_string(&doc.workbook).unwrap_or_else(|_| "{}".into()),
                 serde_json::to_string(&doc.mapping).unwrap_or_else(|_| "{}".into()),
                 version,
                 now,
@@ -1122,12 +1373,13 @@ pub fn confirm_cells(db: &Db, id: i64, cells: &[Value]) -> Result<Value> {
     }
 
     let now = now_db();
+    doc.write_back();
     db.with(|conn| {
         conn.execute(
             "UPDATE table_doc SET sheet_json = ?1, status = CASE WHEN status = 'draft' THEN 'confirmed' ELSE status END,
                     updated_at = ?2 WHERE id = ?3",
             params![
-                serde_json::to_string(&doc.sheet).unwrap_or_else(|_| "{}".into()),
+                serde_json::to_string(&doc.workbook).unwrap_or_else(|_| "{}".into()),
                 now,
                 id,
             ],

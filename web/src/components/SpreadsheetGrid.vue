@@ -59,6 +59,7 @@ const emit = defineEmits<{
   (e: 'structure', payload: { action: 'insert-row' | 'delete-row' | 'insert-col' | 'delete-col' | 'sort'; index: number; asc?: boolean; count?: number }): void
   (e: 'rename-row', payload: { index: number; label: string }): void
   (e: 'set-period', payload: { index: number; period: string }): void
+  (e: 'rename-column', payload: { index: number; label: string }): void
   (e: 'select', payload: { rows: number; cols: number }): void
 }>()
 
@@ -495,12 +496,22 @@ watch(
             @mousedown="onCellMouseDown(0, ci + 1, $event)"
             @mouseenter="onCellMouseEnter(0, ci + 1)"
           >
-            <div class="head-label">{{ c.label }}</div>
-            <div class="head-period">
+            <input
+              v-if="!readonly"
+              class="mini head-input"
+              :value="c.label"
+              placeholder="列标题"
+              @mousedown.stop
+              @change="$emit('rename-column', { index: ci + 1, label: ($event.target as HTMLInputElement).value })"
+            />
+            <div v-else class="head-label">{{ c.label }}</div>
+            <div class="head-sub">
               <input
                 v-if="!readonly"
-                class="mini"
+                class="mini period-input"
                 :value="c.period"
+                placeholder="期间"
+                title="期间（年份）：填了才能参与入库与同比"
                 @mousedown.stop
                 @change="$emit('set-period', { index: ci + 1, period: ($event.target as HTMLInputElement).value })"
               />
@@ -642,10 +653,9 @@ watch(
   text-overflow: ellipsis;
 }
 
-.head-period {
-  height: 0;
-  overflow: hidden;
-}
+.head-sub { display: flex; gap: 4px; align-items: center; }
+.head-input { font-weight: 600; }
+.period-input { font-size: 10.5px; color: var(--text-sub); font-weight: 400; }
 
 .head-actions,
 .row-actions {

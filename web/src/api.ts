@@ -228,7 +228,15 @@ export interface TableDoc {
   period_type: string
   currency: string
   sheet: { columns: TableColumn[]; rows: TableSheetRow[]; meta?: Record<string, any> }
+  /** 工作簿里的工作表清单（多工作表） */
+  sheets?: { key: string; name: string; columns: number; rows: number }[]
+  /** 当前工作表 key */
+  active?: string
+  /** 完整工作簿（含各表数据，供前端整簿保存） */
+  workbook?: { sheets: { key: string; name: string; columns: TableColumn[]; rows: TableSheetRow[] }[]; active: string }
   mapping: Record<string, string>
+  /** 表格级脚本宏 */
+  macros?: { name: string; code: string; updated_at?: string }[]
   status: 'draft' | 'confirmed' | 'ingested'
   version: number
   origin: string

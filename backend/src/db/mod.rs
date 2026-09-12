@@ -28,6 +28,7 @@ impl Db {
         let conn = Connection::open(path)
             .with_context(|| format!("打开数据库失败：{}", path.display()))?;
         conn.execute_batch(schema::SCHEMA).context("初始化表结构失败")?;
+        migrate(&conn).context("升级表结构失败")?;
         Ok(Self { conn: Arc::new(Mutex::new(conn)) })
     }
 
@@ -40,6 +41,30 @@ impl Db {
     pub fn enterprise_count(&self) -> Result<i64> {
         self.with(|c| Ok(c.query_row("SELECT COUNT(*) FROM enterprise", [], |r| r.get(0))?))
     }
+}
+
+/// 轻量迁移：`CREATE TABLE IF NOT EXISTS` 不会给既有库补列，这里按需 ALTER。
+///
+/// 目前需要补的列：
+///  * `table_doc.macro_json`（P6 加入的表格级脚本宏）
+fn migrate(conn: &Connection) -> Result<()> {
+    let has_column = |table: &str, column: &str| -> bool {
+        let sql = format!("PRAGMA table_info({table})");
+        let Ok(mut stmt) = conn.prepare(&sql) else {
+            return false;
+        };
+        let names: Vec<String> = stmt
+            .query_map([], |r| r.get::<_, String>(1))
+            .map(|rows| rows.filter_map(|r| r.ok()).collect())
+            .unwrap_or_default();
+        names.iter().any(|n| n == column)
+    };
+
+    if !has_column("table_doc", "macro_json") {
+        conn.execute_batch("ALTER TABLE table_doc ADD COLUMN macro_json TEXT NOT NULL DEFAULT '[]'")?;
+        println!("[db] 迁移：table_doc 增加 macro_json 列");
+    }
+    Ok(())
 }
 
 /// 初始化数据库：建表 + 空库时灌入样例数据

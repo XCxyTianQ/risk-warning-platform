@@ -13,6 +13,8 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import { api, type TableDoc, type TableRow, type TableValidation } from '../api'
 import SpreadsheetGrid from '../components/SpreadsheetGrid.vue'
+import { BUILTIN_MACROS, runMacro, type Macro } from '../lib/macros'
+import { pivot as computePivot, pivotFields, pivotToSheet, type PivotResult, type PivotSpec } from '../lib/pivot'
 import { openPanel } from '../workspace/store'
 
 const props = defineProps<{ tableId?: number }>()
@@ -26,6 +28,25 @@ const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
 const toast = ref('')
+
+// 工作表页签
+const sheetList = computed(() => doc.value?.sheets ?? [])
+const activeSheet = computed(() => doc.value?.active ?? '')
+
+// 数据透视表
+const pivotOpen = ref(false)
+const pivotSpec = ref<PivotSpec>({ rowField: '__label', colField: '', valueField: '', agg: 'sum' })
+const pivotResult = ref<PivotResult | null>(null)
+const pivotSheetName = ref('透视表')
+
+// 宏
+const macroOpen = ref(false)
+const macroList = ref<Macro[]>([])
+const macroIndex = ref(0)
+const macroCode = ref('')
+const macroName = ref('')
+const macroLogs = ref<string[]>([])
+const macroError = ref('')
 
 // 图片识别导入
 const imageInput = ref<HTMLInputElement | null>(null)
@@ -52,7 +73,7 @@ const templates = ref<{ kind: string; title: string }[]>([])
 const form = ref({
   enterprise_id: null as number | null,
   title: '',
-  kind: 'kpi',
+  kind: 'blank',
   periods: [`${CURRENT_YEAR}`, `${CURRENT_YEAR - 1}`],
   unit: '万元',
   scope: '合并报表',
@@ -444,14 +465,202 @@ async function saveMeta(patch: Record<string, any>) {
 /** 追加一个期间列 */
 async function addColumn() {
   if (!doc.value) return
-  const period = prompt('新增期间的年份（如 2026）', String(CURRENT_YEAR))
-  if (!period) return
-  pushUndo('新增期间')
+  const label = prompt('新增列的标题（如 2026年报 / 备注 / 合计）', `列${columns.value.length + 1}`)
+  if (label === null) return
+  const period = prompt('该列的期间（年份，可留空；填了才能参与入库与同比）', '')
+  pushUndo('新增列')
   const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
   const key = `c_${Date.now().toString(36)}`
-  sheet.columns.push({ key, label: `${period}年报`, period, report_type: '年报', type: 'number' })
+  sheet.columns.push({ key, label: label || '', period: period || '', report_type: period ? '年报' : '', type: 'number' })
   await api.updateTable(doc.value.id, { sheet })
   await loadDoc(doc.value.id)
+}
+
+/** 改列标题（自由填写栏目） */
+async function renameColumn(index: number, label: string) {
+  if (!doc.value) return
+  const sheet = JSON.parse(JSON.stringify(doc.value.sheet))
+  const col = sheet.columns[index - 1]
+  if (!col || col.label === label) return
+  pushUndo('改列标题')
+  col.label = label
+  await api.updateTable(doc.value.id, { sheet })
+  await loadDoc(doc.value.id)
+}
+
+// ---------- 工作表（多工作区） ----------
+
+async function switchSheet(key: string) {
+  if (!doc.value || key === activeSheet.value) return
+  await api.updateTable(doc.value.id, { active: key })
+  await loadDoc(doc.value.id)
+}
+
+/** 整簿保存（页签增删改都走这里） */
+async function saveSheets(sheets: any[], active: string, label: string) {
+  if (!doc.value) return
+  pushUndo(label)
+  await api.updateTable(doc.value.id, { sheets, active })
+  await loadDoc(doc.value.id)
+}
+
+function currentSheetsPayload(): any[] {
+  if (!doc.value) return []
+  const active = activeSheet.value
+  const full = doc.value.workbook?.sheets ?? []
+  if (full.length) {
+    // 用内存里的活动 sheet 覆盖对应槽位，其余工作表原样带回（避免整簿替换时丢数据）
+    return full.map((s) =>
+      s.key === active
+        ? { key: s.key, name: s.name, columns: doc.value!.sheet.columns, rows: doc.value!.sheet.rows }
+        : s,
+    )
+  }
+  return [{ key: active || 's1', name: 'Sheet1', columns: doc.value.sheet.columns, rows: doc.value.sheet.rows }]
+}
+
+async function addSheet() {
+  if (!doc.value) return
+  const name = prompt('新工作表名称', `Sheet${sheetList.value.length + 1}`)
+  if (!name) return
+  const key = `s_${Date.now().toString(36)}`
+  const blank = {
+    key,
+    name,
+    columns: [
+      { key: 'n1', label: '', period: '', report_type: '', type: 'text' },
+      { key: 'n2', label: '', period: '', report_type: '', type: 'number' },
+      { key: 'n3', label: '', period: '', report_type: '', type: 'number' },
+    ],
+    rows: Array.from({ length: 8 }, (_, i) => ({ key: `nr${i + 1}`, label: '', field: '', cells: {} })),
+  }
+  await saveSheets([...currentSheetsPayload(), blank], key, '新增工作表')
+}
+
+async function renameSheet() {
+  if (!doc.value) return
+  const cur = sheetList.value.find((s) => s.key === activeSheet.value)
+  const name = prompt('重命名工作表', cur?.name ?? '')
+  if (!name || name === cur?.name) return
+  const sheets = currentSheetsPayload().map((s) => (s.key === activeSheet.value ? { ...s, name } : s))
+  await saveSheets(sheets, activeSheet.value, '重命名工作表')
+}
+
+async function deleteSheet() {
+  if (!doc.value) return
+  if (sheetList.value.length <= 1) {
+    error.value = '至少保留一个工作表'
+    return
+  }
+  if (!confirm('删除当前工作表及其数据？')) return
+  const rest = currentSheetsPayload().filter((s) => s.key !== activeSheet.value)
+  await saveSheets(rest, rest[0]?.key ?? 's1', '删除工作表')
+}
+
+// ---------- 数据透视表 ----------
+
+const pivotFieldList = computed(() => (doc.value ? pivotFields(doc.value.sheet as any) : []))
+
+function openPivot() {
+  if (!doc.value) return
+  const fields = pivotFieldList.value
+  pivotSpec.value = {
+    rowField: '__label',
+    colField: fields[1]?.key ?? '',
+    valueField: fields[2]?.key ?? fields[1]?.key ?? '',
+    agg: 'sum',
+  }
+  pivotSheetName.value = `透视表${sheetList.value.length}`
+  refreshPivot()
+  pivotOpen.value = true
+}
+
+function refreshPivot() {
+  if (!doc.value) return
+  pivotResult.value = computePivot(doc.value.sheet as any, pivotSpec.value)
+}
+
+/** 把透视结果插入为新工作表 */
+async function insertPivotSheet() {
+  if (!doc.value || !pivotResult.value) return
+  const key = `s_${Date.now().toString(36)}`
+  const sheet: any = pivotToSheet(pivotResult.value, pivotSpec.value, pivotSheetName.value)
+  const payload = {
+    key,
+    name: pivotSheetName.value || '透视表',
+    columns: sheet.columns,
+    rows: sheet.rows,
+  }
+  await saveSheets([...currentSheetsPayload(), payload], key, '插入透视表')
+  pivotOpen.value = false
+  toast.value = `已插入工作表「${payload.name}」（${payload.rows.length} 行 × ${payload.columns.length} 列）`
+  setTimeout(() => (toast.value = ''), 5000)
+}
+
+// ---------- 宏 ----------
+
+function openMacros() {
+  if (!doc.value) return
+  const saved = (doc.value.macros ?? []) as Macro[]
+  macroList.value = [...saved.map((m) => ({ ...m })), ...BUILTIN_MACROS.map((m) => ({ ...m }))]
+  macroIndex.value = 0
+  macroName.value = macroList.value[0]?.name ?? '新宏'
+  macroCode.value = macroList.value[0]?.code ?? ''
+  macroLogs.value = []
+  macroError.value = ''
+  macroOpen.value = true
+}
+
+function pickMacro(i: number) {
+  const m = macroList.value[i]
+  if (!m) return
+  macroIndex.value = i
+  macroName.value = m.name
+  macroCode.value = m.code
+  macroLogs.value = []
+  macroError.value = ''
+}
+
+/** 运行宏：作用于当前工作表；先记快照以便撤销 */
+async function runCurrentMacro() {
+  if (!doc.value) return
+  macroError.value = ''
+  macroLogs.value = []
+  const result = runMacro(macroCode.value, doc.value.sheet as any)
+  if (result.error) {
+    macroError.value = result.error
+    return
+  }
+  pushUndo(`运行宏：${macroName.value}`)
+  doc.value.sheet.columns = result.sheet.columns as any
+  doc.value.sheet.rows = result.sheet.rows as any
+  recalcFormulas()
+  await api.updateTable(doc.value.id, { sheet: JSON.parse(JSON.stringify(doc.value.sheet)) })
+  await loadDoc(doc.value.id)
+  macroLogs.value = result.logs.length ? result.logs : [`宏执行完成，改动 ${result.changed} 个单元格`]
+  toast.value = `宏「${macroName.value}」已执行（改动 ${result.changed} 处）`
+  setTimeout(() => (toast.value = ''), 4000)
+}
+
+/** 把当前代码存成表格宏（随表格保存） */
+async function saveCurrentMacro() {
+  if (!doc.value) return
+  const name = macroName.value.trim() || `宏${(doc.value.macros?.length ?? 0) + 1}`
+  const saved = (doc.value.macros ?? []).filter((m) => m.name !== name)
+  const next = [...saved, { name, code: macroCode.value, updated_at: new Date().toISOString() }]
+  await api.updateTable(doc.value.id, { macros: next })
+  doc.value.macros = next
+  toast.value = `已保存宏「${name}」`
+  setTimeout(() => (toast.value = ''), 3000)
+}
+
+async function deleteMacro() {
+  if (!doc.value) return
+  const saved = (doc.value.macros ?? []).filter((m) => m.name !== macroName.value)
+  await api.updateTable(doc.value.id, { macros: saved })
+  doc.value.macros = saved
+  toast.value = `已删除宏「${macroName.value}」`
+  setTimeout(() => (toast.value = ''), 3000)
 }
 
 /** 数字格式（当前列或整个表）：千分位/两位小数/百分比/整数/常规 */
@@ -766,6 +975,11 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
           <button class="btn ghost small" title="常规" @click="setFormat('general')">常规</button>
         </span>
         <span class="tb-sep"></span>
+        <span class="tb-group">
+          <button class="btn ghost small" title="数据透视表：按行/列字段分组汇总" @click="openPivot">⊞ 透视表</button>
+          <button class="btn ghost small" title="宏：用一小段脚本批量处理本表" @click="openMacros">⚙ 宏</button>
+        </span>
+        <span class="tb-sep"></span>
         <span class="tb-fx">
           <i>ƒx</i>
           <span class="cell-ref">{{ activeRef || '—' }}</span>
@@ -788,6 +1002,7 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
           @change="onCellsChange"
           @structure="onStructure"
           @rename-row="(p) => renameRow(rows[p.index - 1]?.key ?? '', p.label)"
+          @rename-column="(p) => renameColumn(p.index, p.label)"
           @set-period="(p) => setColumnPeriod(columns[p.index - 1]?.key ?? '', { period: p.period })"
           @select="onSelect"
         />
@@ -797,16 +1012,40 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
         </p>
       </div>
 
+      <!-- 工作表页签（多工作区） -->
+      <div class="card sheet-tabs">
+        <button
+          v-for="s in sheetList"
+          :key="s.key"
+          class="sheet-tab"
+          :class="{ active: s.key === activeSheet }"
+          :title="`${s.name} · ${s.rows} 行 × ${s.columns} 列`"
+          @click="switchSheet(s.key)"
+        >
+          {{ s.name }}
+        </button>
+        <span class="tabs-tools">
+          <button class="btn ghost small" title="新增工作表" @click="addSheet">＋</button>
+          <button class="btn ghost small" title="重命名当前工作表" @click="renameSheet">✎</button>
+          <button class="btn ghost small" :disabled="sheetList.length <= 1" title="删除当前工作表" @click="deleteSheet">🗑</button>
+        </span>
+      </div>
+
       <p class="muted small" v-if="doc.note">备注：{{ doc.note }}</p>
     </template>
 
     <!-- 新建弹窗 -->
     <div v-if="newOpen" class="modal" @click.self="newOpen = false">
       <div class="modal-card">
-        <h3>新建财报表格</h3>
-        <label>模板
+        <h3>新建表格</h3>
+        <p class="muted small">
+          默认给一张**空白表格**：列标题、行标题都留空，自己填就行（不限定财报模板）。
+          需要现成科目行时再选下面的模板。
+        </p>
+        <label>起始内容
           <select v-model="form.kind">
-            <option v-for="t in templates" :key="t.kind" :value="t.kind">{{ t.title }}</option>
+            <option value="blank">空白表格（推荐）</option>
+            <option v-for="t in templates" :key="t.kind" :value="t.kind">{{ t.title }}（模板）</option>
           </select>
         </label>
         <label>企业（可留空，之后再绑定）
@@ -816,7 +1055,7 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
           </select>
         </label>
         <label>标题<input v-model="form.title" placeholder="如：XX 公司 2024-2025 关键指标" /></label>
-        <label>期间（逗号分隔）
+        <label v-if="form.kind !== 'blank'">期间（逗号分隔）
           <input :value="form.periods.join(',')" @change="form.periods = ($event.target as HTMLInputElement).value.split(',').map((s) => s.trim()).filter(Boolean)" />
         </label>
         <div class="row">
@@ -830,6 +1069,118 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
         <div class="modal-actions">
           <button class="btn ghost small" @click="newOpen = false">取消</button>
           <button class="btn primary small" :disabled="saving" @click="create">创建</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据透视表弹窗 -->
+    <div v-if="pivotOpen" class="modal" @click.self="pivotOpen = false">
+      <div class="modal-card wide">
+        <h3>⊞ 数据透视表</h3>
+        <p class="muted small">
+          把当前工作表当成数据表：选「行字段 / 列字段 / 值字段」，实时预览分组汇总结果，可插入为新工作表。
+          长表（如 年度 | 科目 | 数值）选行=科目、列=年度、值=数值 即可得到矩阵。
+        </p>
+        <div class="row">
+          <label>行字段
+            <select v-model="pivotSpec.rowField" @change="refreshPivot">
+              <option v-for="f in pivotFieldList" :key="f.key" :value="f.key">{{ f.label }}</option>
+            </select>
+          </label>
+          <label>列字段
+            <select v-model="pivotSpec.colField" @change="refreshPivot">
+              <option v-for="f in pivotFieldList" :key="f.key" :value="f.key">{{ f.label }}</option>
+            </select>
+          </label>
+          <label>值字段
+            <select v-model="pivotSpec.valueField" @change="refreshPivot">
+              <option v-for="f in pivotFieldList" :key="f.key" :value="f.key">{{ f.label }}</option>
+            </select>
+          </label>
+          <label>聚合
+            <select v-model="pivotSpec.agg" @change="refreshPivot">
+              <option value="sum">求和</option>
+              <option value="count">计数</option>
+              <option value="avg">平均</option>
+              <option value="max">最大</option>
+              <option value="min">最小</option>
+            </select>
+          </label>
+        </div>
+        <div v-if="pivotResult" class="pivot-wrap">
+          <table class="tbl small pivot">
+            <thead>
+              <tr>
+                <th>{{ pivotSpec.rowField === '__label' ? '行标题' : '行' }}</th>
+                <th v-for="c in pivotResult.colLabels" :key="c">{{ c }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(r, ri) in pivotResult.rowLabels" :key="r">
+                <td>{{ r }}</td>
+                <td v-for="(c, ci) in pivotResult.colLabels" :key="c">
+                  {{ pivotResult.matrix[ri][ci] === null ? '—' : pivotResult.matrix[ri][ci] }}
+                </td>
+              </tr>
+              <tr class="total">
+                <td>合计（{{ pivotSpec.agg === 'count' ? '计数' : pivotSpec.agg }}）</td>
+                <td :colspan="pivotResult.colLabels.length">{{ pivotResult.total ?? '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="muted small">
+            扫描 {{ pivotResult.scannedRows }} 行 · {{ pivotResult.rowLabels.length }} 个行分组 ·
+            {{ pivotResult.colLabels.length }} 个列分组
+            <span v-if="pivotResult.warnings.length"> · {{ pivotResult.warnings.join('；') }}</span>
+          </p>
+        </div>
+        <label>新工作表名称<input v-model="pivotSheetName" /></label>
+        <div class="modal-actions">
+          <button class="btn ghost small" @click="pivotOpen = false">取消</button>
+          <button class="btn primary small" @click="insertPivotSheet">插入为新工作表</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 宏弹窗 -->
+    <div v-if="macroOpen" class="modal" @click.self="macroOpen = false">
+      <div class="modal-card wide">
+        <h3>⚙ 表格宏</h3>
+        <p class="muted small">
+          用一小段 JS 批量处理当前工作表（增删行列、改值、算合计、换算单位…）。运行前会自动记录快照，可 Ctrl+Z 撤销。
+          注：这是脚本宏，不是 Excel VBA——不支持 VBA 语法与录制。
+        </p>
+        <div class="macro-layout">
+          <div class="macro-list">
+            <div
+              v-for="(m, i) in macroList"
+              :key="m.name + i"
+              class="macro-item"
+              :class="{ active: i === macroIndex }"
+              @click="pickMacro(i)"
+            >
+              <span>{{ m.builtin ? '内置' : '我的' }}</span>
+              <b>{{ m.name }}</b>
+            </div>
+          </div>
+          <div class="macro-editor">
+            <label>宏名称<input v-model="macroName" /></label>
+            <textarea v-model="macroCode" rows="12" class="code-box" spellcheck="false"></textarea>
+            <p class="muted small">
+              可用：<code>sheet.columns</code> / <code>sheet.rows</code> · <code>num(v)</code> ·
+              <code>cell(行,列)</code> · <code>set(行,列,值)</code> · <code>addColumn(label)</code> ·
+              <code>addRow(label)</code> · <code>colValues(列)</code> · <code>log(...)</code>
+            </p>
+            <p v-if="macroError" class="error-box">宏执行失败：{{ macroError }}</p>
+            <ul v-if="macroLogs.length" class="macro-logs">
+              <li v-for="(l, i) in macroLogs" :key="i">{{ l }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost small" @click="deleteMacro">删除此宏</button>
+          <button class="btn ghost small" @click="saveCurrentMacro">保存到表格</button>
+          <button class="btn primary small" @click="runCurrentMacro">▶ 运行宏</button>
         </div>
       </div>
     </div>
@@ -993,6 +1344,53 @@ onUnmounted(() => window.removeEventListener('keydown', onUndoKey))
 .modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; width: min(520px, 92vw); display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
 .modal-card.wide { width: min(680px, 94vw); }
 .modal-card textarea.paste-box { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; resize: vertical; }
+
+/* 工作表页签 */
+.sheet-tabs { display: flex; align-items: center; gap: 4px; padding: 4px 8px; flex-wrap: wrap; }
+.sheet-tab {
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text-sub);
+  border-radius: 7px 7px 0 0;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.sheet-tab:hover { color: var(--text); }
+.sheet-tab.active { background: var(--card); color: var(--text); font-weight: 600; border-bottom-color: var(--card); }
+.tabs-tools { margin-left: auto; display: inline-flex; gap: 4px; }
+
+/* 透视表预览 */
+.pivot-wrap { max-height: 320px; overflow: auto; border: 1px solid var(--border-soft); border-radius: 8px; }
+table.pivot { width: 100%; border-collapse: collapse; }
+table.pivot th, table.pivot td { border-bottom: 1px solid var(--border-soft); padding: 4px 8px; text-align: right; }
+table.pivot th:first-child, table.pivot td:first-child { text-align: left; position: sticky; left: 0; background: var(--card); }
+table.pivot thead th { position: sticky; top: 0; background: var(--bg-elev); z-index: 2; }
+table.pivot tr.total td { font-weight: 600; background: var(--bg-elev); text-align: left; }
+
+/* 宏编辑器 */
+.macro-layout { display: flex; gap: 12px; min-height: 260px; }
+.macro-list { width: 210px; display: flex; flex-direction: column; gap: 3px; max-height: 340px; overflow: auto; }
+.macro-item { display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 7px; cursor: pointer; border: 1px solid transparent; }
+.macro-item:hover { background: var(--hover); }
+.macro-item.active { border-color: var(--primary); background: var(--bg-elev); }
+.macro-item span { font-size: 9.5px; color: var(--text-sub); }
+.macro-item b { font-size: 12px; font-weight: 600; }
+.macro-editor { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+textarea.code-box {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-elev);
+  color: var(--text);
+  padding: 8px 10px;
+  resize: vertical;
+}
+.macro-logs { margin: 0; padding-left: 16px; font-size: 11.5px; color: var(--text-sub); max-height: 90px; overflow: auto; }
 .modal-card h3 { margin: 0; font-size: 15px; }
 .modal-card label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-sub); }
 .modal-card input, .modal-card select { font-family: inherit; font-size: 12.5px; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-elev); color: var(--text); }

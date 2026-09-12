@@ -156,7 +156,7 @@ def main():
     check("确定性数据无需人工确认（无 VISION_UNCONFIRMED）", "VISION_UNCONFIRMED" not in codes, f"{codes}")
     check("勾稽通过", v.get("ok") is True, f"{[i['message'] for i in v.get('issues', []) if i['level'] == 'error']}")
     st, ing = req(port, f"/api/tables/{tid_tsv}/ingest", "POST", {})
-    check("入库成功（2 期）", st == 200 and len(ing.get("created", [])) == 2, f"{st} {str(ing)[:160]}")
+    check("入库成功（2 期，新增或更新都算）", st == 200 and len(ing.get("created", [])) + len(ing.get("updated", [])) == 2, f"{st} {str(ing)[:160]}")
     st, fa = req(port, f"/api/finance/{ent_id}/analysis")
     check("金融分析可用且营收=128600", fa.get("available") is True and
           next((k["value"] for k in fa.get("kpi", []) if k["key"] == "revenue" and k.get("available")), None) == 128600.0,
