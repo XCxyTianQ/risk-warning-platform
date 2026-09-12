@@ -23,10 +23,21 @@ interface ToolCard {
   latencyMs?: number
 }
 
+interface ChatAttachment {
+  id: string
+  filename: string
+  kind: string
+  size: number
+  preview_url: string
+  reading_status?: string
+  uploading?: boolean
+}
+
 interface ChatMsg {
   role: 'user' | 'assistant'
   text: string
   tools: ToolCard[]
+  attachments?: ChatAttachment[]
   streaming?: boolean
   error?: string
   notice?: string
@@ -64,6 +75,11 @@ const busy = ref(false)
 const sessionId = ref<string | null>(null)
 const listEl = ref<HTMLDivElement | null>(null)
 const historyOpen = ref(false)
+// 待发送附件（粘贴/拖拽/选择）——图片会先在前端压缩再上传
+const pending = ref<ChatAttachment[]>([])
+const uploading = ref(false)
+const dragOver = ref(false)
+const fileInput = ref<HTMLInputElement | null>(null)
 const sessions = ref<SessionRow[]>([])
 const loadingHistory = ref(false)
 const usage = ref<UsageStats | null>(null)
@@ -304,12 +320,126 @@ function onPresetChange() {
   localStorage.setItem('rw-preset', presetId.value ? String(presetId.value) : '')
 }
 
+// ---------- 多模态输入：粘贴 / 拖拽 / 选择图片 ----------
+
+/** 前端压缩：长边 ≤1600、JPEG 0.82 —— 明显省 token，也让上传更快 */
+async function compressImage(file: File): Promise<{ data: string; mime: string; filename: string }> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const fr = new FileReader()
+    fr.onload = () => resolve(String(fr.result))
+    fr.onerror = () => reject(new Error('读取图片失败'))
+    fr.readAsDataURL(file)
+  })
+  if (file.type === 'image/gif') return { data: dataUrl, mime: file.type, filename: file.name }
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image()
+      el.onload = () => resolve(el)
+      el.onerror = () => reject(new Error('图片解码失败'))
+      el.src = dataUrl
+    })
+    const maxSide = 1600
+    const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+    const w = Math.max(1, Math.round(img.width * scale))
+    const h = Math.max(1, Math.round(img.height * scale))
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return { data: dataUrl, mime: file.type, filename: file.name }
+    ctx.drawImage(img, 0, 0, w, h)
+    const out = canvas.toDataURL('image/jpeg', 0.82)
+    return { data: out, mime: 'image/jpeg', filename: file.name.replace(/\.(png|webp|bmp)$/i, '.jpg') }
+  } catch {
+    return { data: dataUrl, mime: file.type || 'image/png', filename: file.name }
+  }
+}
+
+async function uploadFiles(files: File[]) {
+  if (!files.length) return
+  uploading.value = true
+  try {
+    for (const file of files) {
+      const isImage = file.type.startsWith('image/')
+      const placeholder: ChatAttachment = {
+        id: `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        filename: file.name,
+        kind: isImage ? 'image' : 'file',
+        size: file.size,
+        preview_url: '',
+        uploading: true,
+      }
+      pending.value.push(placeholder)
+      try {
+        let body: any
+        if (isImage) {
+          const { data, mime, filename } = await compressImage(file)
+          body = { filename, mime, data_base64: data, session_id: sessionId.value ?? '', origin: 'paste' }
+        } else {
+          const buf = await file.arrayBuffer()
+          let bin = ''
+          const bytes = new Uint8Array(buf)
+          for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i])
+          body = { filename: file.name, mime: file.type || 'application/octet-stream', data_base64: btoa(bin), session_id: sessionId.value ?? '', origin: 'upload' }
+        }
+        const r = await api.uploadAttachment(body)
+        const att = r.attachment as ChatAttachment
+        Object.assign(placeholder, att, { uploading: false })
+      } catch (e) {
+        pending.value = pending.value.filter((p) => p.id !== placeholder.id)
+        error.value = `附件上传失败：${(e as Error).message}`
+      }
+    }
+  } finally {
+    uploading.value = false
+  }
+}
+
+function onPaste(e: ClipboardEvent) {
+  const items = e.clipboardData?.items
+  if (!items) return
+  const files: File[] = []
+  for (const it of items) {
+    if (it.kind === 'file') {
+      const f = it.getAsFile()
+      if (f) files.push(f)
+    }
+  }
+  if (files.length) {
+    e.preventDefault()
+    void uploadFiles(files)
+  }
+}
+
+function onDrop(e: DragEvent) {
+  dragOver.value = false
+  const files = Array.from(e.dataTransfer?.files ?? [])
+  if (files.length) void uploadFiles(files)
+}
+
+function pickFiles() {
+  fileInput.value?.click()
+}
+
+function onPickFiles(e: Event) {
+  const el = e.target as HTMLInputElement
+  void uploadFiles(Array.from(el.files ?? []))
+  el.value = ''
+}
+
+function removePending(id: string) {
+  pending.value = pending.value.filter((p) => p.id !== id)
+}
+
 async function send(text?: string) {
   const content = (text ?? input.value).trim()
-  if (!content || busy.value) return
+  if ((!content && !pending.value.length) || busy.value) return
+  const sent = pending.value.filter((p) => !p.uploading).map((p) => ({ ...p }))
+  const attachmentIds = sent.map((a) => a.id)
   input.value = ''
+  pending.value = []
   busy.value = true
-  messages.value.push({ role: 'user', text: content, tools: [] })
+  messages.value.push({ role: 'user', text: content, tools: [], attachments: sent.length ? sent : undefined })
   const reply: ChatMsg = { role: 'assistant', text: '', tools: [], streaming: true, reasoningOpen: true }
   messages.value.push(reply)
   await scrollBottom()
@@ -324,7 +454,12 @@ async function send(text?: string) {
     const resp = await fetch('/api/chat/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: content, session_id: sessionId.value, preset_id: presetId.value }),
+      body: JSON.stringify({
+        message: content,
+        session_id: sessionId.value,
+        preset_id: presetId.value,
+        attachment_ids: attachmentIds,
+      }),
       signal: abort.signal,
     })
     if (!resp.body) throw new Error('服务端未返回流')
@@ -578,6 +713,20 @@ function stop() {
             </div>
           </div>
 
+          <div v-if="m.attachments?.length" class="msg-atts">
+            <a
+              v-for="a in m.attachments"
+              :key="a.id"
+              class="msg-att"
+              :href="api.attachmentUrl(a.id)"
+              target="_blank"
+              rel="noopener"
+              :title="a.filename"
+            >
+              <img v-if="a.kind === 'image'" :src="api.attachmentUrl(a.id)" :alt="a.filename" />
+              <span v-else class="file-chip">📄 {{ a.filename }}</span>
+            </a>
+          </div>
           <div v-if="m.text" class="bubble" v-html="render(m.text)"></div>
           <div v-else-if="m.streaming && !m.tools.length" class="bubble typing"><i></i><i></i><i></i></div>
           <div v-if="m.streaming && m.elapsedMs" class="stream-timer">⏱ 已用时 {{ fmtMs(m.elapsedMs) }}</div>
@@ -593,15 +742,35 @@ function stop() {
       </div>
     </div>
 
-    <div class="composer">
+    <div
+      class="composer"
+      :class="{ 'drag-over': dragOver }"
+      @dragover.prevent="dragOver = true"
+      @dragleave="dragOver = false"
+      @drop.prevent="onDrop"
+    >
+      <!-- 待发送附件（粘贴/拖拽/选择） -->
+      <div v-if="pending.length" class="pending">
+        <div v-for="a in pending" :key="a.id" class="chip" :class="{ busy: a.uploading }">
+          <img v-if="a.kind === 'image' && !a.uploading" :src="api.attachmentUrl(a.id)" :alt="a.filename" />
+          <span v-else class="chip-ph">{{ a.uploading ? '⏳' : '📄' }}</span>
+          <span class="chip-name">{{ a.filename }}</span>
+          <i title="移除" @click="removePending(a.id)">✕</i>
+        </div>
+        <span v-if="uploading" class="chip-hint">上传中…</span>
+      </div>
+
       <textarea
         v-model="input"
         rows="2"
-        placeholder="提问…（Enter 发送）"
+        placeholder="提问…（Enter 发送；可直接粘贴截图或拖入图片/表格文件）"
         @keydown.enter.exact.prevent="send()"
+        @paste="onPaste"
       ></textarea>
+      <input ref="fileInput" type="file" multiple accept="image/*,.csv,.xlsx,.xls" hidden @change="onPickFiles" />
+      <button class="btn ghost attach-btn" title="添加图片或表格文件" @click="pickFiles">📎</button>
       <button v-if="busy" class="btn ghost" @click="stop">停止</button>
-      <button v-else class="btn primary" :disabled="!input.trim()" @click="send()">发送</button>
+      <button v-else class="btn primary" :disabled="(!input.trim() && !pending.length) || uploading" @click="send()">发送</button>
     </div>
   </div>
 </template>
@@ -1107,6 +1276,89 @@ function stop() {
   padding-top: 10px;
   border-top: 1px solid var(--border);
   margin-top: 10px;
+  flex-wrap: wrap;
+  border-radius: 10px;
+}
+
+.composer.drag-over {
+  outline: 2px dashed var(--primary);
+  outline-offset: 4px;
+}
+
+.pending {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px 6px 3px 4px;
+  background: var(--bg-elev);
+  max-width: 220px;
+}
+
+.chip.busy { opacity: 0.7; }
+
+.chip img {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.chip-ph { font-size: 16px; }
+
+.chip-name {
+  font-size: 11px;
+  color: var(--text-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip i {
+  font-style: normal;
+  cursor: pointer;
+  color: var(--text-sub);
+  font-size: 10.5px;
+}
+
+.chip i:hover { color: #dc2626; }
+
+.chip-hint { font-size: 11px; color: var(--text-sub); }
+
+.attach-btn { padding: 6px 9px; }
+
+.msg-atts {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.msg-att img {
+  width: 132px;
+  max-height: 132px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.file-chip {
+  display: inline-block;
+  font-size: 11.5px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: var(--bg-elev);
 }
 
 .composer textarea {

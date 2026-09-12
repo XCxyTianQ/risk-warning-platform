@@ -22,6 +22,9 @@ pub struct StreamReq {
     pub session_id: Option<String>,
     #[serde(default)]
     pub preset_id: Option<i64>,
+    /// 本轮携带的附件（图片/表格文件），先经 `/api/attachments` 上传拿到 id
+    #[serde(default)]
+    pub attachment_ids: Vec<String>,
 }
 
 /// POST /api/chat/stream —— SSE 流式对话
@@ -29,12 +32,12 @@ pub async fn stream(
     State(st): State<AppState>,
     Json(req): Json<StreamReq>,
 ) -> AppResult<Sse<impl Stream<Item = Result<Event, Infallible>>>> {
-    if req.message.trim().is_empty() {
-        return Err(AppError::bad_request("message 不能为空"));
+    if req.message.trim().is_empty() && req.attachment_ids.is_empty() {
+        return Err(AppError::bad_request("message 与 attachment_ids 不能同时为空"));
     }
     let store = SessionStore::new();
     let session = store.get_or_create(&st.db, req.session_id.as_deref())?;
-    let events = run_agent(st.clone(), session, req.message, req.preset_id);
+    let events = run_agent(st.clone(), session, req.message, req.preset_id, req.attachment_ids);
     let sse = events.map(|e| Ok::<_, Infallible>(e.to_sse()));
     Ok(Sse::new(sse).keep_alive(KeepAlive::default()))
 }

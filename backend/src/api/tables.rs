@@ -185,3 +185,24 @@ pub async fn delete(State(st): State<AppState>, Path(id): Path<i64>) -> AppResul
     }
     Ok(Json(result))
 }
+
+#[derive(Deserialize)]
+pub struct ConfirmReq {
+    /// 要确认的单元格；留空 = 确认全部待确认（视觉识别）单元格
+    #[serde(default)]
+    pub cells: Vec<Value>,
+}
+
+/// POST /api/tables/{id}/confirm —— 确认视觉识别结果（source: vision → user）
+pub async fn confirm(
+    State(st): State<AppState>,
+    Path(id): Path<i64>,
+    body: Option<Json<ConfirmReq>>,
+) -> AppResult<Json<Value>> {
+    let cells = body.map(|Json(b)| b.cells).unwrap_or_default();
+    let result = tables::confirm_cells(&st.db, id, &cells)?;
+    if let Some(err) = result.get("error").and_then(|v| v.as_str()) {
+        return Err(AppError::not_found(err));
+    }
+    Ok(Json(result))
+}

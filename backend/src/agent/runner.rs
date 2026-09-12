@@ -107,10 +107,32 @@ pub fn summarize(result: &Value) -> Value {
     Value::Object(out)
 }
 
-fn build_messages(session: &Session, store: &SessionStore, system_prompt: &str, tool_free: bool) -> Vec<Value> {
+fn build_messages(
+    db: &crate::db::Db,
+    data_dir: &std::path::Path,
+    session: &Session,
+    store: &SessionStore,
+    system_prompt: &str,
+    tool_free: bool,
+) -> Vec<Value> {
     let mut messages = vec![json!({ "role": "system", "content": system_prompt })];
-    messages.extend(store.context(session, tool_free));
+    messages.extend(store.context_with_media(db, data_dir, session, tool_free));
     messages
+}
+
+/// 图片按分辨率档位估算 token（提供方通常按 512×512 分块计费，这里取保守档）
+pub fn media_tokens(atts: &[crate::services::attachments::Attachment]) -> i64 {
+    atts.iter()
+        .filter(|a| a.kind == "image")
+        .map(|a| {
+            let pixels = (a.width.max(0) as f64) * (a.height.max(0) as f64);
+            if pixels <= 0.0 {
+                800 // 尺寸未知：按常见截图估
+            } else {
+                ((pixels / (512.0 * 512.0)).ceil() as i64 * 170).clamp(170, 3200)
+            }
+        })
+        .sum()
 }
 
 /// 运行一轮对话，产出 SSE 事件流
@@ -119,10 +141,12 @@ pub fn run_agent(
     mut session: Session,
     user_text: String,
     preset_id: Option<i64>,
+    attachment_ids: Vec<String>,
 ) -> impl Stream<Item = AgentEvent> {
     stream! {
         let store = SessionStore::new();
         let db = state.db.clone();
+        let data_dir = state.cfg.data_dir.clone();
         let rt = state.rt();
 
         // 载入 Agent 预设（提示词补充 + 工具白名单 + 技能白名单 + 模型覆盖）
@@ -148,23 +172,43 @@ pub fn run_agent(
         );
         let reg = build_registry_for(&db, preset.as_ref());
 
-        if let Err(err) = store.append(&db, &mut session, Msg::new("user", user_text)) {
-            yield AgentEvent::new("error", json!({ "message": format!("写入消息失败：{err}") }));
-            return;
-        }
+        let user_msg = match store.append(&db, &mut session, Msg::new("user", user_text)) {
+            Ok(m) => m,
+            Err(err) => {
+                yield AgentEvent::new("error", json!({ "message": format!("写入消息失败：{err}") }));
+                return;
+            }
+        };
+        // 附件挂到这条消息上（当期多模态；下一轮起自动降级为文本投影）
+        let atts = if attachment_ids.is_empty() {
+            Vec::new()
+        } else {
+            let _ = crate::services::attachments::bind_to_message(&db, &attachment_ids, &session.id, user_msg.id);
+            crate::services::attachments::for_message(&db, user_msg.id).unwrap_or_default()
+        };
+        let media_extra = media_tokens(&atts);
 
         yield AgentEvent::new("session", json!({
             "session_id": session.id,
             "title": session.title,
+            "attachment_count": atts.len(),
         }));
+        if !atts.is_empty() {
+            yield AgentEvent::new("attachment", json!({
+                "message_id": user_msg.id,
+                "items": atts.iter().map(|a| a.to_json()).collect::<Vec<_>>(),
+                "media_tokens": media_extra,
+            }));
+        }
 
         let mut tool_free_retry = false;
 
-        // 主动压缩检查
-        let messages = build_messages(&session, &store, &system_prompt, false);
-        let (over, est) = store.should_compact(
+        // 主动压缩检查（图片 token 单独计入）
+        let messages = build_messages(&db, &data_dir, &session, &store, &system_prompt, false);
+        let (over, est) = store.should_compact_extra(
             &session.messages,
             &reg.definitions(),
+            media_extra,
             rt.llm_context_window,
             rt.compaction_threshold_ratio,
         );
@@ -196,7 +240,7 @@ pub fn run_agent(
         }
 
         for step in 0..MAX_STEPS {
-            let messages = build_messages(&session, &store, &system_prompt, tool_free_retry);
+            let messages = build_messages(&db, &data_dir, &session, &store, &system_prompt, tool_free_retry);
             let tools = reg.definitions();
             let mut text = String::new();
             let mut calls: Vec<crate::llm::ToolCall> = Vec::new();

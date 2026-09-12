@@ -218,4 +218,30 @@ CREATE TABLE IF NOT EXISTS table_doc (
 );
 CREATE INDEX IF NOT EXISTS idx_table_doc_ent ON table_doc(enterprise_id);
 CREATE INDEX IF NOT EXISTS idx_table_doc_status ON table_doc(status);
+
+-- 多模态附件（图片/表格文件）：二进制落盘（data/attachments/…），库里只存元数据与读取结果。
+-- 设计要点：
+--  * reading_json 是「读取」的统一中间表示（Reading）：结构化数据 + 方法 + 置信度 + 来源定位
+--  * 同一内容按 sha256 去重，重复上传只落一份文件
+--  * 只有最新一轮对话会把图片展开成多模态 parts，历史轮次用 Reading 的文本投影（省 token、兼容性稳）
+CREATE TABLE IF NOT EXISTS attachment (
+    id             TEXT PRIMARY KEY,
+    session_id     TEXT NOT NULL DEFAULT '',
+    message_id     INTEGER,
+    kind           TEXT NOT NULL DEFAULT 'image',
+    filename       TEXT NOT NULL DEFAULT '',
+    mime           TEXT NOT NULL DEFAULT '',
+    size           INTEGER NOT NULL DEFAULT 0,
+    sha256         TEXT NOT NULL DEFAULT '',
+    width          INTEGER NOT NULL DEFAULT 0,
+    height         INTEGER NOT NULL DEFAULT 0,
+    file_path      TEXT NOT NULL DEFAULT '',
+    origin         TEXT NOT NULL DEFAULT 'upload',
+    reading_json   TEXT NOT NULL DEFAULT '',
+    reading_method TEXT NOT NULL DEFAULT '',
+    reading_status TEXT NOT NULL DEFAULT 'none',
+    created_at     TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_attachment_session ON attachment(session_id);
+CREATE INDEX IF NOT EXISTS idx_attachment_sha ON attachment(sha256);
 "#;

@@ -7,7 +7,7 @@ edition = "2024"
 aes = "0.9.3"
 anyhow = "1.0.104"
 async-stream = "0.3.6"
-axum = "0.8.9"
+axum = { version = "0.8.9", features = ["multipart"] }
 base64 = "0.23.1"
 cbc = { version = "0.2.1", features = ["alloc"] }
 chrono = { version = "0.4.45", features = ["serde"] }

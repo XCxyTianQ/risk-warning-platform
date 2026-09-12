@@ -356,6 +356,36 @@ pub fn validate(doc: &TableDoc) -> Value {
         push("warn", "ONLY_ONE_PERIOD", "只有一期数据：同比、趋势与 Beneish M-Score 不可用".into(), "", "");
     }
 
+    // 待确认的模型识别结果：财报数字读错一位就全盘皆错 —— 确认前阻止入库
+    let mut unconfirmed: Vec<String> = Vec::new();
+    for r in doc.sheet.get("rows").and_then(|v| v.as_array()).cloned().unwrap_or_default() {
+        let row_key = r.get("key").and_then(|v| v.as_str()).unwrap_or("");
+        let label = r.get("label").and_then(|v| v.as_str()).unwrap_or(row_key);
+        for (col, cell) in r.get("cells").and_then(|v| v.as_object()).cloned().unwrap_or_default() {
+            if cell.get("source").and_then(|v| v.as_str()) == Some("vision") {
+                let col_label = columns
+                    .iter()
+                    .find(|c| c.get("key").and_then(|v| v.as_str()) == Some(col.as_str()))
+                    .and_then(|c| c.get("label").and_then(|v| v.as_str()))
+                    .unwrap_or(col.as_str());
+                unconfirmed.push(format!("{label}@{col_label}"));
+            }
+        }
+    }
+    if !unconfirmed.is_empty() {
+        push(
+            "error",
+            "VISION_UNCONFIRMED",
+            format!(
+                "有 {} 个由图片识别的数字尚未确认（{}）—— 请在表格里核对后点「确认识别结果」",
+                unconfirmed.len(),
+                unconfirmed.iter().take(5).cloned().collect::<Vec<_>>().join("、")
+            ),
+            "",
+            "",
+        );
+    }
+
     // 逐列勾稽（用映射后的科目值）
     let get = |field: &str, col: &str| -> Option<f64> {
         doc.mapping.get(field).and_then(|v| v.as_str()).and_then(|row| cell_value(&doc.sheet, row, col))
@@ -1038,6 +1068,73 @@ pub fn ingest(db: &Db, id: i64, overwrite: bool) -> Result<Value> {
         "alerts": alerts.get("created").cloned().unwrap_or(json!([])),
         "validation": check,
     }))
+}
+
+/// 确认视觉识别单元格：source vision → user，confidence → 1.0
+/// （视觉读数默认视为「待确认」，确认前不允许入库 —— 财报数字读错一个小数点就全盘皆错）
+pub fn confirm_cells(db: &Db, id: i64, cells: &[Value]) -> Result<Value> {
+    let Some(mut doc) = get(db, id)? else {
+        return Ok(json!({ "error": format!("表格不存在: {id}") }));
+    };
+    let targets: Vec<(String, String)> = if cells.is_empty() {
+        // 全部待确认
+        let mut list = Vec::new();
+        for r in doc.sheet.get("rows").and_then(|v| v.as_array()).cloned().unwrap_or_default() {
+            let row_key = r.get("key").and_then(|v| v.as_str()).unwrap_or("").to_string();
+            for (col, cell) in r.get("cells").and_then(|v| v.as_object()).cloned().unwrap_or_default() {
+                if cell.get("source").and_then(|v| v.as_str()) == Some("vision") {
+                    list.push((row_key.clone(), col));
+                }
+            }
+        }
+        list
+    } else {
+        cells
+            .iter()
+            .filter_map(|c| {
+                Some((
+                    c.get("row").and_then(|v| v.as_str())?.to_string(),
+                    c.get("col").and_then(|v| v.as_str())?.to_string(),
+                ))
+            })
+            .collect()
+    };
+
+    let mut confirmed = 0usize;
+    for (row_key, col_key) in &targets {
+        if let Some(rows) = doc.sheet.get_mut("rows").and_then(|v| v.as_array_mut()) {
+            for row in rows.iter_mut() {
+                if row.get("key").and_then(|v| v.as_str()) != Some(row_key.as_str()) {
+                    continue;
+                }
+                if let Some(cell) = row
+                    .get_mut("cells")
+                    .and_then(|c| c.get_mut(col_key))
+                    .and_then(|c| c.as_object_mut())
+                {
+                    cell.insert("source".into(), json!("user"));
+                    cell.insert("confidence".into(), json!(1.0));
+                    cell.insert("confirmed_at".into(), json!(now_db()));
+                    confirmed += 1;
+                }
+            }
+        }
+    }
+
+    let now = now_db();
+    db.with(|conn| {
+        conn.execute(
+            "UPDATE table_doc SET sheet_json = ?1, status = CASE WHEN status = 'draft' THEN 'confirmed' ELSE status END,
+                    updated_at = ?2 WHERE id = ?3",
+            params![
+                serde_json::to_string(&doc.sheet).unwrap_or_else(|_| "{}".into()),
+                now,
+                id,
+            ],
+        )?;
+        Ok(())
+    })?;
+    Ok(json!({ "ok": true, "table_id": id, "confirmed": confirmed }))
 }
 
 /// 入库前差异预览（不写库）：展示将新增/更新/冲突的期间

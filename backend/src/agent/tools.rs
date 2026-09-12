@@ -801,6 +801,36 @@ pub fn build_registry() -> ToolRegistry {
         false,
     );
 
+    // ---------- 多模态读取 ----------
+    reg.register(
+        "read_attachment",
+        "读取用户上传的图片（财报截图/公告/判决书等），返回结构化提取结果（字段+数值+置信度+不确定点）。用户在图里问了什么、或需要图片里的数字时必须调用它，不要凭空猜测图片内容。",
+        json!({
+            "type": "object",
+            "properties": {
+                "attachment_id": { "type": "string", "description": "附件 id（来自对话中的附件或 list_attachments）" },
+                "target": { "type": "string", "description": "finance（财报数字）/ announcement（公告事实）/ auto，默认 auto" },
+                "table_id": { "type": "integer", "description": "可选：把识别结果直接填入该表格（待确认状态）" }
+            },
+            "required": ["attachment_id"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "list_attachments",
+        "列出当前会话（或全部）上传的附件及其读取状态。",
+        json!({
+            "type": "object",
+            "properties": {
+                "session_id": { "type": "string", "description": "可选：按会话筛选" },
+                "limit": { "type": "integer", "description": "默认 20" }
+            },
+            "required": []
+        }),
+        true,
+    );
+
     reg
 }
 
@@ -881,6 +911,7 @@ pub fn call_tool(db: &Db, name: &str, args: &Value, allowed_skills: &[String]) -
         "load_skill" => load_skill(db, args, allowed_skills),
         "list_tables" => tool_list_tables(db, args),
         "get_table" => tool_get_table(db, args),
+        "list_attachments" => tool_list_attachments(db, args),
         "create_table" => tool_create_table(db, args),
         "write_table_cells" => tool_write_table_cells(db, args),
         "validate_table" => tool_validate_table(db, args),
@@ -1014,6 +1045,27 @@ fn tool_ingest_table(db: &Db, args: &Value) -> Value {
     let overwrite = arg_bool(args, "overwrite", false);
     match crate::services::tables::ingest(db, id, overwrite) {
         Ok(v) => v,
+        Err(err) => json!({ "error": err.to_string() }),
+    }
+}
+
+fn tool_list_attachments(db: &Db, args: &Value) -> Value {
+    let session_id = arg_str(args, "session_id");
+    let limit = arg_i64(args, "limit", 20).clamp(1, 50);
+    let sid = if session_id.is_empty() { None } else { Some(session_id.as_str()) };
+    match crate::services::attachments::list(db, sid, limit) {
+        Ok(mut v) => {
+            // 精简：工具场景只需定位与读取状态
+            if let Some(items) = v.get_mut("items").and_then(|x| x.as_array_mut()) {
+                for it in items.iter_mut() {
+                    if let Some(obj) = it.as_object_mut() {
+                        obj.remove("sha256");
+                        obj.remove("preview_url");
+                    }
+                }
+            }
+            v
+        }
         Err(err) => json!({ "error": err.to_string() }),
     }
 }
@@ -1221,7 +1273,7 @@ pub fn screen_by_financial_metric(db: &Db, args: &Value) -> Value {
     })
 }
 
-/// 需要网络或写库的异步工具（含手搓插件 `custom_*` 与 MCP `mcp_*`）
+/// 需要网络或写库的异步工具（含手搓插件 `custom_*`、MCP `mcp_*` 与多模态读取）
 pub fn is_async_tool(name: &str) -> bool {
     matches!(
         name,
@@ -1230,6 +1282,7 @@ pub fn is_async_tool(name: &str) -> bool {
             | "refresh_enterprise_data"
             | "handle_alert"
             | "run_risk_analysis"
+            | "read_attachment"
     ) || name.starts_with("custom_")
         || name.starts_with("mcp_")
 }
@@ -1249,6 +1302,29 @@ pub async fn call_tool_async(state: &crate::state::AppState, name: &str, args: &
         return crate::services::mcp::call_tool(&item.server_url, &item.auth_header, &item.name, args).await;
     }
     match name {
+        "read_attachment" => {
+            let id = arg_str(args, "attachment_id");
+            let target = {
+                let t = arg_str(args, "target");
+                if t.is_empty() { "auto".to_string() } else { t }
+            };
+            let table_id = args.get("table_id").and_then(|v| v.as_i64());
+            match crate::services::reading::read_attachment(state, &id, &target, table_id, false).await {
+                Ok(v) if v.get("error").is_some() => json!({ "error": v.get("error") }),
+                Ok(v) => {
+                    let reading = v.get("reading").cloned().unwrap_or(json!({}));
+                    json!({
+                        "ok": true,
+                        "attachment_id": id,
+                        "reading": reading,
+                        "fill": v.get("fill"),
+                        "usage": v.get("usage"),
+                        "hint": "如需把数字写进平台数据，请用表格（create_table/write_table_cells）并让用户确认后 ingest_table",
+                    })
+                }
+                Err(err) => json!({ "error": format!("读取失败: {err}") }),
+            }
+        }
         "run_risk_analysis" => {
             let enterprise_id = arg_i64(args, "enterprise_id", 0);
             match crate::services::risk::analyze_enterprise(state, enterprise_id).await {

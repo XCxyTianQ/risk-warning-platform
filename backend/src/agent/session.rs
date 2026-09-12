@@ -308,7 +308,77 @@ impl SessionStore {
     }
 
     /// 构建上下文：摘要（若有）+ 压缩点之后的最近 N 条（工具成对性已修正）
+    ///
+    /// 纯文本版（无附件）；对话主链路走 `context_with_media`（当期多模态 + 历史文本化），
+    /// 这里保留给压缩、导出与不带媒体的调用方。
+    #[allow(dead_code)]
     pub fn context(&self, session: &Session, tool_free: bool) -> Vec<Value> {
+        let mut out = self.summary_prefix(session);
+        for m in self.selected_messages(session, tool_free) {
+            out.push(m.to_api());
+        }
+        out
+    }
+
+    /// 多模态上下文：
+    ///  * **最新一条 user 消息**把图片展开成 `image_url` parts（当期多模态）
+    ///  * 更早的消息只用**读取结果的文本投影**（省 token + 避免历史图片导致的端点兼容问题）
+    pub fn context_with_media(
+        &self,
+        db: &Db,
+        data_dir: &std::path::Path,
+        session: &Session,
+        tool_free: bool,
+    ) -> Vec<Value> {
+        use crate::services::attachments;
+
+        let mut out = self.summary_prefix(session);
+        let msgs = self.selected_messages(session, tool_free);
+        let ids: Vec<i64> = msgs.iter().map(|m| m.id).collect();
+        let atts = attachments::for_messages(db, &ids).unwrap_or_default();
+        let newest_user = msgs.iter().rev().find(|m| m.role == "user").map(|m| m.id);
+
+        for m in msgs {
+            let mine: Vec<&attachments::Attachment> =
+                atts.iter().filter(|a| a.message_id == Some(m.id)).collect();
+            if mine.is_empty() || m.role != "user" {
+                out.push(m.to_api());
+                continue;
+            }
+            let is_newest = Some(m.id) == newest_user;
+            if !is_newest {
+                // 历史轮次：文本投影（含已识别内容）
+                let mut text = m.content.clone();
+                for a in mine {
+                    text.push_str(&format!("\n[附件] {}", a.text_projection()));
+                }
+                out.push(json!({ "role": "user", "content": text }));
+                continue;
+            }
+            // 当期：图片转多模态 parts；表格类文件仍走文本
+            let mut parts: Vec<Value> = vec![json!({ "type": "text", "text": m.content })];
+            for a in mine {
+                if a.kind == "image" {
+                    match attachments::data_url(data_dir, a) {
+                        Ok(url) => parts.push(json!({
+                            "type": "image_url",
+                            "image_url": { "url": url },
+                        })),
+                        Err(err) => parts.push(json!({
+                            "type": "text",
+                            "text": format!("[附件读取失败] {}", err),
+                        })),
+                    }
+                } else {
+                    parts.push(json!({ "type": "text", "text": format!("[附件] {}", a.text_projection()) }));
+                }
+            }
+            out.push(json!({ "role": "user", "content": parts }));
+        }
+        out
+    }
+
+    fn summary_prefix(&self, session: &Session) -> Vec<Value> {
         let mut out: Vec<Value> = Vec::new();
         if !session.summary.is_empty() {
             out.push(json!({
@@ -316,14 +386,18 @@ impl SessionStore {
                 "content": format!("[会话摘要（更早的对话已压缩，视为已知信息）]\n{}", session.summary),
             }));
         }
+        out
+    }
+
+    /// 选入上下文的消息（压缩点之后 + 窗口裁剪 + 工具成对性修正）
+    fn selected_messages(&self, session: &Session, tool_free: bool) -> Vec<Msg> {
         let recent: Vec<Msg> = session
             .messages
             .iter()
             .filter(|m| m.id > session.compacted_until)
             .cloned()
             .collect();
-
-        let selected: Vec<Msg> = if tool_free {
+        if tool_free {
             recent
                 .into_iter()
                 .filter(|m| {
@@ -335,12 +409,7 @@ impl SessionStore {
         } else {
             let start = recent.len().saturating_sub(WINDOW);
             sanitize_tool_pairs(recent[start..].to_vec())
-        };
-
-        for m in selected {
-            out.push(m.to_api());
         }
-        out
     }
 
     pub fn set_summary(&self, db: &Db, session: &mut Session, summary: &str, until_id: i64) -> Result<()> {
@@ -788,8 +857,21 @@ impl SessionStore {
 
     // ---------------- 上下文压缩 ----------------
 
+    #[allow(dead_code)]
     pub fn should_compact(&self, messages: &[Msg], tools: &[Value], window: i64, threshold: f64) -> (bool, i64) {
-        let est = estimate_tokens(messages, tools);
+        self.should_compact_extra(messages, tools, 0, window, threshold)
+    }
+
+    /// 带媒体额外开销的压缩判断（图片 token 不计入字符估算，需单独加）
+    pub fn should_compact_extra(
+        &self,
+        messages: &[Msg],
+        tools: &[Value],
+        extra_tokens: i64,
+        window: i64,
+        threshold: f64,
+    ) -> (bool, i64) {
+        let est = estimate_tokens(messages, tools) + extra_tokens;
         (est as f64 >= window as f64 * threshold, est)
     }
 

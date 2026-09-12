@@ -3,6 +3,7 @@
 //! 与 Python 版保持一致：后端同时托管 `web/dist`，未知路径回落到 `index.html`。
 
 pub mod alerts;
+pub mod attachments;
 pub mod chat;
 pub mod dashboard;
 pub mod enterprises;
@@ -131,6 +132,20 @@ pub fn router(state: AppState) -> Router {
         .route("/tables/{id}/validate", post(tables::validate))
         .route("/tables/{id}/preview", get(tables::preview))
         .route("/tables/{id}/ingest", post(tables::ingest))
+        .route("/tables/{id}/confirm", post(tables::confirm))
+        // 多模态附件与读取
+        .route(
+            "/attachments",
+            get(attachments::list).post(attachments::upload_json),
+        )
+        .route("/attachments/raw", post(attachments::upload_raw))
+        .route("/attachments/multipart", post(attachments::upload_multipart))
+        .route(
+            "/attachments/{id}",
+            get(attachments::get_meta).delete(attachments::delete),
+        )
+        .route("/attachments/{id}/raw", get(attachments::get_raw))
+        .route("/attachments/{id}/read", post(attachments::read_one))
         .with_state(state.clone());
 
     let index = state.cfg.web_dist.join("index.html");

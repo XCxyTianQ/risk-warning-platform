@@ -267,6 +267,45 @@ export interface TableValidation {
   issues: TableIssue[]
 }
 
+// --- 多模态附件与读取 ---
+export interface AttachmentMeta {
+  id: string
+  session_id: string
+  message_id: number | null
+  kind: 'image' | 'table' | 'file' | string
+  filename: string
+  mime: string
+  size: number
+  width: number
+  height: number
+  sha256?: string
+  origin: string
+  reading: Reading | null
+  reading_method: string
+  reading_status: 'none' | 'ok' | 'error' | string
+  preview_url?: string
+  created_at: string
+}
+
+export interface ReadingField {
+  label: string
+  field: string
+  value: number | string
+  unit: string
+  confidence: number
+}
+
+export interface Reading {
+  kind: string
+  method: string
+  confidence: number
+  title: string
+  meta: { unit?: string; scope?: string; period?: string } & Record<string, any>
+  fields: ReadingField[]
+  notes: string[]
+  raw_text: string
+}
+
 export interface AlertRow {  id: number
   enterprise_id: number
   enterprise: string
@@ -381,6 +420,42 @@ export const api = {
     request<FinanceAnalysis>(`/api/finance/${id}/analysis?years=${years}&peers=${peers}`),
   financeReportUrl: (id: number, years = 5) => `/api/finance/${id}/report?years=${years}`,
 
+  // --- 多模态附件（图片/表格文件）与读取 ---
+  uploadAttachment: (body: {
+    filename: string
+    mime: string
+    data_base64: string
+    session_id?: string
+    origin?: string
+  }) =>
+    request<{ ok: boolean; attachment: AttachmentMeta }>('/api/attachments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  attachments: (params: { session_id?: string; limit?: number } = {}) => {
+    const q = new URLSearchParams()
+    if (params.session_id) q.set('session_id', params.session_id)
+    if (params.limit) q.set('limit', String(params.limit))
+    return request<{ total: number; items: AttachmentMeta[] }>(`/api/attachments?${q.toString()}`)
+  },
+  attachment: (id: string) => request<AttachmentMeta>(`/api/attachments/${id}`),
+  attachmentUrl: (id: string) => `/api/attachments/${id}/raw`,
+  readAttachment: (id: string, body: { target?: string; table_id?: number; dry_run?: boolean } = {}) =>
+    request<{
+      ok: boolean
+      attachment: AttachmentMeta
+      reading: Reading
+      fill?: { written?: number; skipped?: any[]; note?: string; error?: string }
+      usage?: Record<string, number>
+    }>(`/api/attachments/${id}/read`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  deleteAttachment: (id: string) =>
+    request<{ deleted: string }>(`/api/attachments/${id}`, { method: 'DELETE' }),
+
   // --- 表格对象（在线创建 / 编辑 / 校验 / 入库） ---
   tables: (params: { enterprise_id?: number; status?: string } = {}) => {
     const q = new URLSearchParams()
@@ -436,6 +511,12 @@ export const api = {
     }),
   validateTable: (id: number) =>
     request<TableValidation>(`/api/tables/${id}/validate`, { method: 'POST' }),
+  confirmTableCells: (id: number, cells: { row: string; col: string }[] = []) =>
+    request<{ ok: boolean; confirmed: number }>(`/api/tables/${id}/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cells }),
+    }),
   previewIngest: (id: number) =>
     request<{
       table_id: number

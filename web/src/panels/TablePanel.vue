@@ -26,6 +26,12 @@ const saving = ref(false)
 const error = ref('')
 const toast = ref('')
 
+// 图片识别导入
+const imageInput = ref<HTMLInputElement | null>(null)
+const reading = ref<import('../api').Reading | null>(null)
+const readingOpen = ref(false)
+const readingBusy = ref(false)
+
 // 新建表
 const newOpen = ref(false)
 const enterprises = ref<{ id: number; name: string }[]>([])
@@ -62,6 +68,18 @@ const statusLabel = computed(() => {
 })
 const errorIssues = computed(() => (validation.value?.issues ?? []).filter((i) => i.level === 'error'))
 const otherIssues = computed(() => (validation.value?.issues ?? []).filter((i) => i.level !== 'error').slice(0, 6))
+/** 待确认的模型识别单元格数量（识别结果默认待确认，确认前禁止入库） */
+const visionCells = computed(() => {
+  const out: { row: string; col: string }[] = []
+  for (const r of rows.value) {
+    for (const [col, cell] of Object.entries(r.cells ?? {})) {
+      if ((cell as any)?.source === 'vision') out.push({ row: r.key, col })
+    }
+  }
+  return out
+})
+const visionCellCount = computed(() => visionCells.value.length)
+const hasVisionCells = computed(() => visionCellCount.value > 0)
 
 function cellText(rowKey: string, colKey: string): string {
   const cell = rows.value.find((r) => r.key === rowKey)?.cells?.[colKey]
@@ -321,6 +339,65 @@ async function remove(id: number) {
   await loadList()
 }
 
+// ---------- 图片识别导入（多模态读取 → 表格） ----------
+
+/** 前端压缩后上传，再让后端读取并填入当前表格 */
+async function importFromImage(file: File) {
+  if (!doc.value) return
+  readingBusy.value = true
+  error.value = ''
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader()
+      fr.onload = () => resolve(String(fr.result))
+      fr.onerror = () => reject(new Error('读取图片失败'))
+      fr.readAsDataURL(file)
+    })
+    const up = await api.uploadAttachment({
+      filename: file.name,
+      mime: file.type || 'image/png',
+      data_base64: dataUrl,
+      origin: 'paste',
+    })
+    const r = await api.readAttachment(up.attachment.id, { target: 'finance', table_id: doc.value.id })
+    reading.value = r.reading
+    readingOpen.value = true
+    const written = r.fill?.written ?? 0
+    toast.value = written
+      ? `已识别并填入 ${written} 个科目（待确认）`
+      : r.fill?.note || '识别完成，但没有可映射的科目'
+    await loadDoc(doc.value.id)
+  } catch (e) {
+    error.value = (e as Error).message
+  } finally {
+    readingBusy.value = false
+  }
+}
+
+function pickImage() {
+  imageInput.value?.click()
+}
+
+function onPickImage(e: Event) {
+  const el = e.target as HTMLInputElement
+  const f = el.files?.[0]
+  if (f) void importFromImage(f)
+  el.value = ''
+}
+
+/** 确认全部模型识别结果（vision → user），确认后才允许入库 */
+async function confirmVision() {
+  if (!doc.value) return
+  try {
+    const r = await api.confirmTableCells(doc.value.id)
+    toast.value = `已确认 ${r.confirmed} 个识别结果`
+    await loadDoc(doc.value.id)
+  } catch (e) {
+    error.value = (e as Error).message
+  }
+  setTimeout(() => (toast.value = ''), 4000)
+}
+
 function openDoc(id: number) {
   openPanel('tables', { props: { tableId: id } })
 }
@@ -404,6 +481,10 @@ onMounted(async () => {
         </div>
         <div class="head-actions">
           <button class="btn ghost small" @click="doc = null; loadList()">← 返回列表</button>
+          <input ref="imageInput" type="file" accept="image/*" hidden @change="onPickImage" />
+          <button class="btn ghost small" :disabled="readingBusy" title="上传财报截图，自动识别并填入本表" @click="pickImage">
+            {{ readingBusy ? '识别中…' : '📷 从图片识别' }}
+          </button>
           <button class="btn ghost small" @click="addRow">＋ 行</button>
           <button class="btn ghost small" @click="addColumn">＋ 期间</button>
           <button class="btn primary small" :disabled="validation?.ok !== true || saving" @click="openPreview">
@@ -449,6 +530,14 @@ onMounted(async () => {
         <div class="banner-head">
           <b>{{ validation.ok ? '✅ 勾稽校验通过' : `⛔ 校验未通过：${validation.errors} 个错误` }}</b>
           <span v-if="validation.warnings" class="muted">· {{ validation.warnings }} 条提示</span>
+          <button
+            v-if="hasVisionCells"
+            class="btn ghost small confirm-btn"
+            title="核对后确认：确认前不允许入库"
+            @click="confirmVision"
+          >
+            ✔ 确认识别结果（{{ visionCellCount }} 格）
+          </button>
         </div>
         <ul v-if="errorIssues.length" class="issues">
           <li v-for="(i, idx) in errorIssues.slice(0, 6)" :key="idx">⛔ {{ i.message }}</li>
@@ -554,6 +643,44 @@ onMounted(async () => {
         <div class="modal-actions">
           <button class="btn ghost small" @click="newOpen = false">取消</button>
           <button class="btn primary small" :disabled="saving" @click="create">创建</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 识别结果弹窗 -->
+    <div v-if="readingOpen" class="modal" @click.self="readingOpen = false">
+      <div class="modal-card">
+        <h3>📷 图片识别结果</h3>
+        <p class="muted small">
+          {{ reading?.title || '（未给出标题）' }}
+          <span v-if="reading?.meta?.unit"> · 单位 {{ reading.meta.unit }}</span>
+          <span v-if="reading?.meta?.period"> · 期间 {{ reading.meta.period }}</span>
+          <span v-if="reading?.confidence"> · 最低置信度 {{ reading.confidence }}</span>
+        </p>
+        <table class="tbl small">
+          <thead><tr><th>科目</th><th>数值</th><th>映射</th><th>置信度</th></tr></thead>
+          <tbody>
+            <tr v-for="(f, i) in reading?.fields ?? []" :key="i">
+              <td>{{ f.label }}</td>
+              <td>{{ f.value }}{{ f.unit }}</td>
+              <td>
+                <span class="badge" :class="{ ok: !!f.field, warn: !f.field }">
+                  {{ f.field || '未映射' }}
+                </span>
+              </td>
+              <td>{{ Math.round((f.confidence ?? 0) * 100) }}%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-if="reading?.notes?.length" class="muted small">
+          不确定点：{{ reading.notes.join('；') }}
+        </p>
+        <p class="muted small">
+          已填入当前期间的对应科目，标记为「待确认」——请在表格中核对数字后点「确认识别结果」，确认前无法入库。
+        </p>
+        <div class="modal-actions">
+          <button class="btn ghost small" @click="readingOpen = false">知道了</button>
+          <button class="btn primary small" @click="readingOpen = false; confirmVision()">全部确认</button>
         </div>
       </div>
     </div>
