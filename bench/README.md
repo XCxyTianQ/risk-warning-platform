@@ -6,8 +6,25 @@
 node bench/run.js                      # 全量（本机有界面时含 GUI 冒烟）
 node bench/run.js --no-gui             # 只跑探针 + 平台指标（CI 默认）
 node bench/run.js --with-reference     # 额外跑金标准比对（Rust vs Python 参考实现）
+node bench/run.js --with-llm           # 额外跑需要真实模型的套件（对话/研判/审批/压缩/多模态）
+node bench/run.js --with-mcp           # 额外跑 MCP 工具装配（本地 mock MCP，端口 8765）
+node bench/run.js --with-llm --with-reference --with-mcp   # 全绿口径：22 套件 / 201 断言
 node bench/run.js --update-baseline    # 全绿时把当前数字固化为基线
 ```
+
+### 真实模型（`--with-llm`）
+
+Key 解析顺序（**不会写进仓库，也不会写进报告**）：
+
+1. 环境变量 `RWP_LLM_API_KEY` / `RWP_LLM_BASE_URL` / `RWP_LLM_MODEL`（CI 用 secret）
+2. Key 文件：`RWP_BENCH_KEY_FILE` → `~/Desktop/KEY.txt` → `~/Desktop/KEY-Linux.txt` → `<repo>/KEY.txt`
+3. 默认：`https://api.deepseek.com/v1` + `deepseek-flash`（原生多模态），可用 `--llm-model` 覆盖
+
+报告里只记录 `baseUrl / model / Key 来源 / Key 掩码`，例如
+`https://api.deepseek.com/v1 · deepseek-flash（Key 来源 C:\Users\...\Desktop\KEY.txt，sk-a39…84cc）`。
+
+> **成本提醒**：`--with-llm` 会产生真实调用。一次全量大约 **40–60 次模型调用 / 约 3 分钟**；
+> 评测后端默认关闭启动预热（`RWP_PREHEAT_ON_STARTUP=false`）。CI 默认**不**开 `--with-llm`。
 
 产物：
 
@@ -26,11 +43,17 @@ node bench/run.js --update-baseline    # 全绿时把当前数字固化为基线
 | `probe-sheets` (21) | 导入：粘贴 TSV / CSV / XLSX / 长表透视 / 单位识别 / 失败路径 | - |
 | `probe-workbook` (19) | 工作簿：空白表默认、自由命名、多表隔离、当前表入库、旧结构归一化 | - |
 | `probe-media` (15) | 多模态附件：上传/去重/读取（跳过真实模型步骤） | - |
-| `probe-finance-golden` | **金标准逐点比对**：KPI / 杜邦 / Z·F·M / 异常 / 对标分位（报告里直接给"比对 N 项、差异 M 处"） | `--with-reference` |
+| `probe-finance-golden` | **金标准逐点比对**：KPI / 杜邦 / Z·F·M / 异常 / 对标分位（272 项 / 0 差异） | `--with-reference` |
 | `probe-datasource-golden` | 数据源刷新结果与 Python 版一致（真实网络，容差 1%） | `--with-reference` + 外网 |
+| `probe-chat-golden` | 对话链路（含工具调用）+ 六维评分 Rust vs Python 逐项 | `--with-llm` + `--with-reference` |
+| `probe-p4` (50) | 技能/预设/插件/设置/MCP 服务端与会话管理金标准比对 | `--with-reference`（MCP 用例需 `--with-mcp`） |
+| `probe-p4-risk` (27) | `run_risk_analysis` 工具 + 按名称研判 + 读侧快照 | `--with-llm` + `--with-reference` |
+| `probe-p4-tools` (15) | 内置 + 手搓插件 + MCP 工具是否真的进入模型 tools 数组、预设白名单是否精确生效 | `--with-mcp`（探针自带 mock LLM） |
+| `probe-compaction` | 小窗口（4k）+ 4 轮对话**必须真的触发压缩**（断言 `compact_count ≥ 1`） | `--with-llm` |
+| `probe-approval` | 写操作授权闭环：SSE 待授权 → 批准 → 工具继续执行 → 数据真的刷新 | `--with-llm` |
 | `smoke-backend` | 后端二进制能启动/建库/健康检查 | - |
-| `smoke-tables` / `smoke-excel` / `smoke-workbook` / `smoke-import` / `smoke-keep-long` / `verify-grid` / `smoke-finance` | Electron 真实界面链路（栅格编辑、工作簿、导入、透视、真事件回归） | 有界面 |
-| `probe-chat-golden` / `probe-p4*` / `probe-compaction` / `probe-approval` / `smoke-chat` / `smoke-media` | 对话/研判/压缩/审批/多模态识别链路 | `--with-llm` + 真实模型配额 |
+| `smoke-tables` / `smoke-excel` / `smoke-workbook` / `smoke-import` / `smoke-keep-long` / `verify-grid` / `smoke-finance` | Electron 真实界面链路（栅格编辑、工作簿、导入、透视、真事件回归、金融面板） | 有界面 |
+| `smoke-chat` / `smoke-media` | 对话工作区（含附图提问）；图片财报 → 结构化字段 → 写入模板表（标待确认）→ 全部确认 → 可入库 | `--with-llm` + 有界面 |
 | 平台指标（内置） | 冷启动中位数、只读接口 p50/p95、前端包体、产物完整性、样例数据灌入 | - |
 
 **跳过 ≠ 通过**：每条跳过都会在报告里写明原因（例如"未开启 `--with-llm`"）。
@@ -76,6 +99,8 @@ node bench/run.js --update-baseline    # 全绿时把当前数字固化为基线
 
 ## 现状与下一步（M1）
 
-- 已纳入：14 个套件（107 条断言）默认执行，8 个需模型/参考环境的套件按开关启用；
+- 已纳入：**22 个套件全部可跑**（`--with-llm --with-reference --with-mcp` 时 22/22 通过、201 条断言）；
+  默认无 Key 环境下 14 个确定性套件执行，8 个按开关启用；
 - 平台指标目前是**本机基线**（空库、5 家样例企业），不是压力测试：数据量放大后要重测并更新门槛；
+- 已知 v1 目标未达标项（只记账不判红）：前端仍是单 chunk（1.37 MB raw / 453 KB gzip）；
 - M1 起补：业务指标基准（`FinRisk-Bench` 的 T1/T3/T4 自动层）、外部基准抽样、报告趋势图。

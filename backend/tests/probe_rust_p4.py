@@ -270,8 +270,11 @@ def main():
     p_tools = req(pp, "/api/mcp", "POST", {"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
     r_names = [t["name"] for t in r_tools[1].get("result", {}).get("tools", [])] if isinstance(r_tools[1], dict) else []
     p_names = [t["name"] for t in p_tools[1].get("result", {}).get("tools", [])] if isinstance(p_tools[1], dict) else []
-    check(f"服务端 tools/list 工具集合一致（{len(p_names)} 个）", r_names == sorted(p_names),
-          f"rust={r_names} py={sorted(p_names)}")
+    # 口径说明：参考实现冻结在 v0.4.4，此后 Rust 侧新增了表格/多模态等工具，
+    # 所以这里校验"Python 的工具全部仍在（无回归）"，而不是要求两侧完全相等。
+    missing = [n for n in p_names if n not in r_names]
+    check(f"服务端 tools/list 覆盖参考实现（py {len(p_names)} 个 ⊂ rust {len(r_names)} 个）", not missing,
+          f"缺失={missing} rust={r_names} py={sorted(p_names)}")
     r_call = req(rp, "/api/mcp", "POST", {
         "jsonrpc": "2.0", "id": 3, "method": "tools/call",
         "params": {"name": "get_platform_overview", "arguments": {}},

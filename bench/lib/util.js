@@ -165,6 +165,27 @@ async function waitForHealth(port, timeoutMs = 30000) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
+/** 等某个端口开始接受连接（用于 mock 服务就绪判断） */
+async function waitForPort(port, timeoutMs = 10000) {
+  const started = Date.now()
+  while (Date.now() - started < timeoutMs) {
+    const ok = await new Promise((resolve) => {
+      const sock = net.connect({ host: '127.0.0.1', port }, () => {
+        sock.destroy()
+        resolve(true)
+      })
+      sock.on('error', () => resolve(false))
+      sock.setTimeout(1000, () => {
+        sock.destroy()
+        resolve(false)
+      })
+    })
+    if (ok) return Date.now() - started
+    await sleep(150)
+  }
+  return null
+}
+
 function sha256File(file) {
   try {
     return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
@@ -293,4 +314,5 @@ module.exports = {
   sha256File,
   sleep,
   waitForHealth,
+  waitForPort,
 }

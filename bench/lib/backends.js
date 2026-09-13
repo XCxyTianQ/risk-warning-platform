@@ -79,7 +79,7 @@ function resolvePython(repo, { needHttpx = false } = {}) {
 }
 
 /** 启动 Python 参考实现（uvicorn），用于金标准逐点比对 */
-async function startReference({ repo, port, dataDir, logFile, pythonBin, readyTimeoutMs = 60000 }) {
+async function startReference({ repo, port, dataDir, logFile, pythonBin, extraEnv = {}, readyTimeoutMs = 60000 }) {
   const { spawn } = require('node:child_process')
   fs.mkdirSync(dataDir, { recursive: true })
   const out = fs.createWriteStream(logFile, { flags: 'w' })
@@ -94,6 +94,7 @@ async function startReference({ repo, port, dataDir, logFile, pythonBin, readyTi
         RWP_SAMPLES_DIR: path.join(repo, 'data', 'samples'),
         PYTHONIOENCODING: 'utf-8',
         PYTHONUTF8: '1',
+        ...extraEnv,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
@@ -126,8 +127,43 @@ function copyGoldenDb(goldenDb, targetDir) {
   return dst
 }
 
+/** 启动一个长期运行的辅助进程（例如 mock MCP 服务），返回句柄与 stop() */
+async function startProcess({ bin, args = [], cwd, env = {}, logFile }) {
+  const { spawn } = require('node:child_process')
+  const out = fs.createWriteStream(logFile, { flags: 'w' })
+  const child = spawn(bin, args, {
+    cwd,
+    env: { ...process.env, ...env },
+    stdio: ['ignore', 'pipe', 'pipe'],
+    windowsHide: true,
+  })
+  child.stdout.pipe(out)
+  child.stderr.pipe(out)
+  let stopped = false
+  return {
+    pid: child.pid,
+    logFile,
+    async stop() {
+      if (stopped) return
+      stopped = true
+      killTree(child.pid)
+      await sleep(120)
+      out.end()
+    },
+  }
+}
+
 function describeBinary(bin) {
   return { path: bin, sizeBytes: fileSize(bin), sha256: sha256File(bin) }
 }
 
-module.exports = { copyGoldenDb, describeBinary, resolveBackendBin, resolvePython, startBackend, startReference, fmtMs }
+module.exports = {
+  copyGoldenDb,
+  describeBinary,
+  resolveBackendBin,
+  resolvePython,
+  startBackend,
+  startProcess,
+  startReference,
+  fmtMs,
+}

@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-13T08:06:11.330Z",
-  "git": "c4a476a",
+  "at": "2026-09-13T08:41:56.949Z",
+  "git": "9b58a90",
   "appVersion": "0.7.1",
-  "checksPassed": 107,
+  "checksPassed": 201,
   "checksFailed": 0,
   "suites": {
     "probe-tables": {
@@ -36,32 +36,32 @@
       "checksFailed": 0
     },
     "probe-chat-golden": {
-      "status": "skipped",
+      "status": "pass",
       "checksPassed": 0,
       "checksFailed": 0
     },
     "probe-p4": {
-      "status": "skipped",
-      "checksPassed": 0,
+      "status": "pass",
+      "checksPassed": 50,
       "checksFailed": 0
     },
     "probe-p4-risk": {
-      "status": "skipped",
-      "checksPassed": 0,
+      "status": "pass",
+      "checksPassed": 27,
       "checksFailed": 0
     },
     "probe-p4-tools": {
-      "status": "skipped",
-      "checksPassed": 0,
+      "status": "pass",
+      "checksPassed": 15,
       "checksFailed": 0
     },
     "probe-compaction": {
-      "status": "skipped",
+      "status": "pass",
       "checksPassed": 0,
       "checksFailed": 0
     },
     "probe-approval": {
-      "status": "skipped",
+      "status": "pass",
       "checksPassed": 0,
       "checksFailed": 0
     },
@@ -106,21 +106,21 @@
       "checksFailed": 0
     },
     "smoke-chat": {
-      "status": "skipped",
-      "checksPassed": 0,
+      "status": "pass",
+      "checksPassed": 1,
       "checksFailed": 0
     },
     "smoke-media": {
-      "status": "skipped",
-      "checksPassed": 0,
+      "status": "pass",
+      "checksPassed": 1,
       "checksFailed": 0
     }
   },
   "metrics": {
-    "coldStartMedianMs": 125,
+    "coldStartMedianMs": 127,
     "apiP95Max": 1,
     "jsRawBytes": 1401108,
     "jsFiles": 1,
-    "durationMs": 182770
+    "durationMs": 368586
   }
 }

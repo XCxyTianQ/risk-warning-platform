@@ -170,6 +170,10 @@ function toMarkdown(report) {
     const metricText = [
       m.comparisonPoints ? `金标准比对 ${m.comparisonPoints} 项 / 差异 ${m.diffs ?? 0}` : '',
       m.financeTolerancePct ? `数值容差 ${m.financeTolerancePct}%` : '',
+      typeof m.compactCount === 'number' ? `压缩 ${m.compactCount} 次` : '',
+      typeof m.llmCalls === 'number' ? `LLM 调用 ${m.llmCalls}` : '',
+      typeof m.cacheHitRate === 'number' ? `缓存命中 ${(m.cacheHitRate * 100).toFixed(1)}%` : '',
+      typeof m.agentSteps === 'number' ? `步数 ${m.agentSteps}` : '',
     ]
       .filter(Boolean)
       .join('，')
@@ -243,6 +247,7 @@ function toMarkdown(report) {
   L.push(`python    : ${report.env.python || '-'}`)
   L.push(`rust      : ${report.env.rustc || '-'}`)
   L.push(`后端二进制 : ${report.env.backendBinary.path} (${(report.env.backendBinary.sizeBytes / 1048576).toFixed(1)} MB, sha256 ${String(report.env.backendBinary.sha256).slice(0, 12)}…)`)
+  L.push(`真实模型  : ${report.env.llm ? `${report.env.llm.baseUrl} · ${report.env.llm.model}（Key 来源 ${report.env.llm.keySource}，${report.env.llm.keyMask}）` : '未启用'}`)
   L.push('```')
   L.push('')
   L.push('## 复现')

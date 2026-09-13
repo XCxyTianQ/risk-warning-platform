@@ -33,8 +33,10 @@ const {
   run,
   sha256File,
   sleep,
+  waitForPort,
 } = require('./lib/util')
-const { copyGoldenDb, describeBinary, resolveBackendBin, resolvePython, startBackend, startReference } = require('./lib/backends')
+const { copyGoldenDb, describeBinary, resolveBackendBin, resolvePython, startBackend, startProcess, startReference } = require('./lib/backends')
+const { describeLlm, llmEnv, resolveLlm } = require('./lib/llm')
 const { collectPlatformMetrics } = require('./lib/platform')
 const { HARNESS, compare, loadBaseline, saveBaseline, summarize, toMarkdown, writeReports } = require('./lib/report')
 const { probes, smokes, EXE } = require('./suites')
@@ -60,6 +62,7 @@ const opts = {
   withGui: hasFlag('--with-gui'),
   withLlm: hasFlag('--with-llm'),
   withReference: hasFlag('--with-reference'),
+  withMcp: hasFlag('--with-mcp'),
   only: listOf('--only'),
   skip: listOf('--skip'),
   updateBaseline: hasFlag('--update-baseline'),
@@ -70,6 +73,7 @@ const opts = {
   reportDir: path.resolve(REPO, argOf('--report-dir', 'bench/report')),
   dataDir: argOf('--data-dir', ''),
   goldenDb: argOf('--golden-db', 'E:/IUC/rwp-golden/platform.db'),
+  llmModel: argOf('--llm-model', ''),
   timeoutScale: Number(argOf('--timeout-scale', '1')) || 1,
   argsRaw: argv.join(' '),
 }
@@ -133,15 +137,28 @@ async function main() {
   say(`Python：${python ? python.bin : '未找到'}${pythonHttpx ? '' : '（无 httpx：金标准比对将跳过）'}`)
 
   // ---- 可用性判定（不满足就跳过，并写明原因） ----
+  // 真实模型：--with-llm 时解析 Key（环境变量 → 桌面 KEY.txt），并注入后端
+  const llm = opts.withLlm ? resolveLlm(REPO, { model: opts.llmModel }) : null
+  const llmExtraEnv = llm && llm.ready ? llmEnv(llm) : {}
+  if (opts.withLlm) {
+    say(`真实模型：${llm.ready ? `${llm.baseUrl} · ${llm.model} · Key 来源 ${llm.keySource}（${llm.mask}）` : '未找到 API Key'}`)
+  }
+
   const availability = {}
   availability.gui = opts.noGui
     ? { ok: false, reason: process.env.CI ? 'CI 环境（如需开启：--with-gui）' : '已指定 --no-gui' }
     : { ok: fs.existsSync(electron), reason: fs.existsSync(electron) ? '' : `未找到 Electron：${electron}` }
   availability.image = { ok: fs.existsSync(path.join(REPO, 'desktop', 'resources', 'samples', 'finance_table_demo.png')), reason: '缺少测试图片' }
-  availability.llm = opts.withLlm
-    ? { ok: true, reason: '' }
-    : { ok: false, reason: '未开启 --with-llm（需要真实模型配额）' }
-  availability.mcp = { ok: false, reason: 'M1：需要 mock MCP 服务，暂未纳入' }
+  availability.llm = !opts.withLlm
+    ? { ok: false, reason: '未开启 --with-llm（需要真实模型配额）' }
+    : llm.ready
+      ? { ok: true, reason: '' }
+      : { ok: false, reason: `未找到 API Key（RWP_LLM_API_KEY 或 ${llm.tried[0]}）` }
+  availability.mcp = !opts.withMcp
+    ? { ok: false, reason: '未开启 --with-mcp（需要本地 mock MCP 服务）' }
+    : fs.existsSync(path.join(REPO, 'server', 'tests', 'mock_mcp_server.py')) && pythonHttpx
+      ? { ok: true, reason: '' }
+      : { ok: false, reason: '缺少 server/tests/mock_mcp_server.py 或带 httpx 的 Python' }
   availability.reference = opts.withReference
     ? { ok: true, reason: '' }
     : { ok: false, reason: '未开启 --with-reference（需要 Python 参考实现 + 金标准库）' }
@@ -152,6 +169,7 @@ async function main() {
   let mainBackend = null
   let referenceHandle = null
   let parityBackend = null
+  let mcpHandle = null
 
   try {
     say(`\n[1/3] 启动隔离后端（端口 ${mainPort}，数据目录 ${tmpDir}）…`)
@@ -161,6 +179,7 @@ async function main() {
       dataDir: path.join(tmpDir, 'rust-main'),
       webDist,
       samplesDir,
+      env: llmExtraEnv,
       logFile: path.join(logsDir, 'backend-main.log'),
     })
     if (mainBackend.readyMs === null) {
@@ -194,6 +213,7 @@ async function main() {
           dataDir: pyDir,
           logFile: path.join(logsDir, 'reference-python.log'),
           pythonBin: pythonHttpx.bin,
+          extraEnv: llmExtraEnv,
         })
         parityBackend = await startBackend({
           bin: backend.bin,
@@ -201,6 +221,7 @@ async function main() {
           dataDir: parityDir,
           webDist,
           samplesDir,
+          env: llmExtraEnv,
           logFile: path.join(logsDir, 'backend-parity.log'),
         })
         if (referenceHandle.readyMs === null || parityBackend.readyMs === null) {
@@ -219,6 +240,38 @@ async function main() {
     platform = await collectPlatformMetrics({ repo: REPO, bin: backend.bin, mainPort, dir: path.join(tmpDir, 'platform'), quiet: opts.quiet })
 
     // ---- 组装套件执行上下文 ----
+    // mock MCP（可选）：给 p4-tools 这类"工具装配"套件用（该探针自己会起 mock LLM）
+    let mcpUrl = ''
+    if (availability.mcp.ok) {
+      // probe-p4 里的 MCP 用例写死了 127.0.0.1:8765 → 默认就起在 8765，被占用再退到空闲端口
+      const preferred = Number(process.env.RWP_BENCH_MCP_PORT || 8765)
+      let mcpPort = preferred
+      mcpUrl = `http://127.0.0.1:${mcpPort}/mcp`
+      mcpHandle = await startProcess({
+        bin: pythonHttpx.bin,
+        args: [path.join(REPO, 'server', 'tests', 'mock_mcp_server.py'), '--port', String(mcpPort)],
+        cwd: path.join(REPO, 'server'),
+        env: { PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' },
+        logFile: path.join(logsDir, 'mock-mcp.log'),
+      })
+      let up = await waitForPort(mcpPort, 8000)
+      if (!up) {
+        await mcpHandle.stop()
+        mcpPort = await freePort()
+        mcpUrl = `http://127.0.0.1:${mcpPort}/mcp`
+        mcpHandle = await startProcess({
+          bin: pythonHttpx.bin,
+          args: [path.join(REPO, 'server', 'tests', 'mock_mcp_server.py'), '--port', String(mcpPort)],
+          cwd: path.join(REPO, 'server'),
+          env: { PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' },
+          logFile: path.join(logsDir, 'mock-mcp.log'),
+        })
+        up = await waitForPort(mcpPort, 8000)
+      }
+      say(`      mock MCP：${mcpUrl}（${up ? '已就绪' : '未就绪'}）`)
+      if (!up) availability.mcp = { ok: false, reason: 'mock MCP 未能在 8s 内就绪' }
+    }
+
     const ctx = {
       repo: REPO,
       port: String(mainPort),
@@ -228,6 +281,8 @@ async function main() {
       exe: backend.bin,
       python: python ? python.bin : 'python',
       electron,
+      mcpUrl,
+      altPort: String(await freePort()),
       ...parityCtx,
     }
 
@@ -270,8 +325,39 @@ async function main() {
 
       const binKey = suite.bin
       const bin = binKey === 'python' ? (python ? python.bin : 'python') : binKey === 'python-httpx' ? pythonHttpx.bin : binKey === 'electron' ? electron : binKey
-      const args = (suite.args || []).map((a) => resolveTokens(a, ctx))
-      const env = Object.fromEntries(Object.entries(suite.env || {}).map(([k, v]) => [k, resolveTokens(v, ctx)]))
+      // 少数套件需要特殊的后端配置（例如把上下文窗口压小以真正触发压缩）→ 为它单独起一个后端
+      let suitePort = mainPort
+      let dedicated = null
+      if (suite.backendEnv) {
+        suitePort = await freePort()
+        dedicated = await startBackend({
+          bin: backend.bin,
+          port: suitePort,
+          dataDir: path.join(tmpDir, `backend-${suite.id}`),
+          webDist,
+          samplesDir,
+          env: { ...llmExtraEnv, ...suite.backendEnv },
+          logFile: path.join(logsDir, `backend-${suite.id}.log`),
+        })
+        if (dedicated.readyMs === null) {
+          results.push({
+            id: suite.id,
+            title: suite.title,
+            kind: suite.kind,
+            tier: suite.tier || 'gate',
+            status: 'error',
+            reason: '专用后端未能就绪',
+            durationMs: 0,
+            checksPassed: 0,
+            checksFailed: 0,
+          })
+          await dedicated.stop()
+          continue
+        }
+      }
+      const suiteCtx = { ...ctx, port: String(suitePort), url: `http://127.0.0.1:${suitePort}/` }
+      const args = (suite.args || []).map((a) => resolveTokens(a, suiteCtx))
+      const env = Object.fromEntries(Object.entries(suite.env || {}).map(([k, v]) => [k, resolveTokens(v, suiteCtx)]))
       // Python 在 Windows 上默认按控制台代码页输出（GBK），日志会变乱码、断言也解析不出来
       if (binKey.startsWith('python')) {
         env.PYTHONIOENCODING = 'utf-8'
@@ -283,6 +369,7 @@ async function main() {
       const startedSuite = Date.now()
       const res = await run({ bin, args, cwd: REPO, env, timeoutMs, logFile, quiet: true })
       const parsed = parseSuiteResult(suite, res)
+      if (dedicated) await dedicated.stop()
       results.push({
         id: suite.id,
         title: suite.title,
@@ -316,6 +403,7 @@ async function main() {
       appVersion: JSON.parse(fs.readFileSync(path.join(REPO, 'desktop', 'package.json'), 'utf8')).version,
       backendBinary: { kind: backend.kind, ...describeBinary(backend.bin) },
       webDist: path.relative(REPO, webDist),
+      llm: llm && opts.withLlm ? describeLlm(llm) : null,
     }
 
     const report = {
@@ -375,6 +463,7 @@ async function main() {
     if (mainBackend) await mainBackend.stop()
     if (parityBackend) await parityBackend.stop()
     if (referenceHandle) await referenceHandle.stop()
+    if (mcpHandle) await mcpHandle.stop()
     if (!opts.keepData) {
       await sleep(150)
       rmrf(tmpDir)
@@ -400,6 +489,15 @@ function extractMetrics(text) {
   if (toler) m.financeTolerancePct = Number(toler[1])
   const news = text.match(/新闻条数：Rust=(\d+)\s+Python=(\d+)/)
   if (news) m.newsRust = Number(news[1])
+  // 对话链路的量化痕迹：压缩次数、缓存命中率、LLM 调用轮数
+  const compact = text.match(/"compact_count":\s*(\d+)/)
+  if (compact) m.compactCount = Number(compact[1])
+  const cache = text.match(/"cache_hit_rate":\s*([\d.]+)/)
+  if (cache) m.cacheHitRate = Number(cache[1])
+  const calls = text.match(/"llm_calls":\s*(\d+)/)
+  if (calls) m.llmCalls = Number(calls[1])
+  const steps = text.match(/steps=(\d+)/)
+  if (steps) m.agentSteps = Number(steps[1])
   return m
 }
 
@@ -431,6 +529,13 @@ function parseSuiteResult(suite, res) {
   } else if (metrics.diffs > 0) {
     status = 'fail'
     reason = `金标准比对存在 ${metrics.diffs} 处差异`
+  } else if (suite.rejectOutput && new RegExp(suite.rejectOutput).test(text)) {
+    // 有些套件"跑完不报错"并不代表测到了东西（例：压缩根本没触发）→ 用反例断言兜住
+    status = 'fail'
+    reason = suite.rejectReason || `命中了不应该出现的输出：${suite.rejectOutput}`
+  } else if (suite.expectOutput && !new RegExp(suite.expectOutput).test(text)) {
+    status = 'fail'
+    reason = suite.expectReason || `输出中缺少期望内容：${suite.expectOutput}`
   }
 
   // 冒烟没有细粒度断言，整条链路算 1 条：让总数能反映"验证面"而不只是探针
