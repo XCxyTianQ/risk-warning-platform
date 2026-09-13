@@ -167,6 +167,11 @@ async function main() {
   availability.golden = fs.existsSync(legacyFixtureSql)
     ? { ok: true, reason: '' }
     : { ok: false, reason: `缺少旧库夹具：${legacyFixtureSql}` }
+  // T5 需要先采数据集（原始数据不入库，可重抓）
+  const datasetPanel = path.join(REPO, 'bench', 'dataset', 'out', 'panel.jsonl')
+  availability.dataset = fs.existsSync(datasetPanel)
+    ? { ok: true, reason: '' }
+    : { ok: false, reason: '未采集 T5 数据集：先跑 node bench/dataset/fetch.js（见 bench/dataset/README.md）' }
 
   // ---- 平台指标（在干净库上先测，保证可比性） ----
   let platform = { metrics: {}, checks: [] }
@@ -542,6 +547,16 @@ function extractMetrics(text) {
       if (typeof o.t1_f1 === 'number') m.t1F1 = o.t1_f1
       if (typeof o.t3_recall === 'number') m.t3Recall = o.t3_recall
       if (typeof o.t4_agreement === 'number') m.t4Agreement = o.t4_agreement
+    } catch {}
+  }
+  // T5 风险预警层的汇总行
+  const t5 = text.match(/T5:\s*(\{[^\n]*\})/)
+  if (t5) {
+    try {
+      const o = JSON.parse(t5[1])
+      if (typeof o.auc === 'number') m.t5Auc = o.auc
+      if (typeof o.ap === 'number') m.t5Ap = o.ap
+      if (typeof o.median_lead_days === 'number') m.t5LeadDays = o.median_lead_days
     } catch {}
   }
   return m

@@ -36,3 +36,8 @@ backend/target/
 
 # ===== 评测产物（报告不入库，基线入库存）=====
 bench/report/
+
+# ===== T5 数据集原始产物（公开数据、可重抓；入库的只有采集脚本与 t5-report.json）=====
+bench/dataset/out/*.jsonl
+bench/dataset/out/cohort.json
+bench/dataset/out/manifest.json

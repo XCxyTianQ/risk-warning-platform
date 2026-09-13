@@ -177,6 +177,8 @@ function toMarkdown(report) {
       typeof m.t1F1 === 'number' ? `T1 F1 ${(m.t1F1 * 100).toFixed(1)}%` : '',
       typeof m.t3Recall === 'number' ? `T3 召回 ${(m.t3Recall * 100).toFixed(1)}%` : '',
       typeof m.t4Agreement === 'number' ? `T4 一致 ${(m.t4Agreement * 100).toFixed(1)}%` : '',
+      typeof m.t5Auc === 'number' ? `T5 AUC ${m.t5Auc.toFixed(3)}/AP ${(m.t5Ap ?? 0).toFixed(3)}` : '',
+      typeof m.t5LeadDays === 'number' ? `预警期中位 ${m.t5LeadDays} 天` : '',
     ]
       .filter(Boolean)
       .join('，')

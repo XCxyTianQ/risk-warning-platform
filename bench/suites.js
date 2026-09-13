@@ -64,6 +64,18 @@ const probes = [
     requires: ['image'],
   },
   {
+    id: 't5-warning',
+    title: 'T5 风险预警层：point-in-time 样本 + 时间切分（ROC-AUC / PR-AUC / Top-K / 提前预警期）',
+    kind: 'smoke',
+    bin: 'node',
+    args: ['{repo}/bench/dataset/t5.js', '--data', '{repo}/bench/dataset/out'],
+    parse: 'smoke',
+    expectOutput: 'T5: \\{',
+    expectReason: 'T5 打分器没有输出汇总行（数据集缺失或脚本失败）',
+    timeoutMs: 300000,
+    requires: ['dataset'],
+  },
+  {
     id: 'finrisk-bench',
     title: 'FinRisk-Bench v0.1 能力基准：T1 抽取准确率 / T3 勾稽检出 / T4 指标正确性（真值由生成过程给出）',
     kind: 'smoke',

@@ -1,0 +1,346 @@
+{
+  "generatedAt": "2026-09-13T12:08:12.873Z",
+  "target": "risk_warning_next_year",
+  "targetLabel": "未来 12 个月被实施退市风险警示/终止上市",
+  "data": {
+    "panel": 11600,
+    "events": 8894,
+    "collectedAt": "2026-09-13T12:03:07.207Z"
+  },
+  "cutoffs": [
+    "2017-04-30",
+    "2018-04-30",
+    "2019-04-30",
+    "2020-04-30",
+    "2021-04-30",
+    "2022-04-30",
+    "2023-04-30",
+    "2024-04-30"
+  ],
+  "horizonDays": 365,
+  "split": {
+    "trainUntil": "2023-12-31",
+    "testFrom": "2024-01-01",
+    "train": 1270,
+    "test": 190
+  },
+  "samples": 1460,
+  "positiveRate": 0.0273972602739726,
+  "skipped": {
+    "noFinance": 60,
+    "noFeatures": 0
+  },
+  "metrics": {
+    "predictor": "baseline:financial-distress-rule",
+    "rocAuc": 0.525749063670412,
+    "prAuc": 0.0775761281028167,
+    "topK": {
+      "k": 19,
+      "precision": 0.10526315789473684,
+      "recall": 0.16666666666666666,
+      "hits": 2,
+      "totalPos": 12
+    },
+    "medianLeadDays": 266,
+    "testBaseRate": 0.06315789473684211,
+    "testPositiveByType": {
+      "delisting_risk": 12
+    }
+  },
+  "examples": {
+    "topScored": [
+      {
+        "code": "600322",
+        "name": "津投城开",
+        "cutoff": "2024-04-30",
+        "score": 3.5,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "603557",
+        "name": "*ST起步",
+        "cutoff": "2024-04-30",
+        "score": 3.5,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "600036",
+        "name": "招商银行",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "600340",
+        "name": "*ST华幸",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "600476",
+        "name": "*ST湘邮",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "600581",
+        "name": "*ST八钢",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "603021",
+        "name": "*ST华鹏",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "603843",
+        "name": "*ST正平",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 1,
+        "event": "delisting_risk",
+        "leadDays": 364
+      },
+      {
+        "code": "603959",
+        "name": "ST百利",
+        "cutoff": "2024-04-30",
+        "score": 3,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
+        "code": "600180",
+        "name": "*ST瑞茂",
+        "cutoff": "2024-04-30",
+        "score": 2.5,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      }
+    ],
+    "missedHighRisk": [
+      {
+        "code": "600243",
+        "name": "*ST海华",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 262,
+        "features": {
+          "debt_ratio": 0.2729929948200858,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.26619689831583754,
+          "receivable_ratio": 0.06036923238783405,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "600289",
+        "name": "ST信通",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 31,
+        "features": {
+          "debt_ratio": 0.6691342052790349,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.012402662380608925,
+          "receivable_ratio": 0.07486695011836117,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "600355",
+        "name": "*ST精伦",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 261,
+        "features": {
+          "debt_ratio": 0.42393352392239503,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.17152077156628048,
+          "receivable_ratio": 0.06062558034768427,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "600381",
+        "name": "*ST春天",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 360,
+        "features": {
+          "debt_ratio": 0.04176233062622813,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.1960148399338971,
+          "receivable_ratio": 0.02077676861176741,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "603377",
+        "name": "ST东时",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 56,
+        "features": {
+          "debt_ratio": 0.577928822680642,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.012172134212642039,
+          "receivable_ratio": 0.004489706807682118,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "603398",
+        "name": "*ST沐邦",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 364,
+        "features": {
+          "debt_ratio": 0.6167368444653828,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.0616464395625549,
+          "receivable_ratio": 0.030915854551953486,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "603608",
+        "name": "天创时尚",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 37,
+        "features": {
+          "debt_ratio": 0.3919563679564585,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.15329965073713736,
+          "receivable_ratio": 0.05441042558662231,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "603789",
+        "name": "ST星农",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 268,
+        "features": {
+          "debt_ratio": 0.6577493920826663,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.19658628302274606,
+          "receivable_ratio": 0.17575862197021952,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "603838",
+        "name": "*ST四通",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 266,
+        "features": {
+          "debt_ratio": 0.05361295560731575,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.11014092575840125,
+          "receivable_ratio": 0.06801026224582418,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "600753",
+        "name": "ST海钦",
+        "cutoff": "2024-04-30",
+        "score": 0.5,
+        "event": "delisting_risk",
+        "leadDays": 268,
+        "features": {
+          "debt_ratio": 0.4531194008179302,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.005098928879922106,
+          "receivable_ratio": 0.3419748313132902,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      }
+    ]
+  }
+}
