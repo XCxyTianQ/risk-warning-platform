@@ -64,6 +64,20 @@ const probes = [
     requires: ['image'],
   },
   {
+    id: 'finrisk-bench',
+    title: 'FinRisk-Bench v0.1 能力基准：T1 抽取准确率 / T3 勾稽检出 / T4 指标正确性（真值由生成过程给出）',
+    kind: 'smoke',
+    bin: 'node',
+    // 用旧库夹具单独起一个后端：既不污染主库，又顺带走一遍旧库升级路径
+    dataDir: 'golden',
+    args: ['{repo}/bench/benchmark/run.js', '--port', '{port}', '--cases', '12'],
+    parse: 'smoke',
+    expectOutput: 'FINRISK: \\{',
+    expectReason: '基准脚本没有输出 FINRISK 汇总行（可能中途失败）',
+    timeoutMs: 600000,
+    requires: ['golden'],
+  },
+  {
     id: 'legacy-db-compat',
     title: '旧数据目录兼容：用"升级前"的库跑写路径（会话/表格/企业建档）',
     kind: 'probe',

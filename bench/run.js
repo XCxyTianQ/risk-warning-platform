@@ -534,6 +534,16 @@ function extractMetrics(text) {
   if (calls) m.llmCalls = Number(calls[1])
   const steps = text.match(/steps=(\d+)/)
   if (steps) m.agentSteps = Number(steps[1])
+  // FinRisk-Bench 能力基准的汇总行
+  const finrisk = text.match(/FINRISK:\s*(\{[^\n]*\})/)
+  if (finrisk) {
+    try {
+      const o = JSON.parse(finrisk[1])
+      if (typeof o.t1_f1 === 'number') m.t1F1 = o.t1_f1
+      if (typeof o.t3_recall === 'number') m.t3Recall = o.t3_recall
+      if (typeof o.t4_agreement === 'number') m.t4Agreement = o.t4_agreement
+    } catch {}
+  }
   return m
 }
 

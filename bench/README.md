@@ -2,13 +2,44 @@
 
 一句话：**一条命令，把所有验证资产跑一遍，产出可归档、可对比的数字。**
 
+> 注意区分三件事（报告里也是分开的）：
+> 1. **回归测试**（探针/冒烟：功能有没有坏）——`probe-*` / `smoke-*` / `verify-grid`；
+> 2. **工程指标**（冷启动、接口时延、包体、产物完整性）——平台指标；
+> 3. **能力基准**（读得准不准、能不能发现错、算得对不对）——`finrisk-bench`（见下节）。
+
+## FinRisk-Bench（能力基准）
+
+```bash
+# 单跑基准（会自己起一个独立后端，用旧库夹具，不污染主库）
+node bench/run.js --only finrisk-bench
+# 直接跑（已有后端时）
+node bench/benchmark/run.js --port 8266 --cases 12 --seed 20260913
+```
+
+产物：`bench/report/finrisk-bench.md` / `.json`（另有一行 `FINRISK: {...}` 汇总进入主报告）。
+
+| 层 | 测什么 | 判定方式 | 当前门槛 |
+|---|---|---|---|
+| **T1 结构化抽取** | 宽表文本 → 平台导入 → 逐格比对 | 真值由生成过程给出（含千分位/括号负数/全角空格/单位行等脏格式） | 字段 F1 ≥ 0.98、完全命中率 ≥ 0.95 |
+| **T3 勾稽校验** | 注入 4 类已知缺陷（不平/缺权益/比率不一致/缺期间） | 期望被拦住（导入拒绝或校验报错），干净样本不得误报 | 召回 ≥ 0.95、误报率 ≤ 0.05 |
+| **T4 指标正确性** | 合成财报入库 → 与**独立重算**的 KPI 比对 | 资产负债率/毛利率/净利率/ROE/ROA/流动比率/周转率/权益乘数，相对误差 ≤ 0.5% | 一致率 ≥ 0.95 |
+
+**边界（必须说清楚）**：
+- v0.1 只覆盖**自动判定层**。`T2 图片读取`、`T5 风险标签与预警`、`T6 Agent 工具链`、`T7 报告质量`尚未纳入——
+  T2/T6 需要真实模型与稳定判定规则，**T5 需要真实风险事件标签（属于数据管道工作）**；
+- 样本是"合成的真实形状"：满足会计恒等式、带脏格式，但**不能替代真实上市公司财报**；
+- 该基准测"读得准、能发现错、算得对"，**不测**"预警是否真有价值"——后者必须靠 T5 与事后事件对齐。
+
+## 用法
+
 ```bash
 node bench/run.js                      # 全量（本机有界面时含 GUI 冒烟）
 node bench/run.js --no-gui             # 只跑探针 + 平台指标（CI 默认）
 node bench/run.js --with-reference     # 额外跑金标准比对（Rust vs Python 参考实现）
 node bench/run.js --with-llm           # 额外跑需要真实模型的套件（对话/研判/审批/压缩/多模态）
 node bench/run.js --with-mcp           # 额外跑 MCP 工具装配（本地 mock MCP，端口 8765）
-node bench/run.js --with-llm --with-reference --with-mcp   # 全绿口径：22 套件 / 201 断言
+node bench/run.js --with-llm --with-reference --with-mcp   # 全绿口径（当前：23 套件 / 214 断言）
+node bench/run.js --only finrisk-bench # 只跑能力基准
 node bench/run.js --update-baseline    # 全绿时把当前数字固化为基线
 ```
 
@@ -43,6 +74,7 @@ Key 解析顺序（**不会写进仓库，也不会写进报告**）：
 | `probe-sheets` (21) | 导入：粘贴 TSV / CSV / XLSX / 长表透视 / 单位识别 / 失败路径 | - |
 | `probe-workbook` (19) | 工作簿：空白表默认、自由命名、多表隔离、当前表入库、旧结构归一化 | - |
 | `probe-media` (15) | 多模态附件：上传/去重/读取（跳过真实模型步骤） | - |
+| `finrisk-bench` | **能力基准**：T1 抽取 F1 / T3 勾稽检出率与误报率 / T4 指标一致率（详见上节） | - |
 | `legacy-db-compat` (13) | **旧数据目录兼容**：用 Python 时代 schema 的夹具建库，验证升级后会话/表格/企业建档等写路径仍可用 | - |
 | `probe-finance-golden` | **金标准逐点比对**：KPI / 杜邦 / Z·F·M / 异常 / 对标分位（272 项 / 0 差异） | `--with-reference` |
 | `probe-datasource-golden` | 数据源刷新结果与 Python 版一致（真实网络，容差 1%） | `--with-reference` + 外网 |

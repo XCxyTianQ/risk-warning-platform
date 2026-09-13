@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-13T09:01:16.256Z",
-  "git": "0e9868c",
-  "appVersion": "0.7.1",
-  "checksPassed": 214,
+  "at": "2026-09-13T11:13:53.174Z",
+  "git": "4c38b7a",
+  "appVersion": "0.7.2",
+  "checksPassed": 215,
   "checksFailed": 0,
   "suites": {
     "probe-tables": {
@@ -23,6 +23,11 @@
     "probe-media": {
       "status": "pass",
       "checksPassed": 15,
+      "checksFailed": 0
+    },
+    "finrisk-bench": {
+      "status": "pass",
+      "checksPassed": 1,
       "checksFailed": 0
     },
     "legacy-db-compat": {
@@ -122,10 +127,10 @@
     }
   },
   "metrics": {
-    "coldStartMedianMs": 134,
-    "apiP95Max": 1,
+    "coldStartMedianMs": 136,
+    "apiP95Max": 2,
     "jsRawBytes": 1401108,
     "jsFiles": 1,
-    "durationMs": 343227
+    "durationMs": 341245
   }
 }
