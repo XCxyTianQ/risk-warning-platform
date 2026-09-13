@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T16:36:13.639Z",
+  "generatedAt": "2026-09-13T23:42:06.004Z",
   "target": "risk_warning_next_year",
   "targetLabel": "未来 12 个月被实施退市风险警示/终止上市",
   "data": {
@@ -32,6 +32,32 @@
   },
   "metrics": {
     "randomBaselinePrAuc": 0.04066073697585769,
+    "strata": {
+      "with_nonfinancial": {
+        "n": 255,
+        "positives": 25,
+        "baseline_rule": {
+          "rocAuc": 0.593304347826087,
+          "prAuc": 0.2593141342490888
+        },
+        "platform_composite": {
+          "rocAuc": 0.7127826086956521,
+          "prAuc": 0.2719000047826096
+        }
+      },
+      "finance_only": {
+        "n": 532,
+        "positives": 7,
+        "baseline_rule": {
+          "rocAuc": 0.6395918367346939,
+          "prAuc": 0.16724657783869573
+        },
+        "platform_composite": {
+          "rocAuc": 0.5303401360544218,
+          "prAuc": 0.09260688165389999
+        }
+      }
+    },
     "predictors": {
       "baseline_rule": {
         "label": "财务困境规则分（基线）",
@@ -52,13 +78,13 @@
         "label": "平台六维综合风险信号（100-综合分）",
         "n": 787,
         "positives": 32,
-        "rocAuc": 0.6646316225165563,
-        "prAuc": 0.16124751379387672,
+        "rocAuc": 0.7687086092715232,
+        "prAuc": 0.2025979108468086,
         "topK": {
           "k": 79,
-          "precision": 0.11392405063291139,
-          "recall": 0.28125,
-          "hits": 9,
+          "precision": 0.12658227848101267,
+          "recall": 0.3125,
+          "hits": 10,
           "totalPos": 32
         },
         "medianLeadDays": 269
@@ -97,8 +123,8 @@
     "bestByAuc": "platform_composite",
     "baselineRocAuc": 0.6210057947019868,
     "baselinePrAuc": 0.19174244446368457,
-    "platformCompositeRocAuc": 0.6646316225165563,
-    "platformCompositePrAuc": 0.16124751379387672
+    "platformCompositeRocAuc": 0.7687086092715232,
+    "platformCompositePrAuc": 0.2025979108468086
   },
   "replay": {
     "rows": 6728,

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T16:36:06.355Z",
+  "generatedAt": "2026-09-13T23:41:52.368Z",
   "target": "any_high_event_next_year",
   "targetLabel": "未来 12 个月出现任一高危事件",
   "data": {
@@ -32,6 +32,32 @@
   },
   "metrics": {
     "randomBaselinePrAuc": 0.11435832274459974,
+    "strata": {
+      "with_nonfinancial": {
+        "n": 255,
+        "positives": 63,
+        "baseline_rule": {
+          "rocAuc": 0.5932953042328042,
+          "prAuc": 0.42087968941594645
+        },
+        "platform_composite": {
+          "rocAuc": 0.6722883597883598,
+          "prAuc": 0.4748658861830885
+        }
+      },
+      "finance_only": {
+        "n": 532,
+        "positives": 27,
+        "baseline_rule": {
+          "rocAuc": 0.5367436743674368,
+          "prAuc": 0.12233351113325387
+        },
+        "platform_composite": {
+          "rocAuc": 0.49904657132379904,
+          "prAuc": 0.09734259397090736
+        }
+      }
+    },
     "predictors": {
       "baseline_rule": {
         "label": "财务困境规则分（基线）",
@@ -52,13 +78,13 @@
         "label": "平台六维综合风险信号（100-综合分）",
         "n": 787,
         "positives": 90,
-        "rocAuc": 0.6161406025824964,
-        "prAuc": 0.24615894366540045,
+        "rocAuc": 0.7127211860353898,
+        "prAuc": 0.33049676573690756,
         "topK": {
           "k": 79,
-          "precision": 0.25316455696202533,
-          "recall": 0.2222222222222222,
-          "hits": 20,
+          "precision": 0.3037974683544304,
+          "recall": 0.26666666666666666,
+          "hits": 24,
           "totalPos": 90
         },
         "medianLeadDays": 259
@@ -97,8 +123,8 @@
     "bestByAuc": "platform_composite",
     "baselineRocAuc": 0.587031723258409,
     "baselinePrAuc": 0.24371518194276354,
-    "platformCompositeRocAuc": 0.6161406025824964,
-    "platformCompositePrAuc": 0.24615894366540045
+    "platformCompositeRocAuc": 0.7127211860353898,
+    "platformCompositePrAuc": 0.33049676573690756
   },
   "replay": {
     "rows": 6728,

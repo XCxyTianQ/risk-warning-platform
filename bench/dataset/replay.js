@@ -84,8 +84,8 @@ function toFinanceRow(code, enterpriseId, r) {
 }
 
 /** 用 Python 直接建库（平台 schema 由后端启动时自动建；这里只灌数据，简单可控） */
-function buildDb(dbFile, enterprises, financeRows) {
-  const payload = JSON.stringify({ enterprises, finance: financeRows })
+function buildDb(dbFile, enterprises, financeRows, newsRows = [], legalRows = []) {
+  const payload = JSON.stringify({ enterprises, finance: financeRows, news: newsRows, legal: legalRows })
   const tmp = dbFile + '.payload.json'
   fs.writeFileSync(tmp, payload, 'utf8')
   const py = `
@@ -95,17 +95,49 @@ data = json.load(open(payload_file, encoding="utf-8"))
 con = sqlite3.connect(db)
 cur = con.cursor()
 idmap = {}
+# 维度是否参与评分取决于 enterprise.data_status_json[dim]（rules.rs::status_of）：
+# 只写 finance 会让 news/legal/credit/operation/supply 全部被跳过 → 必须按实际数据标注
+dims = {}
+for f in data["finance"]:
+    dims.setdefault(f["code"], set()).add("finance")
+for n in data.get("news", []):
+    dims.setdefault(n["code"], set()).add("news")
+for l in data.get("legal", []):
+    dims.setdefault(l["code"], set()).add("legal")
 for e in data["enterprises"]:
-    cur.execute("INSERT OR IGNORE INTO enterprise (name, unified_code, stock_code, industry, data_note, data_status_json) VALUES (?,?,?,?,?,?)",
-                (e["name"], "", e["code"], e.get("industry") or "", "replay", '{"finance":"ok"}'))
+    d = dims.get(e["code"], set())
+    status = {}
+    if "finance" in d:
+        status["finance"] = "ok"
+        status["operation"] = "ok"
+    if "legal" in d:
+        status["legal"] = "ok"
+        status["credit"] = "ok"
+    if "news" in d:
+        status["news"] = "ok"
+        status["supply"] = "ok"
+    cur.execute(
+        "INSERT OR IGNORE INTO enterprise (name, unified_code, stock_code, industry, reg_date, data_note, data_status_json) VALUES (?,?,?,?,?,?,?)",
+        (e["name"], "", e["code"], e.get("industry") or "", e.get("regDate") or "2010-01-01", "replay", json.dumps(status, ensure_ascii=False)),
+    )
     idmap[e["code"]] = cur.lastrowid
 for f in data["finance"]:
     eid = idmap.get(f["code"])
     if not eid: continue
     cur.execute("INSERT INTO finance (enterprise_id, year, report_type, total_assets, total_liabilities, revenue, net_profit, debt_ratio, source, metrics_json) VALUES (?,?,?,?,?,?,?,?,?,?)",
                 (eid, f["year"], f["report_type"], f["total_assets"], f["total_liabilities"], f["revenue"], f["net_profit"], f["debt_ratio"], "replay", f["metrics_json"]))
+for n in data.get("news", []):
+    eid = idmap.get(n["code"])
+    if not eid: continue
+    cur.execute("INSERT INTO news (enterprise_id, title, content, source, url, published_at, sentiment) VALUES (?,?,?,?,?,?,?)",
+                (eid, n["title"], n.get("content") or "", n.get("source") or "replay", n.get("url") or "", n["published_at"], n.get("sentiment") or "neutral"))
+for l in data.get("legal", []):
+    eid = idmap.get(l["code"])
+    if not eid: continue
+    cur.execute("INSERT INTO legal_record (enterprise_id, case_no, doc_type, title, court, cause, amount, status, judgment_date, source) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                (eid, l.get("case_no") or "", l.get("doc_type") or "公告", l["title"], l.get("court") or "", l.get("cause") or "", float(l.get("amount") or 0), l.get("status") or "", l["judgment_date"], l.get("source") or "replay"))
 con.commit()
-print(json.dumps({"enterprises": len(idmap), "finance": len(data["finance"]), "idmap": idmap}))
+print(json.dumps({"enterprises": len(idmap), "finance": len(data["finance"]), "news": len(data.get("news", [])), "legal": len(data.get("legal", [])), "idmap": idmap}))
 `
   const ps = path.join(os.tmpdir(), `replay-build-${Date.now()}.py`)
   fs.writeFileSync(ps, py, 'utf8')
@@ -142,12 +174,25 @@ async function get(port, p) {
 
 ;(async () => {
   const panel = readJsonl('panel.jsonl')
+  const news = readJsonl('news.jsonl')
+  const legal = readJsonl('legal.jsonl')
   const cohort = JSON.parse(fs.readFileSync(path.join(DATA, 'cohort.json'), 'utf8'))
   const universe = readJsonl('universe.jsonl')
   if (!panel.length) {
     console.error('缺少面板数据：先跑 fetch.js')
     process.exit(2)
   }
+  const newsByCode = new Map()
+  for (const n of news) {
+    if (!newsByCode.has(n.code)) newsByCode.set(n.code, [])
+    newsByCode.get(n.code).push(n)
+  }
+  const legalByCode = new Map()
+  for (const l of legal) {
+    if (!legalByCode.has(l.code)) legalByCode.set(l.code, [])
+    legalByCode.get(l.code).push(l)
+  }
+  console.log(`非财务数据：新闻 ${news.length} 条（${newsByCode.size} 只）/ 司法 ${legal.length} 条（${legalByCode.size} 只）`)
   const byCode = new Map()
   for (const r of panel) {
     if (!byCode.has(r.code)) byCode.set(r.code, [])
@@ -188,7 +233,28 @@ async function get(port, p) {
       if (!prev || d > prev.d) dedup.set(key, { d, code: r.code, ...f })
     }
     const financeRows = [...dedup.values()].map(({ d, ...f }) => f)
-    const enterprises = codes.map((c) => ({ code: c, name: meta.get(c)?.name || c, industry: meta.get(c)?.industry || '' }))
+    const enterprises = codes.map((c) => ({ code: c, name: meta.get(c)?.name || c, industry: meta.get(c)?.industry || '', regDate: meta.get(c)?.listDate || '' }))
+
+    // 非财务数据（point-in-time）
+    //  · legal：规则引擎不看时间窗 → 只放"判决/公告日 ≤ cutoff"的记录
+    //  · news ：规则引擎看"近 365 天"（相对**当前**）→ 必须做**时间平移**：
+    //           把 cutoff 当作"今天"，因此 published_at 统一后移 shiftDays 天
+    const shiftDays = Math.round((Date.now() - new Date(cutoff).getTime()) / 86400000)
+    const shiftDate = (d) => new Date(new Date(d).getTime() + shiftDays * 86400000).toISOString().slice(0, 10)
+    const newsRows = []
+    for (const code of codes) {
+      for (const n of newsByCode.get(code) || []) {
+        if (!n.published_at || n.published_at > cutoff) continue
+        newsRows.push({ code, title: n.title, content: n.content, source: n.source, url: n.url, published_at: shiftDate(n.published_at), sentiment: n.sentiment })
+      }
+    }
+    const legalRows = []
+    for (const code of codes) {
+      for (const l of legalByCode.get(code) || []) {
+        if (!l.judgment_date || l.judgment_date > cutoff) continue
+        legalRows.push({ code, ...l })
+      }
+    }
 
     const dir = path.join(os.tmpdir(), `rwp-replay-${cutoff.replace(/-/g, '')}`)
     fs.rmSync(dir, { recursive: true, force: true })
@@ -199,7 +265,7 @@ async function get(port, p) {
     const boot = await startBackend({ bin: bin.bin, port: port0, dataDir: dir, webDist: path.join(REPO, 'desktop/resources/web'), logFile: path.join(dir, 'boot.log') })
     await boot.stop()
 
-    const built = buildDb(dbFile, enterprises, financeRows)
+    const built = buildDb(dbFile, enterprises, financeRows, newsRows, legalRows)
 
     const port = await freePort()
     const handle = await startBackend({
@@ -258,7 +324,7 @@ async function get(port, p) {
     }
     await handle.stop()
     fs.rmSync(dir, { recursive: true, force: true })
-    summary.push({ cutoff, enterprises: built.enterprises, financeRows: built.finance, scored, withScore: out.filter((o) => o.cutoff === cutoff && o.riskScore !== null).length })
+    summary.push({ cutoff, enterprises: built.enterprises, financeRows: built.finance, newsRows: built.news, legalRows: built.legal, scored, withScore: out.filter((o) => o.cutoff === cutoff && o.riskScore !== null).length })
     console.log(`  ${cutoff}：企业 ${built.enterprises} / 财报 ${built.finance} / 评分 ${scored}（有综合分 ${summary[summary.length - 1].withScore}）`)
   }
 

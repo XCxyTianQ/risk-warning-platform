@@ -306,12 +306,43 @@ function evaluate(pairs, testLength) {
   const byType = {}
   for (const s of test.filter((x) => x.label === 1)) byType[s.firstEventType] = (byType[s.firstEventType] || 0) + 1
 
+  // 分层：有非财务数据（news/legal 维度有分）的样本 vs 只有财报的样本
+  // —— 否则"平台变强"可能只是因为"有新闻的公司本身更好预测"（选择效应）
+  const hasNonFinancial = (s) => {
+    const r = replayByKey.get(`${s.code}@${s.cutoff}`)
+    return !!(r && r.dimensionScores && (typeof r.dimensionScores.news === 'number' || typeof r.dimensionScores.legal === 'number'))
+  }
+  const strata = {}
+  for (const [name, filterFn] of [
+    ['with_nonfinancial', hasNonFinancial],
+    ['finance_only', (s) => !hasNonFinancial(s)],
+  ]) {
+    const subset = test.filter(filterFn)
+    if (!subset.length) continue
+    const pairsFor = (key) =>
+      subset.map((s) => {
+        const p = predictorsOf(s, replayByKey).find((x) => x.key === key)
+        return p ? { score: p.score, label: s.label, leadDays: s.leadDays } : null
+      }).filter(Boolean)
+    strata[name] = { n: subset.length, positives: subset.filter((s) => s.label === 1).length }
+    for (const key of ['baseline_rule', 'platform_composite']) {
+      const p = pairsFor(key)
+      if (p.length) strata[name][key] = { rocAuc: rocAuc(p), prAuc: prAuc(p) }
+    }
+  }
+
   console.log('\n测试集指标（同批样本，多预测器对比）')
   console.log(`  ${'预测器'.padEnd(30)} ROC-AUC   PR-AUC    TopK精确   预警期(天)`)
   for (const [key, r] of Object.entries(results)) {
     console.log(`  ${(r.label || key).padEnd(28)} ${fmt(r.rocAuc)}     ${fmt(r.prAuc)}     ${fmt(r.topK?.precision)}      ${r.medianLeadDays ?? '-'}`)
   }
   console.log(`  随机基线（正例率）${fmt(baseRate)}；测试集正例构成 ${JSON.stringify(byType)}`)
+  console.log('\n分层检验（避免"有新闻的公司本身更好预测"的选择效应）')
+  for (const [k, v] of Object.entries(strata)) {
+    console.log(
+      `  ${k}: n=${v.n} 正例 ${v.positives} | 基线 AUC ${fmt(v.baseline_rule?.rocAuc)} AP ${fmt(v.baseline_rule?.prAuc)} | 平台 AUC ${fmt(v.platform_composite?.rocAuc)} AP ${fmt(v.platform_composite?.prAuc)}`,
+    )
+  }
 
   const out = {
     generatedAt: new Date().toISOString(),
@@ -326,6 +357,7 @@ function evaluate(pairs, testLength) {
     skipped,
     metrics: {
       randomBaselinePrAuc: baseRate,
+      strata,
       predictors: results,
       bestByAuc: Object.entries(results).sort((a, b) => (b[1].rocAuc ?? 0) - (a[1].rocAuc ?? 0))[0]?.[0] ?? null,
       baselineRocAuc: base?.rocAuc ?? null,

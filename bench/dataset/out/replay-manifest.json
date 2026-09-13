@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T12:51:14.734Z",
+  "generatedAt": "2026-09-13T23:41:14.556Z",
   "cutoffs": [
     "2016-04-30",
     "2017-04-30",
@@ -16,6 +16,8 @@
       "cutoff": "2016-04-30",
       "enterprises": 627,
       "financeRows": 19158,
+      "newsRows": 13334,
+      "legalRows": 129,
       "scored": 632,
       "withScore": 632
     },
@@ -23,6 +25,8 @@
       "cutoff": "2017-04-30",
       "enterprises": 670,
       "financeRows": 21242,
+      "newsRows": 25881,
+      "legalRows": 237,
       "scored": 675,
       "withScore": 675
     },
@@ -30,6 +34,8 @@
       "cutoff": "2018-04-30",
       "enterprises": 720,
       "financeRows": 23560,
+      "newsRows": 44070,
+      "legalRows": 421,
       "scored": 725,
       "withScore": 725
     },
@@ -37,6 +43,8 @@
       "cutoff": "2019-04-30",
       "enterprises": 757,
       "financeRows": 25953,
+      "newsRows": 65394,
+      "legalRows": 691,
       "scored": 762,
       "withScore": 762
     },
@@ -44,6 +52,8 @@
       "cutoff": "2020-04-30",
       "enterprises": 776,
       "financeRows": 28522,
+      "newsRows": 89519,
+      "legalRows": 1035,
       "scored": 781,
       "withScore": 781
     },
@@ -51,6 +61,8 @@
       "cutoff": "2021-04-30",
       "enterprises": 779,
       "financeRows": 31344,
+      "newsRows": 119970,
+      "legalRows": 1436,
       "scored": 784,
       "withScore": 784
     },
@@ -58,6 +70,8 @@
       "cutoff": "2022-04-30",
       "enterprises": 780,
       "financeRows": 34301,
+      "newsRows": 150479,
+      "legalRows": 1783,
       "scored": 785,
       "withScore": 785
     },
@@ -65,6 +79,8 @@
       "cutoff": "2023-04-30",
       "enterprises": 787,
       "financeRows": 37358,
+      "newsRows": 181960,
+      "legalRows": 2219,
       "scored": 792,
       "withScore": 792
     },
@@ -72,6 +88,8 @@
       "cutoff": "2024-04-30",
       "enterprises": 787,
       "financeRows": 40433,
+      "newsRows": 214174,
+      "legalRows": 2662,
       "scored": 792,
       "withScore": 792
     }
