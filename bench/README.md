@@ -68,8 +68,15 @@ Key 解析顺序（**不会写进仓库，也不会写进报告**）：
    平台指标同样分级：`门禁` 与 `v1 目标`（未达标只记账，不判红）。
 3. **可复现**：报告里带 git commit、应用版本、后端二进制 sha256、Node/Python/Rust 版本、随机种子位（M1 起用于抽样），以及当次完整命令。
 
-## 加一个套件
+## 维护工具
 
+```bash
+# 旧库升级风险扫描：把"某个旧库的 schema"与"全部 INSERT 语句"对一遍，
+# 列出会因 NOT NULL 无默认值而写失败的表（改 schema / 加新表后建议跑一次）
+node bench/tools/scan-legacy-inserts.js --db "%APPDATA%\RiskWarningPlatform\data\platform.db"
+```
+
+## 加一个套件
 在 `bench/suites.js` 里加一条声明即可，不用改运行器：
 
 ```js
