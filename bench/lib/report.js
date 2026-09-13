@@ -105,19 +105,23 @@ function compare(current, baseline) {
     regressions.push(`可比套件断言通过数下降：${baseComparable} → ${nowComparable}（${comparedSuites} 个套件）`)
   }
 
-  const num = (a, b, label, factor) => {
+  // 变差提醒要同时满足"相对倍数"和"绝对增量"：否则 1ms → 2ms 这种噪声会天天报警，没人会再看
+  const num = (a, b, label, factor, minAbsDelta = 0) => {
     if (typeof a !== 'number' || typeof b !== 'number' || b === 0) return
     const ratio = a / b
-    deltas[label] = { from: b, to: a, ratio: Number(ratio.toFixed(2)) }
-    if (ratio > factor) warnings.push(`${label} 变差：${b} → ${a}（×${ratio.toFixed(2)}）`)
+    const absDelta = a - b
+    deltas[label] = { from: b, to: a, ratio: Number(ratio.toFixed(2)), absDelta: Number(absDelta.toFixed(2)) }
+    if (ratio > factor && absDelta >= minAbsDelta) {
+      warnings.push(`${label} 变差：${b} → ${a}（×${ratio.toFixed(2)}）`)
+    }
   }
-  num(current.platform?.metrics?.coldStart?.medianMs, baseline.metrics?.coldStartMedianMs, '冷启动中位数(ms)', 1.5)
-  num(maxP95(current.platform?.metrics?.apiLatency), baseline.metrics?.apiP95Max, '接口 p95 最差值(ms)', 1.5)
-  num(current.platform?.metrics?.bundles?.jsRawBytes, baseline.metrics?.jsRawBytes, '前端 JS 体积(bytes)', 1.1)
+  num(current.platform?.metrics?.coldStart?.medianMs, baseline.metrics?.coldStartMedianMs, '冷启动中位数(ms)', 1.5, 200)
+  num(maxP95(current.platform?.metrics?.apiLatency), baseline.metrics?.apiP95Max, '接口 p95 最差值(ms)', 1.5, 20)
+  num(current.platform?.metrics?.bundles?.jsRawBytes, baseline.metrics?.jsRawBytes, '前端 JS 体积(bytes)', 1.1, 100 * 1024)
   // 整轮耗时只在套件集合一致时才有可比性
   const baseSuiteCount = Object.values(baseSuites).filter((v) => norm(v).status && norm(v).status !== 'skipped').length
   if (baseSuiteCount && baseSuiteCount === comparedSuites) {
-    num(current.run?.durationMs, baseline.metrics?.durationMs, '整轮耗时(ms)', 2)
+    num(current.run?.durationMs, baseline.metrics?.durationMs, '整轮耗时(ms)', 2, 60000)
   }
 
   return { available: true, baselineAt: baseline.at, baselineGit: baseline.git, regressions, warnings, deltas }
