@@ -219,6 +219,38 @@ function buildSamples({ panel, events, target, cutoffs, horizonDays }) {
 // ---------------------------------------------------------------- 主流程
 const fmt = (v, d = 3) => (v === null || v === undefined ? '-' : Number(v).toFixed(d))
 
+/** 预测器集合：基线规则 + 平台 replay 出来的各个信号（越大越危险） */
+function predictorsOf(sample, replayByKey) {
+  const out = [{ key: 'baseline_rule', label: '财务困境规则分（基线）', score: sample.baseline }]
+  const r = replayByKey.get(`${sample.code}@${sample.cutoff}`)
+  if (!r) return out
+  const push = (key, label, v) => {
+    if (typeof v === 'number' && Number.isFinite(v)) out.push({ key, label, score: v })
+  }
+  push('platform_composite', '平台六维综合风险信号（100-综合分）', r.riskSignal)
+  push('platform_finance', '平台财务健康维度风险信号', r.financeSignal)
+  push('platform_beneish', '平台 Beneish M-Score（越高越可能操纵）', r.beneish)
+  push('platform_anomalies', '平台异常勾稽条数', r.anomalies)
+  push('platform_altman', '平台 Altman Z（越低越危险 → 取负）', typeof r.altmanZ === 'number' ? -r.altmanZ : null)
+  return out
+}
+
+function evaluate(pairs, testLength) {
+  const auc = rocAuc(pairs)
+  const ap = prAuc(pairs)
+  const k = Math.max(1, Math.round(testLength * 0.1))
+  const tk = topK(pairs, k)
+  const leads = pairs.filter((p) => p.label === 1 && typeof p.leadDays === 'number').map((p) => p.leadDays).sort((a, b) => a - b)
+  return {
+    n: pairs.length,
+    positives: pairs.filter((p) => p.label === 1).length,
+    rocAuc: auc,
+    prAuc: ap,
+    topK: tk,
+    medianLeadDays: leads.length ? leads[Math.floor(leads.length / 2)] : null,
+  }
+}
+
 ;(async () => {
   const panel = readJsonl('panel.jsonl')
   const events = readJsonl('events.jsonl')
@@ -238,31 +270,48 @@ const fmt = (v, d = 3) => (v === null || v === undefined ? '-' : Number(v).toFix
 
   const { samples, skipped } = buildSamples({ panel, events, target, cutoffs: CUTOFFS, horizonDays: HORIZON_DAYS })
   const withScore = samples.filter((s) => typeof s.baseline === 'number')
+
+  // 平台 replay 结果（可选）：按 (code, cutoff) 关联
+  const replayFile = path.join(DATA, 'replay-scores.jsonl')
+  const replayRows = fs.existsSync(replayFile)
+    ? fs
+        .readFileSync(replayFile, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((l) => JSON.parse(l))
+    : []
+  const replayByKey = new Map(replayRows.map((r) => [`${r.code}@${r.cutoff}`, r]))
+  console.log(`平台 replay：${replayRows.length} 行${replayRows.length ? '' : '（未跑 replay.js：本轮只评基线）'}`)
+
   const train = withScore.filter((s) => s.cutoff <= TRAIN_UNTIL)
   const test = withScore.filter((s) => s.cutoff >= TEST_FROM)
   const posAll = withScore.filter((s) => s.label === 1).length
   console.log(`样本：${withScore.length} 个（病例-时点）| 正例 ${posAll}（${fmt((posAll / Math.max(withScore.length, 1)) * 100, 1)}%）| 跳过 ${JSON.stringify(skipped)}`)
   console.log(`切分：训练 ${train.length}（≤${TRAIN_UNTIL}）/ 测试 ${test.length}（≥${TEST_FROM}）`)
 
-  const pairs = test.map((s) => ({ score: s.baseline, label: s.label, leadDays: s.leadDays }))
-  const auc = rocAuc(pairs)
-  const ap = prAuc(pairs)
-  const k = Math.max(1, Math.round(test.length * 0.1))
-  const tk = topK(pairs, k)
-  const leads = test.filter((s) => s.label === 1 && typeof s.leadDays === 'number').map((s) => s.leadDays).sort((a, b) => a - b)
-  const medianLead = leads.length ? leads[Math.floor(leads.length / 2)] : null
+  // 多预测器同台比较（同一批测试样本）
+  const byPredictor = new Map()
+  for (const s of test) {
+    for (const p of predictorsOf(s, replayByKey)) {
+      if (!byPredictor.has(p.key)) byPredictor.set(p.key, { label: p.label, pairs: [] })
+      byPredictor.get(p.key).pairs.push({ score: p.score, label: s.label, leadDays: s.leadDays })
+    }
+  }
+  const results = {}
+  for (const [key, v] of byPredictor) results[key] = { label: v.label, ...evaluate(v.pairs, test.length) }
+
+  const base = results.baseline_rule
   const testPos = test.filter((s) => s.label === 1).length
   const baseRate = test.length ? testPos / test.length : null
-
   const byType = {}
   for (const s of test.filter((x) => x.label === 1)) byType[s.firstEventType] = (byType[s.firstEventType] || 0) + 1
 
-  console.log('\n测试集指标（基线预测器：财务困境规则分）')
-  console.log(`  ROC-AUC          ${fmt(auc)}`)
-  console.log(`  PR-AUC(AP)       ${fmt(ap)}   （随机基线 ≈ 正例率 ${fmt(baseRate)}）`)
-  console.log(`  Top-${k} 精确率    ${fmt(tk.precision)}（命中 ${tk.hits}/${k}）  召回 ${fmt(tk.recall)}`)
-  console.log(`  提前预警期中位数  ${medianLead === null ? '-' : medianLead + ' 天'}`)
-  console.log(`  测试集正例构成    ${JSON.stringify(byType)}`)
+  console.log('\n测试集指标（同批样本，多预测器对比）')
+  console.log(`  ${'预测器'.padEnd(30)} ROC-AUC   PR-AUC    TopK精确   预警期(天)`)
+  for (const [key, r] of Object.entries(results)) {
+    console.log(`  ${(r.label || key).padEnd(28)} ${fmt(r.rocAuc)}     ${fmt(r.prAuc)}     ${fmt(r.topK?.precision)}      ${r.medianLeadDays ?? '-'}`)
+  }
+  console.log(`  随机基线（正例率）${fmt(baseRate)}；测试集正例构成 ${JSON.stringify(byType)}`)
 
   const out = {
     generatedAt: new Date().toISOString(),
@@ -276,22 +325,36 @@ const fmt = (v, d = 3) => (v === null || v === undefined ? '-' : Number(v).toFix
     positiveRate: withScore.length ? posAll / withScore.length : null,
     skipped,
     metrics: {
-      predictor: 'baseline:financial-distress-rule',
-      rocAuc: auc,
-      prAuc: ap,
-      topK: tk,
-      medianLeadDays: medianLead,
-      testBaseRate: baseRate,
-      testPositiveByType: byType,
+      randomBaselinePrAuc: baseRate,
+      predictors: results,
+      bestByAuc: Object.entries(results).sort((a, b) => (b[1].rocAuc ?? 0) - (a[1].rocAuc ?? 0))[0]?.[0] ?? null,
+      baselineRocAuc: base?.rocAuc ?? null,
+      baselinePrAuc: base?.prAuc ?? null,
+      platformCompositeRocAuc: results.platform_composite?.rocAuc ?? null,
+      platformCompositePrAuc: results.platform_composite?.prAuc ?? null,
     },
+    replay: { rows: replayRows.length, cutoffs: [...new Set(replayRows.map((r) => r.cutoff))] },
     examples: {
       topScored: [...test].sort((a, b) => b.baseline - a.baseline).slice(0, 10).map((s) => ({ code: s.code, name: s.name, cutoff: s.cutoff, score: s.baseline, label: s.label, event: s.firstEventType, leadDays: s.leadDays })),
       missedHighRisk: test.filter((s) => s.label === 1).sort((a, b) => a.baseline - b.baseline).slice(0, 10).map((s) => ({ code: s.code, name: s.name, cutoff: s.cutoff, score: s.baseline, event: s.firstEventType, leadDays: s.leadDays, features: s.features })),
     },
   }
+  const reportFile = path.join(DATA, `t5-report-${TARGET_NAME}.json`)
+  fs.writeFileSync(reportFile, JSON.stringify(out, null, 2))
   fs.writeFileSync(path.join(DATA, 't5-report.json'), JSON.stringify(out, null, 2))
-  console.log(`\n报告：${path.relative(REPO, path.join(DATA, 't5-report.json'))}`)
+  console.log(`\n报告：${path.relative(REPO, reportFile)}`)
+  const platform = results.platform_composite
   console.log(
-    `T5: ${JSON.stringify({ target: TARGET_NAME, samples: out.samples, test: test.length, auc, ap, topk_precision: tk.precision, median_lead_days: medianLead })}`,
+    `T5: ${JSON.stringify({
+      target: TARGET_NAME,
+      samples: out.samples,
+      test: test.length,
+      auc: base?.rocAuc ?? null,
+      ap: base?.prAuc ?? null,
+      topk_precision: base?.topK?.precision ?? null,
+      median_lead_days: base?.medianLeadDays ?? null,
+      platform_auc: platform?.rocAuc ?? null,
+      platform_ap: platform?.prAuc ?? null,
+    })}`,
   )
 })()

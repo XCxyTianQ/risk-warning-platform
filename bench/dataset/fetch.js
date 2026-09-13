@@ -49,6 +49,7 @@ const SLEEP_MS = Number(argOf('--sleep', '250'))
 const REFRESH = hasFlag('--refresh')
 const EVENTS_ONLY = hasFlag('--events-only')
 const PANEL_ONLY = hasFlag('--panel-only')
+const COHORT_ONLY = hasFlag('--cohort-only')
 const EXTRA_CODES = argOf('--codes', '')
   .split(',')
   .map((s) => s.trim())
@@ -133,6 +134,21 @@ async function harvestEvents(universeCodes) {
   const events = []
   const seen = new Set()
   const perKeyword = []
+  // **增量合并**：按关键词分批抓时，不能把之前抓到的其它类型事件冲掉
+  const eventsFile = path.join(OUT, 'events.jsonl')
+  if (fs.existsSync(eventsFile)) {
+    for (const line of fs.readFileSync(eventsFile, 'utf8').split('\n')) {
+      if (!line) continue
+      try {
+        const e = JSON.parse(line)
+        const key = `${e.announcementId}:${e.type}`
+        if (seen.has(key)) continue
+        seen.add(key)
+        events.push(e)
+      } catch {}
+    }
+    console.log(`      （合并已有事件 ${events.length} 条）`)
+  }
   const years = []
   const y0 = Number(SINCE.slice(0, 4))
   const y1 = Number(UNTIL.slice(0, 4))
@@ -185,13 +201,13 @@ async function harvestEvents(universeCodes) {
           for (const a of list) {
             const code = String(a.secCode || '')
             if (!universeCodes.has(code)) continue
-            const key = `${a.announcementId}`
-            if (seen.has(key)) continue
-            seen.add(key)
             const title = String(a.announcementTitle || '').replace(/<[^>]+>/g, '')
             const hits = classifyTitle(title)
             const matched = hits.find((h) => h.keyword === keyword) || hits[0]
             if (!matched) continue
+            const key = `${a.announcementId}:${matched.type}`
+            if (seen.has(key)) continue
+            seen.add(key)
             events.push({
               code,
               name: String(a.secName || ''),
@@ -330,10 +346,29 @@ function writeJsonl(file, rows, { protect = true } = {}) {
     process.exit(3)
   }
 
-  // ---- 队列：现 ST 全部作为病例 + 分层随机对照
-  const cases = universe.filter((u) => u.isST)
+  // ---- 队列：病例 = 现 ST **或历史上出现过风险事件**；对照 = 分层随机抽样
+  const casesFromEventsFlag = hasFlag('--cases-from-events')
+  const eventCodes = new Set()
+  const eventsFile = path.join(OUT, 'events.jsonl')
+  if ((casesFromEventsFlag || true) && fs.existsSync(eventsFile)) {
+    for (const line of fs.readFileSync(eventsFile, 'utf8').split('\n')) {
+      if (!line) continue
+      try {
+        const e = JSON.parse(line)
+        if (e.code) eventCodes.add(e.code)
+      } catch {}
+    }
+  }
+  const caseMap = new Map()
+  for (const u of universe.filter((x) => x.isST)) caseMap.set(u.code, { ...u, why: 'current-ST' })
+  for (const code of eventCodes) {
+    const u = universe.find((x) => x.code === code)
+    if (u) caseMap.set(code, caseMap.get(code) || { ...u, why: 'past-event' })
+    else caseMap.set(code, caseMap.get(code) || { code, name: '', industry: '', isST: false, why: 'past-event' })
+  }
+  const cases = [...caseMap.values()]
   const rnd = mulberry32(SEED)
-  const pool = universe.filter((u) => !u.isST)
+  const pool = universe.filter((u) => !caseMap.has(u.code))
   const controls = []
   const picked = new Set()
   while (controls.length < CONTROLS && picked.size < pool.length) {
@@ -346,10 +381,12 @@ function writeJsonl(file, rows, { protect = true } = {}) {
   const cohort = { cases: selectedCases, controls, extra: universe.filter((u) => EXTRA_CODES.includes(u.code)) }
   const cohortCodes = [...new Set([...selectedCases, ...controls, ...cohort.extra].map((u) => u.code))]
   fs.writeFileSync(path.join(OUT, 'cohort.json'), JSON.stringify({ ...cohort, seed: SEED, generatedAt: nowIso() }, null, 2))
-  console.log(`[2/3] 队列：病例 ${selectedCases.length}（现 ST） + 对照 ${controls.length}（随机） + 指定 ${cohort.extra.length}`)
+  console.log(
+    `[2/3] 队列：病例 ${selectedCases.length}（现 ST ${selectedCases.filter((c) => c.why === 'current-ST').length} / 历史事件 ${selectedCases.filter((c) => c.why === 'past-event').length}） + 对照 ${controls.length} + 指定 ${cohort.extra.length}`,
+  )
 
   // ---- 事件标签
-  if (!PANEL_ONLY) {
+  if (!PANEL_ONLY && !COHORT_ONLY) {
     console.log(`[3/3] 抓取风险事件标签（${EVENT_TYPES.reduce((n, r) => n + r.keywords.length, 0)} 个关键词 × 最多 ${PAGES_PER_KEYWORD} 页）…`)
     const { events, perKeyword } = await harvestEvents(codeSet)
     const byType = {}
@@ -361,7 +398,7 @@ function writeJsonl(file, rows, { protect = true } = {}) {
   }
 
   // ---- 面板
-  if (!EVENTS_ONLY) {
+  if (!EVENTS_ONLY && !COHORT_ONLY) {
     const codes = EXTRA_CODES.length && PANEL_ONLY ? EXTRA_CODES : cohortCodes
     console.log(`[面板] 抓取 ${codes.length} 只股票的财报面板…`)
     const panel = await fetchPanel(codes)
@@ -373,7 +410,18 @@ function writeJsonl(file, rows, { protect = true } = {}) {
   manifest.requests = stats.requests
   manifest.errors = stats.errors.slice(0, 20)
   manifest.warnings = (stats.warnings || []).slice(0, 20)
-  fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2))
+  // 局部运行（--cohort-only / --panel-only）不要抹掉上一次采集留下的口径信息
+  const manifestFile = path.join(OUT, 'manifest.json')
+  if (fs.existsSync(manifestFile)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(manifestFile, 'utf8'))
+      manifest.eventsByType = manifest.eventsByType || prev.eventsByType
+      manifest.perKeyword = manifest.perKeyword || prev.perKeyword
+      manifest.artifacts = { ...prev.artifacts, ...manifest.artifacts }
+      if (manifest.artifacts.events && !manifest.eventsByType) manifest.eventsByType = prev.eventsByType
+    } catch {}
+  }
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2))
   console.log(`\n完成：${path.relative(REPO, OUT)}（请求 ${stats.requests} 次，失败 ${stats.errors.length} 次）`)
   for (const w of manifest.warnings) console.log(`  ⚠ ${w}`)
   console.log(`清单：${Object.entries(manifest.artifacts).map(([k, v]) => `${k}=${v.rows}行/${(v.bytes / 1024).toFixed(0)}KB`).join('  ')}`)
