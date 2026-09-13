@@ -162,6 +162,11 @@ async function main() {
   availability.reference = opts.withReference
     ? { ok: true, reason: '' }
     : { ok: false, reason: '未开启 --with-reference（需要 Python 参考实现 + 金标准库）' }
+  // 旧库兼容套件需要一份"升级前"的库作为夹具（随仓库提交的 SQL 夹具，不需要 venv）
+  const legacyFixtureSql = path.join(REPO, 'backend', 'tests', 'fixtures', 'legacy-python-schema.sql')
+  availability.golden = fs.existsSync(legacyFixtureSql)
+    ? { ok: true, reason: '' }
+    : { ok: false, reason: `缺少旧库夹具：${legacyFixtureSql}` }
 
   // ---- 平台指标（在干净库上先测，保证可比性） ----
   let platform = { metrics: {}, checks: [] }
@@ -325,18 +330,49 @@ async function main() {
 
       const binKey = suite.bin
       const bin = binKey === 'python' ? (python ? python.bin : 'python') : binKey === 'python-httpx' ? pythonHttpx.bin : binKey === 'electron' ? electron : binKey
-      // 少数套件需要特殊的后端配置（例如把上下文窗口压小以真正触发压缩）→ 为它单独起一个后端
+      // 少数套件需要特殊的后端配置（例如把上下文窗口压小以真正触发压缩）
+      // 或特殊的数据目录（例如用"升级前的旧库"验证兼容性）→ 为它单独起一个后端
       let suitePort = mainPort
       let dedicated = null
-      if (suite.backendEnv) {
+      if (suite.backendEnv || suite.dataDir === 'golden') {
         suitePort = await freePort()
+        const suiteDataDir = path.join(tmpDir, `backend-${suite.id}`)
+        if (suite.dataDir === 'golden') {
+          // 用提交在仓库里的旧 schema 夹具建库（真实"升级前"形状：NOT NULL 且无 DEFAULT）
+          fs.mkdirSync(suiteDataDir, { recursive: true })
+          const py = python ? python.bin : 'python'
+          const build = spawnSync(
+            py,
+            [
+              '-c',
+              'import sqlite3,sys;c=sqlite3.connect(sys.argv[1]);c.executescript(open(sys.argv[2],encoding="utf-8").read());c.commit();c.close()',
+              path.join(suiteDataDir, 'platform.db'),
+              legacyFixtureSql,
+            ],
+            { encoding: 'utf8', env: { ...process.env, PYTHONUTF8: '1', PYTHONIOENCODING: 'utf-8' } },
+          )
+          if (build.status !== 0) {
+            results.push({
+              id: suite.id,
+              title: suite.title,
+              kind: suite.kind,
+              tier: suite.tier || 'gate',
+              status: 'error',
+              reason: `旧库夹具建库失败：${String(build.stderr || '').slice(0, 160)}`,
+              durationMs: 0,
+              checksPassed: 0,
+              checksFailed: 0,
+            })
+            continue
+          }
+        }
         dedicated = await startBackend({
           bin: backend.bin,
           port: suitePort,
-          dataDir: path.join(tmpDir, `backend-${suite.id}`),
+          dataDir: suiteDataDir,
           webDist,
           samplesDir,
-          env: { ...llmExtraEnv, ...suite.backendEnv },
+          env: { ...llmExtraEnv, ...(suite.backendEnv || {}) },
           logFile: path.join(logsDir, `backend-${suite.id}.log`),
         })
         if (dedicated.readyMs === null) {

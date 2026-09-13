@@ -248,3 +248,59 @@ CREATE TABLE IF NOT EXISTS attachment (
 CREATE INDEX IF NOT EXISTS idx_attachment_session ON attachment(session_id);
 CREATE INDEX IF NOT EXISTS idx_attachment_sha ON attachment(sha256);
 "#;
+
+/// 解析 [`SCHEMA`]，返回每张表的：
+/// `(表名, 建表 SQL, [(列名, 该列是否有 DEFAULT)])`
+///
+/// 用途：升级旧库时判断"旧表是否缺少列默认值"，并按新 schema 重建（见 `db::rebuild_legacy_tables`）。
+/// 这里刻意用简单的文本解析而不是引 SQLite 解析器：schema 是本文件里的常量，格式稳定。
+pub fn create_table_statements() -> Vec<(String, String, Vec<(String, bool)>)> {
+    let mut out = Vec::new();
+    let mut rest = SCHEMA;
+    while let Some(start) = rest.find("CREATE TABLE IF NOT EXISTS ") {
+        let tail = &rest[start..];
+        let Some(end) = tail.find("\n);") else { break };
+        let stmt = &tail[..end + 3]; // 含 "\n);"
+        rest = &tail[end + 3..];
+
+        let name_start = "CREATE TABLE IF NOT EXISTS ".len();
+        let Some(paren) = stmt[name_start..].find('(') else { continue };
+        let name = stmt[name_start..name_start + paren].trim().to_string();
+
+        let body_start = name_start + paren + 1;
+        let mut cols = Vec::new();
+        for line in stmt[body_start..].lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with(')') {
+                continue;
+            }
+            let Some((col, rest_of_line)) = line.split_once(char::is_whitespace) else { continue };
+            let col = col.trim_matches(|c| c == '"' || c == '`').to_string();
+            if col.is_empty() || matches!(col.to_ascii_uppercase().as_str(), "PRIMARY" | "UNIQUE" | "FOREIGN" | "CHECK" | "CONSTRAINT") {
+                continue;
+            }
+            let has_default = rest_of_line.to_ascii_uppercase().contains("DEFAULT");
+            cols.push((col, has_default));
+        }
+        out.push((name, stmt.to_string(), cols));
+    }
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_all_tables() {
+        let tables = create_table_statements();
+        assert!(tables.len() >= 15, "应解析出至少 15 张表，实际 {}", tables.len());
+        let chat = tables.iter().find(|(n, _, _)| n == "chat_session").expect("chat_session");
+        assert!(chat.2.iter().any(|(c, d)| c == "summary" && *d), "summary 应带 DEFAULT");
+        assert!(chat.2.iter().any(|(c, d)| c == "share_token" && *d), "share_token 应带 DEFAULT");
+        let ent = tables.iter().find(|(n, _, _)| n == "enterprise").expect("enterprise");
+        assert!(ent.2.iter().any(|(c, d)| c == "unified_code" && *d));
+        let alert = tables.iter().find(|(n, _, _)| n == "alert").expect("alert");
+        assert!(alert.2.iter().any(|(c, d)| c == "handler" && *d));
+    }
+}

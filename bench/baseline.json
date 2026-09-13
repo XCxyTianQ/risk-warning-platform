@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-13T08:41:56.949Z",
-  "git": "9b58a90",
+  "at": "2026-09-13T09:01:16.256Z",
+  "git": "0e9868c",
   "appVersion": "0.7.1",
-  "checksPassed": 201,
+  "checksPassed": 214,
   "checksFailed": 0,
   "suites": {
     "probe-tables": {
@@ -23,6 +23,11 @@
     "probe-media": {
       "status": "pass",
       "checksPassed": 15,
+      "checksFailed": 0
+    },
+    "legacy-db-compat": {
+      "status": "pass",
+      "checksPassed": 13,
       "checksFailed": 0
     },
     "probe-finance-golden": {
@@ -117,10 +122,10 @@
     }
   },
   "metrics": {
-    "coldStartMedianMs": 127,
+    "coldStartMedianMs": 134,
     "apiP95Max": 1,
     "jsRawBytes": 1401108,
     "jsFiles": 1,
-    "durationMs": 368586
+    "durationMs": 343227
   }
 }

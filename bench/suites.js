@@ -64,6 +64,18 @@ const probes = [
     requires: ['image'],
   },
   {
+    id: 'legacy-db-compat',
+    title: '旧数据目录兼容：用"升级前"的库跑写路径（会话/表格/企业建档）',
+    kind: 'probe',
+    bin: 'python',
+    // 旧库与"压缩套件的小窗口后端"同理：必须给它一份旧 schema 的库单独起后端
+    dataDir: 'golden',
+    args: ['{repo}/backend/tests/probe_rust_legacy_db.py', '--port', '{port}'],
+    parse: 'probe',
+    timeoutMs: 180000,
+    requires: ['golden'],
+  },
+  {
     id: 'probe-finance-golden',
     title: '金标准比对：金融分析（KPI/杜邦/Z·F·M/异常/对标）Rust vs Python 逐点',
     kind: 'probe',
