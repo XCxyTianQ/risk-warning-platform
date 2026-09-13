@@ -33,3 +33,6 @@ server/tests/_*
 Thumbs.db
 # ===== Rust 后端 =====
 backend/target/
+
+# ===== 评测产物（报告不入库，基线入库存）=====
+bench/report/

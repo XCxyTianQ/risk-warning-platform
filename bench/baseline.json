@@ -1,0 +1,126 @@
+{
+  "at": "2026-09-13T08:06:11.330Z",
+  "git": "c4a476a",
+  "appVersion": "0.7.1",
+  "checksPassed": 107,
+  "checksFailed": 0,
+  "suites": {
+    "probe-tables": {
+      "status": "pass",
+      "checksPassed": 36,
+      "checksFailed": 0
+    },
+    "probe-sheets": {
+      "status": "pass",
+      "checksPassed": 21,
+      "checksFailed": 0
+    },
+    "probe-workbook": {
+      "status": "pass",
+      "checksPassed": 19,
+      "checksFailed": 0
+    },
+    "probe-media": {
+      "status": "pass",
+      "checksPassed": 15,
+      "checksFailed": 0
+    },
+    "probe-finance-golden": {
+      "status": "pass",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-datasource-golden": {
+      "status": "pass",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-chat-golden": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-p4": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-p4-risk": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-p4-tools": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-compaction": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "probe-approval": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "smoke-backend": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-tables": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-excel": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-workbook": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-import": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-keep-long": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "verify-grid": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-finance": {
+      "status": "pass",
+      "checksPassed": 1,
+      "checksFailed": 0
+    },
+    "smoke-chat": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    },
+    "smoke-media": {
+      "status": "skipped",
+      "checksPassed": 0,
+      "checksFailed": 0
+    }
+  },
+  "metrics": {
+    "coldStartMedianMs": 125,
+    "apiP95Max": 1,
+    "jsRawBytes": 1401108,
+    "jsFiles": 1,
+    "durationMs": 182770
+  }
+}

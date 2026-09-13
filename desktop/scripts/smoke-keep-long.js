@@ -137,17 +137,20 @@ app.on('ready', async () => {
   const cleanup = await evalJs(`
     (async () => {
       const wait = (ms) => new Promise((r) => setTimeout(r, ms))
-      const back = [...document.querySelectorAll('button')].find((b) => (b.textContent || '').includes('返回列表'))
-      if (back) { back.click(); await wait(1200) }
-      const rows = [...document.querySelectorAll('tr.clickable')]
-      const row = rows[0]
-      if (!row) return 'no-rows'
-      const del = [...row.querySelectorAll('button')].find((b) => (b.textContent || '').includes('删除'))
-      if (!del) return 'no-delete'
-      del.click(); await wait(1200)
-      return { remaining: document.querySelectorAll('tr.clickable').length }
+      // 用接口删除：界面上点「删除」会弹原生 confirm，会把渲染进程的 JS 卡住（踩过的坑）
+      const list = await fetch('/api/tables').then((r) => r.json()).catch(() => null)
+      if (!list || !list.items) return 'no-list'
+      const mine = list.items.filter((t) => (t.title || '').includes('粘贴') || (t.title || '').includes('长表'))
+      let removed = 0
+      for (const t of mine) {
+        const r = await fetch('/api/tables/' + t.id, { method: 'DELETE' })
+        if (r.ok) removed++
+      }
+      await wait(300)
+      const after = await fetch('/api/tables').then((r) => r.json()).catch(() => null)
+      return { removed: removed, remaining: after && after.items ? after.items.length : null }
     })()
-  `)
+  `, 20000)
   log('CLEANUP', cleanup)
 
   log('ERRORS', errors.slice(0, 8))
