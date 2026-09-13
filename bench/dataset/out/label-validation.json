@@ -1,0 +1,264 @@
+{
+  "generatedAt": "2026-09-13T13:27:17.166Z",
+  "events": 20114,
+  "windows": [
+    [
+      "2026-08-25",
+      "2026-08-31"
+    ],
+    [
+      "2026-08-18",
+      "2026-08-24"
+    ],
+    [
+      "2026-08-11",
+      "2026-08-17"
+    ]
+  ],
+  "windowStats": [
+    {
+      "window": "2026-08-25~2026-08-31",
+      "announcements": 33720,
+      "scanned": 6000,
+      "riskHits": 20
+    },
+    {
+      "window": "2026-08-18~2026-08-24",
+      "announcements": 13859,
+      "scanned": 6000,
+      "riskHits": 9
+    },
+    {
+      "window": "2026-08-11~2026-08-17",
+      "announcements": 7220,
+      "scanned": 6000,
+      "riskHits": 14
+    }
+  ],
+  "sources": {
+    "A": "巨潮关键词检索（labels.js 词表）",
+    "B": "巨潮按日期全量扫描（无关键词，标题本地分类）",
+    "C": "深交所官方公告接口（深市第二披露渠道）"
+  },
+  "bySource": {
+    "A_keyword": 14968,
+    "B_cninfo_range": 35,
+    "C_szse": 25,
+    "A_confirmed_by_second_source": 27,
+    "B_found_by_scan_missed_by_keyword": 10,
+    "C_found_by_exchange_missed_by_keyword": 9,
+    "A_only_single_source": 14941
+  },
+  "confidence": {
+    "A_confirmed_2plus": 27,
+    "B_single_authoritative": 14941,
+    "C_needs_review": 11,
+    "A_share": 0.0013423486129064332
+  },
+  "samples": {
+    "missedByKeyword": [
+      {
+        "code": "000826",
+        "name": "*ST启环",
+        "date": "2026-08-31",
+        "title": "中德证券有限责任公司关于启迪环境科技发展股份有限公司被纳入失信被执行人名单及新增大额被执行案件的临时受托管理事务报告",
+        "types": [
+          "enforcement"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "002731",
+        "name": "*ST萃华",
+        "date": "2026-08-30",
+        "title": "关于预计无法在法定期限内披露定期报告暨公司股票停牌暨可能被终止上市的风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "002731",
+        "name": "*ST萃华",
+        "date": "2026-08-30",
+        "title": "关于公司股票存在可能因市值被终止上市的第九次风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "002368",
+        "name": "太极股份",
+        "date": "2026-08-30",
+        "title": "关于再次延期披露前期会计差错更正专项鉴证报告的公告",
+        "types": [
+          "fraud"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "000078",
+        "name": "ST海王",
+        "date": "2026-08-28",
+        "title": "关于公司股票交易被叠加实施其他风险警示的风险提示公告",
+        "types": [
+          "other_risk_warning"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "001277",
+        "name": "速达股份",
+        "date": "2026-08-28",
+        "title": "防范控股股东及其他关联方资金占用管理制度",
+        "types": [
+          "funds_occupation"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "002731",
+        "name": "*ST萃华",
+        "date": "2026-08-23",
+        "title": "关于公司股票存在可能因市值被终止上市的第四次风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "000639",
+        "name": "ST西王",
+        "date": "2026-08-21",
+        "title": "关于公司股票可能被叠加实施其他风险警示的提示性公告",
+        "types": [
+          "other_risk_warning"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "002217",
+        "name": "ST合力泰",
+        "date": "2026-08-14",
+        "title": "关于公司股票交易被实施其他风险警示相关事项的进展公告",
+        "types": [
+          "other_risk_warning"
+        ],
+        "source": "cninfo-range"
+      },
+      {
+        "code": "600606",
+        "name": "绿地控股",
+        "date": "2026-08-14",
+        "title": "绿地控股关于公司及控股子公司逾期债务和新增诉讼的公告",
+        "types": [
+          "debt_default"
+        ],
+        "source": "cninfo-range"
+      }
+    ],
+    "exchangeConfirmed": [
+      {
+        "code": "300020",
+        "name": "ST银江",
+        "date": "2026-08-31",
+        "title": "ST银江：关于公司股票被实施其他风险警示相关事项的进展公告",
+        "types": [
+          "other_risk_warning"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "000826",
+        "name": "*ST启环",
+        "date": "2026-08-31",
+        "title": "*ST启环：中德证券有限责任公司关于启迪环境科技发展股份有限公司被纳入失信被执行人名单及新增大额被执行案件的临时受托管理事务报告",
+        "types": [
+          "enforcement"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "300716",
+        "name": "*ST泉为",
+        "date": "2026-08-31",
+        "title": "*ST泉为：关于公司股票可能被终止上市的风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "301139",
+        "name": "*ST元道",
+        "date": "2026-08-31",
+        "title": "*ST元道：关于公司股票被实施其他风险警示的第六次提示性公告",
+        "types": [
+          "other_risk_warning"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "300555",
+        "name": "ST路通",
+        "date": "2026-08-31",
+        "title": "ST路通：无锡路通视信网络股份有限公司关于公司股票被实施其他风险警示相关事项的进展公告",
+        "types": [
+          "other_risk_warning"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "002368",
+        "name": "太极股份",
+        "date": "2026-08-31",
+        "title": "太极股份：关于再次延期披露前期会计差错更正专项鉴证报告的公告",
+        "types": [
+          "fraud"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "002731",
+        "name": "*ST萃华",
+        "date": "2026-08-31",
+        "title": "*ST萃华：关于公司股票存在可能因市值被终止上市的第九次风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "002731",
+        "name": "*ST萃华",
+        "date": "2026-08-31",
+        "title": "*ST萃华：关于预计无法在法定期限内披露定期报告暨公司股票停牌暨可能被终止上市的风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "301139",
+        "name": "*ST元道",
+        "date": "2026-08-29",
+        "title": "*ST元道：关于公司股票停牌暨可能被终止上市的风险提示公告",
+        "types": [
+          "delisting_risk"
+        ],
+        "source": "szse"
+      },
+      {
+        "code": "301139",
+        "name": "*ST元道",
+        "date": "2026-08-29",
+        "title": "*ST元道：关于收到《行政处罚决定书》的公告",
+        "types": [
+          "regulatory_penalty"
+        ],
+        "source": "szse"
+      }
+    ]
+  }
+}
