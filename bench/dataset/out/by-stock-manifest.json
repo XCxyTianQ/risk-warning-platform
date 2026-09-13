@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-09-13T16:35:35.521Z",
+  "since": "2015-01-01",
+  "until": "2026-09-13",
+  "codes": 680,
+  "added": 1998,
+  "total": 22127,
+  "requests": 21835,
+  "errors": 4,
+  "byType": {
+    "regulatory_penalty": 1425,
+    "delisting_risk": 4956,
+    "investigation": 1102,
+    "audit_qualified": 1772,
+    "other_risk_warning": 2161,
+    "fraud": 2576,
+    "funds_occupation": 8028,
+    "debt_default": 12,
+    "enforcement": 94,
+    "bond_extension": 1
+  }
+}

@@ -1,8 +1,8 @@
 {
-  "at": "2026-09-13T11:13:53.174Z",
-  "git": "4c38b7a",
+  "at": "2026-09-13T16:41:46.450Z",
+  "git": "9650c43",
   "appVersion": "0.7.2",
-  "checksPassed": 215,
+  "checksPassed": 216,
   "checksFailed": 0,
   "suites": {
     "probe-tables": {
@@ -23,6 +23,11 @@
     "probe-media": {
       "status": "pass",
       "checksPassed": 15,
+      "checksFailed": 0
+    },
+    "t5-warning": {
+      "status": "pass",
+      "checksPassed": 1,
       "checksFailed": 0
     },
     "finrisk-bench": {
@@ -127,10 +132,10 @@
     }
   },
   "metrics": {
-    "coldStartMedianMs": 136,
-    "apiP95Max": 2,
+    "coldStartMedianMs": 132,
+    "apiP95Max": 1,
     "jsRawBytes": 1401108,
     "jsFiles": 1,
-    "durationMs": 341245
+    "durationMs": 340384
   }
 }

@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T12:51:37.707Z",
+  "generatedAt": "2026-09-13T16:36:05.756Z",
   "target": "penalty_next_year",
   "targetLabel": "未来 12 个月受到行政处罚或立案调查",
   "data": {
     "panel": 47468,
-    "events": 20114,
+    "events": 22127,
     "collectedAt": "2026-09-13T12:46:42.450Z"
   },
   "cutoffs": [
@@ -25,80 +25,80 @@
     "test": 787
   },
   "samples": 6056,
-  "positiveRate": 0.04772126816380449,
+  "positiveRate": 0.05498678996036988,
   "skipped": {
     "noFinance": 240,
     "noFeatures": 0
   },
   "metrics": {
-    "randomBaselinePrAuc": 0.026683608640406607,
+    "randomBaselinePrAuc": 0.04955527318932656,
     "predictors": {
       "baseline_rule": {
         "label": "财务困境规则分（基线）",
         "n": 787,
-        "positives": 21,
-        "rocAuc": 0.6050913838120104,
-        "prAuc": 0.06518389887727226,
+        "positives": 39,
+        "rocAuc": 0.5917660770601947,
+        "prAuc": 0.09877044441860755,
         "topK": {
           "k": 79,
-          "precision": 0.08860759493670886,
-          "recall": 0.3333333333333333,
-          "hits": 7,
-          "totalPos": 21
+          "precision": 0.12658227848101267,
+          "recall": 0.2564102564102564,
+          "hits": 10,
+          "totalPos": 39
         },
-        "medianLeadDays": 233
+        "medianLeadDays": 192
       },
       "platform_composite": {
         "label": "平台六维综合风险信号（100-综合分）",
         "n": 787,
-        "positives": 21,
-        "rocAuc": 0.6141986820837996,
-        "prAuc": 0.07504555237223146,
+        "positives": 39,
+        "rocAuc": 0.5897093102975456,
+        "prAuc": 0.11093842248994325,
         "topK": {
           "k": 79,
-          "precision": 0.0759493670886076,
-          "recall": 0.2857142857142857,
-          "hits": 6,
-          "totalPos": 21
+          "precision": 0.11392405063291139,
+          "recall": 0.23076923076923078,
+          "hits": 9,
+          "totalPos": 39
         },
-        "medianLeadDays": 233
+        "medianLeadDays": 192
       },
       "platform_finance": {
         "label": "平台财务健康维度风险信号",
         "n": 787,
-        "positives": 21,
-        "rocAuc": 0.6141986820837996,
-        "prAuc": 0.07504555237223146,
+        "positives": 39,
+        "rocAuc": 0.5897093102975456,
+        "prAuc": 0.11093842248994325,
         "topK": {
           "k": 79,
-          "precision": 0.0759493670886076,
-          "recall": 0.2857142857142857,
-          "hits": 6,
-          "totalPos": 21
+          "precision": 0.11392405063291139,
+          "recall": 0.23076923076923078,
+          "hits": 9,
+          "totalPos": 39
         },
-        "medianLeadDays": 233
+        "medianLeadDays": 192
       },
       "platform_anomalies": {
         "label": "平台异常勾稽条数",
         "n": 787,
-        "positives": 21,
+        "positives": 39,
         "rocAuc": 0.5,
-        "prAuc": 0.04976520166466304,
+        "prAuc": 0.08282015973533911,
         "topK": {
           "k": 79,
-          "precision": 0.06329113924050633,
-          "recall": 0.23809523809523808,
-          "hits": 5,
-          "totalPos": 21
+          "precision": 0.11392405063291139,
+          "recall": 0.23076923076923078,
+          "hits": 9,
+          "totalPos": 39
         },
-        "medianLeadDays": 233
+        "medianLeadDays": 192
       }
     },
-    "bestByAuc": "platform_composite",
-    "baselineRocAuc": 0.6050913838120104,
-    "baselinePrAuc": 0.06518389887727226,
-    "platformCompositeRocAuc": 0.6141986820837996,
-    "platformCompositePrAuc": 0.07504555237223146
+    "bestByAuc": "baseline_rule",
+    "baselineRocAuc": 0.5917660770601947,
+    "baselinePrAuc": 0.09877044441860755,
+    "platformCompositeRocAuc": 0.5897093102975456,
+    "platformCompositePrAuc": 0.11093842248994325
   },
   "replay": {
     "rows": 6728,
@@ -184,9 +184,9 @@
         "name": "ST美晨",
         "cutoff": "2024-04-30",
         "score": 3,
-        "label": 0,
-        "event": null,
-        "leadDays": null
+        "label": 1,
+        "event": "investigation",
+        "leadDays": 335
       },
       {
         "code": "300269",
@@ -209,12 +209,32 @@
     ],
     "missedHighRisk": [
       {
+        "code": "300010",
+        "name": "ST豆神",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "investigation",
+        "leadDays": 234,
+        "features": {
+          "debt_ratio": 0.5164620193549626,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.11248553015379215,
+          "receivable_ratio": 0.08698200915119257,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
         "code": "300020",
         "name": "ST银江",
         "cutoff": "2024-04-30",
         "score": 0,
-        "event": "regulatory_penalty",
-        "leadDays": 350,
+        "event": "investigation",
+        "leadDays": 136,
         "features": {
           "debt_ratio": 0.4059356911598694,
           "current_ratio": null,
@@ -223,6 +243,26 @@
           "asset_turnover": null,
           "inventory_ratio": 0.0050083387424504295,
           "receivable_ratio": 0.21815581726551606,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "300096",
+        "name": "ST易联众",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "investigation",
+        "leadDays": 8,
+        "features": {
+          "debt_ratio": 0.6211978311097034,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.13189644087765276,
+          "receivable_ratio": 0.18973414169132985,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null
@@ -309,100 +349,60 @@
         }
       },
       {
-        "code": "600187",
-        "name": "*ST国中",
+        "code": "300460",
+        "name": "ST惠伦",
         "cutoff": "2024-04-30",
         "score": 0,
-        "event": "regulatory_penalty",
+        "event": "investigation",
+        "leadDays": 359,
+        "features": {
+          "debt_ratio": 0.5294871093742332,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.166351327320283,
+          "receivable_ratio": 0.0992474790974921,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "300462",
+        "name": "ST华铭",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "investigation",
         "leadDays": 129,
         "features": {
-          "debt_ratio": 0.11323753660597655,
+          "debt_ratio": 0.3096127960332799,
           "current_ratio": null,
           "net_margin": null,
           "roe": null,
           "asset_turnover": null,
-          "inventory_ratio": 0.029599700792280505,
-          "receivable_ratio": 0.11570618126588542,
+          "inventory_ratio": 0.16633293920896597,
+          "receivable_ratio": 0.18814819926013313,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null
         }
       },
       {
-        "code": "600381",
-        "name": "*ST春天",
+        "code": "600079",
+        "name": "ST人福",
         "cutoff": "2024-04-30",
         "score": 0,
-        "event": "regulatory_penalty",
-        "leadDays": 10,
+        "event": "investigation",
+        "leadDays": 175,
         "features": {
-          "debt_ratio": 0.04176233062622813,
+          "debt_ratio": 0.4461810186195589,
           "current_ratio": null,
           "net_margin": null,
           "roe": null,
           "asset_turnover": null,
-          "inventory_ratio": 0.1960148399338971,
-          "receivable_ratio": 0.02077676861176741,
-          "negative_equity": 0,
-          "loss_making": 0,
-          "revenue_growth": null
-        }
-      },
-      {
-        "code": "600488",
-        "name": "津药药业",
-        "cutoff": "2024-04-30",
-        "score": 0,
-        "event": "regulatory_penalty",
-        "leadDays": 365,
-        "features": {
-          "debt_ratio": 0.37487692384718363,
-          "current_ratio": null,
-          "net_margin": null,
-          "roe": null,
-          "asset_turnover": null,
-          "inventory_ratio": 0.12046164387356993,
-          "receivable_ratio": 0.0670336796573256,
-          "negative_equity": 0,
-          "loss_making": 0,
-          "revenue_growth": null
-        }
-      },
-      {
-        "code": "600543",
-        "name": "*ST莫高",
-        "cutoff": "2024-04-30",
-        "score": 0,
-        "event": "regulatory_penalty",
-        "leadDays": 250,
-        "features": {
-          "debt_ratio": 0.1382216432008874,
-          "current_ratio": null,
-          "net_margin": null,
-          "roe": null,
-          "asset_turnover": null,
-          "inventory_ratio": 0.1724321924143169,
-          "receivable_ratio": 0.027309050118866984,
-          "negative_equity": 0,
-          "loss_making": 0,
-          "revenue_growth": null
-        }
-      },
-      {
-        "code": "600576",
-        "name": "祥源文旅",
-        "cutoff": "2024-04-30",
-        "score": 0,
-        "event": "regulatory_penalty",
-        "leadDays": 227,
-        "features": {
-          "debt_ratio": 0.23657180774335426,
-          "current_ratio": null,
-          "net_margin": null,
-          "roe": null,
-          "asset_turnover": null,
-          "inventory_ratio": 0.02624520735658698,
-          "receivable_ratio": 0.018793393966490945,
+          "inventory_ratio": 0.1035111698291651,
+          "receivable_ratio": 0.25299319712415264,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null

@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T12:53:02.881Z",
+  "generatedAt": "2026-09-13T16:36:13.639Z",
   "target": "risk_warning_next_year",
   "targetLabel": "未来 12 个月被实施退市风险警示/终止上市",
   "data": {
     "panel": 47468,
-    "events": 20114,
+    "events": 22127,
     "collectedAt": "2026-09-13T12:46:42.450Z"
   },
   "cutoffs": [
