@@ -1,364 +1,507 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>企业经营风险预警平台 · 基准展示</title>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>企业经营风险预警平台 · 基准交互台</title>
 <style>
 :root{
-  --bg:#080c14; --bg2:#0c1220; --card:#111a2b; --line:#1e2b42;
-  --ink:#e8eefc; --ink2:#a9b8d4; --muted:#6f809f;
-  --accent:#2ee6b0; --accent2:#0ea47a; --blue:#5aa9ff; --amber:#ffb454; --rose:#ff6b8b; --violet:#a78bfa;
-  --shadow:0 20px 60px rgba(0,0,0,.45);
+  --bg:#070a11;--panel:#0d1421;--panel2:#111a2b;--line:#1d2a41;--line2:#27364f;
+  --ink:#e9effc;--ink2:#a6b6d3;--muted:#6b7c9c;--accent:#31e8b4;--blue:#5aa9ff;--amber:#ffb454;--rose:#ff6b8b;--violet:#a78bfa;
+  --shadow:0 24px 70px rgba(0,0,0,.5);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:
-  radial-gradient(1200px 600px at 12% -10%, #123 0%, transparent 60%),
-  radial-gradient(900px 500px at 100% 0%, #1a1030 0%, transparent 55%),
-  var(--bg);
-  color:var(--ink);font:15.5px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  -webkit-font-smoothing:antialiased}
-a{color:inherit}
-.wrap{max-width:1120px;margin:0 auto;padding:0 26px}
-nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(8,12,20,.72);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;gap:20px;height:58px}
-.brand{font-weight:700;letter-spacing:.3px;white-space:nowrap}
+body{margin:0;color:var(--ink);background:
+  radial-gradient(1100px 520px at 8% -8%, #0f2338 0%, transparent 58%),
+  radial-gradient(900px 480px at 102% 4%, #1a1234 0%, transparent 52%), var(--bg);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+/* 左栏：视图切换 */
+.rail{border-right:1px solid var(--line);padding:20px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.brand{font-weight:800;letter-spacing:.2px;line-height:1.35;margin-bottom:6px}
 .brand b{color:var(--accent)}
-nav .links{display:flex;gap:18px;margin-left:auto;font-size:13.5px;color:var(--ink2);flex-wrap:wrap}
-nav .links a{text-decoration:none;padding:4px 2px;border-bottom:1px solid transparent}
-nav .links a:hover{color:var(--ink);border-color:var(--accent)}
-#prog{position:fixed;left:0;top:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--blue));width:0;z-index:60}
-header.hero{padding:78px 0 40px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(46,230,176,.3);background:rgba(46,230,176,.07);padding:5px 12px;border-radius:999px}
-h1{font-size:clamp(32px,5vw,58px);line-height:1.12;margin:20px 0 14px;letter-spacing:-.02em;font-weight:800}
-h1 .grad{background:linear-gradient(100deg,var(--accent),var(--blue) 62%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.lede{font-size:clamp(16px,1.6vw,19px);color:var(--ink2);max-width:820px}
-.lede strong{color:var(--ink)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin:36px 0 8px}
-.kpi{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:16px;padding:16px 18px}
-.kpi .v{font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.kpi .v small{font-size:15px;color:var(--muted);font-weight:600;margin-left:3px}
-.kpi .k{color:var(--ink2);font-size:13px;margin-top:2px}
-section{padding:64px 0;border-top:1px solid rgba(30,43,66,.7)}
-h2{font-size:clamp(23px,2.6vw,32px);margin:0 0 10px;letter-spacing:-.01em}
-h2 .no{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:10px;font-size:.72em;vertical-align:middle}
-.sub{color:var(--ink2);max-width:860px;margin:0 0 26px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
-.grid2{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:start}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.tag{display:inline-block;font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin-right:6px}
-.tag.good{color:var(--accent);border-color:rgba(46,230,176,.35)}
-.tag.warn{color:var(--amber);border-color:rgba(255,180,84,.35)}
-.note{font-size:12.5px;color:var(--muted);margin-top:14px}
-.chart{width:100%;height:auto;display:block}
-.grid{stroke:#1b2740;stroke-width:1}
-.axis{fill:#6f809f;font-size:12px}
-.axisTitle{fill:#6f809f;font-size:12.5px}
-.mLabel{fill:#c8d6ef;font-size:14px}
-.mLabel.ours{fill:var(--accent);font-weight:700}
-.barOracle{fill:var(--blue);opacity:.85}
-.barClosed{fill:#33415c}
-.valOracle{fill:#9fc6ff;font-size:12px;font-variant-numeric:tabular-nums}
-.valClosed{fill:#8b9ab6;font-size:12px;font-variant-numeric:tabular-nums}
-.incLine{stroke:var(--accent);stroke-width:2}
-.incVal{fill:var(--accent);font-size:12.5px;font-weight:600}
-.incVal.ours{font-size:13.5px;font-weight:800}
-.incRow{cursor:pointer}
-.incRow:hover .barOracle{opacity:1}
-.ring{fill:none;stroke:#1d2a42}
-.spoke{stroke:#1d2a42}
-.poly{fill:color-mix(in srgb,var(--c) 16%,transparent);stroke:var(--c);stroke-width:2}
-.poly.ours{fill:color-mix(in srgb,var(--accent) 22%,transparent);stroke-width:2.6}
-.bubCircle{fill:rgba(90,169,255,.3);stroke:var(--blue);stroke-width:1.5}
-.bubCircle.ours{fill:rgba(46,230,176,.34);stroke:var(--accent);stroke-width:2.4}
-.bubLabel{fill:#dbe6fb;font-size:12px;font-weight:600;pointer-events:none}
-.bub{cursor:pointer}
-.bub:hover .bubCircle{fill-opacity:.75}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-top:12px}
-.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.big{font-size:clamp(26px,3.4vw,42px);font-weight:800;letter-spacing:-.02em;line-height:1.2}
-.big .a{color:var(--accent)}
-.quote{border-left:3px solid var(--accent);padding:6px 0 6px 18px;color:var(--ink);font-size:clamp(17px,1.9vw,22px);font-weight:600;letter-spacing:-.01em}
-.detail{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:16px}
-.detail h4{margin:0 0 8px;font-size:16px}
-.bar{height:9px;border-radius:6px;background:#22304a;overflow:hidden;margin:6px 0 12px}
-.bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--blue));width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #1a2539}
-th{color:var(--ink2);font-weight:600;font-size:12.5px}
+.brand small{display:block;color:var(--muted);font-weight:500;font-size:12px;margin-top:4px}
+.nav{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.nav button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:transparent;border:1px solid transparent;border-radius:12px;padding:10px 12px;text-align:left;transition:.18s}
+.nav button:hover{background:rgba(255,255,255,.045)}
+.nav button.on{background:linear-gradient(90deg,rgba(49,232,180,.14),rgba(49,232,180,.02));border-color:rgba(49,232,180,.35)}
+.nav button .t{font-weight:700;font-size:14.5px}
+.nav button .d{color:var(--muted);font-size:11.5px}
+.railFoot{margin-top:auto;color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);padding-top:12px}
+/* 右栏 */
+.main{padding:18px 22px 28px;min-width:0}
+.top{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:clamp(20px,2.1vw,27px);line-height:1.2;margin:0;letter-spacing:-.02em}
+h1 .grad{background:linear-gradient(100deg,var(--accent),var(--blue) 60%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--ink2);max-width:700px;font-size:13.5px;margin:6px 0 0}
+.kpis{display:flex;gap:9px;flex-wrap:wrap;margin-left:auto}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:7px 11px;min-width:96px}
+.kpi .v{font-size:17px;font-weight:800;letter-spacing:-.01em}
+.kpi .k{color:var(--muted);font-size:11px;white-space:nowrap}
+/* 控制条 */
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:16px}
+.bar .lab{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.seg{display:inline-flex;background:#0a0f19;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{background:transparent;border:0;border-radius:8px;padding:5px 11px;color:var(--ink2);font-size:13px;transition:.18s}
+.seg button.on{background:var(--accent);color:#062018;font-weight:700}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;background:#0a0f19;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--ink2);transition:.18s}
+.chip i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chip.on{color:var(--ink);border-color:var(--line2);background:#101a2b}
+.chip:not(.on){opacity:.42}
+.stage{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:18px;align-items:start}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 4px;font-size:15px}
+.card p.note{color:var(--muted);font-size:12px;margin:8px 0 0}
+svg.chart{width:100%;height:auto;max-height:min(60vh,540px);display:block;touch-action:none}
+.axisT{fill:#7b8cab;font-size:12px}
+.axisV{fill:#c9d7f0;font-size:11.5px;font-variant-numeric:tabular-nums}
+.ring{fill:none;stroke:#1a2539}
+.spoke{stroke:#1a2539}
+.hit{cursor:crosshair}
+.hit:hover .spoke{stroke:var(--blue)}
+.poly{transition:opacity .2s}
+.legendRow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;border:1px solid transparent;transition:.16s;cursor:default}
+.legendRow:hover{background:rgba(255,255,255,.04);border-color:var(--line)}
+.legendRow.ours{background:rgba(49,232,180,.07)}
+.legendRow i.sw{width:11px;height:11px;border-radius:3px;flex:none}
+.legendRow .nm{font-weight:600;font-size:14px}
+.legendRow .num{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:13px}
+.legendRow .sub{color:var(--muted);font-size:11.5px}
+.tips{color:var(--muted);font-size:12px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:8px 9px;border-bottom:1px solid #182337}
+th{color:var(--ink2);font-weight:600;font-size:12px}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
-tr.ours{background:rgba(46,230,176,.07)}
+tr.ours{background:rgba(49,232,180,.07)}
 tr.ours td:first-child{color:var(--accent);font-weight:700}
-.tl{position:relative;padding-left:26px}
-.tl:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--accent),transparent)}
-.tl .it{position:relative;margin-bottom:20px}
-.tl .it:before{content:"";position:absolute;left:-24px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(46,230,176,.14)}
-.tl .d{color:var(--muted);font-size:12.5px}
-.tl .t{font-weight:700}
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-.reveal.in{opacity:1;transform:none}
-footer{padding:52px 0 70px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line)}
-code{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
-pre{background:#0a0f1a;border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow:auto;font-size:12.5px;color:#c9d6ee}
-@media (max-width:900px){.grid2{grid-template-columns:1fr}}
-</style>
-</head>
+.view{display:none}.view.on{display:block;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.big{font-size:clamp(22px,3vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.big .a{color:var(--accent)}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.mini .m{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.mini .m .v{font-size:21px;font-weight:800}
+.mini .m .k{color:var(--muted);font-size:11.5px}
+.pill{display:inline-block;font-size:11px;border:1px solid var(--line2);border-radius:999px;padding:1px 9px;color:var(--ink2);margin:0 6px 6px 0}
+.pill.good{color:var(--accent);border-color:rgba(49,232,180,.4)}
+.pill.warn{color:var(--amber);border-color:rgba(255,180,84,.4)}
+pre{background:#080d15;border:1px solid var(--line);border-radius:12px;padding:12px 14px;overflow:auto;font-size:12px;color:#c6d3ea;margin:10px 0 0}
+.bar2{height:9px;border-radius:6px;background:#1c2740;overflow:hidden;margin:6px 0 12px}
+.bar2>i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1);background:linear-gradient(90deg,var(--accent),var(--blue))}
+@media (max-width:980px){.app{grid-template-columns:1fr}.rail{position:static;height:auto}.stage{grid-template-columns:1fr}}
+</style></head>
 <body>
-<div id="prog"></div>
-<nav><div class="wrap">
-  <div class="brand">企业经营风险预警平台 · <b>基准展示</b></div>
-  <div class="links">
-    <a href="#finding">核心发现</a><a href="#inc">文档增量</a><a href="#cost">成本×效果</a>
-    <a href="#radar">四维对比</a><a href="#self">自建基准</a><a href="#method">方法</a><a href="#limits">边界</a>
-  </div>
-</div></nav>
-
-<header class="hero"><div class="wrap">
-  <span class="eyebrow">Benchmark Showcase · 2026-09</span>
-  <h1>我们不是最贵的那个，<br><span class="grad">但我们是真的在读文档。</span></h1>
-  <p class="lede">把当前<strong>最贵档的两个模型</strong>（Claude Fable 5.1、GPT-6 Astra）拉到<strong>同一批题、同一提示词、同一裁判</strong>下正面对比，
-  再补上同代三家与视觉两项。结果不是"谁更强"，而是发现了一件更值得说的事：
-  <strong>最贵的模型在财报问答上的领先，很大一部分来自记忆，而不是读文档的能力。</strong></p>
-
-  <div class="kpis">
-    <div class="kpi"><div class="v" data-count="25">0</div><div class="k">平台工具</div></div>
-    <div class="kpi"><div class="v" data-count="15">0</div><div class="k">数据表 / 6 个风险维度</div></div>
-    <div class="kpi"><div class="v" data-count="5">0</div><div class="k">家模型正面对比</div></div>
-    <div class="kpi"><div class="v" data-count="2260">0</div><div class="k">次模型调用</div></div>
-    <div class="kpi"><div class="v">¥<span data-count-dec="18.4">0</span></div><div class="k">整轮外部对齐成本</div></div>
-  </div>
-  <p class="note">口径：FinanceBench 全量 150 题（oracle + 闭卷双口径）、BFCL v4 520 题、FinEval-MM 150 题、OmniDocBench 18 页；
-  裁判 Claude Sonnet 5（与被测各方均非同源）。闭卷 = 不给任何文档，只给问题。</p>
-</div></header>
-
-<section id="finding"><div class="wrap">
-  <h2><span class="no">01</span>核心发现：闭卷之后，排名变了意思</h2>
-  <div class="grid2">
-    <div>
-      <div class="quote">把文档完全拿走之后，<br>排名第一的模型仍然答对 <span class="a">86.67%</span>。</div>
-      <p class="sub" style="margin-top:18px">FinanceBench 的 oracle 口径是把标注好的证据段落直接喂给模型，常被当作"读财报能力"。
-      我们补了一个对照实验：<strong>完全不给文档</strong>，只给问题。于是每个模型都得到两个分数——</p>
-      <ul style="color:var(--ink2);padding-left:20px;margin:0">
-        <li><strong style="color:var(--blue)">oracle</strong>：给了文档能答对多少</li>
-        <li><strong>闭卷</strong>：不给文档还能答对多少（≈ 记忆底分）</li>
-        <li><strong style="color:var(--accent)">文档增量</strong>：两者之差，才是"读文档"真正带来的能力</li>
-      </ul>
-      <p class="sub" style="margin-top:18px">最贵档的 Fable 5.1 闭卷就能答对 86.67%，
-      文档只为它带来 <strong style="color:var(--amber)">+8.00pp</strong>；
-      而文档为我们带来 <strong style="color:var(--accent)">+40.67pp</strong>，
-      是它的 <strong>5.1 倍</strong>。
-      抽查还看到它自己在答案里写 "Based on FY2022 figures <em>from memory</em>"，并复现出只有读过原文才知道的数字。</p>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">企业经营风险预警平台<b> · 基准交互台</b>
+      <small>2026-09 · 同题 · 同提示词 · 同裁判</small></div>
+    <div class="nav" id="nav">
+      <button data-v="radar" class="on"><span class="t">能力雷达</span><span class="d">六轴 · 可切尺度</span></button>
+      <button data-v="memory"><span class="t">闭卷对照</span><span class="d">记忆底分 vs 文档增量</span></button>
+      <button data-v="cost"><span class="t">成本 × 效果</span><span class="d">气泡 = 文档增量</span></button>
+      <button data-v="self"><span class="t">自建基准</span><span class="d">T1 / T3 / T4 / T5</span></button>
+      <button data-v="limits"><span class="t">边界与口径</span><span class="d">这份结果没覆盖什么</span></button>
     </div>
-    <div class="card">
-      <div class="tag warn">记忆底分 vs 文档增量</div>
-      <table>
-        <thead><tr><th>模型</th><th class="n">闭卷</th><th class="n">文档增量</th><th class="n">闭卷写出正确数值</th></tr></thead>
-        <tbody>
-          <tr class=""><td>GLM-5.3-Flash</td><td class="n">40.67%</td><td class="n" style="color:inherit;font-weight:700">+49.33pp</td><td class="n">12.7%</td></tr><tr class=""><td>GPT-5.6 Luna</td><td class="n">42.67%</td><td class="n" style="color:inherit;font-weight:700">+48.66pp</td><td class="n">11.3%</td></tr><tr class="ours"><td>我们</td><td class="n">51.33%</td><td class="n" style="color:var(--accent);font-weight:700">+40.67pp</td><td class="n">20.7%</td></tr><tr class=""><td>GPT-6 Astra</td><td class="n">50.67%</td><td class="n" style="color:inherit;font-weight:700">+40.00pp</td><td class="n">20.0%</td></tr><tr class=""><td>Fable 5.1</td><td class="n">86.67%</td><td class="n" style="color:inherit;font-weight:700">+8.00pp</td><td class="n">38.0%</td></tr>
-        </tbody>
-      </table>
-      <p class="note">本表按<strong>文档增量</strong>排序（不是按能力排序）——括号越长，说明它的分数越是"读"出来的。
-      「闭卷写出正确数值」= 不给文档却给出与标准答案一致的数值，占该模型 150 题的比例。这一项不依赖提示词风格，是记忆的直接证据。</p>
-    </div>
-  </div>
-</div></section>
+    <div class="railFoot">数据由 <code>make-showcase.js</code> 从仓库产物注入；单文件零依赖，离线可用。</div>
+  </aside>
 
-<section id="inc"><div class="wrap">
-  <h2><span class="no">02</span>把两个分数画在一起</h2>
-  <p class="sub">蓝条 = 给了文档（oracle），灰条 = 不给文档（闭卷），绿色括号 = 差额，也就是文档真正带来的部分。
-  我们把括号画在灰条右端，是因为<strong>它才是这家模型"会读文档"的证据</strong>。</p>
-  <div class="card"><svg viewBox="0 0 980 436" class="chart incChart" role="img" aria-label="各模型 oracle 与闭卷准确率对比"><line x1="150" y1="26" x2="150" y2="422" class="grid"/><text x="150" y="16" class="axis" text-anchor="middle">0%</text><line x1="333.5" y1="26" x2="333.5" y2="422" class="grid"/><text x="333.5" y="16" class="axis" text-anchor="middle">25%</text><line x1="517" y1="26" x2="517" y2="422" class="grid"/><text x="517" y="16" class="axis" text-anchor="middle">50%</text><line x1="700.5" y1="26" x2="700.5" y2="422" class="grid"/><text x="700.5" y="16" class="axis" text-anchor="middle">75%</text><line x1="884" y1="26" x2="884" y2="422" class="grid"/><text x="884" y="16" class="axis" text-anchor="middle">100%</text><g class="incRow" data-model="glm-5.3-flash"><text x="136" y="49" class="mLabel " text-anchor="end">GLM-5.3-Flash</text><rect x="150" y="34" width="660.6" height="17" rx="4" class="barOracle"/><rect x="150" y="55" width="298.5178" height="17" rx="4" class="barClosed"/><text x="818.6" y="47" class="valOracle">90.00%</text><text x="456.5178" y="68" class="valClosed">40.67%</text><line x1="448.5178" y1="76" x2="810.6" y2="76" class="incLine"/><text x="629.5589" y="92" class="incVal " text-anchor="middle">文档增量 +49.33pp</text></g><g class="incRow" data-model="gpt-5.6-luna"><text x="136" y="127" class="mLabel " text-anchor="end">GPT-5.6 Luna</text><rect x="150" y="112" width="670.3622" height="17" rx="4" class="barOracle"/><rect x="150" y="133" width="313.19780000000003" height="17" rx="4" class="barClosed"/><text x="828.3622" y="125" class="valOracle">91.33%</text><text x="471.19780000000003" y="146" class="valClosed">42.67%</text><line x1="463.19780000000003" y1="154" x2="820.3622" y2="154" class="incLine"/><text x="641.78" y="170" class="incVal " text-anchor="middle">文档增量 +48.66pp</text></g><g class="incRow" data-model="deepseek-flash"><text x="136" y="205" class="mLabel ours" text-anchor="end">我们</text><rect x="150" y="190" width="675.28" height="17" rx="4" class="barOracle"/><rect x="150" y="211" width="376.7622" height="17" rx="4" class="barClosed"/><text x="833.28" y="203" class="valOracle">92.00%</text><text x="534.7622" y="224" class="valClosed">51.33%</text><line x1="526.7622" y1="232" x2="825.28" y2="232" class="incLine"/><text x="676.0210999999999" y="248" class="incVal ours" text-anchor="middle">文档增量 +40.67pp</text></g><g class="incRow" data-model="gpt-6-astra"><text x="136" y="283" class="mLabel " text-anchor="end">GPT-6 Astra</text><rect x="150" y="268" width="665.5178" height="17" rx="4" class="barOracle"/><rect x="150" y="289" width="371.91779999999994" height="17" rx="4" class="barClosed"/><text x="823.5178" y="281" class="valOracle">90.67%</text><text x="529.9177999999999" y="302" class="valClosed">50.67%</text><line x1="521.9177999999999" y1="310" x2="815.5178" y2="310" class="incLine"/><text x="668.7177999999999" y="326" class="incVal " text-anchor="middle">文档增量 +40.00pp</text></g><g class="incRow" data-model="claude-fable-5-1"><text x="136" y="361" class="mLabel " text-anchor="end">Fable 5.1</text><rect x="150" y="346" width="694.8778" height="17" rx="4" class="barOracle"/><rect x="150" y="367" width="636.1578" height="17" rx="4" class="barClosed"/><text x="852.8778" y="359" class="valOracle">94.67%</text><text x="794.1578" y="380" class="valClosed">86.67%</text><line x1="786.1578" y1="388" x2="844.8778" y2="388" class="incLine"/><text x="815.5178" y="404" class="incVal " text-anchor="middle">文档增量 +8.00pp</text></g></svg>
-    <div class="legend"><span><i style="background:var(--blue)"></i>oracle（给文档）</span><span><i style="background:#33415c"></i>闭卷（不给文档）</span><span><i style="background:var(--accent)"></i>文档增量</span></div>
-    <p class="note">口径：FinanceBench 全量 150 题，A1 提示词，裁判 Claude Sonnet 5。闭卷不等于纯记忆（部分题可凭通用金融常识推导，且闭卷提示词鼓励推导），故它是污染的<strong>上界</strong>估计。</p>
-  </div>
-</div></section>
-
-<section id="cost"><div class="wrap">
-  <h2><span class="no">03</span>成本 × 效果：气泡越大，越靠"读"得分</h2>
-  <div class="grid2">
-    <div class="card"><svg viewBox="0 0 980 430" class="chart bubble" role="img" aria-label="成本与准确率的关系"><line x1="76" y1="372" x2="940" y2="372" class="grid"/><text x="66" y="376" class="axis" text-anchor="end">86%</text><line x1="76" y1="309.09090909090907" x2="940" y2="309.09090909090907" class="grid"/><text x="66" y="313.09090909090907" class="axis" text-anchor="end">88%</text><line x1="76" y1="246.1818181818182" x2="940" y2="246.1818181818182" class="grid"/><text x="66" y="250.1818181818182" class="axis" text-anchor="end">90%</text><line x1="76" y1="183.27272727272728" x2="940" y2="183.27272727272728" class="grid"/><text x="66" y="187.27272727272728" class="axis" text-anchor="end">92%</text><line x1="76" y1="120.36363636363635" x2="940" y2="120.36363636363635" class="grid"/><text x="66" y="124.36363636363635" class="axis" text-anchor="end">94%</text><line x1="76" y1="57.45454545454544" x2="940" y2="57.45454545454544" class="grid"/><text x="66" y="61.45454545454544" class="axis" text-anchor="end">96%</text><line x1="221.16328201938123" y1="26" x2="221.16328201938123" y2="372" class="grid"/><text x="221.16328201938123" y="392" class="axis" text-anchor="middle">$1</text><line x1="387.71440336719144" y1="26" x2="387.71440336719144" y2="372" class="grid"/><text x="387.71440336719144" y="392" class="axis" text-anchor="middle">$2</text><line x1="607.8830099118561" y1="26" x2="607.8830099118561" y2="372" class="grid"/><text x="607.8830099118561" y="392" class="axis" text-anchor="middle">$5</text><line x1="774.4341312596663" y1="26" x2="774.4341312596663" y2="372" class="grid"/><text x="774.4341312596663" y="392" class="axis" text-anchor="middle">$10</text><text x="528" y="418" class="axisTitle" text-anchor="middle">两项基准的模型成本（美元，对数轴）</text><text x="18" y="86" class="axisTitle" transform="rotate(-90 18 86)" text-anchor="middle">FinanceBench oracle</text><g class="bub" data-model="claude-fable-5-1"><circle cx="851.4766641215544" cy="99.28909090909087" r="14.16" class="bubCircle "/><text x="851.4766641215544" y="103.28909090909087" class="bubLabel" text-anchor="middle">Fable 5.1</text><title>Claude Fable 5.1：oracle 94.67%，文档增量 +8.00pp，成本 $13.78</title></g><g class="bub" data-model="deepseek-flash"><circle cx="164.5233358784456" cy="183.27272727272728" r="31.1484" class="bubCircle ours"/><text x="164.5233358784456" y="187.27272727272728" class="bubLabel" text-anchor="middle">我们</text><title>DeepSeek-V4.1-Flash：oracle 92.00%，文档增量 +40.67pp，成本 $0.79</title></g><g class="bub" data-model="gpt-6-astra"><circle cx="637.6746682249568" cy="225.10727272727266" r="30.8" class="bubCircle "/><text x="637.6746682249568" y="229.10727272727266" class="bubLabel" text-anchor="middle">GPT-6 Astra</text><title>GPT-6 Astra：oracle 90.67%，文档增量 +40.00pp，成本 $5.66</title></g></svg>
-      <p class="note">横轴为两项基准（FinanceBench 150 + BFCL 520）的实测模型成本，对数轴；纵轴为 oracle 准确率；
-      气泡半径代表文档增量。我们（绿）在最左侧、且气泡不小——<strong>用 1/17 的钱拿到了 97% 的分数，并且分数里"读出来"的比例最高。</strong>
-      Luna 与 GLM-5.3-Flash 的价目网关未公布，故不入图。</p>
-    </div>
-    <div>
-      <div class="big">$0.79 <span style="color:var(--muted);font-weight:600;font-size:.5em">vs</span> $5.66 ~ $13.78</div>
-      <p class="sub" style="margin-top:14px">同样跑完这两项基准，我们花 <strong>$0.79</strong>；
-      Astra 是我们的 <strong>7.2 倍</strong>，Fable 5.1 是 <strong>17.4 倍</strong>。
-      而在工具调用（BFCL，确定性判分）上，我们 89.04%，领先 Astra 5.8pp。</p>
-      <div class="card" style="margin-top:18px">
-        <table>
-          <thead><tr><th>模型</th><th class="n">oracle</th><th class="n">BFCL</th><th class="n">成本</th><th class="n">倍数</th></tr></thead>
-          <tbody>
-            <tr class=""><td>Fable 5.1</td><td class="n">94.67%</td><td class="n">90.96%</td><td class="n">$13.78</td><td class="n">17.4×</td></tr><tr class="ours"><td>我们</td><td class="n">92.00%</td><td class="n">89.04%</td><td class="n">$0.79</td><td class="n">1.0×</td></tr><tr class=""><td>GPT-5.6 Luna</td><td class="n">91.33%</td><td class="n">83.08%</td><td class="n">未公布</td><td class="n">—</td></tr><tr class=""><td>GPT-6 Astra</td><td class="n">90.67%</td><td class="n">83.27%</td><td class="n">$5.66</td><td class="n">7.2×</td></tr><tr class=""><td>GLM-5.3-Flash</td><td class="n">90.00%</td><td class="n">88.27%</td><td class="n">未公布</td><td class="n">—</td></tr>
-          </tbody>
-        </table>
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>我们不是最贵的那个，<br><span class="grad">但我们是真的在读文档。</span></h1>
+        <p class="lede">把当前最贵档两个模型（Claude Fable 5.1、GPT-6 Astra）与同代三家拉到
+          <strong>同一批题、同一提示词、同一裁判</strong>下正面对比，并补上闭卷对照实验。
+          下面每个视图都可以动手调：切尺度、开关模型、悬停读数。</p>
       </div>
+      <div class="kpis"><div class="kpi"><div class="v">25</div><div class="k">平台工具</div></div><div class="kpi"><div class="v">15</div><div class="k">数据表 / 6 维风险</div></div><div class="kpi"><div class="v">5</div><div class="k">家模型正面对比</div></div><div class="kpi"><div class="v">7.2×~17.4×</div><div class="k">对手的成本倍数</div></div><div class="kpi"><div class="v">¥18</div><div class="k">整轮外部对齐成本</div></div></div>
     </div>
-  </div>
-</div></section>
 
-<section id="radar"><div class="wrap">
-  <h2><span class="no">04</span>四维对比：两家顶级模型各赢一半</h2>
-  <div class="grid2">
-    <div class="card"><svg viewBox="0 0 980 400" class="chart dimBars" role="img" aria-label="四个维度上三家模型的成绩对比"><text x="0" y="22" class="mLabel">财报问答</text><text x="0" y="40" class="axis">FinanceBench oracle</text><rect x="118" y="52" width="664.2857142857141" height="13" rx="3.5" fill="var(--amber)" opacity="0.82"/><text x="790.2857142857141" y="63" class="axis" style="fill:#c8d6ef">94.67% ★</text><rect x="118" y="69" width="645.5507099850608" height="13" rx="3.5" fill="var(--accent)" opacity="1"/><text x="771.5507099850608" y="80" class="axis" style="fill:#c8d6ef">我们 92.00%</text><rect x="118" y="86" width="636.2182921124506" height="13" rx="3.5" fill="var(--blue)" opacity="0.82"/><text x="762.2182921124506" y="97" class="axis" style="fill:#c8d6ef">90.67%</text><line x1="0" y1="94" x2="980" y2="94" class="grid"/><text x="0" y="118" class="mLabel">工具调用</text><text x="0" y="136" class="axis">BFCL v4（确定性判分）</text><rect x="118" y="148" width="664.2857142857141" height="13" rx="3.5" fill="var(--amber)" opacity="0.82"/><text x="790.2857142857141" y="159" class="axis" style="fill:#c8d6ef">90.96% ★</text><rect x="118" y="165" width="650.2638522427441" height="13" rx="3.5" fill="var(--accent)" opacity="1"/><text x="776.2638522427441" y="176" class="axis" style="fill:#c8d6ef">我们 89.04%</text><rect x="118" y="182" width="608.1252355823596" height="13" rx="3.5" fill="var(--blue)" opacity="0.82"/><text x="734.1252355823596" y="193" class="axis" style="fill:#c8d6ef">83.27%</text><line x1="0" y1="190" x2="980" y2="190" class="grid"/><text x="0" y="214" class="mLabel">图表取数</text><text x="0" y="232" class="axis">FinEval-MM</text><rect x="118" y="244" width="602.2621217279847" height="13" rx="3.5" fill="var(--amber)" opacity="0.82"/><text x="728.2621217279847" y="255" class="axis" style="fill:#c8d6ef">64.67%</text><rect x="118" y="261" width="614.6482145360598" height="13" rx="3.5" fill="var(--accent)" opacity="1"/><text x="740.6482145360598" y="272" class="axis" style="fill:#c8d6ef">我们 66.00%</text><rect x="118" y="278" width="664.2857142857142" height="13" rx="3.5" fill="var(--blue)" opacity="0.82"/><text x="790.2857142857142" y="289" class="axis" style="fill:#c8d6ef">71.33% ★</text><line x1="0" y1="286" x2="980" y2="286" class="grid"/><text x="0" y="310" class="mLabel">整页转写</text><text x="0" y="328" class="axis">OmniDocBench 片段召回</text><rect x="118" y="340" width="617.1168706831703" height="13" rx="3.5" fill="var(--amber)" opacity="0.82"/><text x="743.1168706831703" y="351" class="axis" style="fill:#c8d6ef">0.58</text><rect x="118" y="357" width="616.1628940709841" height="13" rx="3.5" fill="var(--accent)" opacity="1"/><text x="742.1628940709841" y="368" class="axis" style="fill:#c8d6ef">我们 0.58</text><rect x="118" y="374" width="664.2857142857142" height="13" rx="3.5" fill="var(--blue)" opacity="0.82"/><text x="790.2857142857142" y="385" class="axis" style="fill:#c8d6ef">0.63 ★</text><line x1="0" y1="382" x2="980" y2="382" class="grid"/></svg>
-      <div class="legend"><span><i style="background:var(--accent)"></i>我们</span><span><i style="background:var(--blue)"></i>GPT-6 Astra</span><span><i style="background:var(--amber)"></i>Claude Fable 5.1</span><span>★ = 该维领先</span></div>
-      <p class="note">每行独立定标（只比较同一维度内的三家），并直接标出原始数值：财报问答 = FinanceBench oracle；工具调用 = BFCL v4；图表取数 = FinEval-MM；整页转写 = OmniDocBench 片段召回。Luna / GLM 未跑视觉，故不入此图。</p>
-    </div>
-    <div>
-      <div class="grid3">
-        <div class="card"><div class="tag">图表取数</div><div class="big" style="font-size:30px">66.00%</div>
-          <div class="note" style="margin-top:4px">我们领先 Fable 5.1 1.3pp，落后 Astra 5.3pp</div></div>
-        <div class="card"><div class="tag good">工具调用</div><div class="big" style="font-size:30px">89.04%</div>
-          <div class="note" style="margin-top:4px">确定性判分，无裁判主观性；领先 Astra、只落后 Fable 1.9pp</div></div>
-        <div class="card"><div class="tag">整页转写</div><div class="big" style="font-size:30px">0.75</div>
-          <div class="note" style="margin-top:4px">数字召回；Fable 在这一项略胜我们（0.78）</div></div>
+    <div class="bar">
+      <span class="lab">尺度</span>
+      <div class="seg" id="scaleSeg">
+        <button data-s="zoom" class="on">拉开尺度</button><button data-s="abs">绝对尺度</button>
       </div>
-      <div class="card" style="margin-top:16px">
-        <div class="tag warn">能力分裂</div>
-        <p class="sub" style="margin:8px 0 0">Fable 5.1 在整页转写保真度上略胜我们，却在图表取数上输给我们；
-        这与一个更早的观察吻合：它能指出"标题在右页中部"（版面位置感知），
-        但在<strong>金融数据推理与理解</strong>这一类题上只拿到 <strong>6.67%（1/15）</strong>。
-        <strong>会看版面 ≠ 会取数。</strong></p>
+      <span class="lab" style="margin-left:8px">范围</span>
+      <div class="seg" id="setSeg"><button data-set="three" class="on">三家（含视觉轴）</button><button data-set="five" class="">五家（文本轴）</button></div>
+      <span class="lab" style="margin-left:8px">模型</span>
+      <div class="chips" id="chips"></div>
+      <span class="tips" id="barTip">提示：把鼠标放到雷达轴上看原始数值；点图例可聚焦某个模型</span>
+    </div>
+
+    <!-- 视图 1：雷达 -->
+    <section class="view on" id="v-radar">
+      <div class="stage">
+        <div class="card">
+          <h3>能力雷达</h3>
+          <p class="note" id="radarNote"></p>
+          <svg class="chart" id="radar" viewBox="0 0 640 560" role="img" aria-label="模型能力雷达图"></svg>
+        </div>
+        <div class="card">
+          <h3>数值</h3>
+          <p class="note" id="radarSub"></p>
+          <div id="legend"></div>
+          <p class="note" id="tip"></p>
+        </div>
       </div>
-    </div>
-  </div>
-</div></section>
+    </section>
 
-<section id="self"><div class="wrap">
-  <h2><span class="no">05</span>自建基准：先证明自己，再去比外部</h2>
-  <p class="sub">外部基准决定"坐标"，自建基准决定"确定性"。下面四项用生成过程真值与事后事件做标注，
-  刻意避开"自己考自己"——这也是后面能看出"记忆 vs 阅读"的前提：我们知道自己的数字是怎么来的。</p>
-  <div class="grid3">
-    <div class="card"><div class="tag good">T1 结构化抽取</div>
-      <div class="big">100%<small style="font-size:14px;color:var(--muted)"> 字段级 F1</small></div>
-      <div class="bar"><i data-w="100"></i></div>
-      <div class="note">258 个单元格，MAPE 0.0000%</div></div>
-    <div class="card"><div class="tag good">T3 勾稽校验</div>
-      <div class="big">100%<small style="font-size:14px;color:var(--muted)"> 缺陷召回</small></div>
-      <div class="bar"><i data-w="100"></i></div>
-      <div class="note">4 类缺陷，误报率 0%</div></div>
-    <div class="card"><div class="tag good">T4 指标测算</div>
-      <div class="big">100%<small style="font-size:14px;color:var(--muted)"> 与独立重算一致</small></div>
-      <div class="bar"><i data-w="100"></i></div>
-      <div class="note">30 个指标点，最大相对误差 0.471%</div></div>
-    <div class="card"><div class="tag good">T5 风险预警</div>
-      <div class="big">79.8<small style="font-size:14px;color:var(--muted)"> AUC</small></div>
-      <div class="bar"><i data-w="79.8"></i></div>
-      <div class="note">三行财务规则基线 63.3；任一高危事件领先 255 天（1,348 家企业·期，time-split）</div></div>
-  </div>
-</div></section>
+    <!-- 视图 2：闭卷 -->
+    <section class="view" id="v-memory">
+      <div class="stage">
+        <div class="card">
+          <h3>给了文档 vs 不给文档</h3>
+          <p class="note">蓝 = oracle（给文档），灰 = 闭卷（不给文档），绿括号 = 差额，也就是文档真正带来的部分。</p>
+          <svg class="chart" id="mem" viewBox="0 0 900 440" role="img" aria-label="oracle 与闭卷对比"></svg>
+        </div>
+        <div class="card">
+          <h3>这张图想说的事</h3>
+          <div class="big">Fable 5.1 闭卷就答对 <span class="a">86.67%</span></div>
+          <p class="note">文档只为它带来 <strong>+8.00pp</strong>；
+          为我们带来 <strong style="color:var(--accent)">+40.67pp</strong>，是它的
+          <strong>5.1 倍</strong>。</p>
+          <p class="note">抽查可见它自己在答案里写 "Based on FY2022 figures <em>from memory</em>"，
+          并复现出只有读过原文才知道的数字（如某年营业利润率"下降 1.7 个百分点"）。</p>
+          <div class="mini">
+            <div class="m"><div class="v">38.0%</div><div class="k">Fable 5.1 · 闭卷写出正确数值</div></div><div class="m"><div class="v">20.7%</div><div class="k">我们 · 闭卷写出正确数值</div></div><div class="m"><div class="v">20.0%</div><div class="k">GPT-6 Astra · 闭卷写出正确数值</div></div><div class="m"><div class="v">12.7%</div><div class="k">GLM-5.3-Flash · 闭卷写出正确数值</div></div><div class="m"><div class="v">11.3%</div><div class="k">GPT-5.6 Luna · 闭卷写出正确数值</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<section id="method"><div class="wrap">
-  <h2><span class="no">06</span>这条路是怎么走出来的</h2>
-  <div class="grid2">
-    <div class="tl">
-      <div class="it"><div class="d">第一阶段</div><div class="t">自建基准 T1–T5</div><div class="sub" style="margin:2px 0 0">用生成过程真值 + 事后事件做标注，先把"读得准、判得准"钉死。</div></div>
-      <div class="it"><div class="d">第二阶段</div><div class="t">外部对齐：6 组公开基准</div><div class="sub" style="margin:2px 0 0">CFLUE / FinEval / FinEval-MM / BFCL / OmniDocBench / FinanceBench，全部锁定版本与哈希。</div></div>
-      <div class="it"><div class="d">第三阶段</div><div class="t">发现裁判是同一把尺子的问题</div><div class="sub" style="margin:2px 0 0">把论文公开答案送进我们的裁判重判，才看清"平手"是尺子造成的；随后统一裁判口径并引入多数投票。</div></div>
-      <div class="it"><div class="d">第四阶段</div><div class="t">同代与超限挑战</div><div class="sub" style="margin:2px 0 0">接入聚合网关，把同代三家与最贵档两家拉到同题同裁判下对比；顺带验证"网关路由是否改变答案"。</div></div>
-      <div class="it"><div class="d">第五阶段</div><div class="t">补上闭卷对照，发现记忆红利</div><div class="sub" style="margin:2px 0 0">本文的起点：<strong>不给文档还能答对多少</strong>，才是判断"会不会读"的关键一问。</div></div>
-    </div>
-    <div class="card">
-      <div class="tag">可复现</div>
-      <pre># 1) 回归与工程指标
-node bench/run.js --no-gui
-# 2) 自建基准 T1/T3/T4
+    <!-- 视图 3：成本 -->
+    <section class="view" id="v-cost">
+      <div class="stage">
+        <div class="card">
+          <h3>成本 × 效果</h3>
+          <p class="note">横轴对数成本，纵轴 oracle，<strong>气泡半径 = 文档增量</strong>（越大越靠"读"得分）。悬停看明细。</p>
+          <svg class="chart" id="bub" viewBox="0 0 900 440" role="img" aria-label="成本与准确率"></svg>
+          <p class="note">Luna 与 GLM-5.3-Flash 的网关价目未公布，故不入图。</p>
+        </div>
+        <div class="card">
+          <h3>同题同量的花费</h3>
+          <div class="big">$0.79 <span style="color:var(--muted);font-weight:600;font-size:.45em">vs</span>
+            $5.66 ~ $13.78</div>
+          <p class="note">Astra 是我们的 7.2 倍，Fable 5.1 是
+          17.4 倍。而在工具调用（确定性判分）上我们
+          89.04%，领先 Astra 5.77pp。</p>
+          <table><thead><tr><th>模型</th><th class="n">oracle</th><th class="n">BFCL</th><th class="n">成本</th><th class="n">倍数</th></tr></thead>
+          <tbody><tr class=""><td>Fable 5.1</td><td class="n">94.67%</td><td class="n">90.96%</td><td class="n">$13.78</td><td class="n">17.4×</td></tr><tr class="ours"><td>我们</td><td class="n">92.00%</td><td class="n">89.04%</td><td class="n">$0.79</td><td class="n">1.0×</td></tr><tr class=""><td>GPT-5.6 Luna</td><td class="n">91.33%</td><td class="n">83.08%</td><td class="n">未公布</td><td class="n">—</td></tr><tr class=""><td>GPT-6 Astra</td><td class="n">90.67%</td><td class="n">83.27%</td><td class="n">$5.66</td><td class="n">7.2×</td></tr><tr class=""><td>GLM-5.3-Flash</td><td class="n">90.00%</td><td class="n">88.27%</td><td class="n">未公布</td><td class="n">—</td></tr></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 视图 4：自建基准 -->
+    <section class="view" id="v-self">
+      <div class="stage">
+        <div class="card">
+          <h3>自建基准：先证明自己，再去比外部</h3>
+          <p class="note">用生成过程真值与事后事件做标注，刻意避开"自己考自己"——这也是能看出"记忆 vs 阅读"的前提：我们知道自己的数字是怎么来的。</p>
+          <div class="mini">
+            <div class="m"><div class="v">100%</div><div class="k">T1 字段级 F1 · 258 单元格</div></div>
+            <div class="m"><div class="v">0.0000%</div><div class="k">T1 MAPE</div></div>
+            <div class="m"><div class="v">100%</div><div class="k">T3 勾稽缺陷召回 · 误报 0</div></div>
+            <div class="m"><div class="v">100%</div><div class="k">T4 指标与独立重算一致</div></div>
+            <div class="m"><div class="v">79.8</div><div class="k">T5 退市风险 AUC</div></div>
+            <div class="m"><div class="v">255 天</div><div class="k">T5 任一高危事件平均提前</div></div>
+          </div>
+          <div style="margin-top:14px">
+            <div class="pill good">T5 vs 三行财务规则基线 63.3</div><div class="pill good">1,348 家企业·期 time-split</div><div class="pill">六维风险模型</div>
+          </div>
+          <div style="margin-top:10px">
+            <div style="color:var(--muted);font-size:12px">T5 退市风险 AUC</div><div class="bar2"><i data-w="79.8"></i></div>
+            <div style="color:var(--muted);font-size:12px">三行财务规则基线</div><div class="bar2"><i data-w="63.3" style="background:linear-gradient(90deg,#5a6a86,#8ea0bd)"></i></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>外部坐标（同一次运行）</h3>
+          <table><tbody>
+            <tr><td>CFLUE 中文金融知识</td><td class="n">89.93%</td><td class="n" style="color:var(--muted)">n=298</td></tr>
+            <tr><td>FinEval 金融数值计算</td><td class="n">85.71%</td><td class="n" style="color:var(--muted)">n=42</td></tr>
+            <tr><td>BFCL v4 工具调用</td><td class="n">89.04%</td><td class="n" style="color:var(--muted)">n=520</td></tr>
+            <tr><td>FinEval-MM 图表题</td><td class="n">66.00%</td><td class="n" style="color:var(--muted)">n=150</td></tr>
+            <tr><td>OmniDocBench 片段召回</td><td class="n">0.5813</td><td class="n" style="color:var(--muted)">n=18</td></tr>
+            <tr class="ours"><td>FinanceBench oracle</td><td class="n">92.00%</td><td class="n" style="color:var(--muted)">n=150</td></tr>
+          </tbody></table>
+          <p class="note">全部 2,260 次模型调用，
+          成本 ¥18.01（含裁判），每一条都能用仓库命令复现。</p>
+          <pre>node bench/run.js --no-gui
 node bench/benchmark/run.js
-# 3) 外部对齐（六组）
 node bench/external/run.js --models deepseek-flash
-# 4) 同代/超限对比
 node bench/external/samegen.js --plan
-# 5) 生成展示页
 node bench/html/make-showcase.js</pre>
-      <p class="note">每个数字都对应仓库里的产物文件与命令；报告与展示页由同一批 JSON 生成，不存在两套口径。</p>
-    </div>
-  </div>
-</div></section>
+        </div>
+      </div>
+    </section>
 
-<section id="limits"><div class="wrap">
-  <h2><span class="no">07</span>边界：这份展示没有覆盖到什么</h2>
-  <div class="grid3">
-    <div class="card"><div class="tag warn">口径</div><p class="sub" style="margin:8px 0 0">闭卷不等于纯记忆：部分题可凭通用金融常识推导，且闭卷提示词鼓励推导，因此闭卷分是污染的<strong>上界</strong>估计。</p></div>
-    <div class="card"><div class="tag warn">判分</div><p class="sub" style="margin:8px 0 0">BFCL 判分是官方 checker 的自实现移植，OmniDocBench 四项是自实现保真度指标（非官方 TEDS/CDM），不得与官方榜单直接等同。</p></div>
-    <div class="card"><div class="tag warn">样本</div><p class="sub" style="margin:8px 0 0">FinanceBench 用的是开源子集 150 题；闭卷对照只在这一组题上做过，"记忆红利"的结论仍需换一个未被污染的基准复验。</p></div>
-    <div class="card"><div class="tag warn">未做</div><p class="sub" style="margin:8px 0 0">T6 Agent 工具链未纳入自建基准；长稳测试（8 小时 / 2000 请求）与放大数据量后的性能未做。</p></div>
-    <div class="card"><div class="tag warn">成本</div><p class="sub" style="margin:8px 0 0">Luna 与 GLM-5.3-Flash 的网关价目未公布，只记 token 不估钱；我们的成本按官方 peak 价计，实际可能更低。</p></div>
-    <div class="card"><div class="tag warn">产品链路</div><p class="sub" style="margin:8px 0 0">平台后端附件目前只接受图片、<strong>不支持 PDF</strong>；PDF 抽取与检索在评测侧完成，产品化需要补后端 PDF 能力。</p></div>
-  </div>
-</div></section>
-
-<footer><div class="wrap">
-  <div>数据来源：<code>bench/external/out/frontier-challenge.json</code>、<code>samegen-results.json</code>、<code>bench/external/reports/external-alignment-v1.json</code>、<code>bench/reports/</code>。</div>
-  <div style="margin-top:8px">展示页由 <code>bench/html/make-showcase.js</code> 生成；单文件零依赖，离线可用。所有对比均在公开基准上进行，结果包含负结果与未达标项。</div>
-</div></footer>
+    <!-- 视图 5：边界 -->
+    <section class="view" id="v-limits">
+      <div class="stage">
+        <div class="card">
+          <h3>口径：为什么闭卷不等于纯记忆</h3>
+          <p class="note">部分题可凭通用金融常识推导，且闭卷提示词鼓励"未陈述则推导"，因此闭卷得分是记忆污染的<strong>上界</strong>估计。
+          而"闭卷下写出与标准答案一致的数值"这一项不依赖提示词风格，是更硬的证据。</p>
+          <h3 style="margin-top:16px">判分</h3>
+          <p class="note">BFCL 判分是官方 checker 的自实现移植；OmniDocBench 四项是自实现保真度指标，<strong>不是官方 TEDS/CDM</strong>，不得与官方榜单直接等同。</p>
+          <h3 style="margin-top:16px">样本与未做</h3>
+          <p class="note">FinanceBench 用开源子集 150 题；闭卷对照只在这一组题上做过，结论仍需换一个未被污染的基准复验。
+          T6 Agent 工具链未纳入自建基准；长稳测试（8 小时 / 2000 请求）未做。</p>
+        </div>
+        <div class="card">
+          <h3>产品链路的一条硬约束</h3>
+          <p class="note">平台后端附件目前<strong>只接受图片，不支持 PDF</strong>：同一张图在聚合网关路由下返回
+          <code>HTTP 400</code>，官方直连正常，因此视觉对比里我方必须走官方直连。PDF 抽取与检索在评测侧完成，
+          产品化需要补后端的 PDF 能力。</p>
+          <h3 style="margin-top:16px">成本口径</h3>
+          <p class="note">我们按官方 peak 价计（cache-hit $0.006 / cache-miss $0.30 / 输出 $1.20 每百万 token），
+          实际可能更低；Luna 与 GLM-5.3-Flash 网关未公布价目，只记 token 不估钱。</p>
+          <div class="pill warn">闭卷是上界</div><div class="pill warn">判分为自实现</div><div class="pill warn">单一基准来源</div><div class="pill warn">后端无 PDF</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 
 <script>
-(function(){
-  var prog=document.getElementById('prog');
-  function onScroll(){
-    var h=document.documentElement;
-    var p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);
-    prog.style.width=(p*100).toFixed(2)+'%';
+const DATA = {"models":[{"id":"claude-fable-5-1","label":"Claude Fable 5.1","short":"Fable 5.1","ours":false,"tier":"frontier","oracle":94.67,"closed":86.67,"inc":8,"recalled":38,"bfcl":90.96,"irr":81.67,"fmm":64.67,"seg":58.22,"numrec":77.57,"cost":13.78,"ratio":17.4},{"id":"deepseek-flash","label":"DeepSeek-V4.1-Flash","short":"我们","ours":true,"tier":"ours","oracle":92,"closed":51.33,"inc":40.67,"recalled":20.67,"bfcl":89.04,"irr":76.67,"fmm":66,"seg":58.13,"numrec":75.25,"cost":0.79,"ratio":1},{"id":"gpt-5.6-luna","label":"GPT-5.6 Luna","short":"GPT-5.6 Luna","ours":false,"tier":"samegen","oracle":91.33,"closed":42.67,"inc":48.66,"recalled":11.33,"bfcl":83.08,"irr":80.83,"fmm":null,"seg":null,"numrec":null,"cost":null,"ratio":null},{"id":"gpt-6-astra","label":"GPT-6 Astra","short":"GPT-6 Astra","ours":false,"tier":"frontier","oracle":90.67,"closed":50.67,"inc":40,"recalled":20,"bfcl":83.27,"irr":84.17,"fmm":71.33,"seg":62.67,"numrec":80.24,"cost":5.66,"ratio":7.2},{"id":"glm-5.3-flash","label":"GLM-5.3-Flash","short":"GLM-5.3-Flash","ours":false,"tier":"samegen","oracle":90,"closed":40.67,"inc":49.33,"recalled":12.67,"bfcl":88.27,"irr":75.83,"fmm":null,"seg":null,"numrec":null,"cost":null,"ratio":null}],"axes":{"oracle":{"label":"财报问答","unit":"%","hint":"FinanceBench oracle（给文档）","max":100},"inc":{"label":"文档增量","unit":"pp","hint":"oracle − 闭卷，越高越靠\"读\"得分","max":60},"bfcl":{"label":"工具调用","unit":"%","hint":"BFCL v4，确定性判分","max":100},"irr":{"label":"拒调判断","unit":"%","hint":"BFCL 该拒调时是否拒调","max":100},"fmm":{"label":"图表取数","unit":"%","hint":"FinEval-MM 图表四选一","max":100},"seg":{"label":"整页转写","unit":"%","hint":"OmniDocBench 片段召回","max":100}},"sets":[{"id":"three","label":"三家（含视觉轴）","models":["claude-fable-5-1","deepseek-flash","gpt-6-astra"],"axes":["oracle","inc","bfcl","irr","fmm","seg"]},{"id":"five","label":"五家（文本轴）","models":["claude-fable-5-1","deepseek-flash","gpt-5.6-luna","gpt-6-astra","glm-5.3-flash"],"axes":["oracle","inc","bfcl","irr"]}]};
+const COLOR = { 'deepseek-flash': '#31e8b4', 'gpt-6-astra': '#5aa9ff', 'claude-fable-5-1': '#ffb454', 'gpt-5.6-luna': '#a78bfa', 'glm-5.3-flash': '#ff6b8b' };
+const $ = (s) => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e }
+
+/* ---------- 状态 ---------- */
+const state = {
+  view: 'radar',
+  scale: 'zoom',
+  set: DATA.sets[0].id,
+  hidden: new Set(),
+  focus: null,
+  axisHover: null,
+};
+
+/* ---------- 雷达 ---------- */
+const radar = $('#radar');
+let cur = {}; // 当前动画中的归一化值 modelId -> [..]
+
+function axesOf() { return DATA.sets.find((s) => s.id === state.set).axes }
+function modelsOf() { return DATA.sets.find((s) => s.id === state.set).models.map((id) => DATA.models.find((m) => m.id === id)) }
+function visibleModels() { const ids = new Set(modelsOf().map((m) => m.id)); return DATA.models.filter((m) => ids.has(m.id) && !state.hidden.has(m.id)) }
+
+/** 归一化：zoom = 按当前可见模型在该轴的 min-max 拉开；abs = 按轴的绝对量程 */
+function ratio(model, axKey, visible) {
+  const a = DATA.axes[axKey];
+  const v = model[axKey];
+  if (v === null || v === undefined) return 0;
+  if (state.scale === 'abs') return Math.max(0.04, Math.min(1, v / a.max));
+  const vals = visible.map((m) => m[axKey]).filter((x) => x !== null && x !== undefined);
+  const lo = Math.min(...vals);
+  const hi = Math.max(...vals);
+  if (hi === lo) return 0.62;
+  // 映射到 0.34~1：留出内圈，避免差异被放大到失真
+  return 0.34 + 0.66 * ((v - lo) / (hi - lo));
+}
+
+function drawRadar() {
+  const axes = axesOf(), ms = visibleModels();
+  const W = 640, C = W / 2, R = 178, cy = 272;
+  radar.innerHTML = '';
+  const pt = (i, r) => {
+    const ang = -Math.PI / 2 + (i * 2 * Math.PI) / axes.length;
+    return [C + Math.cos(ang) * R * r, cy + Math.sin(ang) * R * r];
+  };
+  // 网格
+  for (const ring of [0.34, 0.56, 0.78, 1]) {
+    const p = axes.map((_, i) => pt(i, ring).map((x) => x.toFixed(1)).join(',')).join(' ');
+    radar.appendChild(el('polygon', { points: p, class: 'ring' }));
   }
-  addEventListener('scroll',onScroll,{passive:true});onScroll();
-
-  var io=new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
-  },{rootMargin:'-8% 0px -8% 0px'});
-  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
-
-  // 数字滚动
-  function count(el){
-    var target=Number(el.getAttribute('data-count'))||0, t0=null, dur=1100;
-    function step(ts){ if(!t0)t0=ts; var k=Math.min(1,(ts-t0)/dur); var v=Math.round(target*(1-Math.pow(1-k,3)));
-      el.textContent=v.toLocaleString('en-US'); if(k<1)requestAnimationFrame(step); }
-    requestAnimationFrame(step);
-  }
-  var kio=new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ count(e.target); kio.unobserve(e.target);} });
-  },{threshold:.4});
-  document.querySelectorAll('[data-count]').forEach(function(el){kio.observe(el)});
-  // 带小数位的计数（成本用）
-  function countDec(el){
-    var target=Number(el.getAttribute('data-count-dec'))||0, t0=null, dur=1100;
-    function step(ts){ if(!t0)t0=ts; var k=Math.min(1,(ts-t0)/dur); var v=target*(1-Math.pow(1-k,3));
-      el.textContent=v.toFixed(1); if(k<1)requestAnimationFrame(step); }
-    requestAnimationFrame(step);
-  }
-  var dio=new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ countDec(e.target); dio.unobserve(e.target);} });
-  },{threshold:.4});
-  document.querySelectorAll('[data-count-dec]').forEach(function(el){dio.observe(el)});
-
-  // 进度条（能力条）
-  var bio=new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ var bar=e.target; bar.style.width=(bar.getAttribute('data-w')||0)+'%'; bio.unobserve(bar);} });
-  },{threshold:.5});
-  document.querySelectorAll('.bar > i').forEach(function(el){bio.observe(el)});
-
-  // 交互：点击/悬停柱状行 → 高亮并显示细节
-  var rows=document.querySelectorAll('.incRow');
-  rows.forEach(function(r){
-    function hl(){ rows.forEach(function(x){x.style.opacity=(x===r?1:.32)}); }
-    function reset(){ rows.forEach(function(x){x.style.opacity=1}); }
-    r.addEventListener('mouseenter',hl); r.addEventListener('mouseleave',reset);
-    r.addEventListener('click',function(){
-      var t=r.getAttribute('data-model');
-      var el=document.querySelector('#incDetail');
-      if(!el)return;
-      var d=DATA[t]; if(!d)return;
-      el.innerHTML='<h4>'+d.label+'</h4>'+
-        '<div class="note" style="margin:0 0 10px">oracle '+d.oracle.toFixed(2)+'% ｜ 闭卷 '+d.closed.toFixed(2)+'% ｜ 文档增量 +'+d.inc.toFixed(2)+'pp ｜ 闭卷写出正确数值 '+d.recalled+'%</div>'+
-        '<div class="bar"><i style="width:'+d.closed+'%"></i></div><div class="note" style="margin:-6px 0 8px">闭卷（记忆底分）</div>'+
-        '<div class="bar"><i style="width:'+d.oracle+'%"></i></div><div class="note" style="margin:-6px 0 0">oracle（给文档）</div>';
-      el.classList.add('in');
-      el.style.opacity=1; el.style.transform='none';
-    });
+  // 轴 + 标签 + 命中区
+  axes.forEach((k, i) => {
+    const a = DATA.axes[k];
+    const [x, y] = pt(i, 1);
+    radar.appendChild(el('line', { x1: C, y1: cy, x2: x.toFixed(1), y2: y.toFixed(1), class: 'spoke' }));
+    const [lx, ly] = pt(i, 1.15);
+    const t = el('text', { x: lx.toFixed(1), y: ly.toFixed(1), class: 'axisT', 'text-anchor': 'middle' });
+    t.textContent = a.label;
+    radar.appendChild(t);
+    // 该轴领先者的原始值
+    const vals = ms.map((m) => m[k]).filter((v) => v !== null);
+    if (vals.length) {
+      const best = Math.max(...vals);
+      const tv = el('text', { x: lx.toFixed(1), y: (ly + 15).toFixed(1), class: 'axisV', 'text-anchor': 'middle' });
+      tv.textContent = best.toFixed(a.unit === 'pp' ? 1 : 2) + a.unit;
+      radar.appendChild(tv);
+    }
+    const hit = el('line', { x1: C, y1: cy, x2: x.toFixed(1), y2: y.toFixed(1), stroke: 'transparent', 'stroke-width': 26, class: 'hit' });
+    hit.addEventListener('mouseenter', () => { state.axisHover = k; renderLegend() });
+    hit.addEventListener('mouseleave', () => { state.axisHover = null; renderLegend() });
+    radar.appendChild(hit);
   });
-  window.DATA={"claude-fable-5-1":{"label":"Claude Fable 5.1","oracle":94.67,"closed":86.67,"inc":8,"recalled":38},"deepseek-flash":{"label":"DeepSeek-V4.1-Flash","oracle":92,"closed":51.33,"inc":40.67,"recalled":20.67},"gpt-5.6-luna":{"label":"GPT-5.6 Luna","oracle":91.33,"closed":42.67,"inc":48.66,"recalled":11.33},"gpt-6-astra":{"label":"GPT-6 Astra","oracle":90.67,"closed":50.67,"inc":40,"recalled":20},"glm-5.3-flash":{"label":"GLM-5.3-Flash","oracle":90,"closed":40.67,"inc":49.33,"recalled":12.67}};
-})();
+  // 多边形
+  for (const m of ms) {
+    const p = axes.map((k, i) => pt(i, ratio(m, k, ms)).map((x) => x.toFixed(1)).join(',')).join(' ');
+    const poly = el('polygon', { points: p, fill: hexA(COLOR[m.id], m.ours ? 0.3 : 0.16), stroke: COLOR[m.id], 'stroke-width': m.ours ? 2.6 : 1.8, class: 'poly', 'data-id': m.id });
+    if (state.focus && state.focus !== m.id) poly.setAttribute('opacity', 0.18);
+    radar.appendChild(poly);
+    // 顶点
+    axes.forEach((k, i) => {
+      const [x, y] = pt(i, ratio(m, k, ms));
+      radar.appendChild(el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: m.ours ? 3.6 : 2.8, fill: COLOR[m.id], opacity: state.focus && state.focus !== m.id ? 0.18 : 1 }));
+    });
+  }
+  // 尺度说明
+  const note = state.scale === 'zoom'
+    ? '拉开尺度：每根轴按当前可见模型的最小—最大值映射（外圈为该轴最好，内圈为该轴最差）。这样才看得出"谁靠什么得分"；形状差异不代表绝对差距。'
+    : '绝对尺度：每根轴按量程绘制（财报问答/工具调用/拒调/图表/转写为 0~100%，文档增量为 0~60pp）。在这个尺度下三家形状几乎重叠——这本身就是结论：绝对分上大家差不多。';
+  $('#radarNote').textContent = note;
+  $('#radarSub').textContent = state.scale === 'zoom' ? '切到「绝对尺度」看看形状怎么重叠的' : '切到「拉开尺度」看差异';
+}
+function hexA(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return 'rgba(' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(',') + ',' + a + ')';
+}
+
+function renderLegend() {
+  const axes = axesOf();
+  const ms = modelsOf();
+  const box = $('#legend');
+  box.innerHTML = '';
+  for (const m of ms) {
+    const row = document.createElement('div');
+    row.className = 'legendRow' + (m.ours ? ' ours' : '');
+    row.style.opacity = state.hidden.has(m.id) ? 0.4 : 1;
+    const sw = document.createElement('i'); sw.className = 'sw'; sw.style.background = COLOR[m.id];
+    const wrap = document.createElement('div');
+    const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = m.short + (m.ours ? ' · 本平台' : '');
+    const sub = document.createElement('div'); sub.className = 'sub';
+    sub.textContent = state.axisHover
+      ? (DATA.axes[state.axisHover].label + '：' + (m[state.axisHover] === null ? '未测' : m[state.axisHover].toFixed(2) + DATA.axes[state.axisHover].unit))
+      : ('文档增量 +' + m.inc.toFixed(2) + 'pp · 成本 ' + (m.cost === null ? '未公布' : '$' + m.cost.toFixed(2)));
+    wrap.appendChild(nm); wrap.appendChild(sub);
+    const num = document.createElement('div'); num.className = 'num';
+    num.textContent = state.axisHover ? '' : m.oracle.toFixed(2) + '%';
+    row.appendChild(sw); row.appendChild(wrap); row.appendChild(num);
+    row.addEventListener('mouseenter', () => { state.focus = m.id; drawRadar() });
+    row.addEventListener('mouseleave', () => { state.focus = null; drawRadar() });
+    row.addEventListener('click', () => {
+      if (state.hidden.has(m.id)) state.hidden.delete(m.id); else if (visibleModels().length > 1) state.hidden.add(m.id);
+      syncChips(); drawRadar(); renderLegend();
+    });
+    box.appendChild(row);
+  }
+  $('#tip').textContent = state.axisHover
+    ? ('看轴：' + DATA.axes[state.axisHover].label + ' —— ' + DATA.axes[state.axisHover].hint)
+    : '轴上的数字是该轴的领先值；点图例行可隐藏/显示该模型。';
+}
+
+function syncChips() {
+  const chips = $('#chips');
+  chips.innerHTML = '';
+  for (const m of modelsOf()) {
+    const b = document.createElement('button');
+    b.className = 'chip' + (state.hidden.has(m.id) ? '' : ' on');
+    const i = document.createElement('i'); i.style.background = COLOR[m.id];
+    b.appendChild(i); b.appendChild(document.createTextNode(m.short));
+    b.addEventListener('click', () => {
+      if (state.hidden.has(m.id)) state.hidden.delete(m.id); else if (visibleModels().length > 1) state.hidden.add(m.id);
+      syncChips(); drawRadar(); renderLegend();
+    });
+    chips.appendChild(b);
+  }
+}
+
+/* ---------- 闭卷图 ---------- */
+function drawMem() {
+  const svg = $('#mem'); svg.innerHTML = '';
+  const W = 900, rowH = 76, left = 132, right = W - 120;
+  const ms = DATA.models.slice().sort((a, b) => b.inc - a.inc);
+  const H = ms.length * rowH + 40;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  const X = (v) => left + ((right - left) * v) / 100;
+  for (const t of [0, 25, 50, 75, 100]) {
+    svg.appendChild(el('line', { x1: X(t), y1: 24, x2: X(t), y2: H - 12, class: 'ring' }));
+    const tx = el('text', { x: X(t), y: 15, class: 'axisT', 'text-anchor': 'middle' }); tx.textContent = t + '%'; svg.appendChild(tx);
+  }
+  ms.forEach((m, i) => {
+    const y = 32 + i * rowH;
+    const g = el('g', {});
+    const nm = el('text', { x: left - 12, y: y + 14, class: 'axisV', 'text-anchor': 'end', style: 'font-size:13.5px;fill:' + (m.ours ? '#31e8b4' : '#c9d7f0') + ';font-weight:' + (m.ours ? 700 : 500) });
+    nm.textContent = m.short; g.appendChild(nm);
+    g.appendChild(el('rect', { x: left, y, width: Math.max(2, X(m.oracle) - left), height: 16, rx: 4, fill: '#5aa9ff', opacity: .85 }));
+    g.appendChild(el('rect', { x: left, y: y + 20, width: Math.max(2, X(m.closed) - left), height: 16, rx: 4, fill: '#33415c' }));
+    const v1 = el('text', { x: X(m.oracle) + 8, y: y + 13, class: 'axisV' }); v1.textContent = m.oracle.toFixed(2) + '%'; g.appendChild(v1);
+    const v2 = el('text', { x: X(m.closed) + 8, y: y + 33, class: 'axisV' }); v2.textContent = m.closed.toFixed(2) + '%'; g.appendChild(v2);
+    g.appendChild(el('line', { x1: X(m.closed), y1: y + 42, x2: X(m.oracle), y2: y + 42, stroke: '#31e8b4', 'stroke-width': 2 }));
+    const v3 = el('text', { x: (X(m.closed) + X(m.oracle)) / 2, y: y + 57, 'text-anchor': 'middle', fill: '#31e8b4', style: 'font-size:12.5px;font-weight:600' });
+    v3.textContent = '文档增量 +' + m.inc.toFixed(2) + 'pp'; g.appendChild(v3);
+    g.addEventListener('mouseenter', () => { g.setAttribute('opacity', 1); })
+    svg.appendChild(g);
+  });
+}
+
+/* ---------- 气泡 ---------- */
+function drawBub() {
+  const svg = $('#bub'); svg.innerHTML = '';
+  const W = 900, H = 440, padL = 74, padR = 40, padT = 26, padB = 56;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  const pts = DATA.models.filter((m) => m.cost !== null);
+  const cs = pts.map((m) => m.cost);
+  const x0 = Math.log10(Math.min(...cs)) - 0.16, x1 = Math.log10(Math.max(...cs)) + 0.16;
+  const y0 = 86, y1 = 97;
+  const X = (c) => padL + ((Math.log10(c) - x0) / (x1 - x0)) * (W - padL - padR);
+  const Y = (v) => H - padB - ((v - y0) / (y1 - y0)) * (H - padT - padB);
+  for (let v = y0; v <= y1; v += 2) {
+    svg.appendChild(el('line', { x1: padL, y1: Y(v), x2: W - padR, y2: Y(v), class: 'ring' }));
+    const t = el('text', { x: padL - 10, y: Y(v) + 4, class: 'axisT', 'text-anchor': 'end' }); t.textContent = v + '%'; svg.appendChild(t);
+  }
+  for (const c of [0.5, 1, 2, 5, 10, 20]) {
+    if (Math.log10(c) < x0 || Math.log10(c) > x1) continue;
+    svg.appendChild(el('line', { x1: X(c), y1: padT, x2: X(c), y2: H - padB, class: 'ring' }));
+    const t = el('text', { x: X(c), y: H - padB + 20, class: 'axisT', 'text-anchor': 'middle' }); t.textContent = '$' + c; svg.appendChild(t);
+  }
+  const tt = el('text', { x: (W + padL) / 2, y: H - 12, class: 'axisT', 'text-anchor': 'middle' });
+  tt.textContent = '两项基准实测成本（美元，对数轴）'; svg.appendChild(tt);
+  for (const m of pts) {
+    const r = 12 + (m.inc / 50) * 26;
+    const g = el('g', {});
+    g.appendChild(el('circle', { cx: X(m.cost), cy: Y(m.oracle), r, fill: hexA(COLOR[m.id], m.ours ? .34 : .22), stroke: COLOR[m.id], 'stroke-width': m.ours ? 2.4 : 1.5 }));
+    const t = el('text', { x: X(m.cost), y: Y(m.oracle) + 4, 'text-anchor': 'middle', fill: '#dbe6fb', style: 'font-size:12px;font-weight:600' });
+    t.textContent = m.ours ? '我们' : m.short; g.appendChild(t);
+    const ti = el('title', {});
+    ti.textContent = m.label + '：oracle ' + m.oracle.toFixed(2) + '%，文档增量 +' + m.inc.toFixed(2) + 'pp，成本 $' + m.cost.toFixed(2);
+    g.appendChild(ti);
+    svg.appendChild(g);
+  }
+}
+
+/* ---------- 视图切换与控件 ---------- */
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll('.view').forEach((s) => s.classList.toggle('on', s.id === 'v-' + v));
+  document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  if (v === 'memory') drawMem();
+  if (v === 'cost') drawBub();
+  if (v === 'radar') { drawRadar(); renderLegend() }
+  $('#barTip').style.display = v === 'radar' ? '' : 'none';
+  $('#scaleSeg').style.display = v === 'radar' ? '' : 'none';
+  $('#setSeg').style.display = v === 'radar' ? '' : 'none';
+  $('#chips').style.display = v === 'radar' ? '' : 'none';
+  document.querySelectorAll('.bar .lab').forEach((l, i) => { if (i > 0) l.style.display = v === 'radar' ? '' : 'none' });
+}
+document.querySelectorAll('#nav button').forEach((b) => b.addEventListener('click', () => setView(b.dataset.v)));
+document.querySelectorAll('#scaleSeg button').forEach((b) => b.addEventListener('click', () => {
+  state.scale = b.dataset.s;
+  document.querySelectorAll('#scaleSeg button').forEach((x) => x.classList.toggle('on', x === b));
+  drawRadar(); renderLegend();
+}));
+document.querySelectorAll('#setSeg button').forEach((b) => b.addEventListener('click', () => {
+  state.set = b.dataset.set;
+  document.querySelectorAll('#setSeg button').forEach((x) => x.classList.toggle('on', x === b));
+  state.hidden = new Set();
+  syncChips(); drawRadar(); renderLegend();
+}));
+
+// 自建基准的能力条动画
+const bio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.style.width = (e.target.dataset.w || 0) + '%'; bio.unobserve(e.target) } }), { threshold: .4 });
+document.querySelectorAll('.bar2 > i').forEach((i) => bio.observe(i));
+
+syncChips(); drawRadar(); renderLegend(); drawMem(); drawBub();
 </script>
-</body>
-</html>
+</body></html>

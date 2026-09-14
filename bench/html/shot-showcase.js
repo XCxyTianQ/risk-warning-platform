@@ -1,4 +1,7 @@
-/** 展示页截图核对：docs/showcase/index.html 分屏截图（Electron，离线）。 */
+/**
+ * 交互页截图核对：默认视图 + 依次切换各视图 + 切换尺度与隐藏模型后的雷达形态。
+ * 关键：截图前必须关掉 scroll-behavior，且切换视图后要等 JS 重绘完成。
+ */
 const { app, BrowserWindow } = require('electron')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -8,41 +11,44 @@ const FILE = path.join(REPO, 'docs', 'showcase', 'index.html')
 const OUT = path.join(REPO, 'bench', 'external', 'out', 'shots-showcase')
 fs.mkdirSync(OUT, { recursive: true })
 
-const VIEWS = [
-  { name: '01-hero', scroll: 0 },
-  { name: '02-finding', sel: '#finding' },
-  { name: '03-increment', sel: '#inc' },
-  { name: '04-cost', sel: '#cost' },
-  { name: '05-radar', sel: '#radar' },
-  { name: '06-self', sel: '#self' },
-  { name: '07-method', sel: '#method' },
-  { name: '08-limits', sel: '#limits' },
-]
-
 app.commandLine.appendSwitch('force-device-scale-factor', '1')
 
-app.whenReady().then(async () => {
-  const win = new BrowserWindow({ width: 1360, height: 980, show: false, webPreferences: { offscreen: false } })
-  await win.loadFile(FILE)
-  await new Promise((r) => setTimeout(r, 900))
-  // 关键：页面开了 scroll-behavior:smooth，截图前必须关掉，否则 scrollTo 是动画，
-  // 700ms 后截到的是滚动途中（取景会随机漂移，同一个选择器两次截出不同内容）
-  await win.webContents.executeJavaScript(`document.documentElement.style.scrollBehavior='auto'`)
-  // 触发滚动动画与计数
-  await win.webContents.executeJavaScript(`(function(){var h=document.documentElement;var y=0;var step=function(){y+=400;window.scrollTo(0,y);if(y<(h.scrollHeight-h.clientHeight))setTimeout(step,40)};step();return new Promise(function(res){setTimeout(function(){window.scrollTo(0,0);res(h.scrollHeight)},1400)})})()`)
-  await new Promise((r) => setTimeout(r, 1200))
+const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
-  for (const v of VIEWS) {
-    if (v.sel) {
-      const ok = await win.webContents.executeJavaScript(`(function(){var el=document.querySelector(${JSON.stringify(v.sel)});if(!el)return false;var r=el.getBoundingClientRect();var vh=window.innerHeight;window.scrollTo(0,Math.max(0,r.top+window.scrollY-(vh-Math.min(r.height,vh))/2));return true})()`)
-      if (!ok) { console.log(`  ⚠️ ${v.name}: 找不到 ${v.sel}`); continue }
-    } else {
-      await win.webContents.executeJavaScript(`window.scrollTo(0,${v.scroll || 0})`)
-    }
-    await new Promise((r) => setTimeout(r, 700))
+app.whenReady().then(async () => {
+  const win = new BrowserWindow({ width: 1440, height: 940, show: false })
+  await win.loadFile(FILE)
+  await wait(1000)
+  const shot = async (name) => {
     const img = await win.webContents.capturePage()
-    fs.writeFileSync(path.join(OUT, `${v.name}.png`), img.toPNG())
-    console.log(`  ✅ ${v.name}.png`)
+    fs.writeFileSync(path.join(OUT, `${name}.png`), img.toPNG())
+    console.log(`  ✅ ${name}.png`)
+  }
+
+  await shot('01-radar-zoom')
+
+  // 切到绝对尺度
+  await win.webContents.executeJavaScript(`document.querySelector('#scaleSeg button[data-s="abs"]').click()`)
+  await wait(500)
+  await shot('02-radar-abs')
+
+  // 切回拉开尺度并聚焦某模型（悬停对应行）
+  await win.webContents.executeJavaScript(`document.querySelector('#scaleSeg button[data-s="zoom"]').click()`)
+  await wait(400)
+  await win.webContents.executeJavaScript(`(function(){var r=document.querySelectorAll('.legendRow')[0];if(r)r.dispatchEvent(new MouseEvent('mouseenter',{bubbles:true}));return true})()`)
+  await wait(400)
+  await shot('03-radar-focus')
+
+  // 范围切到五家
+  await win.webContents.executeJavaScript(`(function(){var r=document.querySelectorAll('.legendRow')[0];if(r)r.dispatchEvent(new MouseEvent('mouseleave',{bubbles:true}));document.querySelectorAll('#setSeg button')[1].click();return true})()`)
+  await wait(500)
+  await shot('04-radar-five')
+
+  // 其它视图
+  for (const [v, name] of [['memory', '05-memory'], ['cost', '06-cost'], ['self', '07-self'], ['limits', '08-limits']]) {
+    await win.webContents.executeJavaScript(`document.querySelector('#nav button[data-v="${v}"]').click()`)
+    await wait(700)
+    await shot(name)
   }
   console.log(`\n输出目录：${path.relative(REPO, OUT)}`)
   app.quit()
