@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-13T23:41:52.368Z",
+  "generatedAt": "2026-09-14T01:45:13.742Z",
   "target": "any_high_event_next_year",
   "targetLabel": "未来 12 个月出现任一高危事件",
   "data": {
-    "panel": 47468,
+    "panel": 77930,
     "events": 22127,
-    "collectedAt": "2026-09-13T12:46:42.450Z"
+    "collectedAt": "2026-09-14T00:58:14.844Z"
   },
   "cutoffs": [
     "2017-04-30",
@@ -21,113 +21,113 @@
   "split": {
     "trainUntil": "2023-12-31",
     "testFrom": "2024-01-01",
-    "train": 5269,
-    "test": 787
+    "train": 8835,
+    "test": 1348
   },
-  "samples": 6056,
-  "positiveRate": 0.1071664464993395,
+  "samples": 10183,
+  "positiveRate": 0.07306294805067269,
   "skipped": {
-    "noFinance": 240,
+    "noFinance": 601,
     "noFeatures": 0
   },
   "metrics": {
-    "randomBaselinePrAuc": 0.11435832274459974,
+    "randomBaselinePrAuc": 0.07418397626112759,
     "strata": {
       "with_nonfinancial": {
-        "n": 255,
-        "positives": 63,
+        "n": 1017,
+        "positives": 98,
         "baseline_rule": {
-          "rocAuc": 0.5932953042328042,
-          "prAuc": 0.42087968941594645
+          "rocAuc": 0.5738213675023872,
+          "prAuc": 0.21052101438891668
         },
         "platform_composite": {
-          "rocAuc": 0.6722883597883598,
-          "prAuc": 0.4748658861830885
+          "rocAuc": 0.7296695609691102,
+          "prAuc": 0.30917375767330035
         }
       },
       "finance_only": {
-        "n": 532,
-        "positives": 27,
+        "n": 331,
+        "positives": 2,
         "baseline_rule": {
-          "rocAuc": 0.5367436743674368,
-          "prAuc": 0.12233351113325387
+          "rocAuc": 0.44376899696048633,
+          "prAuc": 0.011777438248026482
         },
         "platform_composite": {
-          "rocAuc": 0.49904657132379904,
-          "prAuc": 0.09734259397090736
+          "rocAuc": 0.19832826747720364,
+          "prAuc": 0.006212138750627002
         }
       }
     },
     "predictors": {
       "baseline_rule": {
         "label": "财务困境规则分（基线）",
-        "n": 787,
-        "positives": 90,
-        "rocAuc": 0.587031723258409,
-        "prAuc": 0.24371518194276354,
+        "n": 1348,
+        "positives": 100,
+        "rocAuc": 0.5802363782051282,
+        "prAuc": 0.19718838683391277,
         "topK": {
-          "k": 79,
-          "precision": 0.26582278481012656,
-          "recall": 0.23333333333333334,
-          "hits": 21,
-          "totalPos": 90
+          "k": 135,
+          "precision": 0.17037037037037037,
+          "recall": 0.23,
+          "hits": 23,
+          "totalPos": 100
         },
-        "medianLeadDays": 259
+        "medianLeadDays": 255
       },
       "platform_composite": {
         "label": "平台六维综合风险信号（100-综合分）",
-        "n": 787,
-        "positives": 90,
-        "rocAuc": 0.7127211860353898,
-        "prAuc": 0.33049676573690756,
+        "n": 1348,
+        "positives": 100,
+        "rocAuc": 0.7597516025641026,
+        "prAuc": 0.2920371098058831,
         "topK": {
-          "k": 79,
-          "precision": 0.3037974683544304,
-          "recall": 0.26666666666666666,
-          "hits": 24,
-          "totalPos": 90
+          "k": 135,
+          "precision": 0.2814814814814815,
+          "recall": 0.38,
+          "hits": 38,
+          "totalPos": 100
         },
-        "medianLeadDays": 259
+        "medianLeadDays": 255
       },
       "platform_finance": {
         "label": "平台财务健康维度风险信号",
-        "n": 787,
-        "positives": 90,
-        "rocAuc": 0.6161406025824964,
-        "prAuc": 0.24615894366540045,
+        "n": 1348,
+        "positives": 100,
+        "rocAuc": 0.6162580128205128,
+        "prAuc": 0.19402609777758578,
         "topK": {
-          "k": 79,
-          "precision": 0.25316455696202533,
-          "recall": 0.2222222222222222,
-          "hits": 20,
-          "totalPos": 90
+          "k": 135,
+          "precision": 0.16296296296296298,
+          "recall": 0.22,
+          "hits": 22,
+          "totalPos": 100
         },
-        "medianLeadDays": 259
+        "medianLeadDays": 255
       },
       "platform_anomalies": {
         "label": "平台异常勾稽条数",
-        "n": 787,
-        "positives": 90,
+        "n": 1348,
+        "positives": 100,
         "rocAuc": 0.5,
-        "prAuc": 0.14288758848659444,
+        "prAuc": 0.11474913797712388,
         "topK": {
-          "k": 79,
-          "precision": 0.20253164556962025,
-          "recall": 0.17777777777777778,
-          "hits": 16,
-          "totalPos": 90
+          "k": 135,
+          "precision": 0.17037037037037037,
+          "recall": 0.23,
+          "hits": 23,
+          "totalPos": 100
         },
-        "medianLeadDays": 259
+        "medianLeadDays": 255
       }
     },
     "bestByAuc": "platform_composite",
-    "baselineRocAuc": 0.587031723258409,
-    "baselinePrAuc": 0.24371518194276354,
-    "platformCompositeRocAuc": 0.7127211860353898,
-    "platformCompositePrAuc": 0.33049676573690756
+    "baselineRocAuc": 0.5802363782051282,
+    "baselinePrAuc": 0.19718838683391277,
+    "platformCompositeRocAuc": 0.7597516025641026,
+    "platformCompositePrAuc": 0.2920371098058831
   },
   "replay": {
-    "rows": 6728,
+    "rows": 11224,
     "cutoffs": [
       "2016-04-30",
       "2017-04-30",
@@ -170,6 +170,15 @@
         "leadDays": 192
       },
       {
+        "code": "600715",
+        "name": "文投控股",
+        "cutoff": "2024-04-30",
+        "score": 6,
+        "label": 1,
+        "event": "investigation",
+        "leadDays": 9
+      },
+      {
         "code": "300167",
         "name": "ST迪威迅",
         "cutoff": "2024-04-30",
@@ -197,6 +206,15 @@
         "leadDays": null
       },
       {
+        "code": "600665",
+        "name": "天地源",
+        "cutoff": "2024-04-30",
+        "score": 3.5,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
         "code": "603557",
         "name": "*ST起步",
         "cutoff": "2024-04-30",
@@ -213,24 +231,6 @@
         "label": 1,
         "event": "debt_default",
         "leadDays": 63
-      },
-      {
-        "code": "300269",
-        "name": "联建光电",
-        "cutoff": "2024-04-30",
-        "score": 3,
-        "label": 0,
-        "event": null,
-        "leadDays": null
-      },
-      {
-        "code": "300300",
-        "name": "海峡创新",
-        "cutoff": "2024-04-30",
-        "score": 3,
-        "label": 1,
-        "event": "regulatory_penalty",
-        "leadDays": 12
       }
     ],
     "missedHighRisk": [
@@ -269,6 +269,26 @@
           "asset_turnover": null,
           "inventory_ratio": 0.0050083387424504295,
           "receivable_ratio": 0.21815581726551606,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "300051",
+        "name": "琏升科技",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "fraud",
+        "leadDays": 363,
+        "features": {
+          "debt_ratio": 0.6866971454512745,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.029400352709290298,
+          "receivable_ratio": 0.013391019854961928,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null
@@ -409,26 +429,6 @@
           "asset_turnover": null,
           "inventory_ratio": 0.08675316497973641,
           "receivable_ratio": 0.24759814842151304,
-          "negative_equity": 0,
-          "loss_making": 0,
-          "revenue_growth": null
-        }
-      },
-      {
-        "code": "300211",
-        "name": "*ST亿通",
-        "cutoff": "2024-04-30",
-        "score": 0,
-        "event": "delisting_risk",
-        "leadDays": 362,
-        "features": {
-          "debt_ratio": 0.08159441928280572,
-          "current_ratio": null,
-          "net_margin": null,
-          "roe": null,
-          "asset_turnover": null,
-          "inventory_ratio": 0.030174879553643123,
-          "receivable_ratio": 0.05377119367638793,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null

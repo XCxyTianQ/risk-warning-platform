@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-13T23:42:06.004Z",
+  "generatedAt": "2026-09-14T01:45:29.722Z",
   "target": "risk_warning_next_year",
   "targetLabel": "未来 12 个月被实施退市风险警示/终止上市",
   "data": {
-    "panel": 47468,
+    "panel": 77930,
     "events": 22127,
-    "collectedAt": "2026-09-13T12:46:42.450Z"
+    "collectedAt": "2026-09-14T00:58:14.844Z"
   },
   "cutoffs": [
     "2017-04-30",
@@ -21,113 +21,113 @@
   "split": {
     "trainUntil": "2023-12-31",
     "testFrom": "2024-01-01",
-    "train": 5269,
-    "test": 787
+    "train": 8835,
+    "test": 1348
   },
-  "samples": 6056,
-  "positiveRate": 0.029392338177014532,
+  "samples": 10183,
+  "positiveRate": 0.018658548561327704,
   "skipped": {
-    "noFinance": 240,
+    "noFinance": 601,
     "noFeatures": 0
   },
   "metrics": {
-    "randomBaselinePrAuc": 0.04066073697585769,
+    "randomBaselinePrAuc": 0.025222551928783383,
     "strata": {
       "with_nonfinancial": {
-        "n": 255,
-        "positives": 25,
+        "n": 1017,
+        "positives": 33,
         "baseline_rule": {
-          "rocAuc": 0.593304347826087,
-          "prAuc": 0.2593141342490888
+          "rocAuc": 0.6295423749692043,
+          "prAuc": 0.20427763544867622
         },
         "platform_composite": {
-          "rocAuc": 0.7127826086956521,
-          "prAuc": 0.2719000047826096
+          "rocAuc": 0.7929446908105444,
+          "prAuc": 0.19112825260195151
         }
       },
       "finance_only": {
-        "n": 532,
-        "positives": 7,
+        "n": 331,
+        "positives": 1,
         "baseline_rule": {
-          "rocAuc": 0.6395918367346939,
-          "prAuc": 0.16724657783869573
+          "rocAuc": 0.44393939393939397,
+          "prAuc": 0.008403361344537815
         },
         "platform_composite": {
-          "rocAuc": 0.5303401360544218,
-          "prAuc": 0.09260688165389999
+          "rocAuc": 0.3484848484848485,
+          "prAuc": 0.006134969325153374
         }
       }
     },
     "predictors": {
       "baseline_rule": {
         "label": "财务困境规则分（基线）",
-        "n": 787,
-        "positives": 32,
-        "rocAuc": 0.6210057947019868,
-        "prAuc": 0.19174244446368457,
+        "n": 1348,
+        "positives": 34,
+        "rocAuc": 0.6326886919151222,
+        "prAuc": 0.19522069259453192,
         "topK": {
-          "k": 79,
-          "precision": 0.11392405063291139,
-          "recall": 0.28125,
-          "hits": 9,
-          "totalPos": 32
+          "k": 135,
+          "precision": 0.08148148148148149,
+          "recall": 0.3235294117647059,
+          "hits": 11,
+          "totalPos": 34
         },
         "medianLeadDays": 269
       },
       "platform_composite": {
         "label": "平台六维综合风险信号（100-综合分）",
-        "n": 787,
-        "positives": 32,
-        "rocAuc": 0.7687086092715232,
-        "prAuc": 0.2025979108468086,
+        "n": 1348,
+        "positives": 34,
+        "rocAuc": 0.8071112006446414,
+        "prAuc": 0.18102606395233492,
         "topK": {
-          "k": 79,
-          "precision": 0.12658227848101267,
-          "recall": 0.3125,
-          "hits": 10,
-          "totalPos": 32
+          "k": 135,
+          "precision": 0.1111111111111111,
+          "recall": 0.4411764705882353,
+          "hits": 15,
+          "totalPos": 34
         },
         "medianLeadDays": 269
       },
       "platform_finance": {
         "label": "平台财务健康维度风险信号",
-        "n": 787,
-        "positives": 32,
-        "rocAuc": 0.6646316225165563,
-        "prAuc": 0.16124751379387672,
+        "n": 1348,
+        "positives": 34,
+        "rocAuc": 0.6712216850210404,
+        "prAuc": 0.14002469983771518,
         "topK": {
-          "k": 79,
-          "precision": 0.11392405063291139,
-          "recall": 0.28125,
-          "hits": 9,
-          "totalPos": 32
+          "k": 135,
+          "precision": 0.08148148148148149,
+          "recall": 0.3235294117647059,
+          "hits": 11,
+          "totalPos": 34
         },
         "medianLeadDays": 269
       },
       "platform_anomalies": {
         "label": "平台异常勾稽条数",
-        "n": 787,
-        "positives": 32,
+        "n": 1348,
+        "positives": 34,
         "rocAuc": 0.5,
-        "prAuc": 0.05273758545002493,
+        "prAuc": 0.03967011505901362,
         "topK": {
-          "k": 79,
-          "precision": 0.0759493670886076,
-          "recall": 0.1875,
-          "hits": 6,
-          "totalPos": 32
+          "k": 135,
+          "precision": 0.05925925925925926,
+          "recall": 0.23529411764705882,
+          "hits": 8,
+          "totalPos": 34
         },
         "medianLeadDays": 269
       }
     },
     "bestByAuc": "platform_composite",
-    "baselineRocAuc": 0.6210057947019868,
-    "baselinePrAuc": 0.19174244446368457,
-    "platformCompositeRocAuc": 0.7687086092715232,
-    "platformCompositePrAuc": 0.2025979108468086
+    "baselineRocAuc": 0.6326886919151222,
+    "baselinePrAuc": 0.19522069259453192,
+    "platformCompositeRocAuc": 0.8071112006446414,
+    "platformCompositePrAuc": 0.18102606395233492
   },
   "replay": {
-    "rows": 6728,
+    "rows": 11224,
     "cutoffs": [
       "2016-04-30",
       "2017-04-30",
@@ -170,6 +170,15 @@
         "leadDays": 192
       },
       {
+        "code": "600715",
+        "name": "文投控股",
+        "cutoff": "2024-04-30",
+        "score": 6,
+        "label": 1,
+        "event": "delisting_risk",
+        "leadDays": 174
+      },
+      {
         "code": "300167",
         "name": "ST迪威迅",
         "cutoff": "2024-04-30",
@@ -197,6 +206,15 @@
         "leadDays": null
       },
       {
+        "code": "600665",
+        "name": "天地源",
+        "cutoff": "2024-04-30",
+        "score": 3.5,
+        "label": 0,
+        "event": null,
+        "leadDays": null
+      },
+      {
         "code": "603557",
         "name": "*ST起步",
         "cutoff": "2024-04-30",
@@ -208,24 +226,6 @@
       {
         "code": "300237",
         "name": "ST美晨",
-        "cutoff": "2024-04-30",
-        "score": 3,
-        "label": 0,
-        "event": null,
-        "leadDays": null
-      },
-      {
-        "code": "300269",
-        "name": "联建光电",
-        "cutoff": "2024-04-30",
-        "score": 3,
-        "label": 0,
-        "event": null,
-        "leadDays": null
-      },
-      {
-        "code": "300300",
-        "name": "海峡创新",
         "cutoff": "2024-04-30",
         "score": 3,
         "label": 0,
@@ -309,6 +309,26 @@
           "asset_turnover": null,
           "inventory_ratio": 0.030174879553643123,
           "receivable_ratio": 0.05377119367638793,
+          "negative_equity": 0,
+          "loss_making": 0,
+          "revenue_growth": null
+        }
+      },
+      {
+        "code": "600130",
+        "name": "波导股份",
+        "cutoff": "2024-04-30",
+        "score": 0,
+        "event": "delisting_risk",
+        "leadDays": 262,
+        "features": {
+          "debt_ratio": 0.0905397005163459,
+          "current_ratio": null,
+          "net_margin": null,
+          "roe": null,
+          "asset_turnover": null,
+          "inventory_ratio": 0.0254970051835969,
+          "receivable_ratio": 0.05623474985706927,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null
@@ -409,26 +429,6 @@
           "asset_turnover": null,
           "inventory_ratio": 0.17152077156628048,
           "receivable_ratio": 0.06062558034768427,
-          "negative_equity": 0,
-          "loss_making": 0,
-          "revenue_growth": null
-        }
-      },
-      {
-        "code": "600381",
-        "name": "*ST春天",
-        "cutoff": "2024-04-30",
-        "score": 0,
-        "event": "delisting_risk",
-        "leadDays": 360,
-        "features": {
-          "debt_ratio": 0.04176233062622813,
-          "current_ratio": null,
-          "net_margin": null,
-          "roe": null,
-          "asset_turnover": null,
-          "inventory_ratio": 0.1960148399338971,
-          "receivable_ratio": 0.02077676861176741,
           "negative_equity": 0,
           "loss_making": 0,
           "revenue_growth": null

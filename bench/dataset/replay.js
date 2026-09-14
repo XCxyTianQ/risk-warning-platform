@@ -34,6 +34,7 @@ const CUTOFFS = argOf('--cutoffs', '2016-04-30,2017-04-30,2018-04-30,2019-04-30,
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean)
+const KEEP_DIR = argv.includes('--keep-dir')
 
 const { startBackend, resolveBackendBin } = require('../lib/backends')
 const { freePort, sleep } = require('../lib/util')
@@ -323,9 +324,10 @@ async function get(port, p) {
       scored++
     }
     await handle.stop()
-    fs.rmSync(dir, { recursive: true, force: true })
+    if (KEEP_DIR) console.log(`    临时库保留在：${dir}`)
+    else fs.rmSync(dir, { recursive: true, force: true })
     summary.push({ cutoff, enterprises: built.enterprises, financeRows: built.finance, newsRows: built.news, legalRows: built.legal, scored, withScore: out.filter((o) => o.cutoff === cutoff && o.riskScore !== null).length })
-    console.log(`  ${cutoff}：企业 ${built.enterprises} / 财报 ${built.finance} / 评分 ${scored}（有综合分 ${summary[summary.length - 1].withScore}）`)
+    console.log(`  ${cutoff}：企业 ${built.enterprises} / 财报 ${built.finance} / 新闻 ${built.news} / 司法 ${built.legal} / 评分 ${scored}（有综合分 ${summary[summary.length - 1].withScore}）`)
   }
 
   const file = path.join(DATA, 'replay-scores.jsonl')

@@ -401,10 +401,27 @@ function writeJsonl(file, rows, { protect = true } = {}) {
   if (!EVENTS_ONLY && !COHORT_ONLY) {
     const codes = EXTRA_CODES.length && PANEL_ONLY ? EXTRA_CODES : cohortCodes
     console.log(`[面板] 抓取 ${codes.length} 只股票的财报面板…`)
-    const panel = await fetchPanel(codes)
-    console.log(`      ${panel.length} 条报告期记录`)
-    manifest.artifacts.panel = writeJsonl(path.join(OUT, 'panel.jsonl'), panel)
+    const fetched = await fetchPanel(codes)
+    // **与已有面板合并**：队列会随标签补强而变化，重抓时不能把上一批企业的面板丢掉
+    const panelFile = path.join(OUT, 'panel.jsonl')
+    const merged = new Map()
+    if (fs.existsSync(panelFile)) {
+      for (const line of fs.readFileSync(panelFile, 'utf8').split('\n')) {
+        if (!line) continue
+        try {
+          const r = JSON.parse(line)
+          merged.set(`${r.code}|${r.reportDate}`, r)
+        } catch {}
+      }
+    }
+    const before = merged.size
+    for (const r of fetched) merged.set(`${r.code}|${r.reportDate}`, r)
+    const panel = [...merged.values()].sort((a, b) => (a.code === b.code ? (a.reportDate < b.reportDate ? -1 : 1) : a.code < b.code ? -1 : 1))
+    console.log(`      ${fetched.length} 条（合并后 ${panel.length} 条，覆盖 ${new Set(panel.map((r) => r.code)).size} 只）`)
+    manifest.artifacts.panel = writeJsonl(panelFile, panel)
     manifest.cohortCodes = codes.length
+    manifest.panelCodes = new Set(panel.map((r) => r.code)).size
+    void before
   }
 
   manifest.requests = stats.requests

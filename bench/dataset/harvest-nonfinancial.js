@@ -29,6 +29,7 @@ const argOf = (n, d = '') => {
   const i = argv.indexOf(n)
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d
 }
+const hasFlag = (f) => argv.includes(f)
 const REPO = path.resolve(__dirname, '..', '..')
 const DATA = path.resolve(REPO, argOf('--data', 'bench/dataset/out'))
 const LIMIT = Number(argOf('--limit', '0'))
@@ -77,8 +78,17 @@ async function fetchAnnPage(code, pageIndex, pageSize = 100) {
 
 ;(async () => {
   fs.mkdirSync(DATA, { recursive: true })
-  const cohort = JSON.parse(fs.readFileSync(path.join(DATA, 'cohort.json'), 'utf8'))
-  let codes = [...new Set([...(cohort.cases || []), ...(cohort.controls || []), ...(cohort.extra || [])].map((x) => x.code))]
+  // 默认采队列企业；--all-panel 则覆盖"面板里出现过的全部企业"
+  // （replay 池 = 面板企业 ∪ 队列，只采队列会让覆盖率被稀释）
+  let codes
+  if (hasFlag('--all-panel')) {
+    const panel = fs.readFileSync(path.join(DATA, 'panel.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l))
+    codes = [...new Set(panel.map((r) => r.code))].filter(Boolean)
+    console.log(`按 --all-panel 采集：面板覆盖 ${codes.length} 只`)
+  } else {
+    const cohort = JSON.parse(fs.readFileSync(path.join(DATA, 'cohort.json'), 'utf8'))
+    codes = [...new Set([...(cohort.cases || []), ...(cohort.controls || []), ...(cohort.extra || [])].map((x) => x.code))]
+  }
   if (LIMIT) codes = codes.slice(0, LIMIT)
 
   const progressFile = path.join(DATA, 'nonfinancial-progress.json')

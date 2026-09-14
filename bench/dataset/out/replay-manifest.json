@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-13T23:41:14.556Z",
+  "generatedAt": "2026-09-14T01:45:05.232Z",
   "cutoffs": [
     "2016-04-30",
     "2017-04-30",
@@ -14,85 +14,85 @@
   "summary": [
     {
       "cutoff": "2016-04-30",
-      "enterprises": 627,
-      "financeRows": 19158,
-      "newsRows": 13334,
-      "legalRows": 129,
-      "scored": 632,
-      "withScore": 632
+      "enterprises": 996,
+      "financeRows": 31102,
+      "newsRows": 58303,
+      "legalRows": 351,
+      "scored": 1001,
+      "withScore": 1001
     },
     {
       "cutoff": "2017-04-30",
-      "enterprises": 670,
-      "financeRows": 21242,
-      "newsRows": 25881,
-      "legalRows": 237,
-      "scored": 675,
-      "withScore": 675
+      "enterprises": 1082,
+      "financeRows": 34408,
+      "newsRows": 111712,
+      "legalRows": 738,
+      "scored": 1087,
+      "withScore": 1087
     },
     {
       "cutoff": "2018-04-30",
-      "enterprises": 720,
-      "financeRows": 23560,
-      "newsRows": 44070,
-      "legalRows": 421,
-      "scored": 725,
-      "withScore": 725
+      "enterprises": 1178,
+      "financeRows": 38076,
+      "newsRows": 181227,
+      "legalRows": 1339,
+      "scored": 1183,
+      "withScore": 1183
     },
     {
       "cutoff": "2019-04-30",
-      "enterprises": 757,
-      "financeRows": 25953,
-      "newsRows": 65394,
-      "legalRows": 691,
-      "scored": 762,
-      "withScore": 762
+      "enterprises": 1260,
+      "financeRows": 41874,
+      "newsRows": 261147,
+      "legalRows": 2303,
+      "scored": 1265,
+      "withScore": 1265
     },
     {
       "cutoff": "2020-04-30",
-      "enterprises": 776,
-      "financeRows": 28522,
-      "newsRows": 89519,
-      "legalRows": 1035,
-      "scored": 781,
-      "withScore": 781
+      "enterprises": 1311,
+      "financeRows": 46005,
+      "newsRows": 349167,
+      "legalRows": 3497,
+      "scored": 1316,
+      "withScore": 1316
     },
     {
       "cutoff": "2021-04-30",
-      "enterprises": 779,
-      "financeRows": 31344,
-      "newsRows": 119970,
-      "legalRows": 1436,
-      "scored": 784,
-      "withScore": 784
+      "enterprises": 1327,
+      "financeRows": 50626,
+      "newsRows": 460655,
+      "legalRows": 4925,
+      "scored": 1332,
+      "withScore": 1332
     },
     {
       "cutoff": "2022-04-30",
-      "enterprises": 780,
-      "financeRows": 34301,
-      "newsRows": 150479,
-      "legalRows": 1783,
-      "scored": 785,
-      "withScore": 785
+      "enterprises": 1329,
+      "financeRows": 55540,
+      "newsRows": 576843,
+      "legalRows": 6057,
+      "scored": 1334,
+      "withScore": 1334
     },
     {
       "cutoff": "2023-04-30",
-      "enterprises": 787,
-      "financeRows": 37358,
-      "newsRows": 181960,
-      "legalRows": 2219,
-      "scored": 792,
-      "withScore": 792
+      "enterprises": 1348,
+      "financeRows": 60698,
+      "newsRows": 700349,
+      "legalRows": 7103,
+      "scored": 1353,
+      "withScore": 1353
     },
     {
       "cutoff": "2024-04-30",
-      "enterprises": 787,
-      "financeRows": 40433,
-      "newsRows": 214174,
-      "legalRows": 2662,
-      "scored": 792,
-      "withScore": 792
+      "enterprises": 1348,
+      "financeRows": 65914,
+      "newsRows": 828214,
+      "legalRows": 8094,
+      "scored": 1353,
+      "withScore": 1353
     }
   ],
-  "rows": 6728
+  "rows": 11224
 }
