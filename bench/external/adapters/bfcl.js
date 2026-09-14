@@ -121,14 +121,20 @@ module.exports = {
 
     const clean = rows.filter((r) => !r.error)
     const byKind = K.aggregate(clean, { groupKey: 'group' })
+    // 只统计**失败**的 error_type：判定函数在成功时会保留初始占位值
+    // （simple_function_checker:unclear），把成功行也算进去会让"失败类型分布"整张表失真。
     const errorTypes = {}
     for (const r of clean) {
-      if (r.grade && r.grade.error_type) errorTypes[r.grade.error_type] = (errorTypes[r.grade.error_type] || 0) + 1
+      if (!r.grade || r.grade.correct !== false) continue
+      const t = r.grade.error_type || 'unknown'
+      errorTypes[t] = (errorTypes[t] || 0) + 1
     }
+    const failed = clean.filter((r) => r.grade && r.grade.correct === false).length
     const metrics = {
       overall: byKind.__ALL__,
       byCategory: byKind,
       errorTypeDistribution: errorTypes,
+      failedTotal: failed,
       wrongFunctionName: clean.filter((r) => r.grade && r.grade.error_type === 'simple_function_checker:wrong_func_name').length,
       overCallRate: clean.filter((r) => r.grade && r.grade.callCount > 1).length,
       errors: rows.filter((r) => r.error).length,

@@ -744,13 +744,18 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
           widths=[3.6, 2.4, 2.4, 2.8, 2.8])
         for model, run in (b.get("runs") or {}).items():
             et = dig(run, "metrics.errorTypeDistribution", {}) or {}
-            rows = [[k, v] for k, v in sorted(et.items(), key=lambda x: -x[1])]
+            rows = [[err_label(k), v, err_meaning(k)] for k, v in sorted(et.items(), key=lambda x: -x[1])]
             if rows:
-                T(["失败类型", "次数"], rows, caption=f"表 16　BFCL 失败类型分布（{model}）", widths=[8.0, 2.0, 3.0])
+                T(["失败类型", "次数", "含义与对平台的影响"], rows,
+                  caption=f"表 16　BFCL 失败类型分布（{model}，共 {sum(et.values())} 例失败）",
+                  note="只统计失败样本（判定函数在成功时保留占位值，若一并统计会让这张表失真——该口径已修正）。",
+                  widths=[4.6, 1.6, 9.0])
             break
         P(
-            "对平台的含义：irrelevance 子集直接对应「越权/无效调用」风险——模型在没有合适工具时是否忍得住不调用。"
-            "该子集的通过率可以直接作为平台工具层的安全边界参考值。"
+            "对平台的含义：**irrelevance 的 31 例「不该调用却调用了」是最该盯的数字**——"
+            "它对应的正是平台里「没有合适工具时会不会乱调工具」的风险，可以直接作为工具层安全边界的参考基线；"
+            "其次是 9 例「调用个数不对」（multiple 子集要求只调一个，模型调了多个），"
+            "在平台里对应「该走一个工具却走了多个」的多余调用与额度消耗。"
         )
 
     # 4.6 OmniDocBench
@@ -973,6 +978,46 @@ def matched_accuracy(align, key, seg) -> dict:
     return {"matchedN": len(matched), "barePct": round(correct / len(matched) * 100, 2)}
 
 
+ERR_LABELS = {
+    "irrelevance:called_a_function": "不该调用却调用了",
+    "value_error:string": "字符串参数取值不在允许集合内",
+    "value_error:others": "参数取值不在标准答案集合内",
+    "value_error:list/tuple": "列表参数内容与标准答案不符",
+    "value_error:dict_key": "字典参数的键与标准答案不符",
+    "simple_function_checker:wrong_count": "调用个数不对（应只调 1 个）",
+    "multiple_function_checker:wrong_count": "调用个数不对（多函数题应只调 1 个）",
+    "simple_function_checker:wrong_func_name": "函数名选错",
+    "simple_function_checker:missing_required": "缺少必填参数",
+    "simple_function_checker:unexpected_param": "多传了函数不认识的参数",
+    "simple_function_checker:missing_optional": "漏传了标准答案要求的可选参数",
+    "type_error:simple": "参数类型错误",
+    "type_error:nested": "嵌套参数类型错误",
+}
+
+ERR_MEANING = {
+    "irrelevance:called_a_function": "没有合适函数时仍然发起调用；平台里对应「乱调工具」，是安全边界最该守的一条",
+    "value_error:string": "选对了函数，但字符串参数填得不对（枚举/名称类参数）",
+    "value_error:others": "选对了函数，但参数值不是标准答案接受的取值",
+    "value_error:list/tuple": "列表类参数内容不符（如多选/多项输入）",
+    "value_error:dict_key": "字典类参数的键不符，说明结构化参数理解偏差",
+    "simple_function_checker:wrong_count": "简单题要求只调用一个函数，模型调了多个（多余调用=多余额度消耗）",
+    "multiple_function_checker:wrong_count": "多函数题要求只调用一个，模型调了多个或没调",
+    "simple_function_checker:wrong_func_name": "函数选择错误，属于最严重的一类（工具链会走错分支）",
+    "simple_function_checker:missing_required": "缺少必填参数，真实调用会直接失败",
+    "simple_function_checker:unexpected_param": "多传参数，真实调用可能被拒",
+    "simple_function_checker:missing_optional": "漏传标准答案要求的可选参数",
+    "type_error:simple": "参数类型错误（如该给数字给了字符串）",
+    "type_error:nested": "嵌套结构里元素类型错误",
+}
+
+
+def err_label(k: str) -> str:
+    return ERR_LABELS.get(k, k)
+
+
+def err_meaning(k: str) -> str:
+    return ERR_MEANING.get(k, "（未分类）")
+
 def digest_for(bid: str, run: dict):
     """每个基准的「头条数字」（摘要表用）——全部从 run.metrics 里读，不另设数据源。"""
     m = (run or {}).get("metrics") or {}
@@ -1039,9 +1084,16 @@ def main() -> int:
         return 2
     doc, md = build(align, manifest, refs, latest_platform_chain(), sensitivity, platform_usage)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    doc.save(str(OUT_DOCX))
+    # 报告可能正被 Word 打开（存在 ~$ 锁文件），此时不要粗暴失败：写到 .new.docx 并给出提示
+    try:
+        doc.save(str(OUT_DOCX))
+        print(f"已生成 {OUT_DOCX.relative_to(REPO)}（{len(doc.paragraphs)} 段）")
+    except PermissionError:
+        alt = OUT_DOCX.with_name(OUT_DOCX.stem + ".new.docx")
+        doc.save(str(alt))
+        print(f"⚠️ {OUT_DOCX.name} 正被 Word 占用（存在 ~$ 锁文件），已改写到 {alt.name}")
+        print("   关闭 Word 后重跑本脚本即可写回正式文件名。")
     OUT_MD.write_text("\n".join(md), encoding="utf-8")
-    print(f"已生成 {OUT_DOCX.relative_to(REPO)}（{len(doc.paragraphs)} 段）")
     print(f"已生成 {OUT_MD.relative_to(REPO)}")
     return 0
 

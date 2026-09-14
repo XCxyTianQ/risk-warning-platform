@@ -2064,7 +2064,6 @@
               }
             },
             "errorTypeDistribution": {
-              "simple_function_checker:unclear": 366,
               "value_error:string": 6,
               "value_error:dict_key": 2,
               "value_error:others": 8,
@@ -2077,7 +2076,8 @@
             "wrongFunctionName": 1,
             "overCallRate": 8,
             "errors": 0,
-            "scoring": "自实现 AST 判定（对照官方 ast_checker.py 移植）"
+            "scoring": "自实现 AST 判定（对照官方 ast_checker.py 移植）（失败类型分布已修正为只统计失败样本）",
+            "failedTotal": 65
           },
           "seconds": 103.4,
           "rows": 520,
@@ -2718,6 +2718,7 @@
     "所有外部数据均按 repo@ref + sha256 锁定，见 out/manifest.json",
     "本节数字回答的是\"模型与读取链路\"的能力，平台的端到端能力见 FinRisk-Bench 与 bench/ 套件",
     "图像类基准只跑实测支持图像输入的模型",
-    "本次为合并模式：cflue、fineval、fineval-mm、bfcl、omnidocbench 为历史结果，其余为重跑结果"
+    "本次为合并模式：cflue、fineval、fineval-mm、bfcl、omnidocbench 为历史结果，其余为重跑结果",
+    "本文件的部分指标由 tools/regrade-from-detail.js 从逐题明细重算（未重新调用模型）：bfcl"
   ]
 }
