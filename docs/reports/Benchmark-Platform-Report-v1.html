@@ -100,6 +100,13 @@ td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabula
 .chart .slope-line{fill:none;stroke:var(--c-platform);stroke-width:2.5;opacity:.55}
 .chart .fun-val{fill:#fff;font-size:13px;font-weight:700;font-family:var(--f-sans)}
 .chart .fun-sub{fill:rgba(255,255,255,.86);font-size:10.5px;font-family:var(--f-mono)}
+/* 雷达图 */
+.chart.radar{max-width:540px;margin:0 auto}
+.chart .rd-ring{fill:none;stroke:var(--c-grid);stroke-width:1}
+.chart .rd-ring-outer{fill:none;stroke:var(--c-line);stroke-width:1.4}
+.chart .rd-axis{stroke:var(--c-line);stroke-width:1;stroke-dasharray:2 3}
+.chart .rd-label{fill:var(--c-ink);font-size:12.5px;font-family:var(--f-sans);font-weight:700}
+.chart .rd-val{fill:var(--c-platform);font-size:12px;font-family:var(--f-mono);font-weight:700;paint-order:stroke;stroke:var(--c-surface);stroke-width:3px;stroke-linejoin:round}
 .callout{border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14.5px;border:1px solid transparent}
 .callout.warn{background:var(--c-warn-soft);border-color:color-mix(in srgb,var(--c-warn) 30%,transparent)}
 .callout.bad{background:var(--c-bad-soft);border-color:color-mix(in srgb,var(--c-bad) 26%,transparent)}
@@ -171,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 13:15</span>
+    <span class="chip">报告生成 2026-09-14 13:25</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -214,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>10,985 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>11,249 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -344,7 +351,44 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   </div>
   <p style="font-size:12.5px;color:var(--c-muted)">多项选择题需要同时选对全部选项才算正确，因此天然低于单选；这也是后续可优化的一档（例如让模型先输出候选再自检）。</p>
 
-  <h3>5.1 外部对照：同题同集，可直接并列</h3>
+  <h3>5.1 与外部模型的同题对比（雷达图）</h3>
+  <p>这是本页<strong>唯一</strong>能做到"同一批题、同一口径、多方都有公开数字"的对比：FinanceBench 开源子集 150 题，
+  论文把各模型的逐题判定标签一并开源，因此每一格都能追到具体题目。
+  四个实体都是 <strong>oracle 口径</strong>（把财报证据给模型）——条件一致，可以画在一张雷达图上。</p>
+  
+  <div class="figure">
+    <div class="cap">图 3　FinanceBench 150 题分题型准确率（oracle 口径，每类 50 题；数值越高越好，外环为 100%、每环 25%）</div>
+    <div style="display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr);gap:20px;align-items:center">
+      <div><svg viewBox="52 22 436 447" class="chart radar" role="img"><polygon points="270.0,215.4 312.1,288.3 227.9,288.3" class="rd-ring"/><polygon points="270.0,166.8 354.2,312.6 185.8,312.6" class="rd-ring"/><polygon points="270.0,118.2 396.3,336.9 143.7,336.9" class="rd-ring"/><polygon points="270.0,69.6 438.4,361.2 101.6,361.2" class="rd-ring-outer"/><line x1="270" y1="264" x2="270.0" y2="69.6" class="rd-axis"/><text x="270.0" y="43.6" class="rd-label" text-anchor="middle">指标类问题</text><text x="270.0" y="57.6" class="axis sub" text-anchor="middle">n=50</text><line x1="270" y1="264" x2="438.4" y2="361.2" class="rd-axis"/><text x="438.4" y="391.2" class="rd-label" text-anchor="middle">领域推理问题</text><text x="438.4" y="405.2" class="axis sub" text-anchor="middle">n=50</text><line x1="270" y1="264" x2="101.6" y2="361.2" class="rd-axis"/><text x="101.6" y="391.2" class="rd-label" text-anchor="middle">新颖生成问题</text><text x="101.6" y="405.2" class="axis sub" text-anchor="middle">n=50</text><polygon points="270.0,85.2 404.7,341.8 135.3,341.8" fill="var(--c-baseline)" fill-opacity="0.1" stroke="var(--c-baseline)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="270.0" cy="85.2" r="3.2" fill="var(--c-baseline)"/><circle cx="404.7" cy="341.8" r="3.2" fill="var(--c-baseline)"/><circle cx="135.3" cy="341.8" r="3.2" fill="var(--c-baseline)"/><polygon points="270.0,89.0 411.4,345.6 131.9,343.7" fill="var(--c-finance)" fill-opacity="0.1" stroke="var(--c-finance)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="270.0" cy="89.0" r="3.2" fill="var(--c-finance)"/><circle cx="411.4" cy="345.6" r="3.2" fill="var(--c-finance)"/><circle cx="131.9" cy="343.7" r="3.2" fill="var(--c-finance)"/><polygon points="270.0,205.7 320.5,293.2 182.5,314.5" fill="var(--c-baseline)" fill-opacity="0.1" stroke="var(--c-baseline)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="270.0" cy="205.7" r="3.2" fill="var(--c-baseline)"/><circle cx="320.5" cy="293.2" r="3.2" fill="var(--c-baseline)"/><circle cx="182.5" cy="314.5" r="3.2" fill="var(--c-baseline)"/><polygon points="270.0,92.9 401.3,339.8 135.3,341.8" fill="var(--c-platform)" fill-opacity="0.16" stroke="var(--c-platform)" stroke-width="2.6" stroke-dasharray="" stroke-linejoin="round"/><circle cx="270.0" cy="92.9" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="270.0" y="111.9" class="rd-val" text-anchor="middle">88</text><circle cx="401.3" cy="339.8" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="388.3" y="336.3" class="rd-val" text-anchor="middle">78</text><circle cx="135.3" cy="341.8" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="148.3" y="338.3" class="rd-val" text-anchor="middle">80</text></svg></div>
+      <div>
+        <table style="margin-top:0;font-size:12.5px">
+          <thead><tr><th>模型 / 口径</th><th class="n">总体</th><th class="n">指标类</th><th class="n">领域推理</th><th class="n">新颖生成</th></tr></thead>
+          <tbody>
+            <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）</b></td><td class="n best">82.0%</td><td class="n">88%</td><td class="n">78%</td><td class="n">80%</td></tr>
+            <tr><td>GPT-4（oracle）<span class="chip src" style="margin-left:6px">论文公开</span></td><td class="n">84.0%</td><td class="n">92%</td><td class="n">80%</td><td class="n">80%</td></tr><tr><td>GPT-4-1106（oracle）<span class="chip src" style="margin-left:6px">论文公开</span></td><td class="n">85.3%</td><td class="n">90%</td><td class="n">84%</td><td class="n">82%</td></tr><tr><td>Claude-2（in-context）<span class="chip src" style="margin-left:6px">论文公开</span></td><td class="n">37.3%</td><td class="n">30%</td><td class="n">30%</td><td class="n">52%</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12.5px;color:var(--c-muted);margin-top:8px">每格样本量均为 50 题；"总体"为 150 题合计。</p>
+      </div>
+    </div>
+    <div class="legendbar" style="justify-content:center;gap:20px"><span><i style="background:var(--c-platform);"></i>本平台（deepseek-flash，oracle）</span><span><i style="background:var(--c-baseline);height:3px;border-radius:2px"></i>GPT-4（oracle）</span><span><i style="background:var(--c-finance);height:3px;border-radius:2px"></i>GPT-4-1106（oracle）</span><span><i style="background:var(--c-baseline);height:3px;border-radius:2px"></i>Claude-2（in-context）</span></div>
+  </div>
+  <div class="callout warn"><span class="t">这张图该怎么读（三条都别跳过）</span>
+    ① <strong>我们在这一层与 GPT-4 同级，而不是领先</strong>：总体 82.0%% 对 GPT-4 84.0%%、GPT-4-1106 85.3%%，
+    差距 2.0~3.3 个百分点，<strong>与我们自身两次运行的波动（oracle 83.33% → 82.00%，1.3pp）同量级</strong>，因此不能声称与 GPT-4 有实质差异；
+    ② 明显低于我们的是 Claude-2（37.3%%），但它是 2023 年模型，这个对比只能说明"我们不是这一档"；
+    ③ 未纳入的公开结果还有 <strong>Llama2-70B single-store（41.3%%）</strong>——
+    那是<strong>检索口径</strong>（先检索再回答），与 oracle 条件不同；把它画进来会把"检索没命中"算成"模型不会读"，所以单列不并图。</div>
+  <div class="callout good"><span class="t">那我们的优势在哪（不在这一层）</span>
+    平台的价值不体现在"同一批问答题比别人高几个点"，而在<strong>这一层之外</strong>：
+    ① 端到端预警（六维 AUC 79.8 vs 三行规则 63.3，且领先来自数据面更宽）；
+    ② 结构化抽取 / 勾稽校验 / 指标测算的确定性能力（T1/T3/T4 全部 100% 且 MAPE 0.0000%）；
+    ③ 25 个工具的受控编排与审批闸门（BFCL 87.5%%）；
+    ④ 无证据时不硬答（闭卷口径我们 44.7%%，GPT-4 当年 4.67%%，但我们对闭卷已有语料污染，见 6.2）。
+    这些维度<strong>没有可比的公开多方数字</strong>，所以本页不给它们编雷达轴——只有同题同口径的维度才配画在同一张图上。</div>
+  
+
+  <h3>5.2 外部对照表：同题同集，可直接并列</h3>
   <table>
     <caption>表 2　FinanceBench 开源子集 150 题：论文公开结果（由仓库逐题标签统计）与我们同题对比</caption>
     <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">准确率</th><th>说明</th></tr></thead>
@@ -357,7 +401,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <p style="font-size:12.5px;color:var(--c-muted)">判分器可信度先被验证：用我们的确定性判分重判论文公开答案，与论文标签一致率 84.6%–100%；
   初版未做量纲换算时只有 61.5%，修正过程记录在案。</p>
 
-  <h3>5.2 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
+  <h3>5.3 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
   <table>
     <caption>表 3　BFCL v4 非实时子集（n=520）；判分为自实现 AST 判定，非官方 checker</caption>
     <thead><tr><th>子集</th><th class="n">通过率</th><th class="n">n</th><th>含义</th></tr></thead>
@@ -371,9 +415,9 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   不该调用却调用了 31、取值不符 8、列表参数不符 8、调用个数不对 8、字符串取值不符 6、字典键不符 2、调用个数不对 1、函数名选错 1。
   其中 <strong>"不该调用却调用了" 31 例</strong>对应平台里"乱调工具"的风险，是工具层安全边界最该盯的数字。</p>
 
-  <h3>5.3 文档读取：图像输入无法靠记忆作弊</h3>
+  <h3>5.4 文档读取：图像输入无法靠记忆作弊</h3>
   <div class="figure">
-    <div class="cap">图 3　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
+    <div class="cap">图 4　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
     <svg viewBox="0 0 720 186" class="chart" role="img"><line x1="150.0" y1="18" x2="150.0" y2="170" class="grid"/><text x="150.0" y="183" class="axis" text-anchor="middle">0.000</text><line x1="277.5" y1="18" x2="277.5" y2="170" class="grid"/><text x="277.5" y="183" class="axis" text-anchor="middle">0.250</text><line x1="405.0" y1="18" x2="405.0" y2="170" class="grid"/><text x="405.0" y="183" class="axis" text-anchor="middle">0.500</text><line x1="532.5" y1="18" x2="532.5" y2="170" class="grid"/><text x="532.5" y="183" class="axis" text-anchor="middle">0.750</text><line x1="660.0" y1="18" x2="660.0" y2="170" class="grid"/><text x="660.0" y="183" class="axis" text-anchor="middle">1.000</text><text x="140" y="40" class="axis label" text-anchor="end">数字召回</text><rect x="150" y="30" width="323.4" height="12" rx="3" fill="var(--c-baseline)"/><text x="481.4" y="40" class="val">0.634</text><rect x="150" y="47" width="444.2" height="12" rx="3" fill="var(--c-platform)"/><text x="602.2" y="57" class="val">0.871</text><text x="140" y="84" class="axis label" text-anchor="end">片段召回</text><rect x="150" y="74" width="233.3" height="12" rx="3" fill="var(--c-baseline)"/><text x="391.3" y="84" class="val">0.457</text><rect x="150" y="91" width="359.7" height="12" rx="3" fill="var(--c-platform)"/><text x="517.7" y="101" class="val">0.705</text><text x="140" y="128" class="axis label" text-anchor="end">字符编辑距离比 ↓</text><rect x="150" y="118" width="108.0" height="12" rx="3" fill="var(--c-warn)"/><text x="266.0" y="128" class="val">0.212</text><rect x="150" y="135" width="33.4" height="12" rx="3" fill="var(--c-warn)"/><text x="191.4" y="145" class="val">0.066</text><g><rect x="150" y="174" width="10" height="10" rx="2" fill="var(--c-baseline)"/><text x="166" y="183" class="axis">非表格页（9 页）</text><rect x="260" y="174" width="10" height="10" rx="2" fill="var(--c-platform)"/><text x="276" y="183" class="axis">含表格页（9 页）</text></g></svg>
   </div>
   <p style="font-size:13px;color:var(--c-ink-2)">含表格页的数字召回 0.871、编辑距离 0.066，
@@ -393,7 +437,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   <h3>6.1 平台链路在客观题上比直连模型低 18.8 个百分点</h3>
   <div class="figure">
-    <div class="cap">图 4　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
+    <div class="cap">图 5　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
     <svg viewBox="0 0 720 146" class="chart" role="img"><line x1="108.0" y1="18" x2="108.0" y2="124" class="grid"/><text x="108.0" y="136" class="axis" text-anchor="middle">0%</text><line x1="218.8" y1="18" x2="218.8" y2="124" class="grid"/><text x="218.8" y="136" class="axis" text-anchor="middle">20%</text><line x1="329.6" y1="18" x2="329.6" y2="124" class="grid"/><text x="329.6" y="136" class="axis" text-anchor="middle">40%</text><line x1="440.4" y1="18" x2="440.4" y2="124" class="grid"/><text x="440.4" y="136" class="axis" text-anchor="middle">60%</text><line x1="551.2" y1="18" x2="551.2" y2="124" class="grid"/><text x="551.2" y="136" class="axis" text-anchor="middle">80%</text><line x1="662.0" y1="18" x2="662.0" y2="124" class="grid"/><text x="662.0" y="136" class="axis" text-anchor="middle">100%</text><text x="98" y="34" class="axis label" text-anchor="end">CFLUE 知识题</text><line x1="493.0" y1="30" x2="597.4" y2="30" class="db-line"/><circle cx="597.4" cy="30" r="6" fill="var(--c-baseline)"/><circle cx="493.0" cy="30" r="6" fill="var(--c-platform)"/><text x="597.4" y="19" class="val" text-anchor="middle">88.3%</text><text x="493.0" y="50" class="val" text-anchor="middle">69.5%</text><text x="545.2" y="19" class="delta" text-anchor="middle">−18.8pp</text><text x="98" y="80" class="axis label" text-anchor="end">FinEval-MM 图片题</text><line x1="606.6" y1="76" x2="606.6" y2="76" class="db-line"/><circle cx="606.6" cy="76" r="6" fill="var(--c-baseline)"/><circle cx="606.6" cy="76" r="6" fill="var(--c-platform)"/><text x="618.6" y="80.0" class="val" text-anchor="start">两者同为 90.0%</text><text x="606.6" y="63" class="delta" text-anchor="middle" style="fill:var(--c-platform)">持平</text><g class="legend"><circle cx="108" cy="136" r="4.5" fill="var(--c-baseline)"/><text x="117" y="139" class="axis">直连模型</text><circle cx="216" cy="136" r="4.5" fill="var(--c-platform)"/><text x="225" y="139" class="axis">平台链路</text></g></svg>
   </div>
   <div class="callout bad"><span class="t">读法与动作</span>
@@ -456,7 +500,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   <h3>7.2 数据可得性：拿不到的东西也是结论</h3>
   <div class="figure">
-    <div class="cap">图 5　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
+    <div class="cap">图 6　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
     <svg viewBox="0 0 720 250" class="chart" role="img"><path d="M20 22 L700 22 L700 64.5 L20 64.5 Z" fill="var(--c-platform)" opacity="0.9"/><text x="360" y="45.25" class="fun-val" text-anchor="middle">1,000 行题目</text><text x="360" y="59.25" class="fun-sub" text-anchor="middle">15 个题型文件全量</text><path d="M20 70.5 L700 70.5 L680.62 113 L39.379999999999995 113 Z" fill="#1f8f86" opacity="0.9"/><text x="360" y="93.75" class="fun-val" text-anchor="middle">943 行带图且有答案</text><text x="360" y="107.75" class="fun-sub" text-anchor="middle">其余缺答案字段</text><path d="M20 119 L700 119 L517.76 161.5 L202.23999999999998 161.5 Z" fill="var(--c-warn)" opacity="0.9"/><text x="360" y="142.25" class="fun-val" text-anchor="middle">464 行图片确实随仓库发布</text><text x="360" y="156.25" class="fun-sub" text-anchor="middle">figure/pg、sdt 等目录未开放，HF 返回 401</text><path d="M20 167.5 L700 167.5 L486.14 210 L233.86 210 Z" fill="#8a6d1f" opacity="0.9"/><text x="360" y="190.75" class="fun-val" text-anchor="middle">371 行可用于评测</text><text x="360" y="204.75" class="fun-sub" text-anchor="middle">再要求选项 ≥2；评测即在此子集上分层抽样 150 题</text></svg>
   </div>
 </section>

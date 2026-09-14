@@ -17,13 +17,14 @@ fs.mkdirSync(OUT, { recursive: true })
 
 const VIEWPORTS = [
   { name: '01-top', scroll: 0, theme: 'light' },
-  { name: '02-finrisk', scroll: 2100, theme: 'light' },
-  { name: '03-external', scroll: 4100, theme: 'light' },
-  { name: '04-honest', scroll: 6100, theme: 'light' },
-  { name: '05-data', scroll: 7250, theme: 'light' },
-  { name: '06-cost', scroll: 8500, theme: 'light' },
-  { name: '07-conclusion', scroll: 9650, theme: 'light' },
-  { name: '08-dark-top', scroll: 0, theme: 'dark' },
+  { name: '02-finrisk', sel: '#finrisk', theme: 'light' },
+  { name: '03-radar', sel: '.chart.radar', theme: 'light' },
+  { name: '04-external', sel: '#external h3:nth-of-type(2)', theme: 'light' },
+  { name: '05-honest', sel: '#honest', theme: 'light' },
+  { name: '06-data', sel: '#data', theme: 'light' },
+  { name: '07-cost', sel: '#cost', theme: 'light' },
+  { name: '08-conclusion', sel: '#conclusion', theme: 'light' },
+  { name: '09-dark-radar', sel: '.chart.radar', theme: 'dark' },
 ]
 
 app.commandLine.appendSwitch('force-device-scale-factor', '1')
@@ -36,12 +37,21 @@ app.whenReady().then(async () => {
   })
   await win.loadFile(FILE)
   await new Promise((r) => setTimeout(r, 900))
+  // 页面开了 scroll-behavior:smooth，截图前必须关掉，否则量到的位置和拍到的画面对不上
+  await win.webContents.executeJavaScript("document.documentElement.style.scrollBehavior='auto';true")
   const height = await win.webContents.executeJavaScript('document.documentElement.scrollHeight')
   const width = await win.webContents.executeJavaScript('document.documentElement.scrollWidth')
   console.log(`页面尺寸：${width} × ${height} px`)
 
   for (const v of VIEWPORTS) {
-    await win.webContents.executeJavaScript(`document.documentElement.setAttribute('data-theme','${v.theme}');window.scrollTo(0,${v.scroll});true`)
+    await win.webContents.executeJavaScript(`document.documentElement.setAttribute('data-theme','${v.theme}');true`)
+    if (v.sel) {
+      const info = await win.webContents.executeJavaScript(`(function(){var el=document.querySelector(${JSON.stringify(v.sel)});if(!el)return null;var r=el.getBoundingClientRect();var vh=window.innerHeight;var y=r.top+window.scrollY-(vh-r.height)/2;window.scrollTo(0,Math.max(0,y));return {sel:${JSON.stringify(v.sel)},top:Math.round(r.top),h:Math.round(r.height),vh:vh,y:Math.round(Math.max(0,y))}})()`)
+      if (!info) { console.log(`  ⚠️ ${v.name}: 找不到选择器 ${v.sel}`); continue }
+      if (process.env.SHOT_DEBUG) console.log(`     [debug] ${JSON.stringify(info)}`)
+    } else {
+      await win.webContents.executeJavaScript(`window.scrollTo(0,${v.scroll || 0});true`)
+    }
     await new Promise((r) => setTimeout(r, 320))
     const img = await win.webContents.capturePage()
     const file = path.join(OUT, `${v.name}.png`)

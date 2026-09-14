@@ -1,0 +1,136 @@
+{
+  "generatedAt": "2026-09-14T05:18:46.551Z",
+  "types": [
+    "metrics-generated",
+    "domain-relevant",
+    "novel-generated"
+  ],
+  "models": [
+    {
+      "label": "GPT-4（oracle）",
+      "mode": "oracle",
+      "n": 150,
+      "accuracyPct": 84,
+      "refusalPct": 6,
+      "byType": {
+        "metrics-generated": {
+          "n": 50,
+          "accuracyPct": 92
+        },
+        "domain-relevant": {
+          "n": 50,
+          "accuracyPct": 80
+        },
+        "novel-generated": {
+          "n": 50,
+          "accuracyPct": 80
+        }
+      }
+    },
+    {
+      "label": "GPT-4-1106（oracle）",
+      "mode": "oracle",
+      "n": 150,
+      "accuracyPct": 85.33,
+      "refusalPct": 0,
+      "byType": {
+        "metrics-generated": {
+          "n": 50,
+          "accuracyPct": 90
+        },
+        "domain-relevant": {
+          "n": 50,
+          "accuracyPct": 84
+        },
+        "novel-generated": {
+          "n": 50,
+          "accuracyPct": 82
+        }
+      }
+    },
+    {
+      "label": "Claude-2（in-context）",
+      "mode": "oracle",
+      "n": 150,
+      "accuracyPct": 37.33,
+      "refusalPct": 2,
+      "byType": {
+        "metrics-generated": {
+          "n": 50,
+          "accuracyPct": 30
+        },
+        "domain-relevant": {
+          "n": 50,
+          "accuracyPct": 30
+        },
+        "novel-generated": {
+          "n": 50,
+          "accuracyPct": 52
+        }
+      }
+    },
+    {
+      "label": "Llama2-70B（single store）",
+      "mode": "retrieval",
+      "n": 150,
+      "accuracyPct": 41.33,
+      "refusalPct": 4.67,
+      "byType": {
+        "metrics-generated": {
+          "n": 50,
+          "accuracyPct": 26
+        },
+        "domain-relevant": {
+          "n": 50,
+          "accuracyPct": 52
+        },
+        "novel-generated": {
+          "n": 50,
+          "accuracyPct": 46
+        }
+      }
+    },
+    {
+      "label": "GPT-4（闭卷）",
+      "mode": "closedBook",
+      "n": 150,
+      "accuracyPct": 4.67,
+      "refusalPct": 94.67,
+      "byType": {
+        "metrics-generated": {
+          "n": 50,
+          "accuracyPct": 0
+        },
+        "domain-relevant": {
+          "n": 50,
+          "accuracyPct": 10
+        },
+        "novel-generated": {
+          "n": 50,
+          "accuracyPct": 4
+        }
+      }
+    }
+  ],
+  "ours": {
+    "label": "本平台（deepseek-flash，oracle）",
+    "mode": "oracle",
+    "n": 150,
+    "accuracyPct": 82,
+    "closedBookPct": 44.67,
+    "byType": {
+      "metrics-generated": {
+        "n": 50,
+        "accuracyPct": 88
+      },
+      "domain-relevant": {
+        "n": 50,
+        "accuracyPct": 78
+      },
+      "novel-generated": {
+        "n": 50,
+        "accuracyPct": 80
+      }
+    }
+  }
+}

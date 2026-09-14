@@ -687,7 +687,26 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
             if rows:
                 T(["题型（oracle 口径）", "n", "裁判准确率"], rows, caption=f"表 14　FinanceBench 分题型（{model}）", widths=[7.0, 2.0, 3.0])
             break
-        # 闭卷口径的可信度核查：闭卷能答对，究竟是「会读」还是「记得」
+        # 同题同口径的多方分题型对比（雷达图的数据底稿）
+        radar = load(EXT / "out" / "radar-data.json")
+        if radar:
+            P("**同题同口径的分题型对比**（每类 50 题；oracle 口径 = 把财报证据给模型）："
+              "这是本报告唯一能做到「同一批题、同一口径、多方都有公开数字」的横向对比，因而也是唯一适合画在同一张雷达图上的对比。")
+            tnames = {"metrics-generated": "指标类", "domain-relevant": "领域推理", "novel-generated": "新颖生成"}
+            rows = []
+            ours_r = radar.get("ours") or {}
+            rows.append(["本平台（deepseek-flash）", pct(ours_r.get("accuracyPct")), *[pct(dig(ours_r, f"byType.{t}.accuracyPct")) for t in radar.get("types", [])]])
+            for mo in radar.get("models", []):
+                if mo.get("mode") != "oracle":
+                    continue
+                rows.append([f"{mo.get('label')}（论文公开）", pct(mo.get("accuracyPct")), *[pct(dig(mo, f"byType.{t}.accuracyPct")) for t in radar.get("types", [])]])
+            T(["模型 / 口径", "总体（n=150）", *[tnames.get(t, t) for t in radar.get("types", [])]],
+              rows,
+              caption="表 12b　FinanceBench 分题型对比（oracle 口径，每类 n=50）",
+              note="未纳入的公开结果还有 Llama2-70B single-store（41.33%）——那是**检索口径**（先检索再回答），"
+                   "与 oracle 条件不同，合并会把「检索没命中」算成「模型不会读」，因此单列不并表。"
+                   "读法：本平台与 GPT-4 同级而非领先，差距 2.0~3.3 个百分点，与我们自身两次运行的波动（1.3pp）同量级。",
+              widths=[4.4, 2.6, 2.2, 2.4, 2.4])
         cb = audit_closedbook()
         if cb:
             oracle_pct = dig(b, "runs.deepseek-flash.metrics.judgeGraded.byMode.oracle.accuracyPct")

@@ -54,3 +54,4 @@ bench/external/out/*
 !bench/external/out/external-reference-numbers.json
 !bench/external/out/prompt-sensitivity.json
 !bench/external/out/platform-usage.json
+!bench/external/out/radar-data.json

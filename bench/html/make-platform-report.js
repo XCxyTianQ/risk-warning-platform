@@ -43,6 +43,9 @@ const emani = load('bench/external/out/manifest.json', {})
 const dman = load('bench/dataset/out/manifest.json', {})
 const nfman = load('bench/dataset/out/nonfinancial-manifest.json', {})
 const lval = load('bench/dataset/out/label-validation.json', {})
+/** 雷达图数据：同题同口径的多方对比（由 bench/html/prepare-radar-data.js 生成）
+ *  注意：把"组装"放在后面的第五节，因为配色常量 C 在第四节才定义。 */
+const radarData = load('bench/external/out/radar-data.json', null)
 
 // 口径 B（平台链路）取最近一次
 let chain = null
@@ -340,7 +343,98 @@ function pairedBars(items, { width = 720, max = 1, height = null, fmt = (v) => v
   return `<svg viewBox="0 0 ${width} ${h}" class="chart" role="img">${g}</svg>`
 }
 
+/** 雷达图：多方在同题同口径下的多维度对比（axes 为维度名，series 为各方）
+ *  坐标：以画布中心为原点，顶点从正上方开始顺时针排布；标签沿轴向外放，避免压住数据点。 */
+function radar(axes, series, { size = 560, max = 100, rings = 4 } = {}) {
+  const cx = size / 2
+  const cy = size / 2 - 6
+  const R = size * 0.36
+  const n = axes.length
+  const ang = (i) => (-90 + (360 / n) * i) * (Math.PI / 180)
+  const pt = (i, v) => [cx + Math.cos(ang(i)) * R * (v / max), cy + Math.sin(ang(i)) * R * (v / max)]
+  let g = ''
+  for (let r = 1; r <= rings; r++) {
+    const v = (max * r) / rings
+    const poly = axes.map((_, i) => pt(i, v).map((x) => x.toFixed(1)).join(',')).join(' ')
+    g += `<polygon points="${poly}" class="${r === rings ? 'rd-ring-outer' : 'rd-ring'}"/>`
+  }
+  // 刻度说明写在图注里（外环=100%，每环 25%），图内不再塞数字
+  const bounds = { x0: cx - R, x1: cx + R, y0: cy - R, y1: cy + R }
+  const track = (x, y) => {
+    bounds.x0 = Math.min(bounds.x0, x); bounds.x1 = Math.max(bounds.x1, x)
+    bounds.y0 = Math.min(bounds.y0, y); bounds.y1 = Math.max(bounds.y1, y)
+  }
+  axes.forEach((a, i) => {
+    const [x, y] = pt(i, max)
+    g += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="rd-axis"/>`
+    const [vx, vy] = pt(i, max)
+    const lower = Math.sin(ang(i)) > 0.3
+    // 下半部分的顶点：标签放到顶点正下方，避免与数据点和数值标签打架
+    const lx = lower ? vx : cx + Math.cos(ang(i)) * (R + 20)
+    const ly = lower ? vy + 30 : vy - 26
+    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" class="rd-label" text-anchor="middle">${esc(a.label)}</text>`
+    if (a.note) g += `<text x="${lx.toFixed(1)}" y="${(ly + 14).toFixed(1)}" class="axis sub" text-anchor="middle">${esc(a.note)}</text>`
+    const half = Math.max(a.label.length, (a.note || '').length * 0.6) * 6.6
+    track(lx - half, ly - 12); track(lx + half, ly + 16)
+  })
+  // 本平台的系列最后画（压在最上层），数值朝圆心方向放并带白描边，保证小图也读得清
+  const ordered = [...series.filter((s) => !s.emph), ...series.filter((s) => s.emph)]
+  ordered.forEach((s) => {
+    const poly = axes.map((a, i) => pt(i, a.values[s.key] ?? 0).map((x) => x.toFixed(1)).join(',')).join(' ')
+    g += `<polygon points="${poly}" fill="${s.color}" fill-opacity="${s.fill ?? 0.1}" stroke="${s.color}" stroke-width="${s.width || 2}" stroke-dasharray="${s.dash || ''}" stroke-linejoin="round"/>`
+    axes.forEach((a, i) => {
+      const v = a.values[s.key] ?? 0
+      const [x, y] = pt(i, v)
+      g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${s.emph ? 4.6 : 3.2}" fill="${s.color}"${s.emph ? ' stroke="#fff" stroke-width="1.3"' : ''}/>`
+      if (s.emph) {
+        const ox = -Math.cos(ang(i)) * 15
+        const oy = -Math.sin(ang(i)) * 15
+        g += `<text x="${(x + ox).toFixed(1)}" y="${(y + oy + 4).toFixed(1)}" class="rd-val" text-anchor="middle">${v.toFixed(0)}</text>`
+      }
+    })
+  })
+  // 按内容收紧画布：三轴雷达的最低点只到中心以下半个半径，方形画布会浪费一大截高度
+  const pad = 10
+  const vx0 = bounds.x0 - pad, vy0 = bounds.y0 - pad
+  const vw = bounds.x1 - bounds.x0 + pad * 2, vh = bounds.y1 - bounds.y0 + pad * 2
+  return `<svg viewBox="${vx0.toFixed(0)} ${vy0.toFixed(0)} ${vw.toFixed(0)} ${vh.toFixed(0)}" class="chart radar" role="img">${g}</svg>`
+}
+
+/** 图例（雷达图用，放在图外，避免遮挡） */
+function legend(series) {
+  return `<div class="legendbar" style="justify-content:center;gap:20px">${series
+    .map((s) => `<span><i style="background:${s.color};${s.dash ? `height:3px;border-radius:2px` : ''}"></i>${esc(s.label)}${s.note ? `<span style="color:var(--c-muted)"> · ${esc(s.note)}</span>` : ''}</span>`)
+    .join('')}</div>`
+}
+
 // ---------------------------------------------------------------- 五、组装数据
+// 雷达图：只有"同一批题、同一口径"的维度才进同一张蜘蛛网
+const radarAxes = radarData
+  ? radarData.types.map((t) => ({
+      key: t,
+      label: { 'metrics-generated': '指标类问题', 'domain-relevant': '领域推理问题', 'novel-generated': '新颖生成问题' }[t] || t,
+      note: 'n=50',
+      values: Object.fromEntries([
+        ['ours', dig(radarData, `ours.byType.${t}.accuracyPct`, 0)],
+        ...radarData.models.filter((m) => m.mode === 'oracle').map((m) => [m.label, dig(m, `byType.${t}.accuracyPct`, 0)]),
+      ]),
+    }))
+  : []
+const radarSeries = radarData
+  ? [
+      { key: 'ours', label: '本平台（deepseek-flash，oracle）', color: C.platform, emph: true, width: 2.6, fill: 0.16 },
+      ...radarData.models
+        .filter((m) => m.mode === 'oracle')
+        .map((m, i) => ({ key: m.label, label: m.label, color: [C.baseline, C.finance, C.bad][i] || C.baseline, dash: '5 4', width: 1.8 })),
+    ]
+  : []
+const closedBook = radarData
+  ? {
+      ours: dig(radarData, 'ours.closedBookPct', null),
+      gpt4: (radarData.models.find((m) => m.mode === 'closedBook') || {}).accuracyPct ?? null,
+    }
+  : null
+
 const summary = bench.summary || {}
 const platform = dig(bench, 'platform.metrics', {})
 const apiLatency = platform.apiLatency || {}
@@ -514,6 +608,13 @@ td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabula
 .chart .slope-line{fill:none;stroke:var(--c-platform);stroke-width:2.5;opacity:.55}
 .chart .fun-val{fill:#fff;font-size:13px;font-weight:700;font-family:var(--f-sans)}
 .chart .fun-sub{fill:rgba(255,255,255,.86);font-size:10.5px;font-family:var(--f-mono)}
+/* 雷达图 */
+.chart.radar{max-width:540px;margin:0 auto}
+.chart .rd-ring{fill:none;stroke:var(--c-grid);stroke-width:1}
+.chart .rd-ring-outer{fill:none;stroke:var(--c-line);stroke-width:1.4}
+.chart .rd-axis{stroke:var(--c-line);stroke-width:1;stroke-dasharray:2 3}
+.chart .rd-label{fill:var(--c-ink);font-size:12.5px;font-family:var(--f-sans);font-weight:700}
+.chart .rd-val{fill:var(--c-platform);font-size:12px;font-family:var(--f-mono);font-weight:700;paint-order:stroke;stroke:var(--c-surface);stroke-width:3px;stroke-linejoin:round}
 .callout{border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14.5px;border:1px solid transparent}
 .callout.warn{background:var(--c-warn-soft);border-color:color-mix(in srgb,var(--c-warn) 30%,transparent)}
 .callout.bad{background:var(--c-bad-soft);border-color:color-mix(in srgb,var(--c-bad) 26%,transparent)}
@@ -780,7 +881,44 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   </div>
   <p style="font-size:12.5px;color:var(--c-muted)">多项选择题需要同时选对全部选项才算正确，因此天然低于单选；这也是后续可优化的一档（例如让模型先输出候选再自检）。</p>
 
-  <h3>5.1 外部对照：同题同集，可直接并列</h3>
+  <h3>5.1 与外部模型的同题对比（雷达图）</h3>
+  <p>这是本页<strong>唯一</strong>能做到"同一批题、同一口径、多方都有公开数字"的对比：FinanceBench 开源子集 150 题，
+  论文把各模型的逐题判定标签一并开源，因此每一格都能追到具体题目。
+  四个实体都是 <strong>oracle 口径</strong>（把财报证据给模型）——条件一致，可以画在一张雷达图上。</p>
+  ${radarData ? `
+  <div class="figure">
+    <div class="cap">图 3　FinanceBench 150 题分题型准确率（oracle 口径，每类 50 题；数值越高越好，外环为 100%、每环 25%）</div>
+    <div style="display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr);gap:20px;align-items:center">
+      <div>${radar(radarAxes, radarSeries, { size: 540 })}</div>
+      <div>
+        <table style="margin-top:0;font-size:12.5px">
+          <thead><tr><th>模型 / 口径</th><th class="n">总体</th><th class="n">指标类</th><th class="n">领域推理</th><th class="n">新颖生成</th></tr></thead>
+          <tbody>
+            <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）</b></td><td class="n best">${pct(radarData.ours.accuracyPct, 1)}</td>${radarData.types.map((t) => `<td class="n">${pct(dig(radarData, `ours.byType.${t}.accuracyPct`, null), 0)}</td>`).join('')}</tr>
+            ${radarData.models.filter((m) => m.mode === 'oracle').map((m) => `<tr><td>${esc(m.label)}<span class="chip src" style="margin-left:6px">论文公开</span></td><td class="n">${pct(m.accuracyPct, 1)}</td>${radarData.types.map((t) => `<td class="n">${pct(dig(m, `byType.${t}.accuracyPct`, null), 0)}</td>`).join('')}</tr>`).join('')}
+          </tbody>
+        </table>
+        <p style="font-size:12.5px;color:var(--c-muted);margin-top:8px">每格样本量均为 50 题；"总体"为 150 题合计。</p>
+      </div>
+    </div>
+    ${legend(radarSeries)}
+  </div>
+  <div class="callout warn"><span class="t">这张图该怎么读（三条都别跳过）</span>
+    ① <strong>我们在这一层与 GPT-4 同级，而不是领先</strong>：总体 ${pct(radarData.ours.accuracyPct, 1)}% 对 GPT-4 ${pct(dig(radarData, 'models.0.accuracyPct', null), 1)}%、GPT-4-1106 ${pct(dig(radarData, 'models.1.accuracyPct', null), 1)}%，
+    差距 2.0~3.3 个百分点，<strong>与我们自身两次运行的波动（oracle 83.33% → 82.00%，1.3pp）同量级</strong>，因此不能声称与 GPT-4 有实质差异；
+    ② 明显低于我们的是 Claude-2（${pct(dig(radarData, 'models.2.accuracyPct', null), 1)}%），但它是 2023 年模型，这个对比只能说明"我们不是这一档"；
+    ③ 未纳入的公开结果还有 <strong>Llama2-70B single-store（${pct((radarData.models.find((m) => m.mode === 'retrieval') || {}).accuracyPct ?? null, 1)}%）</strong>——
+    那是<strong>检索口径</strong>（先检索再回答），与 oracle 条件不同；把它画进来会把"检索没命中"算成"模型不会读"，所以单列不并图。</div>
+  <div class="callout good"><span class="t">那我们的优势在哪（不在这一层）</span>
+    平台的价值不体现在"同一批问答题比别人高几个点"，而在<strong>这一层之外</strong>：
+    ① 端到端预警（六维 AUC ${n1(t5rows.st.platAuc * 100, 1)} vs 三行规则 ${n1(t5rows.st.baseAuc * 100, 1)}，且领先来自数据面更宽）；
+    ② 结构化抽取 / 勾稽校验 / 指标测算的确定性能力（T1/T3/T4 全部 ${pct(finrisk.t1F1, 0)} 且 MAPE ${n1(finrisk.t1Mape, 4)}%）；
+    ③ 25 个工具的受控编排与审批闸门（BFCL ${pct(bfclOverall.accuracyPct, 1)}%）；
+    ④ 无证据时不硬答（闭卷口径我们 ${pct(closedBook ? closedBook.ours : null, 1)}%，GPT-4 当年 ${pct(closedBook ? closedBook.gpt4 : null, 2)}%，但我们对闭卷已有语料污染，见 6.2）。
+    这些维度<strong>没有可比的公开多方数字</strong>，所以本页不给它们编雷达轴——只有同题同口径的维度才配画在同一张图上。</div>
+  ` : '<p style="color:var(--c-muted)">（未生成雷达数据：先跑 node bench/html/prepare-radar-data.js）</p>'}
+
+  <h3>5.2 外部对照表：同题同集，可直接并列</h3>
   <table>
     <caption>表 2　FinanceBench 开源子集 150 题：论文公开结果（由仓库逐题标签统计）与我们同题对比</caption>
     <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">准确率</th><th>说明</th></tr></thead>
@@ -793,7 +931,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <p style="font-size:12.5px;color:var(--c-muted)">判分器可信度先被验证：用我们的确定性判分重判论文公开答案，与论文标签一致率 ${pct(Math.min(...(graderVal || [{ deterministicAgreementPct: 0 }]).map((g) => g.deterministicAgreementPct || 0)), 1)}–100%；
   初版未做量纲换算时只有 61.5%，修正过程记录在案。</p>
 
-  <h3>5.2 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
+  <h3>5.3 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
   <table>
     <caption>表 3　BFCL v4 非实时子集（n=${num(bfclOverall.n)}）；判分为自实现 AST 判定，非官方 checker</caption>
     <thead><tr><th>子集</th><th class="n">通过率</th><th class="n">n</th><th>含义</th></tr></thead>
@@ -807,9 +945,9 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   ${Object.entries(bfclErrors).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${esc({ 'irrelevance:called_a_function': '不该调用却调用了', 'value_error:string': '字符串取值不符', 'value_error:others': '取值不符', 'value_error:list/tuple': '列表参数不符', 'value_error:dict_key': '字典键不符', 'simple_function_checker:wrong_count': '调用个数不对', 'multiple_function_checker:wrong_count': '调用个数不对', 'simple_function_checker:wrong_func_name': '函数名选错' }[k] || k)} ${v}`).join('、')}。
   其中 <strong>"不该调用却调用了" ${bfclErrors['irrelevance:called_a_function'] || 0} 例</strong>对应平台里"乱调工具"的风险，是工具层安全边界最该盯的数字。</p>
 
-  <h3>5.3 文档读取：图像输入无法靠记忆作弊</h3>
+  <h3>5.4 文档读取：图像输入无法靠记忆作弊</h3>
   <div class="figure">
-    <div class="cap">图 3　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
+    <div class="cap">图 4　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
     ${pairedBars([
       { label: '数字召回', a: dig(omniM, 'nonTablePages.meanNumberRecall', 0), b: dig(omniM, 'tablePages.meanNumberRecall', 0), aLabel: '非表格页（9 页）', bLabel: '含表格页（9 页）' },
       { label: '片段召回', a: dig(omniM, 'nonTablePages.meanSegmentRecall', 0), b: dig(omniM, 'tablePages.meanSegmentRecall', 0) },
@@ -833,7 +971,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   <h3>6.1 平台链路在客观题上比直连模型低 ${chainCflue && chainBareCflue ? n1(Math.abs(chainBareCflue.pct - chainCflue.accuracyPct), 1) : '18.8'} 个百分点</h3>
   <div class="figure">
-    <div class="cap">图 4　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
+    <div class="cap">图 5　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
     ${dumbbell([
       { label: 'CFLUE 知识题', a: chainBareCflue ? chainBareCflue.pct : 88.3, b: chainCflue ? chainCflue.accuracyPct : 69.5, aLabel: '直连模型', bLabel: '平台链路', delta: `−${chainCflue && chainBareCflue ? n1(chainBareCflue.pct - chainCflue.accuracyPct, 1) : '18.8'}pp` },
       { label: 'FinEval-MM 图片题', a: chainBareMm ? chainBareMm.pct : 90, b: chainMm ? chainMm.accuracyPct : 90, aLabel: '直连模型', bLabel: '平台链路', delta: chainBareMm && chainMm ? `${(chainMm.accuracyPct - chainBareMm.pct) >= 0 ? '+' : ''}${n1(chainMm.accuracyPct - chainBareMm.pct, 1)}pp` : '持平' },
@@ -899,7 +1037,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   <h3>7.2 数据可得性：拿不到的东西也是结论</h3>
   <div class="figure">
-    <div class="cap">图 5　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
+    <div class="cap">图 6　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
     ${funnel([
       { top: 1000, value: 1000, label: `${num(dig(ext, 'benchmarks.fineval-mm.sample.coverage.funnel.rows', 1000))} 行题目`, note: '15 个题型文件全量', color: C.platform },
       { top: 1000, value: dig(ext, 'benchmarks.fineval-mm.sample.coverage.funnel.withImageAndAnswer', 943), label: `${num(dig(ext, 'benchmarks.fineval-mm.sample.coverage.funnel.withImageAndAnswer', 943))} 行带图且有答案`, note: '其余缺答案字段', color: '#1f8f86' },
