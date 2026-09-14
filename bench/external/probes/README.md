@@ -24,3 +24,8 @@ node bench/external/probes/probe8-vision-verify.js
 
 > 这些脚本的输出是"当时那一刻"的观测结果，站点或仓库后续可能变化；
 > 报告与 `out/manifest.json` 记录的是实际抓取到的版本与 sha256。
+
+> **关于模型**：`probe6` 与 `probe8` 里列出的 `deepseek-v4-pro` 只是当初为"是否有第二个可用模型"
+> 做的一次性能力探测记录（结论：不接受图像输入）。**所有正式评测都只使用 `deepseek-flash`**
+> （`run.js`、`platform-chain.js`、敏感性实验、FinanceBench 裁判均默认单模型）；
+> 重跑这两个探测脚本会再次调用该候选模型，如无必要请不要执行。
