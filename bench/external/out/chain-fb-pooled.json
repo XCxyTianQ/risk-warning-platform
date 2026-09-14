@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-09-14T16:37:53.757Z",
+  "runs": [
+    "chain-fb-2026-09-14T15-36-02.json",
+    "chain-fb-2026-09-14T16-17-38.json"
+  ],
+  "pooled": {
+    "B0": {
+      "runs": 1,
+      "n": 149,
+      "correct": 129,
+      "accuracyPct": 86.58,
+      "refusalPct": 2.68
+    },
+    "B6": {
+      "runs": 2,
+      "n": 298,
+      "correct": 257,
+      "accuracyPct": 86.24,
+      "refusalPct": 0
+    },
+    "B7": {
+      "runs": 2,
+      "n": 300,
+      "correct": 265,
+      "accuracyPct": 88.33,
+      "refusalPct": 0.67
+    }
+  },
+  "pairs": [
+    {
+      "aId": "B0",
+      "bId": "B6",
+      "used": 148,
+      "aWin": 9,
+      "bWin": 6,
+      "both": 119,
+      "neither": 14,
+      "net": -3,
+      "z": -0.77,
+      "significant": false
+    },
+    {
+      "aId": "B0",
+      "bId": "B7",
+      "used": 149,
+      "aWin": 4,
+      "bWin": 7,
+      "both": 125,
+      "neither": 13,
+      "net": 3,
+      "z": 0.9,
+      "significant": false
+    },
+    {
+      "aId": "B6",
+      "bId": "B7",
+      "used": 298,
+      "aWin": 6,
+      "bWin": 12,
+      "both": 251,
+      "neither": 29,
+      "net": 6,
+      "z": 1.41,
+      "significant": false
+    }
+  ]
+}
