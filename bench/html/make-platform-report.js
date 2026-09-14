@@ -146,6 +146,12 @@ const commit = git.short || git.commit || '—'
 const headCommit = (() => {
   try { return require('node:child_process').execSync('git rev-parse --short HEAD', { cwd: REPO }).toString().trim() } catch { return null }
 })()
+/** 本文件的生成时刻（本地时间；写成时间戳而不是提交号，避免"报告里写自己的提交号"这种自指） */
+const reportStamp = (() => {
+  const d = new Date()
+  const p = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+})()
 const runAt = (bench.run && (bench.run.startedAt || bench.run.at)) || new Date().toISOString()
 
 // ---------------------------------------------------------------- 三、FinRisk 表解析
@@ -579,8 +585,8 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v${esc(facts.appVersion)}</span>
-    <span class="chip">报告生成于 ${esc(String(headCommit || commit).slice(0, 7))}</span>
-    <span class="chip src">评测数据产生于 ${esc(String(commit).slice(0, 7))}</span>
+    <span class="chip">报告生成 ${esc(String(reportStamp))}</span>
+    <span class="chip src">评测数据快照 ${esc(String(commit).slice(0, 7))}</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 ${lockSummary.benchmarks} 组</span>
     <span class="chip">回归套件 ${summary.suites ? summary.suites.total : '—'} 个</span>
