@@ -70,6 +70,36 @@
       "role": "同代测试的第二裁判：与被测三方均非同源，用于交叉验证判分稳健性"
     },
     {
+      "id": "claude-fable-5-1",
+      "label": "Claude Fable 5.1",
+      "vendor": "Anthropic（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "apiModel": "claude-fable-5-1",
+      "apiPath": "/messages",
+      "keyEnv": ["RWP_ZEN_API_KEY"],
+      "keyFiles": ["~/Desktop/KEY-OPENCODE.txt"],
+      "priceUSD": { "hit": 0.25, "miss": 10, "out": 50, "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25" },
+      "priceSource": "https://apidog.com/blog/what-is-claude-fable-5-1/ 与 https://www.orcarouter.ai/models/anthropic/claude-fable-5.1（网关文档未列该型号价目）",
+      "vision": true,
+      "tools": true,
+      "role": "超限挑战对手之一：2026-09 发布，取代 Fable 5；缓存读价格从 $1 降到 $0.25"
+    },
+    {
+      "id": "gpt-6-astra",
+      "label": "GPT-6 Astra",
+      "vendor": "OpenAI（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "apiModel": "gpt-6-astra",
+      "apiPath": "/responses",
+      "keyEnv": ["RWP_ZEN_API_KEY"],
+      "keyFiles": ["~/Desktop/KEY-OPENCODE.txt"],
+      "priceUSD": { "hit": 1, "miss": 10, "out": 50, "note": "标准档（≤272K 输入）：输入 $10 / 缓存读 $1 / 输出 $50；>272K 为 $20/$2/$75；Batch/Flex 半价，Fast 模式翻倍" },
+      "priceSource": "https://www.cloudzero.com/blog/gpt-6-pricing/ 与 https://apidog.com/blog/gpt-6-astra-api/（网关文档未列该型号价目）",
+      "vision": true,
+      "tools": true,
+      "role": "超限挑战对手之二：与 Fable 5.1 同价（$10/$50），官方称其为当前最强档"
+    },
+    {
       "id": "kimi-k3",
       "label": "Kimi K3（副裁判）",
       "vendor": "月之暗面（经 OpenCode Zen）",

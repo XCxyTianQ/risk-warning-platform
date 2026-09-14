@@ -254,13 +254,18 @@ function baselineRows() {
   const questions = loadQuestions()
   const split = ensureSplit(questions)
   const ids = new Set(split[which])
-  const tasks = questions.filter((q) => ids.has(q.id))
+  let tasks = questions.filter((q) => ids.has(q.id))
+  // --limit：小样本试跑（用于"先估成本再决定跑不跑"的场景，或验证新模型连通性）
+  const limit = Number(arg('--limit', '0'))
+  if (limit > 0) tasks = tasks.slice(0, limit)
   console.log(`=== FinanceBench 实验 · 变体 ${variantKey} · 切分 ${which}（${tasks.length} 题，哈希 ${split.hash[which].slice(0, 12)}）===`)
   console.log(`    ${variant.label}`)
   if (which === 'test') console.log('    ⚠️ 这是最终验证切分：只应跑一次，结果无论好坏都要如实记录')
 
-  // baseline 在同一批题号上的表现
-  const base = baselineRows().filter((r) => ids.has(r.id))
+  // baseline 在同一批题号上的表现（注意：必须按**本次实际跑的题号**过滤，
+  // 否则 --limit 小样本时会拿 5 题去比 60 题的 baseline，算出 "-980pp" 这种荒唐数字）
+  const taskIds = new Set(tasks.map((t) => t.id))
+  const base = baselineRows().filter((r) => taskIds.has(r.id))
   const baseCorrect = base.filter((r) => r.grade.judge === 'CORRECT').length
   console.log(`    baseline（同题号 n=${base.length}）：裁判判对 ${baseCorrect} → ${((baseCorrect / Math.max(1, base.length)) * 100).toFixed(1)}%`)
 
