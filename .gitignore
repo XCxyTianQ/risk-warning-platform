@@ -75,6 +75,7 @@ bench/external/out/*
 !bench/external/out/chain-arms-2026-09-14T14-37-31.json
 !bench/external/out/platform-chain-2026-09-14T15-00-37.json
 !bench/external/out/chain-comparison.json
+!bench/external/out/chain-fb-2026-09-14T15-36-02.json
 !bench/external/out/judge-matrix-financebench.json
 !bench/external/out/samegen-results.json
 !bench/external/out/d1-retrieval-tuning.json
