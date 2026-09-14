@@ -940,6 +940,27 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
           + "，我们 $" + str(dig(fc, "models.1.costUSD.both")) + "。花十倍价钱买来的那两三个点，"
           "很大一部分是它背过这套题，而不是它更会读财报。")
 
+        vis = dig(fc, "vision", None)
+        if vis:
+            P("**视觉这一路：两家顶级模型各赢一半。** 同一天把视觉两项也跑了（FinEval-MM 150 题图表四选一 + "
+              "OmniDocBench demo 18 页整页转写）。工程约束需说明：**我方必须走官方直连**"
+              "（网关路由的图像输入会返回上游错误），对手经聚合网关；Luna 与 GLM-5.3-Flash 未跑视觉（省成本），"
+              "表里不虚构它们的数据。")
+            vrows = []
+            for r in vis.get("rows", []):
+                vrows.append([
+                    r.get("label"), pct(dig(r, "finevalMm.accuracyPct")),
+                    str(dig(r, "omniDoc.segmentRecall")), str(dig(r, "omniDoc.numberRecall")),
+                    str(dig(r, "omniDoc.editRatio")), str(dig(r, "omniDoc.rougeL")),
+                ])
+            T(["模型", "FinEval-MM（图表四选一）", "片段召回", "数字召回", "编辑距离（越低越好）", "ROUGE-L"],
+              vrows,
+              caption="表 12i　视觉基准（FinEval-MM 为确定性判分；OmniDocBench 为自实现保真度指标，非官方 TEDS/CDM）",
+              note="Fable 5.1 出现能力分裂：整页转写保真度上略胜我方（数字召回 0.776 对 0.753、编辑距离 0.127 对 0.139），"
+                   "但在图表取数上输给我方（64.67% 对 66.0%）——与 P0 观察吻合：它擅长版面位置感知，不擅长从图表里取数。"
+                   "Astra 两项都最强，而它恰是唯一在 BFCL 上输给我们的顶级模型：强在「看」，弱在「调工具」。",
+              widths=[3.4, 3.0, 2.0, 2.0, 2.6, 2.0])
+
     # 4.6 OmniDocBench
     if "omnidocbench" in benches:
         b = benches["omnidocbench"]

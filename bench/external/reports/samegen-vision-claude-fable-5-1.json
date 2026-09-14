@@ -1,0 +1,583 @@
+{
+  "version": "v1",
+  "generatedAt": "2026-09-14T13:39:19.504Z",
+  "profile": "full",
+  "seed": 20260101,
+  "concurrency": 3,
+  "models": [
+    "claude-fable-5-1"
+  ],
+  "benchmarks": {
+    "fineval-mm": {
+      "title": "FinEval-MM（财报图表截图四选一）",
+      "layer": "多模态读取层：从财报/研报图表截图中取数",
+      "source": {
+        "repo": "SUFE-AIFLM-Lab/FinEval",
+        "ref": "main",
+        "paper": "https://aclanthology.org/2025.naacl-long.318.pdf"
+      },
+      "sample": {
+        "multimodal": {
+          "available": 371,
+          "picked": 150,
+          "hash": "f368c3a8d37c035db9fba08b94767adf8189b38c8f81ac7fbb1809be7408ae96",
+          "seed": 20260103,
+          "perStratum": {
+            "产业分析推断": {
+              "available": 22,
+              "picked": 9,
+              "hash": "31f54ce3e2e2"
+            },
+            "投资分析": {
+              "available": 17,
+              "picked": 7,
+              "hash": "cb8933d2d56c"
+            },
+            "智能选股策略回测分析": {
+              "available": 66,
+              "picked": 27,
+              "hash": "86f2bc10a52b"
+            },
+            "股票k线解读": {
+              "available": 38,
+              "picked": 15,
+              "hash": "3d81b7d97871"
+            },
+            "财务指标分析": {
+              "available": 41,
+              "picked": 17,
+              "hash": "64ff456f9129"
+            },
+            "财务数据统计": {
+              "available": 51,
+              "picked": 21,
+              "hash": "a8daecf2b5e9"
+            },
+            "资产配置分析": {
+              "available": 17,
+              "picked": 7,
+              "hash": "3c7fd6684516"
+            },
+            "金融信息识别": {
+              "available": 15,
+              "picked": 6,
+              "hash": "2af006050789"
+            },
+            "金融实体关系解读": {
+              "available": 17,
+              "picked": 7,
+              "hash": "859d86648ea8"
+            },
+            "金融市场情绪洞察": {
+              "available": 8,
+              "picked": 5,
+              "hash": "a7ab6e3c9e31"
+            },
+            "金融情景分析": {
+              "available": 34,
+              "picked": 14,
+              "hash": "fcf4c7048e7d"
+            },
+            "金融数据推理与理解": {
+              "available": 39,
+              "picked": 15,
+              "hash": "6dc5cd20586b"
+            },
+            "金融策略优化": {
+              "available": 2,
+              "picked": 0,
+              "hash": "e3b0c44298fc"
+            },
+            "金融风险与政策分析​": {
+              "available": 4,
+              "picked": 0,
+              "hash": "e3b0c44298fc"
+            }
+          }
+        },
+        "coverage": {
+          "funnel": {
+            "rows": 1000,
+            "withImage": 1000,
+            "withImageAndAnswer": 943,
+            "resolvableImage": 464,
+            "usable": 371
+          },
+          "missingBySubdir": {
+            "31": 2,
+            "32": 2,
+            "33": 3,
+            "lc": 113,
+            "pg": 166,
+            "sdt": 149,
+            "hg": 8,
+            "frg": 14,
+            "fs": 6,
+            "os": 9,
+            "cc": 6,
+            "L3Q3_4": 1
+          },
+          "totalWithImage": 943,
+          "available": 371,
+          "coveragePct": 39.3
+        },
+        "roundDistribution": {
+          "1": 283,
+          "1.0": 20,
+          "2.0": 21,
+          "3.0": 20,
+          "4.0": 16,
+          "5.0": 8,
+          "6.0": 3
+        }
+      },
+      "notes": [
+        "数据可得性漏斗：TSV 总行 1000 → 带图 1000 → 带图且有答案 943 → 图像在仓库中确实存在 464 → 选项≥2 可用 371",
+        "拿不到图像的目录（按引用次数）：figure/pg×166、figure/sdt×149、figure/lc×113、figure/frg×14、figure/os×9、figure/hg×8、figure/fs×6、figure/cc×6、figure/33×3、figure/31×2、figure/32×2、figure/L3Q3_4×1——仓库未发布、HF 镜像返回 401",
+        "本项只在可用子集（371 题）上分层抽 150 题；round 字段分布 {\"1\":283,\"1.0\":20,\"2.0\":21,\"3.0\":20,\"4.0\":16,\"5.0\":8,\"6.0\":3}",
+        "本轮按单轮提问（不构造多轮上下文）"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "claude-fable-5-1": {
+          "metrics": {
+            "multimodal": {
+              "metric": "四选一准确率",
+              "overall": {
+                "group": "__ALL__",
+                "n": 150,
+                "correct": 97,
+                "wrong": 53,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 64.67,
+                "accuracyPct": 64.67,
+                "ci95": [
+                  56.74,
+                  71.86
+                ]
+              },
+              "byFintype": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 150,
+                  "correct": 97,
+                  "wrong": 53,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 64.67,
+                  "accuracyPct": 64.67,
+                  "ci95": [
+                    56.74,
+                    71.86
+                  ]
+                },
+                "FinEval-MM/金融市场情绪洞察": {
+                  "group": "FinEval-MM/金融市场情绪洞察",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "FinEval-MM/金融情景分析": {
+                  "group": "FinEval-MM/金融情景分析",
+                  "n": 14,
+                  "correct": 7,
+                  "wrong": 7,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 50,
+                  "accuracyPct": 50,
+                  "ci95": [
+                    26.8,
+                    73.2
+                  ]
+                },
+                "FinEval-MM/产业分析推断": {
+                  "group": "FinEval-MM/产业分析推断",
+                  "n": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    70.08,
+                    100
+                  ]
+                },
+                "FinEval-MM/投资分析": {
+                  "group": "FinEval-MM/投资分析",
+                  "n": 7,
+                  "correct": 7,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    64.57,
+                    100
+                  ]
+                },
+                "FinEval-MM/股票k线解读": {
+                  "group": "FinEval-MM/股票k线解读",
+                  "n": 15,
+                  "correct": 11,
+                  "wrong": 4,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 73.33,
+                  "accuracyPct": 73.33,
+                  "ci95": [
+                    48.05,
+                    89.1
+                  ]
+                },
+                "FinEval-MM/财务数据统计": {
+                  "group": "FinEval-MM/财务数据统计",
+                  "n": 21,
+                  "correct": 14,
+                  "wrong": 7,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 66.67,
+                  "accuracyPct": 66.67,
+                  "ci95": [
+                    45.37,
+                    82.81
+                  ]
+                },
+                "FinEval-MM/金融实体关系解读": {
+                  "group": "FinEval-MM/金融实体关系解读",
+                  "n": 7,
+                  "correct": 5,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 71.43,
+                  "accuracyPct": 71.43,
+                  "ci95": [
+                    35.89,
+                    91.78
+                  ]
+                },
+                "FinEval-MM/财务指标分析": {
+                  "group": "FinEval-MM/财务指标分析",
+                  "n": 17,
+                  "correct": 10,
+                  "wrong": 7,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 58.82,
+                  "accuracyPct": 58.82,
+                  "ci95": [
+                    36.01,
+                    78.39
+                  ]
+                },
+                "FinEval-MM/金融信息识别": {
+                  "group": "FinEval-MM/金融信息识别",
+                  "n": 6,
+                  "correct": 4,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 66.67,
+                  "accuracyPct": 66.67,
+                  "ci95": [
+                    30,
+                    90.32
+                  ]
+                },
+                "FinEval-MM/智能选股策略回测分析": {
+                  "group": "FinEval-MM/智能选股策略回测分析",
+                  "n": 27,
+                  "correct": 22,
+                  "wrong": 5,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 81.48,
+                  "accuracyPct": 81.48,
+                  "ci95": [
+                    63.3,
+                    91.82
+                  ]
+                },
+                "FinEval-MM/资产配置分析": {
+                  "group": "FinEval-MM/资产配置分析",
+                  "n": 7,
+                  "correct": 4,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 57.14,
+                  "accuracyPct": 57.14,
+                  "ci95": [
+                    25.05,
+                    84.18
+                  ]
+                },
+                "FinEval-MM/金融数据推理与理解": {
+                  "group": "FinEval-MM/金融数据推理与理解",
+                  "n": 15,
+                  "correct": 1,
+                  "wrong": 14,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 6.67,
+                  "accuracyPct": 6.67,
+                  "ci95": [
+                    1.19,
+                    29.82
+                  ]
+                }
+              },
+              "abstainRate": 0,
+              "meanImageKB": 153.4,
+              "errors": 0
+            }
+          },
+          "seconds": 300.7,
+          "rows": 150,
+          "detail": "bench/external/out/run-2026-09-14T13-39-19/fineval-mm.claude-fable-5-1.json",
+          "usage": {
+            "model": "claude-fable-5-1",
+            "provider": "claude-fable-5-1",
+            "vendor": "Anthropic（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 150,
+            "failed": 0,
+            "promptTokens": 405971,
+            "completionTokens": 15231,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": 405971,
+            "estimatedCostCNY": 34.23,
+            "estimatedCostUSD": 4.8213,
+            "pricePerMTokUSD": {
+              "hit": 0.25,
+              "miss": 10,
+              "out": 50,
+              "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          },
+          "auxUsage": []
+        }
+      }
+    },
+    "omnidocbench": {
+      "title": "OmniDocBench（demo 18 页整页转写）",
+      "layer": "文档读取层：页面图像 → 结构化文本（中文研报/杂志/报纸等）",
+      "source": {
+        "repo": "opendatalab/OmniDocBench",
+        "ref": "main",
+        "paper": "https://arxiv.org/abs/2412.07626"
+      },
+      "sample": {
+        "pages": {
+          "available": 18,
+          "picked": 18,
+          "hash": "4a780eccf8ce9e257183ee7019ed0d852936ddf279fb1348fd5d44ce7c95b79d",
+          "seed": 20260101
+        },
+        "byLanguage": {
+          "english": 7,
+          "simplified_chinese": 10,
+          "en_ch_mixed": 1
+        }
+      },
+      "notes": [
+        "官方 demo 共 18 页（全集 981 页），本轮全量跑 demo",
+        "其中含表格的页面 9 页、含公式的 2 页",
+        "GT 文本 = 标注 text 字段 + 表格 html 去标签 + 公式 latex（表格在标注里没有 text 字段，只取 text 会漏掉表格内容）",
+        "指标为自实现的片段召回/数字召回/编辑距离比/ROUGE-L，**不是**官方 TEDS/CDM/编辑距离口径",
+        "中文页面占比见 byLanguage；研报类页面与平台场景最接近"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "claude-fable-5-1": {
+          "metrics": {
+            "metric": "自实现保真度：片段召回 / 数字召回 / 字符编辑距离比 / ROUGE-L（非官方 TEDS/CDM 口径）",
+            "pages": {
+              "n": 18,
+              "pass": 6,
+              "passRatePct": 33.33,
+              "threshold": "片段召回≥80% 且 数字召回≥90%"
+            },
+            "meanSegmentRecall": 0.5822,
+            "meanNumberRecall": 0.7757,
+            "meanEditRatio": 0.1269,
+            "meanRougeL": 0.9064,
+            "tablePages": {
+              "n": 9,
+              "meanSegmentRecall": 0.7796,
+              "meanNumberRecall": 0.8709,
+              "meanEditRatio": 0.0577,
+              "note": "含表格页面：财报/研报里最要紧的一类，单独列出"
+            },
+            "nonTablePages": {
+              "n": 9,
+              "meanSegmentRecall": 0.3848,
+              "meanNumberRecall": 0.6806,
+              "meanEditRatio": 0.1962
+            },
+            "bySource": {
+              "PPT2PDF": {
+                "n": 2,
+                "meanSegmentRecall": 0.3,
+                "meanNumberRecall": null,
+                "meanEditRatio": 0.0483
+              },
+              "academic_literature": {
+                "n": 2,
+                "meanSegmentRecall": 0.3798,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.0742
+              },
+              "book": {
+                "n": 2,
+                "meanSegmentRecall": 0.6118,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.0982
+              },
+              "magazine": {
+                "n": 2,
+                "meanSegmentRecall": 0.6225,
+                "meanNumberRecall": 0.9904,
+                "meanEditRatio": 0.0825
+              },
+              "exam_paper": {
+                "n": 2,
+                "meanSegmentRecall": 0.6298,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.1168
+              },
+              "colorful_textbook": {
+                "n": 2,
+                "meanSegmentRecall": 0.7158,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.1435
+              },
+              "note": {
+                "n": 2,
+                "meanSegmentRecall": 0.79,
+                "meanNumberRecall": 0.9286,
+                "meanEditRatio": 0.0424
+              },
+              "newspaper": {
+                "n": 2,
+                "meanSegmentRecall": 0.2668,
+                "meanNumberRecall": 0.5626,
+                "meanEditRatio": 0.479
+              },
+              "research_report": {
+                "n": 2,
+                "meanSegmentRecall": 0.9234,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.0576
+              }
+            },
+            "byLanguage": {
+              "english": {
+                "n": 7,
+                "meanSegmentRecall": 0.5464,
+                "meanNumberRecall": 0.9939,
+                "meanEditRatio": 0.062
+              },
+              "simplified_chinese": {
+                "n": 10,
+                "meanSegmentRecall": 0.5837,
+                "meanNumberRecall": 0.8882,
+                "meanEditRatio": 0.183
+              },
+              "en_ch_mixed": {
+                "n": 1,
+                "meanSegmentRecall": 0.8182,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.021
+              }
+            },
+            "errors": 0,
+            "truncated": 0,
+            "gtComposition": "text + table-html(去标签) + equation-latex",
+            "notCovered": "表格结构（TEDS）、公式（CDM）、阅读顺序指标未实现"
+          },
+          "seconds": 166.2,
+          "rows": 18,
+          "detail": "bench/external/out/run-2026-09-14T13-39-19/omnidocbench.claude-fable-5-1.json",
+          "usage": {
+            "model": "claude-fable-5-1",
+            "provider": "claude-fable-5-1",
+            "vendor": "Anthropic（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 18,
+            "failed": 0,
+            "promptTokens": 63683,
+            "completionTokens": 25672,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": 63683,
+            "estimatedCostCNY": 13.64,
+            "estimatedCostUSD": 1.9204,
+            "pricePerMTokUSD": {
+              "hit": 0.25,
+              "miss": 10,
+              "out": 50,
+              "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          },
+          "auxUsage": []
+        }
+      }
+    }
+  },
+  "modelUsage": {
+    "claude-fable-5-1": {
+      "model": "claude-fable-5-1",
+      "provider": "claude-fable-5-1",
+      "vendor": "Anthropic（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+      "keyMask": "sk-iap…lZKV",
+      "calls": 168,
+      "failed": 0,
+      "promptTokens": 469654,
+      "completionTokens": 40903,
+      "reasoningTokens": 0,
+      "cacheHitTokens": 0,
+      "cacheMissTokens": 405971,
+      "estimatedCostCNY": 47.87,
+      "estimatedCostUSD": 4.8213,
+      "pricePerMTokUSD": {
+        "hit": 0.25,
+        "miss": 10,
+        "out": 50,
+        "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25"
+      },
+      "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+      "usdCnyRate": 7.1
+    }
+  },
+  "notes": [
+    "所有外部数据均按 repo@ref + sha256 锁定，见 out/manifest.json",
+    "本节数字回答的是\"模型与读取链路\"的能力，平台的端到端能力见 FinRisk-Bench 与 bench/ 套件",
+    "图像类基准只跑实测支持图像输入的模型"
+  ]
+}

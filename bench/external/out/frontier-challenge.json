@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T13:18:59.271Z",
+  "generatedAt": "2026-09-14T13:53:38.321Z",
   "title": "超限挑战（2026-09-14）：Claude Fable 5.1 与 GPT-6 Astra",
   "setup": {
     "bench": "FinanceBench 全量 150 题（oracle + closedBook 双口径）+ BFCL v4 520 题",
@@ -162,5 +162,77 @@
     "闭卷不等于纯记忆：部分题可凭通用金融常识推导，且闭卷提示词鼓励\"未陈述则推导\"，因此闭卷得分是污染的**上界**估计。",
     "\"闭卷下写出与标准答案一致的数值\"是记忆的直接证据（抽查可见模型自述 \"from memory\" 并复现只有读过原文才知道的数字）。",
     "闭卷分差不影响确定性判分（BFCL）的对比结论。"
-  ]
+  ],
+  "vision": {
+    "generatedAt": "2026-09-14T13:53:38.397Z",
+    "bench": "FinEval-MM（150 题图表四选一，确定性判分）+ OmniDocBench demo 18 页整页转写（自实现保真度指标）",
+    "note": [
+      "视觉基准只跑了三家（我方 + 两个超限档对手）：Luna 与 GLM-5.3-Flash 未跑，为省成本，表里不虚构其数据。",
+      "我方必须走官方直连（网关路由的图像输入会返回上游错误）；对手经聚合网关。",
+      "OmniDocBench 的四项是自实现保真度指标，不是官方 TEDS/CDM，故只作横向对比而不与官方榜单数字对齐。"
+    ],
+    "rows": [
+      {
+        "id": "gpt-6-astra",
+        "label": "GPT-6 Astra",
+        "tier": "frontier",
+        "finevalMm": {
+          "n": 150,
+          "accuracyPct": 71.33,
+          "source": "run detail"
+        },
+        "omniDoc": {
+          "segmentRecall": 0.6267,
+          "numberRecall": 0.8024,
+          "editRatio": 0.1032,
+          "rougeL": 0.9368,
+          "tableSegmentRecall": 0.7241,
+          "tableNumberRecall": 0.8709,
+          "nonTableSegmentRecall": 0.5171
+        },
+        "costUSD": 3.84
+      },
+      {
+        "id": "deepseek-flash",
+        "label": "DeepSeek-V4.1-Flash",
+        "tier": "ours",
+        "finevalMm": {
+          "n": 150,
+          "accuracyPct": 66,
+          "source": "run detail"
+        },
+        "omniDoc": {
+          "segmentRecall": 0.5813,
+          "numberRecall": 0.7525,
+          "editRatio": 0.1386,
+          "rougeL": 0.9047,
+          "tableSegmentRecall": 0.7052,
+          "tableNumberRecall": 0.8709,
+          "nonTableSegmentRecall": 0.4574
+        },
+        "costUSD": null
+      },
+      {
+        "id": "claude-fable-5-1",
+        "label": "Claude Fable 5.1",
+        "tier": "frontier",
+        "finevalMm": {
+          "n": 150,
+          "accuracyPct": 64.67,
+          "source": "run detail"
+        },
+        "omniDoc": {
+          "segmentRecall": 0.5822,
+          "numberRecall": 0.7757,
+          "editRatio": 0.1269,
+          "rougeL": 0.9064,
+          "tableSegmentRecall": 0.7796,
+          "tableNumberRecall": 0.8709,
+          "nonTableSegmentRecall": 0.3848
+        },
+        "costUSD": null
+      }
+    ],
+    "finding": "出现能力分裂：Fable 5.1 在整页转写保真度上略胜我方（数字召回 0.776 对 0.753、编辑距离 0.127 对 0.139），但在图表取数（FinEval-MM）上输给我方（64.67% 对 66.0%）——与 P0 观察一致：它擅长版面位置感知，不擅长从图表里取数。Astra 两项都最强。"
+  }
 }

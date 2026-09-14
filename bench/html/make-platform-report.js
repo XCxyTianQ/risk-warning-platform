@@ -1189,6 +1189,30 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <br>③ <strong>代价是 7~17 倍的钱</strong>：同样跑完这两项基准，Fable 5.1 花 ${'$'}${dig(frontier, 'models.0.costUSD.both', '?')}、
     Astra ${'$'}${dig(frontier, 'models.3.costUSD.both', '?')}，我们 ${'$'}${dig(frontier, 'models.1.costUSD.both', '?')}。
     花十倍价钱买来的那两三个点，很大一部分是它背过这套题，而不是它更会读财报。</div>
+  ${frontier && frontier.vision ? `
+  <h4 style="margin-top:26px">视觉这一路：出现能力分裂</h4>
+  <p style="font-size:13px">同一天把视觉两项也跑了（FinEval-MM 150 题图表四选一 + OmniDocBench demo 18 页整页转写）。
+  这里有一条工程约束必须说明：<strong>我方必须走官方直连</strong>（网关路由的图像输入会返回上游错误），
+  对手经聚合网关；Luna 与 GLM-5.3-Flash 未跑视觉（省成本），表里不虚构它们的数据。</p>
+  <table>
+    <caption>表 12i　视觉基准（FinEval-MM 确定性判分；OmniDocBench 为自实现保真度指标）</caption>
+    <thead><tr><th>模型</th><th class="n">FinEval-MM<br><span style="font-weight:400">图表四选一</span></th><th class="n">片段召回</th><th class="n">数字召回</th><th class="n">编辑距离<br><span style="font-weight:400">越低越好</span></th><th class="n">ROUGE-L</th></tr></thead>
+    <tbody>
+      ${frontier.vision.rows.map((r) => `<tr${r.tier === 'ours' ? ' style="background:var(--c-good-soft)"' : ''}><td><b>${esc(r.label)}</b>${r.tier === 'ours' ? '<div class="chip good" style="margin-top:4px">本平台使用</div>' : ''}</td><td class="n ${r.tier === 'ours' ? 'best' : ''}">${pct(r.finevalMm.accuracyPct, 2)}</td><td class="n">${n1(r.omniDoc.segmentRecall, 4)}</td><td class="n ${r.tier === 'ours' ? 'best' : ''}">${n1(r.omniDoc.numberRecall, 4)}</td><td class="n">${n1(r.omniDoc.editRatio, 4)}</td><td class="n">${n1(r.omniDoc.rougeL, 4)}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <div class="callout"><span class="t">怎么读这张表：两家顶级模型各赢一半</span>
+    <strong>Astra 视觉两项都最强</strong>：图表题 ${pct(dig(frontier, 'vision.rows.0.finevalMm.accuracyPct', null), 2)}
+    （比我们高 ${n1((dig(frontier, 'vision.rows.0.finevalMm.accuracyPct', 0) || 0) - (dig(frontier, 'vision.rows.1.finevalMm.accuracyPct', 0) || 0), 2)}pp），
+    OmniDocBench 四项也全面领先。它也是唯一在 5.10 的 BFCL 上输给我们的顶级模型——<strong>强在"看"，弱在"调工具"</strong>。
+    <br><strong>Fable 5.1 则出现能力分裂</strong>：整页转写保真度上它略胜我们（数字召回
+    ${n1(dig(frontier, 'vision.rows.2.omniDoc.numberRecall', null), 4)} 对 ${n1(dig(frontier, 'vision.rows.1.omniDoc.numberRecall', null), 4)}、
+    编辑距离 ${n1(dig(frontier, 'vision.rows.2.omniDoc.editRatio', null), 4)} 对 ${n1(dig(frontier, 'vision.rows.1.omniDoc.editRatio', null), 4)}），
+    但在<strong>图表取数</strong>上输给我们（${pct(dig(frontier, 'vision.rows.2.finevalMm.accuracyPct', null), 2)} 对 ${pct(dig(frontier, 'vision.rows.1.finevalMm.accuracyPct', null), 2)}）。
+    这与 P0 的观察完全吻合：它能指出"标题在右页中部"（版面位置感知，正是 OmniDocBench 测的东西），
+    却在「金融数据推理与理解」这一类上只拿到 6.67%（1/15）。
+    <br>口径提醒：OmniDocBench 的四项是我们<strong>自实现</strong>的保真度指标，不是官方 TEDS/CDM，只作横向对比。</div>
+  ` : ''}
   ` : ''}
   </section>
 

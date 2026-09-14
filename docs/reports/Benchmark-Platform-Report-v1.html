@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 21:21</span>
+    <span class="chip">报告生成 2026-09-14 21:54</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,834 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,943 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -600,6 +600,30 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <br>③ <strong>代价是 7~17 倍的钱</strong>：同样跑完这两项基准，Fable 5.1 花 $13.78、
     Astra $5.66，我们 $0.79。
     花十倍价钱买来的那两三个点，很大一部分是它背过这套题，而不是它更会读财报。</div>
+  
+  <h4 style="margin-top:26px">视觉这一路：出现能力分裂</h4>
+  <p style="font-size:13px">同一天把视觉两项也跑了（FinEval-MM 150 题图表四选一 + OmniDocBench demo 18 页整页转写）。
+  这里有一条工程约束必须说明：<strong>我方必须走官方直连</strong>（网关路由的图像输入会返回上游错误），
+  对手经聚合网关；Luna 与 GLM-5.3-Flash 未跑视觉（省成本），表里不虚构它们的数据。</p>
+  <table>
+    <caption>表 12i　视觉基准（FinEval-MM 确定性判分；OmniDocBench 为自实现保真度指标）</caption>
+    <thead><tr><th>模型</th><th class="n">FinEval-MM<br><span style="font-weight:400">图表四选一</span></th><th class="n">片段召回</th><th class="n">数字召回</th><th class="n">编辑距离<br><span style="font-weight:400">越低越好</span></th><th class="n">ROUGE-L</th></tr></thead>
+    <tbody>
+      <tr><td><b>GPT-6 Astra</b></td><td class="n ">71.33%</td><td class="n">0.6267</td><td class="n ">0.8024</td><td class="n">0.1032</td><td class="n">0.9368</td></tr><tr style="background:var(--c-good-soft)"><td><b>DeepSeek-V4.1-Flash</b><div class="chip good" style="margin-top:4px">本平台使用</div></td><td class="n best">66.00%</td><td class="n">0.5813</td><td class="n best">0.7525</td><td class="n">0.1386</td><td class="n">0.9047</td></tr><tr><td><b>Claude Fable 5.1</b></td><td class="n ">64.67%</td><td class="n">0.5822</td><td class="n ">0.7757</td><td class="n">0.1269</td><td class="n">0.9064</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><span class="t">怎么读这张表：两家顶级模型各赢一半</span>
+    <strong>Astra 视觉两项都最强</strong>：图表题 71.33%
+    （比我们高 5.33pp），
+    OmniDocBench 四项也全面领先。它也是唯一在 5.10 的 BFCL 上输给我们的顶级模型——<strong>强在"看"，弱在"调工具"</strong>。
+    <br><strong>Fable 5.1 则出现能力分裂</strong>：整页转写保真度上它略胜我们（数字召回
+    0.7757 对 0.7525、
+    编辑距离 0.1269 对 0.1386），
+    但在<strong>图表取数</strong>上输给我们（64.67% 对 66.00%）。
+    这与 P0 的观察完全吻合：它能指出"标题在右页中部"（版面位置感知，正是 OmniDocBench 测的东西），
+    却在「金融数据推理与理解」这一类上只拿到 6.67%（1/15）。
+    <br>口径提醒：OmniDocBench 的四项是我们<strong>自实现</strong>的保真度指标，不是官方 TEDS/CDM，只作横向对比。</div>
+  
   
   </section>
 
