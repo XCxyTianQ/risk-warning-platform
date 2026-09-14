@@ -151,9 +151,19 @@ class ModelClient {
     this.usage = { calls: 0, failed: 0, promptTokens: 0, completionTokens: 0, cacheHitTokens: 0, reasoningTokens: 0, byKind: {} }
   }
 
+  /** 按注册表价目算钱（网关模型的价格不在内置表里）；缺价目时返回 null，绝不编数 */
+  _costFromProvider() {
+    const p = this.provider && this.provider.priceUSD
+    if (!p) return null
+    const hit = Math.min(this.usage.cacheHitTokens || 0, this.usage.promptTokens || 0)
+    const miss = Math.max(0, (this.usage.promptTokens || 0) - hit)
+    const usd = (hit / 1e6) * (p.hit ?? p.miss ?? 0) + (miss / 1e6) * (p.miss ?? 0) + ((this.usage.completionTokens || 0) / 1e6) * (p.out ?? 0)
+    return { usd: Number(usd.toFixed(4)), cny: Number((usd * USD_CNY).toFixed(2)), hitTokens: hit, missTokens: miss, price: p }
+  }
+
   /** 报告用：不含 Key 的自述 */
   describe() {
-    const c = costOf({ model: this.model, promptTokens: this.usage.promptTokens, cacheHitTokens: this.usage.cacheHitTokens, completionTokens: this.usage.completionTokens })
+    const c = costOf({ model: this.model, promptTokens: this.usage.promptTokens, cacheHitTokens: this.usage.cacheHitTokens, completionTokens: this.usage.completionTokens }) || this._costFromProvider()
     return {
       model: this.model,
       provider: this.provider ? this.provider.id : null,
@@ -176,17 +186,27 @@ class ModelClient {
     }
   }
 
+  /**
+   * 记账。**必须兼容三种协议的用量字段名**，否则跨供应商时 token 会静默记成 0：
+   *   OpenAI chat/completions → prompt_tokens / completion_tokens
+   *   OpenAI Responses API    → input_tokens / output_tokens
+   *   Anthropic Messages API  → input_tokens / output_tokens（外加 cache_read_input_tokens）
+   * 这个 bug 曾让整轮网关运行显示"820 次调用、0 token"。
+   */
   _account(kind, usage) {
     if (!usage) return
-    this.usage.promptTokens += usage.prompt_tokens || 0
-    this.usage.completionTokens += usage.completion_tokens || 0
-    this.usage.cacheHitTokens += usage.prompt_cache_hit_tokens || 0
-    const rt = (usage.completion_tokens_details || {}).reasoning_tokens || 0
+    const pin = usage.prompt_tokens ?? usage.input_tokens ?? 0
+    const pout = usage.completion_tokens ?? usage.output_tokens ?? 0
+    const hit = usage.prompt_cache_hit_tokens ?? usage.cache_read_input_tokens ?? usage.cached_tokens ?? 0
+    const rt = (usage.completion_tokens_details || {}).reasoning_tokens || (usage.output_tokens_details || {}).reasoning_tokens || 0
+    this.usage.promptTokens += pin
+    this.usage.completionTokens += pout
+    this.usage.cacheHitTokens += hit
     this.usage.reasoningTokens = (this.usage.reasoningTokens || 0) + rt
     const b = (this.usage.byKind[kind] = this.usage.byKind[kind] || { calls: 0, promptTokens: 0, completionTokens: 0, reasoningTokens: 0 })
     b.calls++
-    b.promptTokens += usage.prompt_tokens || 0
-    b.completionTokens += usage.completion_tokens || 0
+    b.promptTokens += pin
+    b.completionTokens += pout
     b.reasoningTokens += rt
   }
 
@@ -202,7 +222,10 @@ class ModelClient {
         const url = apiPath === '/chat/completions' ? `${this.baseUrl}/chat/completions` : `${this.baseUrl}${apiPath}`
         const res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },
+          headers:
+            this.provider && this.provider.apiPath === '/messages'
+              ? { 'Content-Type': 'application/json', 'x-api-key': this.apiKey, 'anthropic-version': '2023-06-01' }
+              : { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },
           body: JSON.stringify(body),
           signal: ac.signal,
         })
@@ -268,6 +291,45 @@ class ModelClient {
   }
 
   /**
+   * Anthropic Messages API（/messages）：Claude 系列在网关只提供这一种形态。
+   * 与 OpenAI 的差异：认证走 x-api-key（不是 Bearer）、system 是顶层字段、
+   * 输出在 content[] 里、用量字段是 input_tokens/output_tokens。
+   */
+  async _messages(o) {
+    const content = [{ type: 'text', text: o.user }]
+    for (const img of o.images || []) {
+      const abs = path.isAbsolute(img) ? img : path.join(REPO, img)
+      const b64 = fs.readFileSync(abs).toString('base64')
+      const ext = path.extname(abs).slice(1).toLowerCase()
+      const mime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
+      content.push({ type: 'image', source: { type: 'base64', media_type: mime, data: b64 } })
+    }
+    const body = { model: this.model, max_tokens: o.maxTokens ?? 2048, messages: [{ role: 'user', content }] }
+    if (o.system) body.system = o.system
+    if (o.tools) {
+      body.tools = o.tools.map((t) => ({ name: t.function.name, description: t.function.description, input_schema: t.function.parameters }))
+      if (o.toolChoice !== undefined) body.tool_choice = { type: 'auto' }
+    }
+    const j = await this._post(body, o.kind || 'messages')
+    let text = ''
+    const calls = []
+    for (const c of j.content || []) {
+      if (c.type === 'text') text += c.text
+      if (c.type === 'tool_use') calls.push({ id: c.id, name: c.name, args: c.input })
+    }
+    const u = j.usage || {}
+    return {
+      text,
+      reasoning: '',
+      finishReason: j.stop_reason || '',
+      truncated: j.stop_reason === 'max_tokens',
+      calls,
+      usage: { prompt_tokens: u.input_tokens, completion_tokens: u.output_tokens, total_tokens: (u.input_tokens || 0) + (u.output_tokens || 0) },
+      raw: j,
+    }
+  }
+
+  /**
    * 纯文本。
    *
    * 注意（踩过的坑）：DeepSeek 系模型先写 reasoning_content 再写 content。
@@ -278,6 +340,7 @@ class ModelClient {
   async chat(o) {
     // Responses-only 模型（如网关上的 GPT-5.x）直接走 /responses
     if (this.provider && this.provider.apiPath === '/responses') return this._responses(o)
+    if (this.provider && this.provider.apiPath === '/messages') return this._messages(o)
     let budget = o.maxTokens ?? 1024
     let last = null
     for (let round = 0; round < 3; round++) {
@@ -311,6 +374,7 @@ class ModelClient {
    */
   async vision(o) {
     if (this.provider && this.provider.apiPath === '/responses') return this._responses({ ...o, maxTokens: o.maxTokens ?? 2048 })
+    if (this.provider && this.provider.apiPath === '/messages') return this._messages({ ...o, maxTokens: o.maxTokens ?? 2048 })
     const parts = [{ type: 'text', text: o.user }]
     for (const img of o.images) {
       const abs = path.isAbsolute(img) ? img : path.join(REPO, img)
@@ -333,6 +397,7 @@ class ModelClient {
    */
   async tools(o) {
     if (this.provider && this.provider.apiPath === '/responses') return this._responses({ ...o, maxTokens: o.maxTokens ?? 2048 })
+    if (this.provider && this.provider.apiPath === '/messages') return this._messages({ ...o, maxTokens: o.maxTokens ?? 2048 })
     const messages = []
     if (o.system) messages.push({ role: 'system', content: o.system })
     messages.push({ role: 'user', content: o.user })

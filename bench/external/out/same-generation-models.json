@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-09-14T10:55:26.270Z",
+  "note": "公开页面抓取，逐条带出处；厂商自报的基准数字不等于独立评测",
+  "facts": [
+    {
+      "topic": "DeepSeek 定价页",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "priceCells": [
+        "(3) | 1M INPUT TOKENS | (CACHE HIT) | OFF-PEAK | $0.003 | $0.022",
+        "1M INPUT TOKENS | (CACHE HIT) | OFF-PEAK | $0.003 | $0.022 | PEAK",
+        "OFF-PEAK | $0.003 | $0.022 | PEAK | $0.006 | $0.044",
+        "$0.003 | $0.022 | PEAK | $0.006 | $0.044 | 1M INPUT TOKENS",
+        "$0.044 | 1M INPUT TOKENS | (CACHE MISS) | OFF-PEAK | $0.15 | $0.66",
+        "1M INPUT TOKENS | (CACHE MISS) | OFF-PEAK | $0.15 | $0.66 | PEAK",
+        "OFF-PEAK | $0.15 | $0.66 | PEAK | $0.3 | $1.32",
+        "$0.15 | $0.66 | PEAK | $0.3 | $1.32 | 1M OUTPUT TOKENS",
+        "$0.3 | $1.32 | 1M OUTPUT TOKENS | OFF-PEAK | $0.6 | $1.98",
+        "$1.32 | 1M OUTPUT TOKENS | OFF-PEAK | $0.6 | $1.98 | PEAK",
+        "OFF-PEAK | $0.6 | $1.98 | PEAK | $1.2 | $3.96",
+        "$0.6 | $1.98 | PEAK | $1.2 | $3.96 | Concurrency Limit"
+      ],
+      "modelLines": [
+        "deepseek-flash",
+        "deepseek-v4-pro",
+        "DeepSeek-V4.1-Flash",
+        "DeepSeek-V4-Pro-0813",
+        "deepseek-v4-flash",
+        "deepseek-v4-flash-vision-exp",
+        "are still accepted, but the corresponding models have been retired, their requests are served by the DeepSeek-V4.1-Flash model and billed at the Flash price."
+      ]
+    }
+  ],
+  "models": [
+    {
+      "model": "DeepSeek-V4.1-Flash",
+      "role": "我们用的模型",
+      "facts": [
+        "旧名 deepseek-v4-flash / deepseek-v4-flash-vision-exp 已退役，请求由 DeepSeek-V4.1-Flash 承接并按 Flash 价格计费",
+        "相比上代 V4 Flash 参数量增加 40% 以上、速度更快，基准超过 V4 Pro-0813（1.6T 参数）",
+        "第三方测试（OpenDesignt）：达 GPT-6 Astra 的 98% 水平，成本为其 1.4%；安全测试中强于 Grok 4.6、GLM-5.3、GPT-5.6 Luna"
+      ],
+      "sources": [
+        "https://api-docs.deepseek.com/quick_start/pricing",
+        "https://m.mydrivers.com/newsview/1150142.html"
+      ]
+    },
+    {
+      "model": "GPT-5.6 Luna",
+      "role": "同代对标（小尺寸）",
+      "facts": [
+        "GPT-5.6 家族三档 Luna < Terra < Sol，2026-07-09 GA",
+        "定价 $1 / $6 每百万输入/输出 token",
+        "1M 上下文、128k 最大输出、知识截止 2026-02-16",
+        "官方称 Luna 与 Terra 在约 1/16 成本下超过 Claude Fable 5；同页也承认 SWE-Bench Pro 上 Fable 5 以 80% 对 64.6%（Sol）领先"
+      ],
+      "sources": [
+        "https://simonwillison.net/2026/Jul/9/gpt-5-6/"
+      ]
+    },
+    {
+      "model": "GLM-5.3-Flash",
+      "role": "同代对标（开源、原生多模态）",
+      "facts": [
+        "320B 总参数 / 18B 激活（320B-A18B），2026-08-26 上线并开源",
+        "GLM-5 系列首个原生多模态模型；1M 上下文；线性+稀疏混合注意力",
+        "AA 综合智能指数 57 分，官方称与 Claude Opus 4.8 持平",
+        "定价为 GLM-5.3 的 1/10（限时 1/20），约为 Opus 4.8 的 1/40",
+        "官方明确针对金融/法律专业工作优化，可覆盖\"基于来源的金融研究、报告生成、金融建模与分析\""
+      ],
+      "sources": [
+        "https://www.zhipuai.cn/zh/research/163"
+      ]
+    },
+    {
+      "model": "其他同代参照",
+      "role": "出现在同批报道中",
+      "facts": [
+        "GPT-6 Astra（当前最强之一，被 V4.1 Flash 以 1.4% 成本达到 98%）",
+        "Claude Opus 4.8 / Fable 5、Qwen 3.8 Max、Grok 4.6、Kimi K3、GLM-5.3、DeepSeek V4 Pro / V4.1 Pro（未发布）"
+      ],
+      "sources": [
+        "https://m.mydrivers.com/newsview/1150142.html",
+        "https://simonwillison.net/2026/Jul/9/gpt-5-6/",
+        "https://www.zhipuai.cn/zh/research/163"
+      ]
+    }
+  ]
+}

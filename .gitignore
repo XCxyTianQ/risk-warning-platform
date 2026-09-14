@@ -60,5 +60,10 @@ bench/external/out/*
 !bench/external/out/financebench-history.json
 !bench/external/out/variant-comparison.json
 !bench/external/out/d1-rerank-tuning.json
+!bench/external/out/provider-probe.json
+!bench/external/out/gateway-catalog.json
+!bench/external/out/same-generation-models.json
+!bench/external/out/judge-matrix-financebench.json
+!bench/external/out/samegen-results.json
 !bench/external/out/d1-retrieval-tuning.json
 !bench/external/out/d1-extract-manifest.json

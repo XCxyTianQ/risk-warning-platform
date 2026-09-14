@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 18:58</span>
+    <span class="chip">报告生成 2026-09-14 20:19</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>14,265 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>14,988 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -521,7 +521,38 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   FinEval-MM 引用的图表题只有 39.3% 的图片随仓库发布（其余目录未开放、HF 返回 401）；
   BFCL 只跑非实时子集；CFLUE 用的是仓库发布的 3,864 题子集而非 3.8 万题全集。
   这些"拿不到"都写进了报告，而不是记成"模型答错"。</div>
-</section>
+
+  
+  <h3>5.9 同代模型对比（2026-09-14）：GPT-4 那一栏其实是跨代对照</h3>
+  <p>5.3 起的雷达图里，对手是 <strong>GPT-4（2023）</strong>——那是<strong>跨代历史基线</strong>，不是同代对手。
+  本平台实际使用的 <code>deepseek-flash</code> 的官方身份是 <strong>DeepSeek-V4.1-Flash</strong>
+  （DeepSeek 定价页明确：<code>deepseek-v4-flash</code> 等旧名已退役，请求由 V4.1-Flash 承接）。
+  因此本节用同一套题目、同一提示词、同一裁判，把三方同代模型放在一起跑了一遍。</p>
+
+  <table>
+    <caption>表 12g　同代模型对比（FinanceBench oracle，150 题，A1 提示词；裁判为非候选厂商模型）</caption>
+    <thead><tr><th>模型</th><th>接入路径</th><th class="n">裁判 Sonnet 5</th><th class="n">裁判 Kimi K3</th><th class="n">BFCL v4<br><span style="font-weight:400">(520 题，确定性判分)</span></th><th class="n">闭卷探针<br><span style="font-weight:400">(污染检查)</span></th></tr></thead>
+    <tbody>
+      <tr style="background:var(--c-good-soft)"><td><b>DeepSeek-V4.1-Flash（官方直连）</b><div class="chip good" style="margin-top:4px">本平台使用</div></td><td style="font-size:12.5px">官方直连</td><td class="n best">92.00%</td><td class="n">92.00%</td><td class="n best">89.04%</td><td class="n">51.3%</td></tr><tr><td><b>DeepSeek-V4-Flash（网关路由，对照组）</b></td><td style="font-size:12.5px">聚合网关</td><td class="n ">92.00%</td><td class="n">—</td><td class="n ">89.23%</td><td class="n">39.0%</td></tr><tr><td><b>GPT-5.6 Luna（网关）</b></td><td style="font-size:12.5px">聚合网关</td><td class="n ">91.33%</td><td class="n">90.67%</td><td class="n ">83.08%</td><td class="n">42.7%</td></tr><tr><td><b>GLM-5.3-Flash（网关）</b></td><td style="font-size:12.5px">聚合网关</td><td class="n ">91.33%</td><td class="n">92.00%</td><td class="n ">88.27%</td><td class="n">40.7%</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">裁判与候选厂商均不同源（Sonnet 5 = Anthropic，Kimi K3 = 月之暗面）。
+  同一个模型的答案由两个裁判各判一遍，交叉验证判分稳健性：三方极差均 ≤ 0.0 个百分点。</p>
+
+  <div class="callout good"><span class="t">同代对比的四条结论</span>
+    ① <strong>三方同级，不是"我们领先"</strong>：FinanceBench oracle 上三家落在
+    90.0%~92.0% 之间，
+    1 道题就是 0.67pp，排序会随裁判和运行波动——所以只能说<strong>同一档</strong>，不能说领先或落后；
+    <br>② <strong>工具调用上我们与 GLM 同级领先，Luna 明显偏低</strong>：BFCL 是确定性判分（没有裁判主观性），
+    我们 89.0% / GLM 88.3% / Luna 83.1%，
+    差距集中在 simple 与 multiple 两类；
+    <br>③ <strong>网关路由几乎不改变答案</strong>：同一模型官方直连与网关路由的 oracle 得分完全一致（92.0 / 92.0）、BFCL 差 0.2pp，
+    说明聚合网关可以作为可信的对照通道；但它<strong>视觉不可用</strong>（图片返回上游错误）、且贵约 1.4 倍。
+    唯一例外是闭卷探针（51.3 vs 39.0）——那本就依赖记忆，波动大且不作为能力结论；
+    <br>④ <strong>我们自己的裁判对自己更严</strong>：同一批答案，自判 88.67%，Sonnet 5 判 92.00%。
+    前几节报告的分数因此偏保守——"保守"是好事，但必须知道偏在哪。</div>
+  
+  </section>
 
 <section id="honest">
   <h2><span class="no">06</span>短板与反例：这一轮测出来的真问题</h2>
@@ -544,10 +575,10 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <caption>表 4　闭卷口径交叉核查（n=150）：把裁判判定与确定性判分交叉看</caption>
     <thead><tr><th>交叉情况</th><th class="n">题数</th><th>说明</th></tr></thead>
     <tbody>
-      <tr><td>裁判判对且确定性也判对</td><td class="n">25</td><td>模型给出了与标准答案一致的数值</td></tr>
-      <tr><td>仅裁判判对</td><td class="n">42</td><td>标准答案为长句，确定性判分无法覆盖</td></tr>
-      <tr><td>仅确定性判对</td><td class="n">5</td><td>裁判口径更严（单位/表述不同）</td></tr>
-      <tr><td>两者都不对</td><td class="n">78</td><td>含拒答 2 题</td></tr>
+      <tr><td>裁判判对且确定性也判对</td><td class="n">28</td><td>模型给出了与标准答案一致的数值</td></tr>
+      <tr><td>仅裁判判对</td><td class="n">49</td><td>标准答案为长句，确定性判分无法覆盖</td></tr>
+      <tr><td>仅确定性判对</td><td class="n">2</td><td>裁判口径更严（单位/表述不同）</td></tr>
+      <tr><td>两者都不对</td><td class="n">71</td><td>含拒答 6 题</td></tr>
     </tbody>
   </table>
   <p>抽查可见模型在<strong>没有任何文档</strong>时给出具体数字：3M FY2018 资本开支 1,577 百万美元、

@@ -1,0 +1,198 @@
+{
+  "runs": [
+    {
+      "at": "2026-09-14T11:15:08.038Z",
+      "results": [
+        {
+          "id": "deepseek-flash",
+          "baseUrl": "https://api.deepseek.com/v1",
+          "model": "deepseek-flash",
+          "keySource": "C:\\Users\\admin/Desktop/KEY.txt",
+          "text": {
+            "ok": true,
+            "answer": "B",
+            "finish": "stop",
+            "tokens": 37
+          },
+          "vision": {
+            "ok": true,
+            "inTokens": 1033,
+            "out": "与通常一般意义上理解的文学创作或文学作品的“文学”字面一样"
+          },
+          "tools": {
+            "ok": true,
+            "calls": 1,
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          },
+          "usage": {
+            "model": "deepseek-flash",
+            "provider": "deepseek-flash",
+            "vendor": "DeepSeek",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 3,
+            "failed": 0,
+            "promptTokens": 1408,
+            "completionTokens": 291,
+            "reasoningTokens": 216,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": 1408,
+            "estimatedCostCNY": 0.01,
+            "estimatedCostUSD": 0.0008,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          }
+        }
+      ]
+    },
+    {
+      "at": "2026-09-14T11:20:08.596Z",
+      "results": [
+        {
+          "id": "zen-deepseek-v4-flash",
+          "baseUrl": "https://opencode.ai/zen/v1",
+          "model": "deepseek-v4-flash",
+          "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+          "text": {
+            "ok": true,
+            "answer": "B",
+            "finish": "stop",
+            "tokens": 12
+          },
+          "vision": {
+            "ok": false,
+            "error": "模型调用失败(deepseek-v4-flash): HTTP 400: {\"error\":{\"param\":null,\"type\":\"invalid_request_error\",\"message\":\"Error from provider (Console): Upstream request failed: [4"
+          },
+          "tools": {
+            "ok": true,
+            "calls": 1,
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          },
+          "usage": {
+            "model": "deepseek-v4-flash",
+            "provider": "zen-deepseek-v4-flash",
+            "vendor": "OpenCode Zen → DeepSeek",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 2,
+            "failed": 1,
+            "promptTokens": 495,
+            "completionTokens": 103,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": null,
+            "estimatedCostCNY": null,
+            "estimatedCostUSD": null,
+            "pricePerMTokUSD": null,
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          }
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "baseUrl": "https://opencode.ai/zen/v1",
+          "model": "gpt-5.6-luna",
+          "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+          "text": {
+            "ok": true,
+            "answer": "B",
+            "finish": "completed",
+            "tokens": 5
+          },
+          "vision": {
+            "ok": true,
+            "inTokens": 6494,
+            "out": "二、“比较美术学”的中西视域"
+          },
+          "tools": {
+            "ok": true,
+            "calls": 1,
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          },
+          "usage": {
+            "model": "gpt-5.6-luna",
+            "provider": "gpt-5.6-luna",
+            "vendor": "OpenAI（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 3,
+            "failed": 0,
+            "promptTokens": 0,
+            "completionTokens": 0,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": null,
+            "estimatedCostCNY": null,
+            "estimatedCostUSD": null,
+            "pricePerMTokUSD": null,
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          }
+        },
+        {
+          "id": "glm-5.3-flash",
+          "baseUrl": "https://opencode.ai/zen/v1",
+          "model": "glm-5.3-flash",
+          "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+          "text": {
+            "ok": true,
+            "answer": "B",
+            "finish": "stop",
+            "tokens": 51
+          },
+          "vision": {
+            "ok": true,
+            "inTokens": 7056,
+            "out": "二、“比较美术学”的中西视域"
+          },
+          "tools": {
+            "ok": true,
+            "calls": 1,
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          },
+          "usage": {
+            "model": "glm-5.3-flash",
+            "provider": "glm-5.3-flash",
+            "vendor": "智谱 Z.ai（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 3,
+            "failed": 0,
+            "promptTokens": 7281,
+            "completionTokens": 507,
+            "reasoningTokens": 425,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": null,
+            "estimatedCostCNY": null,
+            "estimatedCostUSD": null,
+            "pricePerMTokUSD": null,
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          }
+        }
+      ]
+    }
+  ]
+}

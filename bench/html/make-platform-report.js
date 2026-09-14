@@ -48,6 +48,13 @@ const lval = load('bench/dataset/out/label-validation.json', {})
 const radarData = load('bench/external/out/radar-data.json', null)
 /** FinanceBench 改进记录（提示词变体 + 裁判校准），由 bench/html/collect-financebench-history.js 生成 */
 const fbHistory = load('bench/external/out/financebench-history.json', null)
+/** 同代模型对比结果（2026-09-14），由 bench/external/tools/aggregate-samegen.js 生成 */
+const samegen = load('bench/external/out/samegen-results.json', null)
+const samegenOursLabel = (() => {
+  if (!samegen) return 'DeepSeek-V4.1-Flash'
+  const ours = (samegen.candidates || []).find((c) => c.model === 'deepseek-flash')
+  return ours ? ours.label.replace(/（.*?）/, '') : 'DeepSeek-V4.1-Flash'
+})()
 
 // 口径 B（平台链路）取最近一次
 let chain = null
@@ -1095,7 +1102,44 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   FinEval-MM 引用的图表题只有 ${pct(dig(ext, 'benchmarks.fineval-mm.sample.coverage.coveragePct', null), 1)} 的图片随仓库发布（其余目录未开放、HF 返回 401）；
   BFCL 只跑非实时子集；CFLUE 用的是仓库发布的 3,864 题子集而非 3.8 万题全集。
   这些"拿不到"都写进了报告，而不是记成"模型答错"。</div>
-</section>
+
+  ${samegen ? `
+  <h3>5.9 同代模型对比（2026-09-14）：GPT-4 那一栏其实是跨代对照</h3>
+  <p>5.3 起的雷达图里，对手是 <strong>GPT-4（2023）</strong>——那是<strong>跨代历史基线</strong>，不是同代对手。
+  本平台实际使用的 <code>deepseek-flash</code> 的官方身份是 <strong>${esc(samegenOursLabel)}</strong>
+  （DeepSeek 定价页明确：<code>deepseek-v4-flash</code> 等旧名已退役，请求由 V4.1-Flash 承接）。
+  因此本节用同一套题目、同一提示词、同一裁判，把三方同代模型放在一起跑了一遍。</p>
+
+  <table>
+    <caption>表 12g　同代模型对比（FinanceBench oracle，150 题，A1 提示词；裁判为非候选厂商模型）</caption>
+    <thead><tr><th>模型</th><th>接入路径</th><th class="n">裁判 Sonnet 5</th><th class="n">裁判 Kimi K3</th><th class="n">BFCL v4<br><span style="font-weight:400">(520 题，确定性判分)</span></th><th class="n">闭卷探针<br><span style="font-weight:400">(污染检查)</span></th></tr></thead>
+    <tbody>
+      ${samegen.candidates.map((c) => {
+        // 注意：不能用 dig('judgeRobustness.<模型名>')——模型名里含点号（gpt-5.6-luna），
+        // 点号路径会把它拆成两级，取不到值。必须直接索引。
+        const r = (samegen.judgeRobustness || {})[c.model] || {}
+        const isOurs = c.model === 'deepseek-flash'
+        return `<tr${isOurs ? ' style="background:var(--c-good-soft)"' : ''}><td><b>${esc(c.label)}</b>${isOurs ? '<div class="chip good" style="margin-top:4px">本平台使用</div>' : ''}</td><td style="font-size:12.5px">${c.route === 'official' ? '官方直连' : '聚合网关'}</td><td class="n ${isOurs ? 'best' : ''}">${pct(r['claude-sonnet-5'] ?? c.financebench.oraclePct, 2)}</td><td class="n">${pct(r['kimi-k3'] ?? null, 2)}</td><td class="n ${isOurs ? 'best' : ''}">${pct(c.bfcl.overallPct, 2)}</td><td class="n">${pct(c.financebench.closedBookPct, 1)}</td></tr>`
+      }).join('')}
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">裁判与候选厂商均不同源（Sonnet 5 = Anthropic，Kimi K3 = 月之暗面）。
+  同一个模型的答案由两个裁判各判一遍，交叉验证判分稳健性：三方极差均 ≤ ${n1(Math.max(...samegen.candidates.filter((c) => dig(samegen, `judgeRobustness.${c.model}`, null)).map((c) => { const r = samegen.judgeRobustness[c.model]; const v = Object.values(r); return v.length > 1 ? Math.max(...v) - Math.min(...v) : 0 })), 1)} 个百分点。</p>
+
+  <div class="callout good"><span class="t">同代对比的四条结论</span>
+    ① <strong>三方同级，不是"我们领先"</strong>：FinanceBench oracle 上三家落在
+    ${pct(Math.min(...samegen.candidates.map((c) => c.financebench.oraclePct)), 1)}~${pct(Math.max(...samegen.candidates.map((c) => c.financebench.oraclePct)), 1)} 之间，
+    1 道题就是 0.67pp，排序会随裁判和运行波动——所以只能说<strong>同一档</strong>，不能说领先或落后；
+    <br>② <strong>工具调用上我们与 GLM 同级领先，Luna 明显偏低</strong>：BFCL 是确定性判分（没有裁判主观性），
+    我们 ${pct(dig(samegen, 'candidates.0.bfcl.overallPct', null), 1)} / GLM ${pct(dig(samegen, 'candidates.3.bfcl.overallPct', null), 1)} / Luna ${pct(dig(samegen, 'candidates.2.bfcl.overallPct', null), 1)}，
+    差距集中在 simple 与 multiple 两类；
+    <br>③ <strong>网关路由几乎不改变答案</strong>：同一模型官方直连与网关路由的 oracle 得分完全一致（92.0 / 92.0）、BFCL 差 0.2pp，
+    说明聚合网关可以作为可信的对照通道；但它<strong>视觉不可用</strong>（图片返回上游错误）、且贵约 1.4 倍。
+    唯一例外是闭卷探针（51.3 vs 39.0）——那本就依赖记忆，波动大且不作为能力结论；
+    <br>④ <strong>我们自己的裁判对自己更严</strong>：同一批答案，自判 ${pct(dig(radarData, 'ours.accuracyPct', null), 2)}，Sonnet 5 判 ${pct(dig(samegen, 'judgeRobustness.deepseek-flash.claude-sonnet-5', null), 2)}。
+    前几节报告的分数因此偏保守——"保守"是好事，但必须知道偏在哪。</div>
+  ` : ''}
+  </section>
 
 <section id="honest">
   <h2><span class="no">06</span>短板与反例：这一轮测出来的真问题</h2>

@@ -29,7 +29,14 @@ const ADAPTERS = ['cflue', 'fineval', 'fineval-mm', 'financebench', 'bfcl', 'omn
  */
 const DEFAULT_MODELS = ['deepseek-flash']
 /** 图像类基准：实测 deepseek-v4-pro 不接受图像输入（in=124 tokens 且明确拒绝），故只跑有视觉能力的模型 */
-const VISION_MODELS = ['deepseek-flash']
+// 视觉能力由注册表声明（models.json 的 vision 字段），不再写死；新增模型只要在注册表里标 vision:true 即可参与视觉基准
+const VISION_MODELS = (() => {
+  try {
+    return require('./lib/model').listProviders().filter((m) => m.vision).map((m) => m.id)
+  } catch {
+    return ['deepseek-flash']
+  }
+})()
 
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : d }
 const has = (n) => process.argv.includes(n)
@@ -93,7 +100,10 @@ async function main() {
   }
 
   // --merge：把已有报告里"本次没跑"的基准原样带过来
-  const reportFile = path.join(REPORTS, `external-alignment-${VERSION}${dry ? '-plan' : ''}.json`)
+  // --report-name：给本次运行单独的产物文件名。**多模型/同代对比必须用它**，
+  // 否则会把 official 的 external-alignment-v1.json 覆盖掉（踩过一次：同代测试把官方产物冲成了 zen-deepseek-v4-flash）
+  const reportBase = arg('--report-name', `external-alignment-${VERSION}`)
+  const reportFile = path.join(REPORTS, `${reportBase}${dry ? '-plan' : ''}.json`)
   if (merge && fs.existsSync(reportFile)) {
     try {
       const prev = JSON.parse(fs.readFileSync(reportFile, 'utf8'))
@@ -156,6 +166,7 @@ async function main() {
           candidateModel: model,
           fbVariant: arg('--fb-variant', 'A0'),
           judgeVotes: Number(arg('--judge-votes', 1)),
+          judgeModel: arg('--judge-model', ''),
           concurrency,
           log: (m) => console.log(m),
           getClient: (m) => new ModelClient({ model: m }),

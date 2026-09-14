@@ -23,6 +23,7 @@ const VIEWPORTS = [
   { name: '04b-variants', sel: '#external h4', theme: 'light' },
   { name: '04c-b1', sel: '#external .callout.bad', theme: 'light' },
   { name: '04d-d1', sel: '#external', text: '端到端文档问答（D1）', theme: 'light' },
+  { name: '04e-samegen', sel: '#external', text: '同代模型对比', theme: 'light' },
   { name: '05-honest', sel: '#honest', theme: 'light' },
   { name: '06-data', sel: '#data', theme: 'light' },
   { name: '07-cost', sel: '#cost', theme: 'light' },
@@ -49,7 +50,18 @@ app.whenReady().then(async () => {
   for (const v of VIEWPORTS) {
     await win.webContents.executeJavaScript(`document.documentElement.setAttribute('data-theme','${v.theme}');true`)
     if (v.sel) {
-      const info = await win.webContents.executeJavaScript(`(function(){var el=document.querySelector(${JSON.stringify(v.sel)});if(!el&&${JSON.stringify(v.text || '')}){var hs=[].slice.call(document.querySelectorAll('h2,h3,h4'));el=hs.filter(function(x){return x.textContent.indexOf(${JSON.stringify(v.text || '')})>=0})[0]}if(!el)return null;var r=el.getBoundingClientRect();var vh=window.innerHeight;var y=r.top+window.scrollY-(vh-r.height)/2;window.scrollTo(0,Math.max(0,y));return {sel:${JSON.stringify(v.sel)},top:Math.round(r.top),h:Math.round(r.height),vh:vh,y:Math.round(Math.max(0,y))}})()`)
+      // 注意：给了 text 就必须**先用文本定位**。否则像 #external 这种大容器会先命中，
+      // 结果截图停在章节开头而不是目标小节（踩过一次，截出来的是上一节的内容）
+      const info = await win.webContents.executeJavaScript(`(function(){
+        var el=null;
+        var want=${JSON.stringify(v.text || '')};
+        if(want){var hs=[].slice.call(document.querySelectorAll('h2,h3,h4,h5'));el=hs.filter(function(x){return x.textContent.indexOf(want)>=0})[0]||null}
+        if(!el)el=document.querySelector(${JSON.stringify(v.sel)});
+        if(!el)return null;
+        var r=el.getBoundingClientRect();var vh=window.innerHeight;
+        var y=r.top+window.scrollY-(vh-r.height)/2;
+        window.scrollTo(0,Math.max(0,y));
+        return {sel:${JSON.stringify(v.sel)},matchedText:!!want&&el.tagName,top:Math.round(r.top),h:Math.round(r.height),vh:vh,y:Math.round(Math.max(0,y))}})()`)
       if (!info) { console.log(`  ⚠️ ${v.name}: 找不到选择器 ${v.sel}`); continue }
       if (process.env.SHOT_DEBUG) console.log(`     [debug] ${JSON.stringify(info)}`)
     } else {

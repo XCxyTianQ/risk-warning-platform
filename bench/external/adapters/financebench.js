@@ -171,12 +171,13 @@ module.exports = {
     return out
   },
 
-  async run({ tasks, client, concurrency = 4, log = () => {}, getClient, candidateModel, fbVariant = 'A0' }) {
-    // 裁判模型：优先用**另一个模型**（避免同源偏好）；若只有候选模型可用，则用同一模型，
-    // 并在指标里显式标注 judgeIsSameModel=true 与对应的偏差风险，绝不把这个差别藏起来。
+  async run({ tasks, client, concurrency = 4, log = () => {}, getClient, candidateModel, fbVariant = 'A0', judgeModel: judgeOverride = '', judgeVotes = 1 }) {
+    // 裁判模型：优先用**另一个模型**（避免同源偏好）。
+    // 同代测试里由 --judge-model 显式指定（例如 Claude Sonnet 5 / Gemini 3 Flash 这类非候选厂商模型）；
+    // 若没有指定，退化到旧逻辑并在指标里显式标注 judgeIsSameModel=true 与偏差风险，绝不把这个差别藏起来。
     const alt = candidateModel === 'deepseek-flash' ? 'deepseek-v4-pro' : 'deepseek-flash'
     const altAvailable = process.env.RWP_BENCH_NO_CROSS_JUDGE !== '1' && !!process.env.RWP_BENCH_ALLOW_CROSS_JUDGE
-    const judgeModel = altAvailable ? alt : candidateModel
+    const judgeModel = judgeOverride || (altAvailable ? alt : candidateModel)
     const judgeIsSameModel = judgeModel === candidateModel
     const judge = getClient ? getClient(judgeModel) : client
     if (judgeIsSameModel) log(`  · 裁判模型与候选模型相同（${judgeModel}）：同源裁判可能偏袒自身输出，报告中已标注该偏差风险`)

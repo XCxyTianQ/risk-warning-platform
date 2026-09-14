@@ -1,0 +1,3703 @@
+{
+  "generatedAt": "2026-09-14T12:11:47.150Z",
+  "bench": "financebench",
+  "mode": "oracle",
+  "votes": 1,
+  "judges": [
+    "claude-sonnet-5",
+    "kimi-k3"
+  ],
+  "matrix": {
+    "deepseek-flash": {
+      "file": "bench/external/out/run-2026-09-14T11-38-31/financebench.deepseek-flash.json",
+      "mode": "oracle",
+      "n": 150,
+      "judges": {
+        "claude-sonnet-5": {
+          "n": 150,
+          "correct": 138,
+          "accuracyPct": 92,
+          "refusalPct": 0,
+          "errors": 0,
+          "verdicts": [
+            {
+              "id": "financebench_id_03029",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04672",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01226",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01865",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00807",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00941",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01858",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02987",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07966",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07507",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03856",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00438",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00591",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01319",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00540",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_10420",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_06655",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08135",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08286",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01935",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00799",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01079",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01148",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00684",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01936",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01928",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01930",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03069",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00222",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00995",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01198",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00917",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01279",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00563",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00757",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01028",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00723",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00720",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01351",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01964",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00070",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02608",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04417",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00685",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01077",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01275",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00288",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00460",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01902",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04660",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03838",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07661",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10285",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00517",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01091",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00678",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01290",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00464",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00494",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00585",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03473",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_09724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06272",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10130",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01346",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00005",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04209",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05915",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00790",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01107",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01244",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00839",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00822",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04103",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03471",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04854",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10136",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00956",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00669",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00711",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00651",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01484",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01488",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01490",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01491",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01487",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00299",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02119",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00206",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00394",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02049",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04412",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03031",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04171",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03849",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00382",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01911",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01912",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00407",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04700",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00552",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04458",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03282",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03531",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04080",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01163",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00080",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04980",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01009",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01328",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03620",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04481",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01482",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00705",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01474",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00702",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02416",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00283",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02419",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00746",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00521",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00601",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00603",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00605",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00606",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00859",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02024",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00216",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00215",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00566",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06247",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04784",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06741",
+              "verdict": "CORRECT"
+            }
+          ]
+        },
+        "kimi-k3": {
+          "n": 150,
+          "correct": 138,
+          "accuracyPct": 92,
+          "refusalPct": 0,
+          "errors": 0,
+          "verdicts": [
+            {
+              "id": "financebench_id_03029",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04672",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01226",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01865",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00807",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00941",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01858",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02987",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07966",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07507",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03856",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00438",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00591",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01319",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00540",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_10420",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_06655",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08135",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08286",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01935",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00799",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01079",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01148",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00684",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01936",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01928",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01930",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03069",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00222",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00995",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01198",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00917",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01279",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00563",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00757",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01028",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00723",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00720",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01351",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01964",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00070",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02608",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04417",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00685",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01077",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01275",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00288",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00460",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01902",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04660",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03838",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07661",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10285",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00517",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01091",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00678",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01290",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00464",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00494",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00585",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03473",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_09724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06272",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10130",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01346",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00005",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04209",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05915",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00790",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01107",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01244",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00839",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00822",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04103",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03471",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04854",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10136",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00956",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00669",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00711",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00651",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01484",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01488",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01490",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01491",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01487",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00299",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02119",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00206",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00394",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02049",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04412",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03031",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04171",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03849",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00382",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01911",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01912",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00407",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04700",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00552",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04458",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03282",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03531",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04080",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01163",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00080",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04980",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01009",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01328",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03620",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04481",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01482",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00705",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01474",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00702",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02416",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00283",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02419",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00746",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00521",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00601",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00603",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00605",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00606",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00859",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02024",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00216",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00215",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00566",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06247",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04784",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06741",
+              "verdict": "CORRECT"
+            }
+          ]
+        }
+      }
+    },
+    "gpt-5.6-luna": {
+      "file": "bench/external/out/run-2026-09-14T11-22-39/financebench.gpt-5.6-luna.json",
+      "mode": "oracle",
+      "n": 150,
+      "judges": {
+        "claude-sonnet-5": {
+          "n": 150,
+          "correct": 137,
+          "accuracyPct": 91.33,
+          "refusalPct": 0,
+          "errors": 0,
+          "verdicts": [
+            {
+              "id": "financebench_id_03029",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04672",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01226",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01865",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00807",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00941",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01858",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02987",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07966",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07507",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03856",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00438",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00591",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01319",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00540",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_10420",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_06655",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_08135",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08286",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01935",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00799",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01079",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01148",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00684",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01936",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01928",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01930",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03069",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00222",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00995",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01198",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00917",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01279",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00563",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00757",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01028",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00723",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00720",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01351",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01964",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00070",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02608",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04417",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00685",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01077",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01275",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00288",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00460",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01902",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04660",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03838",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07661",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10285",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00517",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01091",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00678",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01290",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00464",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00494",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00585",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03473",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_09724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06272",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10130",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01346",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00005",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04209",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05915",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00790",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01107",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01244",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00839",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00822",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04103",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03471",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04854",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10136",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00956",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00669",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00711",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00651",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01484",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01488",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01490",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01491",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01487",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00299",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02119",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00206",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00394",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02049",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04412",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03031",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04171",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03849",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00382",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01911",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01912",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00407",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04700",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00552",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04458",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03282",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03531",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04080",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01163",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00080",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04980",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01009",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01328",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03620",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04481",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01482",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00705",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01474",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00702",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02416",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00283",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02419",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00746",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00521",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00601",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00603",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00605",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00606",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00859",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02024",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00216",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00215",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00566",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06247",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04784",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06741",
+              "verdict": "CORRECT"
+            }
+          ]
+        },
+        "kimi-k3": {
+          "n": 150,
+          "correct": 136,
+          "accuracyPct": 90.67,
+          "refusalPct": 0,
+          "errors": 0,
+          "verdicts": [
+            {
+              "id": "financebench_id_03029",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04672",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01226",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01865",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00807",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00941",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01858",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02987",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07966",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07507",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03856",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00438",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00591",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01319",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00540",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_10420",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_06655",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_08135",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08286",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01935",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00799",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01079",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01148",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00684",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01936",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01928",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01930",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03069",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00222",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00995",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01198",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00917",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01279",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00563",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00757",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01028",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00723",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00720",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01351",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01964",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00070",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02608",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04417",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00685",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01077",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01275",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00288",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00460",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01902",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04660",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03838",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07661",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10285",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00517",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01091",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00678",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01290",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00464",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00494",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00585",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03473",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_09724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06272",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10130",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01346",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00005",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04209",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05915",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00790",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01107",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01244",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00839",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00822",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04103",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03471",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04854",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10136",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00956",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00669",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00711",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00651",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01484",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01488",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01490",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01491",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01487",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00299",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02119",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00206",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00394",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02049",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04412",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03031",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04171",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03849",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00382",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01911",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01912",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00407",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04700",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00552",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04458",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03282",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03531",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04080",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01163",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00080",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04980",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01009",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01328",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03620",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04481",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01482",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00705",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01474",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00702",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02416",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00283",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02419",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00746",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00521",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00601",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00603",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00605",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00606",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00859",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02024",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00216",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00215",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00566",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06247",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04784",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06741",
+              "verdict": "CORRECT"
+            }
+          ]
+        }
+      }
+    },
+    "glm-5.3-flash": {
+      "file": "bench/external/out/run-2026-09-14T11-22-41/financebench.glm-5.3-flash.json",
+      "mode": "oracle",
+      "n": 150,
+      "judges": {
+        "claude-sonnet-5": {
+          "n": 150,
+          "correct": 137,
+          "accuracyPct": 91.33,
+          "refusalPct": 0,
+          "errors": 0,
+          "verdicts": [
+            {
+              "id": "financebench_id_03029",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04672",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00499",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01226",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01865",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00807",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00941",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01858",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02987",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07966",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07507",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03856",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00438",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00591",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01319",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00540",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10420",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_06655",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08135",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08286",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01935",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00799",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01079",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01148",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00684",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01936",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01928",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01930",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03069",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00222",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00995",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01198",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00917",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01279",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00563",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00757",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01028",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00723",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00720",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01351",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01964",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00070",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02608",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04417",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00685",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01077",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01275",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00288",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00460",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01902",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04660",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03838",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07661",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10285",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00517",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01091",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00678",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01290",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00464",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00494",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00585",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03473",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_09724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06272",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10130",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01346",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00005",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04209",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05915",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00790",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01107",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01244",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00839",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00822",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04103",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03471",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04854",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10136",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00956",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00669",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00711",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00651",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01484",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01488",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01490",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01491",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01487",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00299",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02119",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00206",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00394",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02049",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04412",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03031",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04171",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03849",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00382",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01911",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01912",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00407",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04700",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00552",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04458",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03282",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03531",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04080",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01163",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00080",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04980",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01009",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01328",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03620",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04481",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01482",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00705",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01474",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00702",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02416",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00283",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02419",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00746",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00521",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00601",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00603",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00605",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00606",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00859",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02024",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00216",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00215",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00566",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06247",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04784",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06741",
+              "verdict": "CORRECT"
+            }
+          ]
+        },
+        "kimi-k3": {
+          "n": 150,
+          "correct": 138,
+          "accuracyPct": 92,
+          "refusalPct": 0,
+          "errors": 0,
+          "verdicts": [
+            {
+              "id": "financebench_id_03029",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04672",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00499",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01226",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01865",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00807",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00941",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01858",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02987",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07966",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07507",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03856",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00438",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00591",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01319",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00540",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10420",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_06655",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08135",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_08286",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01935",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00799",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01079",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01148",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00684",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01936",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01928",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01930",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03069",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00222",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00995",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01198",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00917",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01279",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00563",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00757",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01028",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00723",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00720",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01351",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01964",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00070",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02608",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04417",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00685",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01077",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01275",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00288",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00460",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01902",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04660",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03838",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_07661",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10285",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00517",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01091",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00678",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01290",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00464",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00494",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00585",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03473",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_09724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06272",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10130",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02981",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01346",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00005",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04209",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_05915",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00790",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01107",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01244",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00839",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00822",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04103",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03471",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04854",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10136",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00956",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00669",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00711",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00651",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01484",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01488",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01490",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01491",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01487",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00299",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02119",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00206",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00394",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02049",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_10499",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04412",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03031",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03718",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04171",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03849",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01254",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00382",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01911",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_01912",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00407",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04700",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00552",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04458",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03282",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_03531",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04080",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01163",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00080",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_04980",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01009",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00735",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01328",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_03620",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04481",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01482",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00705",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00882",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01474",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_01476",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00302",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00702",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02416",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00283",
+              "verdict": "INCORRECT"
+            },
+            {
+              "id": "financebench_id_00724",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02419",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00746",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00521",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00601",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00603",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00605",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00606",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00859",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_02024",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00216",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00215",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_00566",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06247",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_04784",
+              "verdict": "CORRECT"
+            },
+            {
+              "id": "financebench_id_06741",
+              "verdict": "CORRECT"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "usage": {
+    "claude-sonnet-5": {
+      "calls": 450,
+      "promptTokens": 209697,
+      "completionTokens": 4388,
+      "estimatedCostUSD": 0.4633,
+      "estimatedCostCNY": 3.29
+    },
+    "kimi-k3": {
+      "calls": 452,
+      "promptTokens": 175444,
+      "completionTokens": 85628,
+      "estimatedCostUSD": 1.8108,
+      "estimatedCostCNY": 12.86
+    }
+  }
+}
