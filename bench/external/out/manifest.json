@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T03:02:48.763Z",
+  "generatedAt": "2026-09-14T11:14:23.820Z",
   "note": "外部基准对齐的输入清单：来源、版本、字节数、sha256。原始数据不入库，本文件入库以保证\"跑的是哪一版\"可复查。",
   "refs": {
     "cflue": {
@@ -89,7 +89,7 @@
       "sourceUrl": "https://github.com/aliyun/cflue/blob/master/data/knowledge/knowledge.json",
       "bytes": 2609981,
       "sha256": "e8473fc0d34973a3250532d9705a5432ddfb5481418bce70073d36b34f47fc79",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:29.469Z"
     },
     {
@@ -100,7 +100,7 @@
       "sourceUrl": "https://github.com/aliyun/cflue/blob/master/data/application/application.json",
       "bytes": 265508,
       "sha256": "f0c730497e01244365a42bda9959f303cd08d5f58e98cbb711fe79f68b81f02f",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:29.583Z"
     },
     {
@@ -111,7 +111,7 @@
       "sourceUrl": "https://github.com/aliyun/cflue/blob/master/utils/compute_score.py",
       "bytes": 38836,
       "sha256": "a42ddae84e0edc3de21f7895826caea3b24a95e953e09d991ba0e872321b622f",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:29.690Z"
     },
     {
@@ -122,7 +122,7 @@
       "sourceUrl": "https://github.com/aliyun/cflue/blob/master/README_zh.md",
       "bytes": 17924,
       "sha256": "f3fd7a28e7d695cb94149f4589574cd59affeea567cbf6fe5d1bab1c475afb98",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:29.797Z"
     },
     {
@@ -133,7 +133,7 @@
       "sourceUrl": "https://github.com/SUFE-AIFLM-Lab/FinEval/blob/main/Financial Rigor Test/Financial Rigor Test_Numerical Calculation.csv",
       "bytes": 48718,
       "sha256": "94553bad506fce457d6e2f029bd579ab91b7668be0ab8caf2a91e53e44167dbd",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:29.904Z"
     },
     {
@@ -144,7 +144,7 @@
       "sourceUrl": "https://github.com/SUFE-AIFLM-Lab/FinEval/blob/main/Financial Rigor Test/Financial Rigor Test_Index Extraction.csv",
       "bytes": 3893274,
       "sha256": "8473eb54833548a05cc91c5834415c716302c4dfe42e18155bc413a427f040af",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:30.344Z"
     },
     {
@@ -155,7 +155,7 @@
       "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/data/financebench_open_source.jsonl",
       "bytes": 929848,
       "sha256": "a5a2aa673e573e55675fc3c0f9aa38c1cf59d2abc91edb077534f71f10a71877",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:30.921Z"
     },
     {
@@ -166,7 +166,7 @@
       "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/gpt-4_oracle.jsonl",
       "bytes": 121667,
       "sha256": "95e90e5098f121856676888847ef308e07c0b2f6c3cb27d2ffb90fc65726c497",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:31.028Z"
     },
     {
@@ -177,7 +177,7 @@
       "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/gpt-4_closedBook.jsonl",
       "bytes": 118330,
       "sha256": "beb885621520e4a781a187ddcd9f96c5dc2439d5e04be672f718aa44ac579c5c",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:31.333Z"
     },
     {
@@ -188,7 +188,7 @@
       "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/gpt-4-1106-preview_oracle.jsonl",
       "bytes": 224879,
       "sha256": "b07efa7daa2adfe706515ea6c05e207ff59d790e0161fd3f9f9208489ec9b3b2",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:31.611Z"
     },
     {
@@ -199,7 +199,7 @@
       "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/claude-2_inContext.jsonl",
       "bytes": 341362,
       "sha256": "e38452ddbc848aec2fc3ff116ef169ad2167bfaf0dc49ec0a1c19320dd6efc3a",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:31.897Z"
     },
     {
@@ -210,7 +210,7 @@
       "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/llama2_singleStore.jsonl",
       "bytes": 156158,
       "sha256": "04a891aaf048ff50a474aeef887447044f5e7f9ca303a754a16b2b4d6dd07b71",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:32.167Z"
     },
     {
@@ -221,7 +221,7 @@
       "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_simple_python.json",
       "bytes": 283274,
       "sha256": "82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:32.276Z"
     },
     {
@@ -232,7 +232,7 @@
       "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_simple_python.json",
       "bytes": 63627,
       "sha256": "90cd5bc653690ee8e459b5b3f3fc9458606f7f3fcbf795bb51b7dc581f8c86dc",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:32.399Z"
     },
     {
@@ -243,7 +243,7 @@
       "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multiple.json",
       "bytes": 316583,
       "sha256": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:32.684Z"
     },
     {
@@ -254,7 +254,7 @@
       "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multiple.json",
       "bytes": 32254,
       "sha256": "244e00ce9395df948bcafc7bee64e8f9c87ef70887587d83cae45b13699f3047",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:32.942Z"
     },
     {
@@ -265,7 +265,7 @@
       "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_irrelevance.json",
       "bytes": 159940,
       "sha256": "2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:33.049Z"
     },
     {
@@ -276,7 +276,7 @@
       "sourceUrl": "https://github.com/opendatalab/OmniDocBench/blob/main/demo_data/omnidocbench_demo/OmniDocBench_demo.json",
       "bytes": 1468917,
       "sha256": "a0686ff3e2ce76b4e60c308bc28700683d3c62a0fd47149355e8b197db238dc6",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:33.172Z"
     },
     {
@@ -287,7 +287,7 @@
       "sourceUrl": "https://github.com/opendatalab/OmniDocBench/blob/main/README_zh-CN.md",
       "bytes": 91562,
       "sha256": "6d5a6b5e15b7e5a1ff91318b88b428e5448cb2b61d764977ec3d590800c21210",
-      "fromCache": false,
+      "fromCache": true,
       "fetchedAt": "2026-09-14T03:02:33.278Z"
     }
   ],

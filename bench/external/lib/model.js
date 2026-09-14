@@ -73,9 +73,10 @@ function resolveProvider(id, { baseUrl, apiKey, model } = {}) {
     vendor: reg.vendor || '',
     baseUrl: resolvedBase,
     apiModel: model || reg.apiModel || id,
+    apiPath: reg.apiPath || '/chat/completions',
     apiKey: key,
     keySource,
-    priceUSD: reg.priceUSD || null,
+    priceUSD: reg.priceUSD || PRICES_USD[id] || null,
     priceSource: reg.priceSource || '',
     vision: reg.vision !== false,
     tools: reg.tools !== false,
@@ -132,7 +133,8 @@ function mimeOf(file) {
 class ModelClient {
   constructor({ model, apiKey, baseUrl, timeoutMs = 180000, maxRetries = 3, logger } = {}) {
     // 优先按注册表解析（支持跨供应商：DeepSeek / OpenAI / 智谱 / 聚合网关）
-    const p = resolveProvider(model || 'deepseek-flash', { apiKey, baseUrl, model })
+    // 注意：不要把注册表 id 传成"模型名"，否则 apiModel（真实模型名）会被 id 覆盖
+    const p = resolveProvider(model || 'deepseek-flash', { apiKey, baseUrl })
     if (!p.ready && !apiKey) {
       const llm = resolveLlm(REPO, { model })
       if (!llm.ready) throw new Error(p.reason || `未找到 API Key（尝试过：${llm.tried.join(' / ')}）`)
@@ -194,7 +196,11 @@ class ModelClient {
       const ac = new AbortController()
       const timer = setTimeout(() => ac.abort(), this.timeoutMs)
       try {
-        const res = await fetch(`${this.baseUrl}/chat/completions`, {
+        // 端点形态因模型族而异：DeepSeek/GLM/Kimi 走 /chat/completions，
+        // GPT-5.x 在 OpenCode Zen 只提供 /responses，Claude 只提供 /messages。
+        const apiPath = this.provider && this.provider.apiPath ? this.provider.apiPath : '/chat/completions'
+        const url = apiPath === '/chat/completions' ? `${this.baseUrl}/chat/completions` : `${this.baseUrl}${apiPath}`
+        const res = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },
           body: JSON.stringify(body),
@@ -220,6 +226,48 @@ class ModelClient {
   }
 
   /**
+   * OpenAI Responses API（/responses）：GPT-5.x 在部分网关只提供这一种形态。
+   * 与 chat/completions 的差异：system 走 instructions、输入叫 input、输出在 output[] 里、
+   * 用量字段是 input_tokens/output_tokens（而非 prompt_tokens/completion_tokens）。
+   * @param {{system?:string,user:string,images?:string[],tools?:any[],maxTokens?:number,kind?:string}} o
+   */
+  async _responses(o) {
+    const content = [{ type: 'input_text', text: o.user }]
+    for (const img of o.images || []) {
+      const abs = path.isAbsolute(img) ? img : path.join(REPO, img)
+      const b64 = fs.readFileSync(abs).toString('base64')
+      const ext = path.extname(abs).slice(1).toLowerCase()
+      const mime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
+      content.push({ type: 'input_image', image_url: `data:${mime};base64,${b64}` })
+    }
+    const body = { model: this.model, input: [{ role: 'user', content }], max_output_tokens: o.maxTokens ?? 2048 }
+    if (o.system) body.instructions = o.system
+    if (o.tools) {
+      body.tools = o.tools.map((t) => ({ type: 'function', name: t.function.name, description: t.function.description, parameters: t.function.parameters }))
+      body.tool_choice = o.toolChoice || 'auto'
+    }
+    const j = await this._post(body, o.kind || 'responses')
+    // 归一化成与 chat() 相同的形状，上层无需分支
+    let text = ''
+    const calls = []
+    for (const item of j.output || []) {
+      if (item.type === 'message') for (const c of item.content || []) if (c.type === 'output_text') text += c.text
+      if (item.type === 'function_call') calls.push({ id: item.call_id || item.id, name: item.name, args: (() => { try { return JSON.parse(item.arguments || '{}') } catch { return item.arguments } })() })
+    }
+    if (!text && typeof j.output_text === 'string') text = j.output_text
+    const u = j.usage || {}
+    return {
+      text,
+      reasoning: '',
+      finishReason: j.status || '',
+      truncated: j.status === 'incomplete',
+      calls,
+      usage: { prompt_tokens: u.input_tokens, completion_tokens: u.output_tokens, total_tokens: (u.input_tokens || 0) + (u.output_tokens || 0) },
+      raw: j,
+    }
+  }
+
+  /**
    * 纯文本。
    *
    * 注意（踩过的坑）：DeepSeek 系模型先写 reasoning_content 再写 content。
@@ -228,6 +276,8 @@ class ModelClient {
    * 并把 finishReason/truncated 暴露给上层，便于把这类样本单列而不是算错。
    */
   async chat(o) {
+    // Responses-only 模型（如网关上的 GPT-5.x）直接走 /responses
+    if (this.provider && this.provider.apiPath === '/responses') return this._responses(o)
     let budget = o.maxTokens ?? 1024
     let last = null
     for (let round = 0; round < 3; round++) {
@@ -260,6 +310,7 @@ class ModelClient {
    * @param {{system?:string,user:string,images:string[],temperature?:number,maxTokens?:number,kind?:string}} o
    */
   async vision(o) {
+    if (this.provider && this.provider.apiPath === '/responses') return this._responses({ ...o, maxTokens: o.maxTokens ?? 2048 })
     const parts = [{ type: 'text', text: o.user }]
     for (const img of o.images) {
       const abs = path.isAbsolute(img) ? img : path.join(REPO, img)
@@ -281,6 +332,7 @@ class ModelClient {
    * @param {{system?:string,user:string,tools:Array,toolChoice?:any,temperature?:number,maxTokens?:number,kind?:string}} o
    */
   async tools(o) {
+    if (this.provider && this.provider.apiPath === '/responses') return this._responses({ ...o, maxTokens: o.maxTokens ?? 2048 })
     const messages = []
     if (o.system) messages.push({ role: 'system', content: o.system })
     messages.push({ role: 'user', content: o.user })

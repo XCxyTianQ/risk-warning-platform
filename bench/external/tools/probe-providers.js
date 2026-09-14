@@ -13,8 +13,15 @@ const { ModelClient } = require('../lib/model')
 
 const EXT = path.join(__dirname, '..')
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : d }
-const img = path.join(EXT, 'cache', 'raw', 'omnidocbench_pages')
-const sample = fs.existsSync(img) ? fs.readdirSync(img).map((f) => path.join(img, f))[0] : null
+/** 自动挑一张真实的整页文档图（OmniDocBench 页面图优先），避免写死路径 */
+function pickSampleImage() {
+  const dir = path.join(EXT, 'cache', 'raw')
+  if (!fs.existsSync(dir)) return null
+  const imgs = fs.readdirSync(dir).filter((f) => /\.(png|jpg|jpeg)$/i.test(f))
+  const omni = imgs.find((f) => f.startsWith('omnidocbench'))
+  return path.join(dir, omni || imgs[0] || '')
+}
+const sample = pickSampleImage()
 
 ;(async () => {
   const ids = arg('--models', 'deepseek-flash').split(',').map((s) => s.trim()).filter(Boolean)

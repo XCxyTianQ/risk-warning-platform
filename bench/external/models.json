@@ -2,54 +2,71 @@
   "_readme": [
     "同代模型注册表：评测用哪个模型、走哪个端点、Key 从哪里读、按什么价目记账。",
     "不含任何密钥：只写环境变量名与 Key 文件候选路径。",
-    "baseUrl 必须由使用者确认（同代模型可能走官方端点，也可能走聚合网关），未确认的条目留空并标记 needsBaseUrl。",
-    "priceUSD 必须来自官方定价页；缺价目时只记 token、不估钱（避免编数）。"
+    "apiPath 必须实测：OpenCode Zen 上 GPT-5.x 只提供 /responses，Claude 只提供 /messages，",
+    "DeepSeek/GLM/Kimi 走 /chat/completions——写错会得到 404 而不是模型错误。",
+    "priceUSD 必须用**实际调用路径的价目**：经网关调用时用网关价，直连官方时用官方价。"
   ],
   "models": [
     {
       "id": "deepseek-flash",
-      "label": "DeepSeek-V4.1-Flash",
+      "label": "DeepSeek-V4.1-Flash（官方直连）",
       "vendor": "DeepSeek",
       "baseUrl": "https://api.deepseek.com/v1",
       "apiModel": "deepseek-flash",
+      "apiPath": "/chat/completions",
       "aliases": ["deepseek-v4-flash", "deepseek-v4-flash-vision-exp"],
       "keyEnv": ["RWP_LLM_API_KEY", "DEEPSEEK_API_KEY"],
       "keyFiles": ["~/Desktop/KEY.txt", "~/Desktop/KEY-Linux.txt", "<repo>/KEY.txt"],
-      "priceUSD": { "hit": 0.006, "miss": 0.3, "out": 1.2, "note": "peak 价；off-peak 减半" },
+      "priceUSD": { "hit": 0.006, "miss": 0.3, "out": 1.2, "note": "官方 peak 价；off-peak 减半" },
       "priceSource": "https://api-docs.deepseek.com/quick_start/pricing",
       "vision": true,
       "tools": true,
-      "role": "本平台当前使用的模型（旧名 deepseek-v4-flash 已退役，官方文档声明由 V4.1-Flash 承接）"
+      "role": "本平台当前使用的模型；官方文档声明旧名 deepseek-v4-flash 由 V4.1-Flash 承接"
+    },
+    {
+      "id": "zen-deepseek-v4-flash",
+      "label": "DeepSeek-V4-Flash（网关路由）",
+      "vendor": "OpenCode Zen → DeepSeek",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "apiModel": "deepseek-v4-flash",
+      "apiPath": "/chat/completions",
+      "keyEnv": ["RWP_ZEN_API_KEY"],
+      "keyFiles": ["~/Desktop/KEY-OPENCODE.txt"],
+      "priceUSD": { "hit": 0.014, "miss": 0.44, "out": 1.32, "note": "网关 peak 价（比官方直连贵约 1.4 倍）" },
+      "priceSource": "https://open-code.ai/en/docs/zen",
+      "vision": true,
+      "tools": true,
+      "role": "对照组：同一模型走网关，用来检查「网关路由」是否引入差异"
     },
     {
       "id": "gpt-5.6-luna",
       "label": "GPT-5.6 Luna",
-      "vendor": "OpenAI",
-      "baseUrl": "",
-      "needsBaseUrl": true,
+      "vendor": "OpenAI（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
       "apiModel": "gpt-5.6-luna",
-      "keyEnv": ["OPENAI_API_KEY", "RWP_LUNA_API_KEY"],
-      "keyFiles": ["~/Desktop/KEY-OPENAI.txt", "~/Desktop/KEY-LUNA.txt"],
-      "priceUSD": { "miss": 1.0, "out": 6.0, "note": "官方 $1/$6 每百万输入/输出；缓存命中价未公布，暂按 miss 计" },
-      "priceSource": "https://simonwillison.net/2026/Jul/9/gpt-5-6/",
+      "apiPath": "/responses",
+      "keyEnv": ["RWP_ZEN_API_KEY", "OPENAI_API_KEY"],
+      "keyFiles": ["~/Desktop/KEY-OPENCODE.txt", "~/Desktop/KEY-OPENAI.txt"],
+      "priceUSD": { "hit": 0.02, "miss": 0.2, "out": 1.2, "note": "网关价（≤272K 上下文档）；>272K 时翻倍" },
+      "priceSource": "https://open-code.ai/en/docs/zen",
       "vision": true,
       "tools": true,
-      "role": "同代对标：GPT-5.6 家族最小档（1M 上下文 / 128k 输出 / 知识截止 2026-02-16）"
+      "role": "同代对标：GPT-5.6 家族最小档；网关只提供 /responses 形态，客户端已适配"
     },
     {
       "id": "glm-5.3-flash",
       "label": "GLM-5.3-Flash",
-      "vendor": "智谱 Z.ai",
-      "baseUrl": "",
-      "needsBaseUrl": true,
+      "vendor": "智谱 Z.ai（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
       "apiModel": "glm-5.3-flash",
-      "keyEnv": ["ZHIPU_API_KEY", "RWP_GLM_API_KEY"],
-      "keyFiles": ["~/Desktop/KEY-ZHIPU.txt", "~/Desktop/KEY-GLM.txt"],
+      "apiPath": "/chat/completions",
+      "keyEnv": ["RWP_ZEN_API_KEY", "ZHIPU_API_KEY"],
+      "keyFiles": ["~/Desktop/KEY-OPENCODE.txt", "~/Desktop/KEY-ZHIPU.txt"],
       "priceUSD": null,
-      "priceSource": "https://www.zhipuai.cn/zh/research/163（官方称定价为 GLM-5.3 的 1/10，未公布绝对值 → 本轮只记 token 不估钱）",
+      "priceSource": "网关文档未列该型号价目（/models 里有、端点表与价格表里没有）→ 只记 token 不估钱，待实测确认",
       "vision": true,
       "tools": true,
-      "role": "同代对标：320B-A18B 开源原生多模态，AA 智能指数 57（官方称与 Opus 4.8 持平）"
+      "role": "同代对标：320B-A18B 开源原生多模态，官方称 AA 智能指数 57、与 Opus 4.8 持平，且明确针对金融/法律优化"
     }
   ]
 }
