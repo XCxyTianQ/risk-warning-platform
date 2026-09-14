@@ -71,6 +71,7 @@ bench/external/out/*
 !bench/external/out/frontier-p1-results.json
 !bench/external/out/frontier-contamination-analysis.json
 !bench/external/out/frontier-challenge.json
+!bench/external/out/attribution-audit.json
 !bench/external/out/judge-matrix-financebench.json
 !bench/external/out/samegen-results.json
 !bench/external/out/d1-retrieval-tuning.json
