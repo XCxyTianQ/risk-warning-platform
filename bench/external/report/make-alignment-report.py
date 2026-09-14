@@ -687,26 +687,68 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
             if rows:
                 T(["题型（oracle 口径）", "n", "裁判准确率"], rows, caption=f"表 14　FinanceBench 分题型（{model}）", widths=[7.0, 2.0, 3.0])
             break
+        # 裁判校准：把论文公开答案送进我们的裁判重判 —— 不解决这个，82% vs 84% 的比较不成立
+        jp = load(EXT / "out" / "judge-published.json")
+        if jp and jp.get("results"):
+            P("**裁判校准（关键）**：直接比较两边的分数是不成立的——两套裁判对「什么算对」的宽严不同。"
+              "把论文公开的逐题答案送进<strong>我们的裁判</strong>重判后：")
+            rows = [[r.get("label"), r.get("n"), pct(r.get("paperAccuracyPct")), pct(r.get("ourJudgeAccuracyPct")),
+                     f"{r.get('deltaPp'):+.2f}pp", r.get("changedToWrong"), r.get("changedToCorrect")] for r in jp["results"]]
+            T(["模型 / 口径", "n", "论文标签", "我们的裁判", "差值", "论文判对/我们判错", "论文判错/我们判对"],
+              rows,
+              caption="表 12a　裁判校准：同一批 150 题上两套裁判的宽严差异",
+              note="宽严差异只出现在高分模型上（GPT-4 −8.67pp、GPT-4-1106 −6.67pp），"
+                   "而在 Claude-2 上仅 +0.67pp——说明分歧集中在「差一点就对」的答案，而不是「全错」的答案。",
+              widths=[3.4, 1.2, 2.0, 2.2, 1.8, 2.8, 2.8])
+        # 提示词变体实验：dev 选型 / test 冻结验证，含负结果
+        hist = load(EXT / "out" / "financebench-history.json")
+        if hist:
+            v = hist.get("variants", {})
+            rows = []
+            for key, label, split in [
+                ("A0（最新一次）", "A0 原提示词（含「无法确定就拒答」）", "全量 150"),
+                ("A1（最新一次）", "A1 去保守化（证据必含答案，未陈述则推导）", "全量 150"),
+                ("A1-dev", "A1 · dev 选型", "dev 60"),
+                ("A1-test", "A1 · 冻结 test 验证", "test 90"),
+                ("A2-dev", "A2 A1 + 先写行项目与单位", "dev 60"),
+                ("B2-dev", "B2 两阶段（先抽取行项目再作答）", "dev 60"),
+            ]:
+                if key in v:
+                    item = v[key]
+                    rows.append([label, split, item.get("n"), pct(item.get("accuracyPct")),
+                                 (f"{item.get('deltaQuestions'):+d} 题" if item.get("deltaQuestions") is not None else "—"),
+                                 item.get("verdicts", {}).get("REFUSAL", 0)])
+            if rows:
+                T(["提示词变体", "切分", "n", "准确率", "相对基线", "拒答"],
+                  rows,
+                  caption="表 12b　提示词变体实验（同一裁判；选型只在 dev，test 冻结后只跑一次）",
+                  note="失分诊断显示：原提示词主动邀请「证据不足就拒答」，导致 9/150 题直接弃答——"
+                       "而 oracle 口径给的 evidence 就是论文标注的支撑段落，答案必在其中。修正后拒答清零。"
+                       "A2 与 A1 持平（未采用）；两阶段抽取反而更差且贵 3.5 倍（未采用）。",
+                  widths=[4.6, 1.8, 1.2, 1.8, 1.8, 1.2])
+            P("**A1 的边界（必须同时说清）**：它利用了 oracle 口径「证据必然充分」这一前提；"
+              "真实检索场景下检索可能没命中，该前提不成立。因此这是<strong>把口径拉齐</strong>，"
+              "而不是生产环境的普适提升。此外裁判与候选模型同源（flash 判 flash），"
+              "同一裁判判双方答案消除了「尺子不同」，但消不掉「偏袒自己」的可能。")
         # 同题同口径的多方分题型对比（雷达图的数据底稿）
         radar = load(EXT / "out" / "radar-data.json")
         if radar:
-            P("**同题同口径的分题型对比**（每类 50 题；oracle 口径 = 把财报证据给模型）："
-              "这是本报告唯一能做到「同一批题、同一口径、多方都有公开数字」的横向对比，因而也是唯一适合画在同一张雷达图上的对比。")
+            P("**同一裁判口径下的分题型对比**（每类 50 题；oracle 口径 = 把财报证据给模型）："
+              "下图数据即本表——本平台一行与三个公开模型行由**同一个裁判**判定，这才构成可比的横向对比。")
             tnames = {"metrics-generated": "指标类", "domain-relevant": "领域推理", "novel-generated": "新颖生成"}
             rows = []
             ours_r = radar.get("ours") or {}
-            rows.append(["本平台（deepseek-flash）", pct(ours_r.get("accuracyPct")), *[pct(dig(ours_r, f"byType.{t}.accuracyPct")) for t in radar.get("types", [])]])
-            for mo in radar.get("models", []):
-                if mo.get("mode") != "oracle":
-                    continue
-                rows.append([f"{mo.get('label')}（论文公开）", pct(mo.get("accuracyPct")), *[pct(dig(mo, f"byType.{t}.accuracyPct")) for t in radar.get("types", [])]])
+            rows.append(["本平台（deepseek-flash，" + str(ours_r.get("promptVariant") or "A0") + "）",
+                         pct(ours_r.get("accuracyPct")), *[pct(dig(ours_r, f"byType.{t}.accuracyPct")) for t in radar.get("types", [])]])
+            for mo in dig(radar, "sameJudge.models", []) or []:
+                rows.append([f"{mo.get('label')}（论文答案 · 我们裁判）", pct(mo.get("ourJudgeAccuracyPct")),
+                             *[pct(dig(mo, f"byType.{t}.accuracyPct")) for t in radar.get("types", [])]])
             T(["模型 / 口径", "总体（n=150）", *[tnames.get(t, t) for t in radar.get("types", [])]],
               rows,
-              caption="表 12b　FinanceBench 分题型对比（oracle 口径，每类 n=50）",
-              note="未纳入的公开结果还有 Llama2-70B single-store（41.33%）——那是**检索口径**（先检索再回答），"
-                   "与 oracle 条件不同，合并会把「检索没命中」算成「模型不会读」，因此单列不并表。"
-                   "读法：本平台与 GPT-4 同级而非领先，差距 2.0~3.3 个百分点，与我们自身两次运行的波动（1.3pp）同量级。",
-              widths=[4.4, 2.6, 2.2, 2.4, 2.4])
+              caption="表 12c　FinanceBench 分题型对比（统一裁判口径，每类 n=50）",
+              note="未纳入的公开结果还有 Llama2-70B single-store（论文 41.33%）——那是**检索口径**"
+                   "（先检索再回答），与 oracle 条件不同，合并会把「检索没命中」算成「模型不会读」，因此单列。",
+              widths=[5.0, 2.6, 2.2, 2.4, 2.4])
         cb = audit_closedbook()
         if cb:
             oracle_pct = dig(b, "runs.deepseek-flash.metrics.judgeGraded.byMode.oracle.accuracyPct")

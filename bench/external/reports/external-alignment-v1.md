@@ -1,7 +1,7 @@
 # 外部基准对齐 · v1
 
-- 生成时间：2026-09-14T04:32:08.444Z
-- 抽样档位：full；随机种子：20260101；并发：6
+- 生成时间：2026-09-14T05:51:53.859Z
+- 抽样档位：full；随机种子：20260101；并发：5
 - 被测模型：deepseek-flash
 
 > 本文件由 `bench/external/run.js` 自动生成，数字全部来自评测产物；口径与局限见 `bench/external/README.md`。
@@ -87,4 +87,4 @@
 
 | 模型 | 关键指标 | 用时(s) |
 |---|---|---:|
-| deepseek-flash | judgeGraded.byMode.__ALL__=63.33%(n=300); judgeGraded.byMode.oracle=82%(n=150); judgeGraded.byMode.closedBook=44.67%(n=150); deterministic.byMode.oracle=35.33%(n=150); deterministic.byMode.closedBook=19.33%(n=150); byQuestionType.__ALL__=82%(n=150); byQuestionType.FinanceBench/metrics-generated=88%(n=50) | 766.9 |
+| deepseek-flash | judgeGraded.byMode.__ALL__=67%(n=300); judgeGraded.byMode.oracle=86.67%(n=150); judgeGraded.byMode.closedBook=47.33%(n=150); deterministic.byMode.oracle=34.67%(n=150); deterministic.byMode.closedBook=20.67%(n=150); byQuestionType.__ALL__=86.67%(n=150); byQuestionType.FinanceBench/metrics-generated=86%(n=50) | 795.4 |

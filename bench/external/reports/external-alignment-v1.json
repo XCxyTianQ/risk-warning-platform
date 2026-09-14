@@ -1,9 +1,9 @@
 {
   "version": "v1",
-  "generatedAt": "2026-09-14T04:32:08.444Z",
+  "generatedAt": "2026-09-14T05:51:53.859Z",
   "profile": "full",
   "seed": 20260101,
-  "concurrency": 6,
+  "concurrency": 5,
   "models": [
     "deepseek-flash"
   ],
@@ -2498,43 +2498,43 @@
                 "__ALL__": {
                   "group": "__ALL__",
                   "n": 300,
-                  "correct": 190,
-                  "wrong": 105,
-                  "abstain": 5,
+                  "correct": 201,
+                  "wrong": 97,
+                  "abstain": 2,
                   "ungraded": 0,
-                  "accuracy": 63.33,
-                  "accuracyPct": 63.33,
+                  "accuracy": 67,
+                  "accuracyPct": 67,
                   "ci95": [
-                    57.74,
-                    68.59
+                    61.49,
+                    72.08
                   ]
                 },
                 "oracle": {
                   "group": "oracle",
                   "n": 150,
-                  "correct": 123,
-                  "wrong": 27,
+                  "correct": 130,
+                  "wrong": 20,
                   "abstain": 0,
                   "ungraded": 0,
-                  "accuracy": 82,
-                  "accuracyPct": 82,
+                  "accuracy": 86.67,
+                  "accuracyPct": 86.67,
                   "ci95": [
-                    75.08,
-                    87.32
+                    80.3,
+                    91.2
                   ]
                 },
                 "closedBook": {
                   "group": "closedBook",
                   "n": 150,
-                  "correct": 67,
-                  "wrong": 78,
-                  "abstain": 5,
+                  "correct": 71,
+                  "wrong": 77,
+                  "abstain": 2,
                   "ungraded": 0,
-                  "accuracy": 44.67,
-                  "accuracyPct": 44.67,
+                  "accuracy": 47.33,
+                  "accuracyPct": 47.33,
                   "ci95": [
-                    36.94,
-                    52.66
+                    39.51,
+                    55.29
                   ]
                 }
               },
@@ -2542,9 +2542,9 @@
               "judgeIsSameModel": true,
               "judgeCaveat": "裁判与候选为同一模型：同源裁判可能对自身输出更宽容，故本口径的绝对值应偏保守解读；确定性口径与论文标签验证（92.31%）作为交叉校验",
               "verdictDistribution": {
-                "CORRECT": 190,
-                "REFUSAL": 11,
-                "INCORRECT": 99
+                "CORRECT": 201,
+                "INCORRECT": 96,
+                "REFUSAL": 3
               }
             },
             "deterministic": {
@@ -2552,20 +2552,20 @@
               "byMode": {
                 "oracle": {
                   "n": 150,
-                  "correct": 53,
-                  "accuracyPct": 35.33,
+                  "correct": 52,
+                  "accuracyPct": 34.67,
                   "ci95": [
-                    28.14,
-                    43.26
+                    27.52,
+                    42.58
                   ]
                 },
                 "closedBook": {
                   "n": 150,
-                  "correct": 29,
-                  "accuracyPct": 19.33,
+                  "correct": 31,
+                  "accuracyPct": 20.67,
                   "ci95": [
-                    13.81,
-                    26.39
+                    14.96,
+                    27.84
                   ]
                 }
               }
@@ -2574,80 +2574,82 @@
               "__ALL__": {
                 "group": "__ALL__",
                 "n": 150,
-                "correct": 123,
-                "wrong": 27,
+                "correct": 130,
+                "wrong": 20,
                 "abstain": 0,
                 "ungraded": 0,
-                "accuracy": 82,
-                "accuracyPct": 82,
+                "accuracy": 86.67,
+                "accuracyPct": 86.67,
                 "ci95": [
-                  75.08,
-                  87.32
+                  80.3,
+                  91.2
                 ]
               },
               "FinanceBench/metrics-generated": {
                 "group": "FinanceBench/metrics-generated",
                 "n": 50,
-                "correct": 44,
-                "wrong": 6,
+                "correct": 43,
+                "wrong": 7,
                 "abstain": 0,
                 "ungraded": 0,
-                "accuracy": 88,
-                "accuracyPct": 88,
+                "accuracy": 86,
+                "accuracyPct": 86,
                 "ci95": [
-                  76.19,
-                  94.38
+                  73.81,
+                  93.05
                 ]
               },
               "FinanceBench/domain-relevant": {
                 "group": "FinanceBench/domain-relevant",
                 "n": 50,
-                "correct": 39,
-                "wrong": 11,
+                "correct": 42,
+                "wrong": 8,
                 "abstain": 0,
                 "ungraded": 0,
-                "accuracy": 78,
-                "accuracyPct": 78,
+                "accuracy": 84,
+                "accuracyPct": 84,
                 "ci95": [
-                  64.76,
-                  87.25
+                  71.49,
+                  91.66
                 ]
               },
               "FinanceBench/novel-generated": {
                 "group": "FinanceBench/novel-generated",
                 "n": 50,
-                "correct": 40,
-                "wrong": 10,
+                "correct": 45,
+                "wrong": 5,
                 "abstain": 0,
                 "ungraded": 0,
-                "accuracy": 80,
-                "accuracyPct": 80,
+                "accuracy": 90,
+                "accuracyPct": 90,
                 "ci95": [
-                  66.96,
-                  88.76
+                  78.64,
+                  95.65
                 ]
               }
             },
-            "oracleRefusalRate": 6,
+            "oracleRefusalRate": 0,
             "errors": 0,
             "judgeSource": "deepseek-flash",
-            "judgeIsSameModel": true
+            "judgeIsSameModel": true,
+            "promptVariant": "A1",
+            "promptVariantLabel": "A1 去保守化（证据必含答案，未直接陈述则推导）"
           },
-          "seconds": 766.9,
+          "seconds": 795.4,
           "rows": 300,
-          "detail": "bench/external/out/run-2026-09-14T04-32-08/financebench.deepseek-flash.json",
+          "detail": "bench/external/out/run-2026-09-14T05-51-53/financebench.deepseek-flash.json",
           "usage": {
             "model": "deepseek-flash",
             "baseUrl": "https://api.deepseek.com/v1",
             "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
             "keyMask": "sk-a39…84cc",
-            "calls": 390,
+            "calls": 376,
             "failed": 0,
-            "promptTokens": 130979,
-            "completionTokens": 709680,
-            "reasoningTokens": 695573,
-            "cacheHitTokens": 72936,
-            "estimatedCostCNY": 1.4848,
+            "promptTokens": 132295,
+            "completionTokens": 581357,
+            "reasoningTokens": 565230,
+            "cacheHitTokens": 75503,
+            "estimatedCostCNY": 1.2289,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
@@ -2660,13 +2662,13 @@
               "baseUrl": "https://api.deepseek.com/v1",
               "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
               "keyMask": "sk-a39…84cc",
-              "calls": 329,
+              "calls": 322,
               "failed": 0,
-              "promptTokens": 98226,
-              "completionTokens": 215818,
-              "reasoningTokens": 214808,
-              "cacheHitTokens": 6651,
-              "estimatedCostCNY": 0.4807,
+              "promptTokens": 97594,
+              "completionTokens": 169629,
+              "reasoningTokens": 168630,
+              "cacheHitTokens": 6142,
+              "estimatedCostCNY": 0.3881,
               "pricePerMTok": {
                 "in": 0.5,
                 "out": 2
@@ -2683,13 +2685,13 @@
       "baseUrl": "https://api.deepseek.com/v1",
       "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
       "keyMask": "sk-a39…84cc",
-      "calls": 1940,
+      "calls": 1926,
       "failed": 0,
-      "promptTokens": 1513798,
-      "completionTokens": 1812889,
+      "promptTokens": 1515114,
+      "completionTokens": 1684566,
       "reasoningTokens": 312239,
-      "cacheHitTokens": 1029672,
-      "estimatedCostCNY": 4.3827,
+      "cacheHitTokens": 1032239,
+      "estimatedCostCNY": 4.1268,
       "pricePerMTok": {
         "in": 0.5,
         "out": 2
@@ -2701,13 +2703,13 @@
       "baseUrl": "https://api.deepseek.com/v1",
       "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
       "keyMask": "sk-a39…84cc",
-      "calls": 329,
+      "calls": 322,
       "failed": 0,
-      "promptTokens": 98226,
-      "completionTokens": 215818,
-      "reasoningTokens": 214808,
-      "cacheHitTokens": 6651,
-      "estimatedCostCNY": 0.4807,
+      "promptTokens": 97594,
+      "completionTokens": 169629,
+      "reasoningTokens": 168630,
+      "cacheHitTokens": 6142,
+      "estimatedCostCNY": 0.3881,
       "pricePerMTok": {
         "in": 0.5,
         "out": 2
@@ -2718,7 +2720,6 @@
     "所有外部数据均按 repo@ref + sha256 锁定，见 out/manifest.json",
     "本节数字回答的是\"模型与读取链路\"的能力，平台的端到端能力见 FinRisk-Bench 与 bench/ 套件",
     "图像类基准只跑实测支持图像输入的模型",
-    "本次为合并模式：cflue、fineval、fineval-mm、bfcl、omnidocbench 为历史结果，其余为重跑结果",
-    "本文件的部分指标由 tools/regrade-from-detail.js 从逐题明细重算（未重新调用模型）：bfcl"
+    "本次为合并模式：cflue、fineval、fineval-mm、bfcl、omnidocbench 为历史结果，其余为重跑结果"
   ]
 }

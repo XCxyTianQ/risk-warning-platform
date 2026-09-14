@@ -154,6 +154,7 @@ async function main() {
           tasks: plan.tasks,
           client,
           candidateModel: model,
+          fbVariant: arg('--fb-variant', 'A0'),
           concurrency,
           log: (m) => console.log(m),
           getClient: (m) => new ModelClient({ model: m }),

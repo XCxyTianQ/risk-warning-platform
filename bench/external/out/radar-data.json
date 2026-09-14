@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T05:18:46.551Z",
+  "generatedAt": "2026-09-14T06:07:04.707Z",
   "types": [
     "metrics-generated",
     "domain-relevant",
@@ -116,21 +116,110 @@
     "label": "本平台（deepseek-flash，oracle）",
     "mode": "oracle",
     "n": 150,
-    "accuracyPct": 82,
-    "closedBookPct": 44.67,
+    "accuracyPct": 86.67,
+    "closedBookPct": 47.33,
+    "promptVariant": "A1",
     "byType": {
       "metrics-generated": {
         "n": 50,
-        "accuracyPct": 88
+        "accuracyPct": 86
       },
       "domain-relevant": {
         "n": 50,
-        "accuracyPct": 78
+        "accuracyPct": 84
       },
       "novel-generated": {
         "n": 50,
-        "accuracyPct": 80
+        "accuracyPct": 90
       }
     }
+  },
+  "sameJudge": {
+    "judgeModel": "deepseek-flash",
+    "models": [
+      {
+        "label": "GPT-4（oracle）",
+        "paperAccuracyPct": 84,
+        "ourJudgeAccuracyPct": 75.33,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 78
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 74
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 74
+          }
+        }
+      },
+      {
+        "label": "GPT-4-1106（oracle）",
+        "paperAccuracyPct": 85.33,
+        "ourJudgeAccuracyPct": 78.67,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 74
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 82
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 80
+          }
+        }
+      },
+      {
+        "label": "Claude-2（in-context）",
+        "paperAccuracyPct": 37.33,
+        "ourJudgeAccuracyPct": 38,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 26
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 32
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 56
+          }
+        }
+      }
+    ]
+  },
+  "oursA1": {
+    "label": "本平台（A1 去保守化提示词）",
+    "n": 150,
+    "accuracyPct": 89.33,
+    "byType": {
+      "metrics-generated": {
+        "n": 50,
+        "accuracyPct": 94
+      },
+      "domain-relevant": {
+        "n": 50,
+        "accuracyPct": 82
+      },
+      "novel-generated": {
+        "n": 50,
+        "accuracyPct": 92
+      }
+    },
+    "sources": [
+      "exp-A1-dev-2026-09-14T05-31-51.json",
+      "exp-A1-test-2026-09-14T05-44-28.json"
+    ]
   }
 }

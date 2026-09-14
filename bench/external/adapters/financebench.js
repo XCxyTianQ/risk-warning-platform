@@ -56,16 +56,54 @@ function deterministicGrade(item, pred) {
   return { correct: contains, how: contains ? 'contains' : `rougeL=${rl.f1.toFixed(3)}` }
 }
 
-function buildUser(item, mode) {
-  if (mode === 'oracle') {
-    return `Answer the following question using ONLY the document evidence provided below. Give a concise answer that states the requested figure and its unit. If the evidence does not contain the answer, say "I cannot determine the answer from the evidence."
+/**
+ * 提示词变体（由 --fb-variant 选择，默认 A0）。
+ * A1 的来历：原提示词（A0）主动邀请模型"证据不足就拒答"，结果 9/150 题直接弃答；
+ * 而 oracle 口径给的 evidence 就是论文标注的支撑段落，答案必在其中——等于我们自己给模型戴了手铐。
+ * A1 与 A2 的区别只在输出形状（A2 要求先写行项目与单位，便于人工复核）。
+ * 实测（dev 60 题，同一裁判）：A0 78.3% → A1 88.3%；A2 与 A1 持平；两阶段抽取(B2) 83.3%，更差且贵 3 倍。
+ */
+const PROMPTS = {
+  A0: {
+    label: 'A0 基线（含"无法确定就拒答"）',
+    user: (q, ev) => `Answer the following question using ONLY the document evidence provided below. Give a concise answer that states the requested figure and its unit. If the evidence does not contain the answer, say "I cannot determine the answer from the evidence."
 
 [Question]
-${item.question}
+${q}
 
 [Document evidence]
-${item.evidence}`
-  }
+${ev}`,
+  },
+  A1: {
+    label: 'A1 去保守化（证据必含答案，未直接陈述则推导）',
+    user: (q, ev) => `Answer the following question using ONLY the document evidence provided below. The evidence is an excerpt from the company's own filing and it always contains the information needed to answer. If the answer is not stated verbatim, derive it from the evidence rather than declining. Give a concise answer.
+
+[Question]
+${q}
+
+[Document evidence]
+${ev}`,
+  },
+  A2: {
+    label: 'A2 去保守化 + 先写行项目与单位',
+    user: (q, ev) => `Answer the following question using ONLY the document evidence provided below. The evidence is an excerpt from the company's own filing and it always contains the information needed to answer; if it is not stated verbatim, derive it.
+
+Answer in exactly this shape:
+Line items: <the exact line item names and their values you used, with units and period>
+Computation: <one line, or "direct extraction">
+Final answer: <the requested figure with its unit; keep the unit used in the filing>
+
+[Question]
+${q}
+
+[Document evidence]
+${ev}`,
+  },
+}
+
+function buildUser(item, mode, variant = 'A0') {
+  const p = PROMPTS[variant] || PROMPTS.A0
+  if (mode === 'oracle') return p.user(item.question, item.evidence)
   return `Answer the following finance question from your own knowledge, without any document. Give a concise answer that states the requested figure and its unit. If you do not know, say "I don't know."
 
 [Question]
@@ -133,7 +171,7 @@ module.exports = {
     return out
   },
 
-  async run({ tasks, client, concurrency = 4, log = () => {}, getClient, candidateModel }) {
+  async run({ tasks, client, concurrency = 4, log = () => {}, getClient, candidateModel, fbVariant = 'A0' }) {
     // 裁判模型：优先用**另一个模型**（避免同源偏好）；若只有候选模型可用，则用同一模型，
     // 并在指标里显式标注 judgeIsSameModel=true 与对应的偏差风险，绝不把这个差别藏起来。
     const alt = candidateModel === 'deepseek-flash' ? 'deepseek-v4-pro' : 'deepseek-flash'
@@ -152,7 +190,7 @@ module.exports = {
         try {
           const r = await client.chat({
             system: 'You are a financial analyst answering questions about corporate filings. Be concise and factual.',
-            user: buildUser(t, mode),
+            user: buildUser(t, mode, fbVariant),
             maxTokens: 2048,
             kind: `financebench-${mode}`,
           })
@@ -219,6 +257,8 @@ module.exports = {
       errors: rows.filter((r) => r.error).length,
       judgeSource: judgeModel,
       judgeIsSameModel,
+      promptVariant: fbVariant,
+      promptVariantLabel: (PROMPTS[fbVariant] || PROMPTS.A0).label,
     }
     const oracle = clean.filter((r) => r.mode === 'oracle')
     metrics.oracleRefusalRate = oracle.length ? K.pct(oracle.filter((r) => r.grade.judge === 'REFUSAL').length / oracle.length) : null

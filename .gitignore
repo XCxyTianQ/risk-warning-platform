@@ -49,9 +49,12 @@ docs/reports/~$*
 # ===== �ⲿ��׼���루ԭʼ������������ϸ����⣬ֻ����嵥��ۺϱ��棩=====
 bench/external/cache/
 bench/external/out/*
-# 这三份是报告直接引用的证据（版本锁定清单、外部对照数字、敏感性实验），随仓库提交
+# 以下几份是报告直接引用的证据（体积小、可复查），随仓库提交；逐题明细与原始数据不入库
 !bench/external/out/manifest.json
 !bench/external/out/external-reference-numbers.json
 !bench/external/out/prompt-sensitivity.json
 !bench/external/out/platform-usage.json
 !bench/external/out/radar-data.json
+!bench/external/out/financebench-split.json
+!bench/external/out/judge-published.json
+!bench/external/out/financebench-history.json

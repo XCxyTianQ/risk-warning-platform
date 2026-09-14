@@ -46,6 +46,8 @@ const lval = load('bench/dataset/out/label-validation.json', {})
 /** 雷达图数据：同题同口径的多方对比（由 bench/html/prepare-radar-data.js 生成）
  *  注意：把"组装"放在后面的第五节，因为配色常量 C 在第四节才定义。 */
 const radarData = load('bench/external/out/radar-data.json', null)
+/** FinanceBench 改进记录（提示词变体 + 裁判校准），由 bench/html/collect-financebench-history.js 生成 */
+const fbHistory = load('bench/external/out/financebench-history.json', null)
 
 // 口径 B（平台链路）取最近一次
 let chain = null
@@ -408,24 +410,29 @@ function legend(series) {
 }
 
 // ---------------------------------------------------------------- 五、组装数据
-// 雷达图：只有"同一批题、同一口径"的维度才进同一张蜘蛛网
-const radarAxes = radarData
+// 雷达图：只有"同一批题、同一把尺子"的维度才进同一张蜘蛛网。
+// 采用**统一裁判口径**：本平台的答案与论文公开答案都由同一个裁判判定（见 5.1 的校准表）。
+const radarAxes = radarData && radarData.sameJudge
   ? radarData.types.map((t) => ({
       key: t,
       label: { 'metrics-generated': '指标类问题', 'domain-relevant': '领域推理问题', 'novel-generated': '新颖生成问题' }[t] || t,
       note: 'n=50',
       values: Object.fromEntries([
         ['ours', dig(radarData, `ours.byType.${t}.accuracyPct`, 0)],
-        ...radarData.models.filter((m) => m.mode === 'oracle').map((m) => [m.label, dig(m, `byType.${t}.accuracyPct`, 0)]),
+        ...radarData.sameJudge.models.map((m) => [m.label, dig(m, `byType.${t}.accuracyPct`, 0)]),
       ]),
     }))
   : []
-const radarSeries = radarData
+const radarSeries = radarData && radarData.sameJudge
   ? [
-      { key: 'ours', label: '本平台（deepseek-flash，oracle）', color: C.platform, emph: true, width: 2.6, fill: 0.16 },
-      ...radarData.models
-        .filter((m) => m.mode === 'oracle')
-        .map((m, i) => ({ key: m.label, label: m.label, color: [C.baseline, C.finance, C.bad][i] || C.baseline, dash: '5 4', width: 1.8 })),
+      { key: 'ours', label: '本平台（deepseek-flash，A1 提示词）', color: C.platform, emph: true, width: 2.6, fill: 0.16 },
+      ...radarData.sameJudge.models.map((m, i) => ({
+        key: m.label,
+        label: `${m.label}（论文答案 · 同裁判）`,
+        color: [C.baseline, C.finance, C.bad][i] || C.baseline,
+        dash: '5 4',
+        width: 1.8,
+      })),
     ]
   : []
 const closedBook = radarData
@@ -882,40 +889,71 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <p style="font-size:12.5px;color:var(--c-muted)">多项选择题需要同时选对全部选项才算正确，因此天然低于单选；这也是后续可优化的一档（例如让模型先输出候选再自检）。</p>
 
   <h3>5.1 与外部模型的同题对比（雷达图）</h3>
-  <p>这是本页<strong>唯一</strong>能做到"同一批题、同一口径、多方都有公开数字"的对比：FinanceBench 开源子集 150 题，
-  论文把各模型的逐题判定标签一并开源，因此每一格都能追到具体题目。
-  四个实体都是 <strong>oracle 口径</strong>（把财报证据给模型）——条件一致，可以画在一张雷达图上。</p>
+  <p><strong>先说方法</strong>：拿我们的分数直接去比论文里的分数是<strong>不成立的</strong>——两套裁判对「什么算对」的宽严不同。
+  所以我们做了两件事：① 把论文公开的答案送进<strong>我们的裁判</strong>重判，得到同一把尺子下的对照；
+  ② 修掉我们自己给模型戴的手铐（原提示词主动邀请"证据不足就拒答"）。</p>
+
   ${radarData ? `
+  <table>
+    <caption>表 12a　裁判校准：论文公开答案在「论文标签」与「我们的裁判」下的差异（同一批 150 题）</caption>
+    <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">论文标签</th><th class="n">我们的裁判重判</th><th class="n">差值</th><th>含义</th></tr></thead>
+    <tbody>
+      ${(radarData.sameJudge ? radarData.sameJudge.models : []).map((m) => `<tr><td>${esc(m.label)}</td><td class="n">${num(m.n)}</td><td class="n">${pct(m.paperAccuracyPct, 2)}</td><td class="n">${pct(m.ourJudgeAccuracyPct, 2)}</td><td class="n">${(m.ourJudgeAccuracyPct - m.paperAccuracyPct).toFixed(2)}pp</td><td style="font-size:12.5px">${m.paperAccuracyPct > 60 ? '我们的裁判明显更严：把「大体答对但表述/单位不同」判成错' : '两家裁判基本一致：答案本来就大量是错的'}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">读法：宽严差异<strong>只出现在高分模型</strong>上（GPT-4 −8.67pp、GPT-4-1106 −6.67pp），
+  而在 Claude-2 上只有 +0.67pp——说明分歧集中在「差一点就对」的答案，而不是「全错」的答案。
+  这正好解释了此前的"平手"结论：那是两把尺子量出来的。</p>
+
   <div class="figure">
-    <div class="cap">图 3　FinanceBench 150 题分题型准确率（oracle 口径，每类 50 题；数值越高越好，外环为 100%、每环 25%）</div>
-    <div style="display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr);gap:20px;align-items:center">
-      <div>${radar(radarAxes, radarSeries, { size: 540 })}</div>
+    <div class="cap">图 3　同一裁判口径下的分题型准确率（oracle 口径，每类 50 题；本平台使用修正后的 A1 提示词，外环为 100%、每环 25%）</div>
+    <div style="display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);gap:20px;align-items:center">
+      <div>${radar(radarAxes, radarSeries, { size: 520 })}</div>
       <div>
         <table style="margin-top:0;font-size:12.5px">
           <thead><tr><th>模型 / 口径</th><th class="n">总体</th><th class="n">指标类</th><th class="n">领域推理</th><th class="n">新颖生成</th></tr></thead>
           <tbody>
-            <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）</b></td><td class="n best">${pct(radarData.ours.accuracyPct, 1)}</td>${radarData.types.map((t) => `<td class="n">${pct(dig(radarData, `ours.byType.${t}.accuracyPct`, null), 0)}</td>`).join('')}</tr>
-            ${radarData.models.filter((m) => m.mode === 'oracle').map((m) => `<tr><td>${esc(m.label)}<span class="chip src" style="margin-left:6px">论文公开</span></td><td class="n">${pct(m.accuracyPct, 1)}</td>${radarData.types.map((t) => `<td class="n">${pct(dig(m, `byType.${t}.accuracyPct`, null), 0)}</td>`).join('')}</tr>`).join('')}
+            <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）</b><div class="chip good" style="margin-top:4px">同一裁判</div></td><td class="n best">${pct(dig(radarData, 'ours.accuracyPct', null), 1)}</td>${radarData.types.map((t) => `<td class="n">${pct(dig(radarData, `ours.byType.${t}.accuracyPct`, null), 0)}</td>`).join('')}</tr>
+            ${(radarData.sameJudge ? radarData.sameJudge.models : []).map((m) => `<tr><td>${esc(m.label)}<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">${pct(m.ourJudgeAccuracyPct, 1)}</td>${radarData.types.map((t) => `<td class="n">${pct(dig(m, `byType.${t}.accuracyPct`, null), 0)}</td>`).join('')}</tr>`).join('')}
           </tbody>
         </table>
-        <p style="font-size:12.5px;color:var(--c-muted);margin-top:8px">每格样本量均为 50 题；"总体"为 150 题合计。</p>
+        <p style="font-size:12.5px;color:var(--c-muted);margin-top:8px">每格样本量均为 50 题；"总体"为 150 题合计。本平台一行与其它三行<strong>由同一个裁判判定</strong>。</p>
       </div>
     </div>
     ${legend(radarSeries)}
   </div>
-  <div class="callout warn"><span class="t">这张图该怎么读（三条都别跳过）</span>
-    ① <strong>我们在这一层与 GPT-4 同级，而不是领先</strong>：总体 ${pct(radarData.ours.accuracyPct, 1)}% 对 GPT-4 ${pct(dig(radarData, 'models.0.accuracyPct', null), 1)}%、GPT-4-1106 ${pct(dig(radarData, 'models.1.accuracyPct', null), 1)}%，
-    差距 2.0~3.3 个百分点，<strong>与我们自身两次运行的波动（oracle 83.33% → 82.00%，1.3pp）同量级</strong>，因此不能声称与 GPT-4 有实质差异；
-    ② 明显低于我们的是 Claude-2（${pct(dig(radarData, 'models.2.accuracyPct', null), 1)}%），但它是 2023 年模型，这个对比只能说明"我们不是这一档"；
-    ③ 未纳入的公开结果还有 <strong>Llama2-70B single-store（${pct((radarData.models.find((m) => m.mode === 'retrieval') || {}).accuracyPct ?? null, 1)}%）</strong>——
-    那是<strong>检索口径</strong>（先检索再回答），与 oracle 条件不同；把它画进来会把"检索没命中"算成"模型不会读"，所以单列不并图。</div>
-  <div class="callout good"><span class="t">那我们的优势在哪（不在这一层）</span>
-    平台的价值不体现在"同一批问答题比别人高几个点"，而在<strong>这一层之外</strong>：
+
+  ${fbHistory ? `
+  <h4>从 82.0% 到 ${pct(dig(fbHistory, 'variants.A1（最新一次）.accuracyPct', null), 1)}%：改动只有一句提示词</h4>
+  <table>
+    <caption>表 12b　提示词变体实验（同一裁判；dev 用于选型、test 冻结后只跑一次）</caption>
+    <thead><tr><th>变体</th><th class="n">切分</th><th class="n">n</th><th class="n">准确率</th><th class="n">相对基线</th><th class="n">拒答</th><th>结论</th></tr></thead>
+    <tbody>
+      <tr><td>A0 原提示词（含"无法确定就拒答"）</td><td class="n">全量</td><td class="n">150</td><td class="n">${pct(dig(fbHistory, 'variants.A0（最新一次）.accuracyPct', null), 1)}</td><td class="n">—</td><td class="n">9</td><td style="font-size:12.5px">基线</td></tr>
+      <tr style="background:var(--c-good-soft)"><td><b>A1 去保守化（证据必含答案，未陈述则推导）</b></td><td class="n">全量</td><td class="n">150</td><td class="n best">${pct(dig(fbHistory, 'variants.A1（最新一次）.accuracyPct', null), 1)}</td><td class="n">+4.67pp</td><td class="n">0</td><td style="font-size:12.5px">✅ 采用</td></tr>
+      <tr><td>A1 · dev 选型</td><td class="n">dev</td><td class="n">60</td><td class="n">${pct(dig(fbHistory, 'variants.A1-dev.accuracyPct', null), 1)}</td><td class="n">+10.0pp</td><td class="n">0</td><td style="font-size:12.5px">相对同题号基线 78.3%</td></tr>
+      <tr><td>A1 · <b>冻结 test 验证</b></td><td class="n">test</td><td class="n">90</td><td class="n">${pct(dig(fbHistory, 'variants.A1-test.accuracyPct', null), 1)}</td><td class="n">+4.4pp</td><td class="n">0</td><td style="font-size:12.5px">选型只在 dev，test 只跑一次</td></tr>
+      <tr><td>A2 A1 + 先写行项目与单位</td><td class="n">dev</td><td class="n">60</td><td class="n">${pct(dig(fbHistory, 'variants.A2-dev.accuracyPct', null), 1)}</td><td class="n">+10.0pp</td><td class="n">0</td><td style="font-size:12.5px">与 A1 持平 → 未采用（仅让输出更可审计）</td></tr>
+      <tr><td>B2 两阶段（先抽取行项目再作答）</td><td class="n">dev</td><td class="n">60</td><td class="n">${pct(dig(fbHistory, 'variants.B2-dev.accuracyPct', null), 1)}</td><td class="n">+5.0pp</td><td class="n">1</td><td style="font-size:12.5px">❌ 不如 A1 且贵 3.5 倍 → 未采用</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">同一变体多次运行之间有 1~3pp 波动（A0 历次 ${JSON.stringify(dig(fbHistory, 'variants.A0（最新一次）.accuracySpreadPct', []))}%），
+  因此这些差值只能读作"量级差异"，不能读作精确提升。</p>
+  ` : ''}
+
+  <div class="callout warn"><span class="t">这张图与这张表该怎么读（四条都别跳过）</span>
+    ① <strong>同一裁判下我们在这一层领先</strong>：${pct(dig(radarData, 'ours.accuracyPct', null), 1)}% 对 GPT-4 ${pct(dig(radarData, 'sameJudge.models.0.ourJudgeAccuracyPct', null), 1)}%、GPT-4-1106 ${pct(dig(radarData, 'sameJudge.models.1.ourJudgeAccuracyPct', null), 1)}%——但差距主要来自<strong>裁判口径与提示词口径的对齐</strong>，不是模型突然变强；
+    ② <strong>A1 的增益依赖 oracle 前提</strong>：它利用了"证据必然充分"这一条（oracle 口径的 evidence 就是论文标注的支撑段落）。在真实检索场景里检索可能没命中，这条前提不成立 —— 因此这是<strong>把口径拉齐</strong>，不是生产环境的普适提升；
+    ③ <strong>裁判仍是同源的</strong>（flash 判 flash）：用同一裁判判双方答案消除了"尺子不同"的问题，但消不掉"偏袒自己"的可能，彻底解决需要独立裁判；
+    ④ 未纳入的公开结果还有 <strong>Llama2-70B single-store（论文 ${pct((radarData.models.find((m) => m.mode === 'retrieval') || {}).accuracyPct ?? null, 1)}%）</strong>——那是<strong>检索口径</strong>，与 oracle 条件不同，合并会把"检索没命中"算成"模型不会读"。</div>
+  <div class="callout good"><span class="t">我们在这一层的定位（以及真正的优势在哪）</span>
+    在同一把尺子下，本平台 ${pct(dig(radarData, 'ours.accuracyPct', null), 1)}%，高于 GPT-4（${pct(dig(radarData, 'sameJudge.models.0.ourJudgeAccuracyPct', null), 1)}%）与 GPT-4-1106（${pct(dig(radarData, 'sameJudge.models.1.ourJudgeAccuracyPct', null), 1)}%），
+    但"问答题高几个点"并不是平台的价值主张。真正的差异化在<strong>这一层之外</strong>：
     ① 端到端预警（六维 AUC ${n1(t5rows.st.platAuc * 100, 1)} vs 三行规则 ${n1(t5rows.st.baseAuc * 100, 1)}，且领先来自数据面更宽）；
     ② 结构化抽取 / 勾稽校验 / 指标测算的确定性能力（T1/T3/T4 全部 ${pct(finrisk.t1F1, 0)} 且 MAPE ${n1(finrisk.t1Mape, 4)}%）；
     ③ 25 个工具的受控编排与审批闸门（BFCL ${pct(bfclOverall.accuracyPct, 1)}%）；
-    ④ 无证据时不硬答（闭卷口径我们 ${pct(closedBook ? closedBook.ours : null, 1)}%，GPT-4 当年 ${pct(closedBook ? closedBook.gpt4 : null, 2)}%，但我们对闭卷已有语料污染，见 6.2）。
-    这些维度<strong>没有可比的公开多方数字</strong>，所以本页不给它们编雷达轴——只有同题同口径的维度才配画在同一张图上。</div>
+    ④ 无证据时不硬答（闭卷口径我们 ${pct(closedBook ? closedBook.ours : null, 1)}% vs GPT-4 ${pct(closedBook ? closedBook.gpt4 : null, 2)}%——但我们对闭卷已有语料污染，见 6.2）。
+    这些维度<strong>没有可比的公开多方数字</strong>，所以本页不给它们编雷达轴。</div>
   ` : '<p style="color:var(--c-muted)">（未生成雷达数据：先跑 node bench/html/prepare-radar-data.js）</p>'}
 
   <h3>5.2 外部对照表：同题同集，可直接并列</h3>

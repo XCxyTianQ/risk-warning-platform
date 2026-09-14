@@ -56,7 +56,8 @@ for (const m of MODELS) {
 
 // 我们自己的分题型数字（来自评测产物）
 const ext = JSON.parse(fs.readFileSync(path.join(REPO, 'bench', 'external', 'reports', 'external-alignment-v1.json'), 'utf8'))
-const ours = ext.benchmarks.financebench.runs['deepseek-flash'].metrics
+const oursRun = ext.benchmarks.financebench.runs['deepseek-flash']
+const ours = oursRun.metrics
 const ourByType = ours.byQuestionType || {}
 out.ours = {
   label: '本平台（deepseek-flash，oracle）',
@@ -64,14 +65,76 @@ out.ours = {
   n: 150,
   accuracyPct: ours.judgeGraded.byMode.oracle.accuracyPct,
   closedBookPct: ours.judgeGraded.byMode.closedBook.accuracyPct,
+  promptVariant: ours.promptVariant || 'A0',
   byType: Object.fromEntries(TYPES.map((t) => {
     const v = ourByType[`FinanceBench/${t}`]
     return [t, { n: v ? v.n : 0, accuracyPct: v ? v.accuracyPct : null }]
   })),
 }
-console.log(`\n${out.ours.label} 总体 ${out.ours.accuracyPct}%`)
+console.log(`\n${out.ours.label}（提示词 ${out.ours.promptVariant}）总体 ${out.ours.accuracyPct}%`)
 console.log(`   ${TYPES.map((t) => `${t}: ${out.ours.byType[t].accuracyPct}% (n=${out.ours.byType[t].n})`).join('  ')}`)
 console.log(`   闭卷 ${out.ours.closedBookPct}%`)
+
+// ---------------------------------------------------------------- 统一裁判口径
+// 关键：把论文公开答案送进**我们的裁判**重判，得到"同一把尺子"下的对照分数。
+// 否则 82% vs 84% 是两个裁判打出来的分，比较不成立。
+const jp = path.join(REPO, 'bench', 'external', 'out', 'judge-published.json')
+if (fs.existsSync(jp)) {
+  const j = JSON.parse(fs.readFileSync(jp, 'utf8'))
+  const sameJudge = { judgeModel: j.judgeModel && j.judgeModel.model, models: [] }
+  for (const r of j.results || []) {
+    const byType = {}
+    for (const t of TYPES) byType[t] = { n: 0, correct: 0 }
+    let correct = 0
+    for (const row of r.rows || []) {
+      const t = typeOf.get(row.id)
+      if (!t || !byType[t]) continue
+      byType[t].n++
+      if (row.ourVerdict === 'CORRECT') { byType[t].correct++; correct++ }
+    }
+    const n = (r.rows || []).length
+    sameJudge.models.push({
+      label: r.label,
+      paperAccuracyPct: r.paperAccuracyPct,
+      ourJudgeAccuracyPct: Number(((correct / Math.max(1, n)) * 100).toFixed(2)),
+      n,
+      byType: Object.fromEntries(TYPES.map((t) => [t, { n: byType[t].n, accuracyPct: byType[t].n ? Number(((byType[t].correct / byType[t].n) * 100).toFixed(2)) : null }])),
+    })
+    console.log(`统一裁判：${r.label} 论文 ${r.paperAccuracyPct}% → 我们裁判 ${sameJudge.models[sameJudge.models.length - 1].ourJudgeAccuracyPct}%`)
+  }
+  out.sameJudge = sameJudge
+}
+
+// A1 提示词变体的分题型（dev + test 合计 150 题，来自实验产物）
+const expDir = path.join(REPO, 'bench', 'external', 'out', 'experiments')
+if (fs.existsSync(expDir)) {
+  const files = fs.readdirSync(expDir).filter((f) => /^exp-A1-(dev|test)-.*\.json$/.test(f))
+  const rows = []
+  for (const f of files) {
+    const j = JSON.parse(fs.readFileSync(path.join(expDir, f), 'utf8'))
+    for (const r of j.rows || []) if (!r.error) rows.push(r)
+  }
+  if (rows.length) {
+    const byType = {}
+    for (const t of TYPES) byType[t] = { n: 0, correct: 0 }
+    for (const r of rows) {
+      const t = TYPES.includes(r.type) ? r.type : null
+      if (!t) continue
+      byType[t].n++
+      if (r.judge === 'CORRECT') byType[t].correct++
+    }
+    const correct = rows.filter((r) => r.judge === 'CORRECT').length
+    out.oursA1 = {
+      label: '本平台（A1 去保守化提示词）',
+      n: rows.length,
+      accuracyPct: Number(((correct / rows.length) * 100).toFixed(2)),
+      byType: Object.fromEntries(TYPES.map((t) => [t, { n: byType[t].n, accuracyPct: byType[t].n ? Number(((byType[t].correct / byType[t].n) * 100).toFixed(2)) : null }])),
+      sources: files,
+    }
+    console.log(`A1 变体（dev+test 合计 n=${rows.length}）总体 ${out.oursA1.accuracyPct}%`)
+    console.log(`   ${TYPES.map((t) => `${t}: ${out.oursA1.byType[t].accuracyPct}%`).join('  ')}`)
+  }
+}
 
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2))
 console.log(`\n已写出 ${path.relative(REPO, OUT)}`)
