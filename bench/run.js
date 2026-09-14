@@ -63,6 +63,7 @@ const opts = {
   withLlm: hasFlag('--with-llm'),
   withReference: hasFlag('--with-reference'),
   withMcp: hasFlag('--with-mcp'),
+  withExternal: hasFlag('--with-external'),
   only: listOf('--only'),
   skip: listOf('--skip'),
   updateBaseline: hasFlag('--update-baseline'),
@@ -172,6 +173,15 @@ async function main() {
   availability.dataset = fs.existsSync(datasetPanel)
     ? { ok: true, reason: '' }
     : { ok: false, reason: '未采集 T5 数据集：先跑 node bench/dataset/fetch.js（见 bench/dataset/README.md）' }
+  // 外部基准对齐：需要联网 + 真实模型 + 显式开启（抽样口径与哈希见 bench/external/README.md）
+  const externalManifest = path.join(REPO, 'bench', 'external', 'out', 'manifest.json')
+  availability.external = !opts.withExternal
+    ? { ok: false, reason: '未开启 --with-external（会调用外部基准并消耗模型配额）' }
+    : !fs.existsSync(externalManifest)
+      ? { ok: false, reason: '未抓取外部基准数据：先跑 node bench/external/prepare.js --with-assets' }
+      : availability.llm.ok
+        ? { ok: true, reason: '' }
+        : { ok: false, reason: '需要 --with-llm（外部基准要真实模型作答）' }
 
   // ---- 平台指标（在干净库上先测，保证可比性） ----
   let platform = { metrics: {}, checks: [] }
@@ -293,6 +303,8 @@ async function main() {
       electron,
       mcpUrl,
       altPort: String(await freePort()),
+      // 外部基准套件要知道用哪个模型作答（未显式指定时用解析出的默认模型）
+      llmModelArg: (llm && llm.model) || 'deepseek-flash',
       ...parityCtx,
     }
 

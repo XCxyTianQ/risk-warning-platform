@@ -44,3 +44,12 @@ bench/dataset/out/manifest.json
 
 # ===== Word/Office 临时文件 =====
 docs/reports/~$*
+
+# ===== �ⲿ��׼���루ԭʼ������������ϸ����⣬ֻ����嵥��ۺϱ��棩=====
+bench/external/cache/
+bench/external/out/*
+# 这三份是报告直接引用的证据（版本锁定清单、外部对照数字、敏感性实验），随仓库提交
+!bench/external/out/manifest.json
+!bench/external/out/external-reference-numbers.json
+!bench/external/out/prompt-sensitivity.json
+!bench/external/out/platform-usage.json

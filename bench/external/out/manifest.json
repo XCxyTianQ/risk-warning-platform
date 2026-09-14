@@ -1,0 +1,472 @@
+{
+  "generatedAt": "2026-09-14T03:02:48.763Z",
+  "note": "外部基准对齐的输入清单：来源、版本、字节数、sha256。原始数据不入库，本文件入库以保证\"跑的是哪一版\"可复查。",
+  "refs": {
+    "cflue": {
+      "repo": "aliyun/cflue",
+      "ref": "master"
+    },
+    "fineval": {
+      "repo": "SUFE-AIFLM-Lab/FinEval",
+      "ref": "main"
+    },
+    "financebench": {
+      "repo": "patronus-ai/financebench",
+      "ref": "main"
+    },
+    "bfcl": {
+      "repo": "ShishirPatil/gorilla",
+      "ref": "main"
+    },
+    "omnidocbench": {
+      "repo": "opendatalab/OmniDocBench",
+      "ref": "main"
+    }
+  },
+  "benchmarks": {
+    "cflue": {
+      "id": "cflue",
+      "title": "CFLUE",
+      "fullName": "CFLUE: A Benchmark for Chinese Financial Language Understanding (ACL 2024 Findings)",
+      "paper": "https://aclanthology.org/2024.findings-acl.337/",
+      "repo": "https://github.com/aliyun/cflue",
+      "layer": "模型层（中文金融知识与指令遵循）",
+      "question": "平台所有解释、摘要、风险定性判断所依赖的模型底座，在中文金融语境下够不够用",
+      "officialMetric": "单项选择题准确率（utils/compute_score.py: acc_score）；生成类任务 BLEU-1/4、ROUGE-1/2/L、BERTScore",
+      "sampling": "知识题从 3,864 题中固定种子抽 300；应用题 125 条全量"
+    },
+    "fineval": {
+      "id": "fineval",
+      "title": "FinEval (Financial Rigor Test + FinEval-MM 子集)",
+      "fullName": "FinEval: A Chinese Financial Domain Knowledge Evaluation Benchmark (NAACL 2025)",
+      "paper": "https://aclanthology.org/2025.naacl-long.318.pdf",
+      "repo": "https://github.com/SUFE-AIFLM-Lab/FinEval",
+      "layer": "数值严谨性层 + 多模态读取层",
+      "question": "从检索文本里做金融数值计算与指标抽取、以及从财报图表截图里取数，是否可靠",
+      "officialMetric": "严谨性测试按标准答案判对错；多模态题为四选一准确率",
+      "sampling": "数值计算 42 条全量；指标抽取抽 300；多模态图题按类型分层抽 150"
+    },
+    "financebench": {
+      "id": "financebench",
+      "title": "FinanceBench (open-source split)",
+      "fullName": "FinanceBench: A New Benchmark for Financial Question Answering",
+      "paper": "https://arxiv.org/abs/2311.11944",
+      "repo": "https://github.com/patronus-ai/financebench",
+      "layer": "财报文档问答层（数值作答 + 证据引用）",
+      "question": "给定财报证据能否给出可核验的数值答案，以及\"无证据时该不该拒答\"",
+      "officialMetric": "answer accuracy（论文用 GPT-4 作为裁判）；仓库内附论文各模型的逐题结果，可作外部锚点",
+      "sampling": "开源子集 150 题全量 × {oracle 给证据, closedBook 不给证据}"
+    },
+    "bfcl": {
+      "id": "bfcl",
+      "title": "BFCL v4 (Berkeley Function Calling Leaderboard)",
+      "fullName": "BFCL V4: Berkeley Function Calling Leaderboard",
+      "paper": "https://gorilla.cs.berkeley.edu/blogs/13_bfcl_v3_multi_turn.html",
+      "repo": "https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard",
+      "layer": "工具调用层（平台 25 个工具 + MCP 的底座能力）",
+      "question": "模型能不能选对函数、填对参数，以及在没有合适函数时能不能不调用",
+      "officialMetric": "AST 匹配（函数名 + 参数值集合）+ 不可执行类判分；本仓库为自实现等价判定，非官方 checker",
+      "sampling": "simple_python 抽 200、multiple 抽 200、irrelevance 抽 120"
+    },
+    "omnidocbench": {
+      "id": "omnidocbench",
+      "title": "OmniDocBench (demo 子集)",
+      "fullName": "OmniDocBench: Benchmarking Diverse PDF Document Parsing with Comprehensive Annotations",
+      "paper": "https://arxiv.org/abs/2412.07626",
+      "repo": "https://github.com/opendatalab/OmniDocBench",
+      "layer": "文档读取层（页面图像 → 结构化文本）",
+      "question": "把中文财报/研报页面图交给多模态模型读，文字与数字能不能读全",
+      "officialMetric": "文本编辑距离、公式 CDM、表格 TEDS、阅读顺序编辑距离（官方实现为 Python，本仓库只做文本保真度与数字召回，口径见报告）",
+      "sampling": "demo 18 页全量"
+    }
+  },
+  "files": [
+    {
+      "benchmark": "cflue",
+      "desc": "CFLUE 财务知识单选 3,864 题（含答案）",
+      "repo": "aliyun/cflue@master",
+      "repoPath": "data/knowledge/knowledge.json",
+      "sourceUrl": "https://github.com/aliyun/cflue/blob/master/data/knowledge/knowledge.json",
+      "bytes": 2609981,
+      "sha256": "e8473fc0d34973a3250532d9705a5432ddfb5481418bce70073d36b34f47fc79",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:29.469Z"
+    },
+    {
+      "benchmark": "cflue",
+      "desc": "CFLUE 金融文本应用 125 条（含参考输出）",
+      "repo": "aliyun/cflue@master",
+      "repoPath": "data/application/application.json",
+      "sourceUrl": "https://github.com/aliyun/cflue/blob/master/data/application/application.json",
+      "bytes": 265508,
+      "sha256": "f0c730497e01244365a42bda9959f303cd08d5f58e98cbb711fe79f68b81f02f",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:29.583Z"
+    },
+    {
+      "benchmark": "cflue",
+      "desc": "CFLUE 官方判分口径（用于对齐指标定义）",
+      "repo": "aliyun/cflue@master",
+      "repoPath": "utils/compute_score.py",
+      "sourceUrl": "https://github.com/aliyun/cflue/blob/master/utils/compute_score.py",
+      "bytes": 38836,
+      "sha256": "a42ddae84e0edc3de21f7895826caea3b24a95e953e09d991ba0e872321b622f",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:29.690Z"
+    },
+    {
+      "benchmark": "cflue",
+      "desc": "CFLUE 中文说明",
+      "repo": "aliyun/cflue@master",
+      "repoPath": "README_zh.md",
+      "sourceUrl": "https://github.com/aliyun/cflue/blob/master/README_zh.md",
+      "bytes": 17924,
+      "sha256": "f3fd7a28e7d695cb94149f4589574cd59affeea567cbf6fe5d1bab1c475afb98",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:29.797Z"
+    },
+    {
+      "benchmark": "fineval",
+      "desc": "FinEval 金融严谨性-数值计算 42 题（含标准答案与计算逻辑）",
+      "repo": "SUFE-AIFLM-Lab/FinEval@main",
+      "repoPath": "Financial Rigor Test/Financial Rigor Test_Numerical Calculation.csv",
+      "sourceUrl": "https://github.com/SUFE-AIFLM-Lab/FinEval/blob/main/Financial Rigor Test/Financial Rigor Test_Numerical Calculation.csv",
+      "bytes": 48718,
+      "sha256": "94553bad506fce457d6e2f029bd579ab91b7668be0ab8caf2a91e53e44167dbd",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:29.904Z"
+    },
+    {
+      "benchmark": "fineval",
+      "desc": "FinEval 金融严谨性-指标抽取（含参考答案）",
+      "repo": "SUFE-AIFLM-Lab/FinEval@main",
+      "repoPath": "Financial Rigor Test/Financial Rigor Test_Index Extraction.csv",
+      "sourceUrl": "https://github.com/SUFE-AIFLM-Lab/FinEval/blob/main/Financial Rigor Test/Financial Rigor Test_Index Extraction.csv",
+      "bytes": 3893274,
+      "sha256": "8473eb54833548a05cc91c5834415c716302c4dfe42e18155bc413a427f040af",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:30.344Z"
+    },
+    {
+      "benchmark": "financebench",
+      "desc": "FinanceBench 开源子集 150 题（含答案/证据/理由）",
+      "repo": "patronus-ai/financebench@main",
+      "repoPath": "data/financebench_open_source.jsonl",
+      "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/data/financebench_open_source.jsonl",
+      "bytes": 929848,
+      "sha256": "a5a2aa673e573e55675fc3c0f9aa38c1cf59d2abc91edb077534f71f10a71877",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:30.921Z"
+    },
+    {
+      "benchmark": "financebench",
+      "desc": "论文公开结果：GPT-4 oracle 模式逐题作答与标签（外部锚点）",
+      "repo": "patronus-ai/financebench@main",
+      "repoPath": "results/gpt-4_oracle.jsonl",
+      "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/gpt-4_oracle.jsonl",
+      "bytes": 121667,
+      "sha256": "95e90e5098f121856676888847ef308e07c0b2f6c3cb27d2ffb90fc65726c497",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:31.028Z"
+    },
+    {
+      "benchmark": "financebench",
+      "desc": "论文公开结果：GPT-4 闭卷模式",
+      "repo": "patronus-ai/financebench@main",
+      "repoPath": "results/gpt-4_closedBook.jsonl",
+      "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/gpt-4_closedBook.jsonl",
+      "bytes": 118330,
+      "sha256": "beb885621520e4a781a187ddcd9f96c5dc2439d5e04be672f718aa44ac579c5c",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:31.333Z"
+    },
+    {
+      "benchmark": "financebench",
+      "desc": "论文公开结果：GPT-4-1106 oracle",
+      "repo": "patronus-ai/financebench@main",
+      "repoPath": "results/gpt-4-1106-preview_oracle.jsonl",
+      "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/gpt-4-1106-preview_oracle.jsonl",
+      "bytes": 224879,
+      "sha256": "b07efa7daa2adfe706515ea6c05e207ff59d790e0161fd3f9f9208489ec9b3b2",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:31.611Z"
+    },
+    {
+      "benchmark": "financebench",
+      "desc": "论文公开结果：Claude-2 in-context",
+      "repo": "patronus-ai/financebench@main",
+      "repoPath": "results/claude-2_inContext.jsonl",
+      "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/claude-2_inContext.jsonl",
+      "bytes": 341362,
+      "sha256": "e38452ddbc848aec2fc3ff116ef169ad2167bfaf0dc49ec0a1c19320dd6efc3a",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:31.897Z"
+    },
+    {
+      "benchmark": "financebench",
+      "desc": "论文公开结果：Llama2-70B single-store",
+      "repo": "patronus-ai/financebench@main",
+      "repoPath": "results/llama2_singleStore.jsonl",
+      "sourceUrl": "https://github.com/patronus-ai/financebench/blob/main/results/llama2_singleStore.jsonl",
+      "bytes": 156158,
+      "sha256": "04a891aaf048ff50a474aeef887447044f5e7f9ca303a754a16b2b4d6dd07b71",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:32.167Z"
+    },
+    {
+      "benchmark": "bfcl",
+      "desc": "BFCL v4 simple (python 函数) 400 题",
+      "repo": "ShishirPatil/gorilla@main",
+      "repoPath": "berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_simple_python.json",
+      "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_simple_python.json",
+      "bytes": 283274,
+      "sha256": "82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:32.276Z"
+    },
+    {
+      "benchmark": "bfcl",
+      "desc": "BFCL v4 simple 标准答案",
+      "repo": "ShishirPatil/gorilla@main",
+      "repoPath": "berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_simple_python.json",
+      "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_simple_python.json",
+      "bytes": 63627,
+      "sha256": "90cd5bc653690ee8e459b5b3f3fc9458606f7f3fcbf795bb51b7dc581f8c86dc",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:32.399Z"
+    },
+    {
+      "benchmark": "bfcl",
+      "desc": "BFCL v4 multiple 题面",
+      "repo": "ShishirPatil/gorilla@main",
+      "repoPath": "berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multiple.json",
+      "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_multiple.json",
+      "bytes": 316583,
+      "sha256": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:32.684Z"
+    },
+    {
+      "benchmark": "bfcl",
+      "desc": "BFCL v4 multiple 标准答案",
+      "repo": "ShishirPatil/gorilla@main",
+      "repoPath": "berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multiple.json",
+      "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/possible_answer/BFCL_v4_multiple.json",
+      "bytes": 32254,
+      "sha256": "244e00ce9395df948bcafc7bee64e8f9c87ef70887587d83cae45b13699f3047",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:32.942Z"
+    },
+    {
+      "benchmark": "bfcl",
+      "desc": "BFCL v4 irrelevance（无合适函数时不该调用）",
+      "repo": "ShishirPatil/gorilla@main",
+      "repoPath": "berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_irrelevance.json",
+      "sourceUrl": "https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/data/BFCL_v4_irrelevance.json",
+      "bytes": 159940,
+      "sha256": "2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:33.049Z"
+    },
+    {
+      "benchmark": "omnidocbench",
+      "desc": "OmniDocBench demo 18 页标注（版面框 + 类别 + 文本）",
+      "repo": "opendatalab/OmniDocBench@main",
+      "repoPath": "demo_data/omnidocbench_demo/OmniDocBench_demo.json",
+      "sourceUrl": "https://github.com/opendatalab/OmniDocBench/blob/main/demo_data/omnidocbench_demo/OmniDocBench_demo.json",
+      "bytes": 1468917,
+      "sha256": "a0686ff3e2ce76b4e60c308bc28700683d3c62a0fd47149355e8b197db238dc6",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:33.172Z"
+    },
+    {
+      "benchmark": "omnidocbench",
+      "desc": "OmniDocBench 中文说明（指标定义出处）",
+      "repo": "opendatalab/OmniDocBench@main",
+      "repoPath": "README_zh-CN.md",
+      "sourceUrl": "https://github.com/opendatalab/OmniDocBench/blob/main/README_zh-CN.md",
+      "bytes": 91562,
+      "sha256": "6d5a6b5e15b7e5a1ff91318b88b428e5448cb2b61d764977ec3d590800c21210",
+      "fromCache": false,
+      "fetchedAt": "2026-09-14T03:02:33.278Z"
+    }
+  ],
+  "licenses": {
+    "cflue": {
+      "licenseFile": null,
+      "note": "仓库树中未见 LICENSE/COPYING 文件，以官方仓库说明为准；本仓库仅用于研究性评测，不二次分发原始数据"
+    },
+    "fineval": {
+      "licenseFile": "LICENSE",
+      "firstLine": "Apache License",
+      "guess": "Apache-2.0",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "financebench": {
+      "licenseFile": null,
+      "note": "仓库树中未见 LICENSE/COPYING 文件，以官方仓库说明为准；本仓库仅用于研究性评测，不二次分发原始数据"
+    },
+    "bfcl": {
+      "licenseFile": "LICENSE",
+      "firstLine": "Apache License",
+      "guess": "Apache-2.0",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "omnidocbench": {
+      "licenseFile": "LICENSE",
+      "firstLine": "Apache License",
+      "guess": "Apache-2.0",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  },
+  "inventory": {
+    "cflue": {
+      "knowledge": 3864,
+      "knowledgeByTask": {
+        "单项选择题": 2345,
+        "多项选择题": 1171,
+        "判断题": 348
+      },
+      "knowledgeBySubject": {
+        "注册会计师": 456,
+        "证券从业资格": 153,
+        "基金从业资格": 336,
+        "反假货币知识": 60,
+        "银从中级资格": 424,
+        "初级会计职称": 285,
+        "银行初级资格": 453,
+        "初级经济师": 410,
+        "金融理财师（AFP）": 146,
+        "证券专项考试": 121,
+        "期货从业资格": 232,
+        "中级经济师": 621,
+        "黄金从业资格": 85,
+        "保险从业资格": 69,
+        "中国精算师": 13
+      },
+      "application": 125,
+      "applicationByTask": {
+        "金融文本分类 / ESG分类": 5,
+        "金融文本分类 / ESG情感分类": 5,
+        "金融咨询 / 产品相关信息问答": 5,
+        "金融文本生成 / 会议内容摘要": 5,
+        "金融咨询 / 保险文档问答": 5,
+        "金融咨询 / 制度政策问答": 5,
+        "金融文本分类 / 合规政策审核": 5,
+        "金融文本生成 / 客服对话摘要": 5,
+        "金融文本生成 / 研报标题生成": 5,
+        "金融咨询 / 研报观点问答": 5,
+        "金融文本抽取 / 行业情感信息抽取": 5,
+        "金融咨询 / 财报内容问答": 5,
+        "金融文本分类 / 财报要点审核": 5,
+        "金融文本生成 / 资讯标题生成": 5,
+        "金融翻译 / 金融中英翻译": 5,
+        "金融文本抽取 / 金融事件主体抽取": 5,
+        "金融文本分类 / 金融事件分类": 5,
+        "金融文本抽取 / 金融事件因果关系抽取": 5,
+        "金融文本抽取 / 金融事件抽取": 5,
+        "金融文本分类 / 金融会议业务分类": 5,
+        "金融文本分类 / 金融文档标题分类": 5,
+        "金融文本生成 / 金融术语解释": 5,
+        "金融翻译 / 金融英中翻译": 5,
+        "金融文本分类 / 金融行业分类": 5,
+        "金融文本分类 / 银行客服对话意图分类": 5
+      }
+    },
+    "fineval": {
+      "rigorNumerical": {
+        "rows": 42,
+        "header": [
+          "序号",
+          "类型",
+          "端到端query",
+          "基座query",
+          "标准答案",
+          "题目答案计算逻辑"
+        ]
+      },
+      "rigorIndex": {
+        "rows": 340,
+        "header": [
+          "序号",
+          "类型",
+          "端到端query",
+          "基座大模型query",
+          "参考答案"
+        ],
+        "byType": {
+          "股票": 187,
+          "宏观": 38,
+          "基金": 115
+        }
+      }
+    },
+    "financebench": {
+      "questions": 150,
+      "byType": {
+        "metrics-generated": 50,
+        "domain-relevant": 50,
+        "novel-generated": 50
+      },
+      "numericAnswers": 52,
+      "evidenceType": "object",
+      "publishedOracleRows": 150,
+      "publishedLabels": {
+        "Correct Answer": 126,
+        "Incorrect Answer": 15,
+        "Refusal": 9
+      }
+    },
+    "bfcl": {
+      "simple_python": {
+        "rows": 400
+      },
+      "multiple": {
+        "rows": 200
+      },
+      "irrelevance": {
+        "rows": 240
+      }
+    },
+    "omnidocbench": {
+      "pages": 18,
+      "byAttr": {
+        "PPT2PDF/english/single_column": 1,
+        "PPT2PDF/simplified_chinese/single_column": 1,
+        "academic_literature/english/double_column": 1,
+        "academic_literature/english/single_column": 1,
+        "book/simplified_chinese/double_column": 1,
+        "book/simplified_chinese/single_column": 1,
+        "magazine/simplified_chinese/other_layout": 1,
+        "magazine/simplified_chinese/double_column": 1,
+        "exam_paper/english/1andmore_column": 1,
+        "exam_paper/english/single_column": 1,
+        "colorful_textbook/english/single_column": 1,
+        "colorful_textbook/simplified_chinese/double_column": 1,
+        "note/simplified_chinese/single_column": 1,
+        "note/en_ch_mixed/single_column": 1,
+        "newspaper/simplified_chinese/other_layout": 1,
+        "newspaper/english/three_column": 1,
+        "research_report/simplified_chinese/1andmore_column": 1,
+        "research_report/simplified_chinese/single_column": 1
+      },
+      "byCategoryType": {
+        "title": 56,
+        "text_block": 201,
+        "abandon": 4,
+        "page_number": 15,
+        "header": 24,
+        "table_caption": 9,
+        "table": 10,
+        "equation_isolated": 17,
+        "equation_caption": 12,
+        "page_footnote": 1,
+        "footer": 6,
+        "figure": 10,
+        "figure_caption": 7,
+        "table_footnote": 1,
+        "figure_footnote": 1
+      }
+    }
+  }
+}

@@ -333,6 +333,21 @@ const smokes = [
     timeoutMs: 420000,
     requires: ['gui', 'llm'],
   },
+  {
+    id: 'external-alignment',
+    tier: 'extended',
+    title: '外部基准对齐（CFLUE / FinEval / FinEval-MM / FinanceBench / BFCL v4 / OmniDocBench，固定种子抽样）',
+    kind: 'smoke',
+    // 只跑小样本：这条套件的用途是"每次提交都能确认外部对齐链路没坏"，
+    // 正式出数用 node bench/external/run.js（full 档位，约 4000 次调用）。
+    bin: 'node',
+    args: ['{repo}/bench/external/run.js', '--small', '--concurrency', '4', '--models', '{llmModelArg}'],
+    parse: 'smoke',
+    expectOutput: 'EXTERNAL-ALIGNMENT: \\{',
+    expectReason: '外部队列没有输出 EXTERNAL-ALIGNMENT 汇总行（数据缺失、无 Key 或中途失败）',
+    timeoutMs: 1800000,
+    requires: ['llm', 'external'],
+  },
 ]
 
 module.exports = { probes, smokes, EXE }

@@ -1,0 +1,1674 @@
+{
+  "model": "deepseek-flash",
+  "n": 60,
+  "seed": 20260101,
+  "variants": {
+    "strict": {
+      "label": "严格提示（只输出字母）",
+      "system": "你是金融领域知识评测的答题者。只输出答案字母，不要任何解释、不要复述题目。",
+      "n": 60,
+      "correct": 51,
+      "accuracyPct": 85,
+      "extractMode": {
+        "compact": 60
+      },
+      "meanOutputChars": 2,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_58",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_83",
+          "taskType": "多项选择题",
+          "gold": "ABDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_176",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "compact",
+          "correct": false,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_342",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_345",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_370",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_423",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_494",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_518",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_576",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_730",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_741",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_831",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_872",
+          "taskType": "判断题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_998",
+          "taskType": "多项选择题",
+          "gold": "AB",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1089",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1118",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1274",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "compact",
+          "correct": false,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1360",
+          "taskType": "多项选择题",
+          "gold": "AB",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1383",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1456",
+          "taskType": "多项选择题",
+          "gold": "BC",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1477",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1510",
+          "taskType": "多项选择题",
+          "gold": "ACDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1609",
+          "taskType": "多项选择题",
+          "gold": "BE",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1704",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1767",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1782",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1952",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2027",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2056",
+          "taskType": "多项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2255",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2270",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2370",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2415",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2466",
+          "taskType": "多项选择题",
+          "gold": "ABDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2479",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2537",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2595",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2689",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2784",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2802",
+          "taskType": "多项选择题",
+          "gold": "ABC",
+          "how": "compact",
+          "correct": false,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2880",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2896",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2899",
+          "taskType": "多项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3058",
+          "taskType": "多项选择题",
+          "gold": "BC",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3075",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3150",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3189",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3194",
+          "taskType": "多项选择题",
+          "gold": "ABD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3209",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3277",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3334",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3370",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3425",
+          "taskType": "判断题",
+          "gold": "A",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3509",
+          "taskType": "多项选择题",
+          "gold": "CD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3580",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3680",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3834",
+          "taskType": "多项选择题",
+          "gold": "BD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3837",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        }
+      ],
+      "deltaVsStrict": 0
+    },
+    "neutral": {
+      "label": "中性提示（不限格式）",
+      "system": "你是金融领域的知识助手，请回答下面的题目。",
+      "n": 60,
+      "correct": 52,
+      "accuracyPct": 86.67,
+      "extractMode": {
+        "explicit": 25,
+        "compact": 23,
+        "weak-scan": 4,
+        "weak-single": 8
+      },
+      "meanOutputChars": 75,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 250,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_58",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 269,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_83",
+          "taskType": "多项选择题",
+          "gold": "ABDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_176",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 75,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_342",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 7,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_345",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 281,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_370",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 73,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_423",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 302,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_494",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 75,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_518",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 152,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_576",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 122,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_730",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 7,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_741",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 7,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_831",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 96,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_872",
+          "taskType": "判断题",
+          "gold": "A",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_998",
+          "taskType": "多项选择题",
+          "gold": "AB",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1089",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 95,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1118",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 77,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1274",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 89,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1360",
+          "taskType": "多项选择题",
+          "gold": "AB",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1383",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 64,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1456",
+          "taskType": "多项选择题",
+          "gold": "BC",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1477",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 123,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1510",
+          "taskType": "多项选择题",
+          "gold": "ACDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1609",
+          "taskType": "多项选择题",
+          "gold": "BE",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1704",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 117,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1767",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1782",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": false,
+          "outChars": 62,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1952",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2027",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2056",
+          "taskType": "多项选择题",
+          "gold": "C",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2255",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2270",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 113,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2370",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 74,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2415",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 283,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2466",
+          "taskType": "多项选择题",
+          "gold": "ABDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2479",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2537",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "compact",
+          "correct": true,
+          "outChars": 5,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2595",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "compact",
+          "correct": false,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2689",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 110,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2784",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 73,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2802",
+          "taskType": "多项选择题",
+          "gold": "ABC",
+          "how": "compact",
+          "correct": true,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2880",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 79,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2896",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 8,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2899",
+          "taskType": "多项选择题",
+          "gold": "D",
+          "how": "compact",
+          "correct": true,
+          "outChars": 1,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3058",
+          "taskType": "多项选择题",
+          "gold": "BC",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3075",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 2,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3150",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 287,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3189",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3194",
+          "taskType": "多项选择题",
+          "gold": "ABD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3209",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3277",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 206,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3334",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 105,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3370",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 66,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3425",
+          "taskType": "判断题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 60,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3509",
+          "taskType": "多项选择题",
+          "gold": "CD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3580",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 4,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3680",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 580,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3834",
+          "taskType": "多项选择题",
+          "gold": "BD",
+          "how": "compact",
+          "correct": false,
+          "outChars": 3,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3837",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "weak-single",
+          "correct": true,
+          "outChars": 20,
+          "truncated": false
+        }
+      ],
+      "deltaVsStrict": 1.67
+    },
+    "reasoned": {
+      "label": "思考提示（允许推理）",
+      "system": "你是金融领域知识评测的答题者。请先简要分析，再在最后一行给出答案字母。",
+      "n": 60,
+      "correct": 46,
+      "accuracyPct": 76.67,
+      "extractMode": {
+        "explicit": 22,
+        "bold": 1,
+        "weak-scan": 37
+      },
+      "meanOutputChars": 100,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 212,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_58",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "bold",
+          "correct": true,
+          "outChars": 189,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_83",
+          "taskType": "多项选择题",
+          "gold": "ABDE",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 213,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_176",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 73,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_342",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 53,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_345",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 180,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_370",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 70,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_423",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 138,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_494",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 51,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_518",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 126,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_576",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 99,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_730",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 50,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_741",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 65,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_831",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 87,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_872",
+          "taskType": "判断题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 85,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_998",
+          "taskType": "多项选择题",
+          "gold": "AB",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 62,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1089",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 63,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1118",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 64,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1274",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": false,
+          "outChars": 74,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1360",
+          "taskType": "多项选择题",
+          "gold": "AB",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 74,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1383",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 40,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1456",
+          "taskType": "多项选择题",
+          "gold": "BC",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 90,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1477",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 93,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1510",
+          "taskType": "多项选择题",
+          "gold": "ACDE",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 77,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1609",
+          "taskType": "多项选择题",
+          "gold": "BE",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 154,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1704",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 77,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1767",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 91,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1782",
+          "taskType": "单项选择题",
+          "gold": "B",
+          "how": "explicit",
+          "correct": false,
+          "outChars": 62,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_1952",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 99,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2027",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 52,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2056",
+          "taskType": "多项选择题",
+          "gold": "C",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 67,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2255",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 87,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2270",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 88,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2370",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 57,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2415",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 191,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2466",
+          "taskType": "多项选择题",
+          "gold": "ABDE",
+          "how": "explicit",
+          "correct": false,
+          "outChars": 119,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2479",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 64,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2537",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 116,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2595",
+          "taskType": "多项选择题",
+          "gold": "ABCDE",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 75,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2689",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 76,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2784",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 49,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2802",
+          "taskType": "多项选择题",
+          "gold": "ABC",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 82,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2880",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 75,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2896",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 75,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_2899",
+          "taskType": "多项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 142,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3058",
+          "taskType": "多项选择题",
+          "gold": "BC",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 89,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3075",
+          "taskType": "多项选择题",
+          "gold": "AD",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 79,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3150",
+          "taskType": "单项选择题",
+          "gold": "C",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 179,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3189",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 79,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3194",
+          "taskType": "多项选择题",
+          "gold": "ABD",
+          "how": "explicit",
+          "correct": false,
+          "outChars": 108,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3209",
+          "taskType": "多项选择题",
+          "gold": "ABCD",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 105,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3277",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 129,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3334",
+          "taskType": "单项选择题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 75,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3370",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 61,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3425",
+          "taskType": "判断题",
+          "gold": "A",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 73,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3509",
+          "taskType": "多项选择题",
+          "gold": "CD",
+          "how": "explicit",
+          "correct": false,
+          "outChars": 88,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3580",
+          "taskType": "判断题",
+          "gold": "B",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 63,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3680",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "explicit",
+          "correct": true,
+          "outChars": 360,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3834",
+          "taskType": "多项选择题",
+          "gold": "BD",
+          "how": "weak-scan",
+          "correct": false,
+          "outChars": 154,
+          "truncated": false
+        },
+        {
+          "id": "knowledge_3837",
+          "taskType": "单项选择题",
+          "gold": "D",
+          "how": "weak-scan",
+          "correct": true,
+          "outChars": 120,
+          "truncated": false
+        }
+      ],
+      "deltaVsStrict": -8.33
+    }
+  }
+}

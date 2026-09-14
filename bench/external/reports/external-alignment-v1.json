@@ -1,0 +1,2723 @@
+{
+  "version": "v1",
+  "generatedAt": "2026-09-14T04:32:08.444Z",
+  "profile": "full",
+  "seed": 20260101,
+  "concurrency": 6,
+  "models": [
+    "deepseek-flash"
+  ],
+  "benchmarks": {
+    "cflue": {
+      "title": "CFLUE",
+      "layer": "模型层：中文金融知识与指令遵循",
+      "source": {
+        "repo": "aliyun/cflue",
+        "ref": "master",
+        "paper": "https://aclanthology.org/2024.findings-acl.337/"
+      },
+      "sample": {
+        "knowledge": {
+          "available": 3864,
+          "picked": 300,
+          "ids": [
+            "knowledge_20",
+            "knowledge_43",
+            "knowledge_47",
+            "knowledge_58",
+            "knowledge_83",
+            "knowledge_85",
+            "knowledge_93",
+            "knowledge_103",
+            "knowledge_115",
+            "knowledge_132",
+            "knowledge_145",
+            "knowledge_152",
+            "knowledge_153",
+            "knowledge_163",
+            "knowledge_165",
+            "knowledge_173",
+            "knowledge_176",
+            "knowledge_185",
+            "knowledge_213",
+            "knowledge_249",
+            "knowledge_257",
+            "knowledge_276",
+            "knowledge_280",
+            "knowledge_281",
+            "knowledge_283",
+            "knowledge_321",
+            "knowledge_326",
+            "knowledge_342",
+            "knowledge_345",
+            "knowledge_363",
+            "knowledge_370",
+            "knowledge_372",
+            "knowledge_379",
+            "knowledge_391",
+            "knowledge_400",
+            "knowledge_420",
+            "knowledge_423",
+            "knowledge_428",
+            "knowledge_439",
+            "knowledge_453",
+            "knowledge_481",
+            "knowledge_484",
+            "knowledge_494",
+            "knowledge_506",
+            "knowledge_518",
+            "knowledge_528",
+            "knowledge_562",
+            "knowledge_565",
+            "knowledge_576",
+            "knowledge_587",
+            "knowledge_588",
+            "knowledge_637",
+            "knowledge_646",
+            "knowledge_679",
+            "knowledge_694",
+            "knowledge_702",
+            "knowledge_710",
+            "knowledge_711",
+            "knowledge_730",
+            "knowledge_741",
+            "knowledge_753",
+            "knowledge_759",
+            "knowledge_781",
+            "knowledge_817",
+            "knowledge_819",
+            "knowledge_821",
+            "knowledge_822",
+            "knowledge_829",
+            "knowledge_831",
+            "knowledge_833",
+            "knowledge_836",
+            "knowledge_837",
+            "knowledge_872",
+            "knowledge_876",
+            "knowledge_878",
+            "knowledge_893",
+            "knowledge_897",
+            "knowledge_899",
+            "knowledge_915",
+            "knowledge_933",
+            "knowledge_939",
+            "knowledge_943",
+            "knowledge_967",
+            "knowledge_976",
+            "knowledge_990",
+            "knowledge_998",
+            "knowledge_1013",
+            "knowledge_1018",
+            "knowledge_1031",
+            "knowledge_1048",
+            "knowledge_1053",
+            "knowledge_1061",
+            "knowledge_1077",
+            "knowledge_1085",
+            "knowledge_1089",
+            "knowledge_1096",
+            "knowledge_1097",
+            "knowledge_1103",
+            "knowledge_1112",
+            "knowledge_1113",
+            "knowledge_1118",
+            "knowledge_1135",
+            "knowledge_1160",
+            "knowledge_1184",
+            "knowledge_1204",
+            "knowledge_1211",
+            "knowledge_1240",
+            "knowledge_1242",
+            "knowledge_1271",
+            "knowledge_1274",
+            "knowledge_1279",
+            "knowledge_1290",
+            "knowledge_1300",
+            "knowledge_1343",
+            "knowledge_1357",
+            "knowledge_1360",
+            "knowledge_1383",
+            "knowledge_1392",
+            "knowledge_1396",
+            "knowledge_1402",
+            "knowledge_1413",
+            "knowledge_1444",
+            "knowledge_1450",
+            "knowledge_1456",
+            "knowledge_1466",
+            "knowledge_1477",
+            "knowledge_1510",
+            "knowledge_1530",
+            "knowledge_1535",
+            "knowledge_1537",
+            "knowledge_1553",
+            "knowledge_1556",
+            "knowledge_1559",
+            "knowledge_1571",
+            "knowledge_1609",
+            "knowledge_1623",
+            "knowledge_1634",
+            "knowledge_1651",
+            "knowledge_1665",
+            "knowledge_1684",
+            "knowledge_1688",
+            "knowledge_1704",
+            "knowledge_1705",
+            "knowledge_1706",
+            "knowledge_1733",
+            "knowledge_1741",
+            "knowledge_1762",
+            "knowledge_1767",
+            "knowledge_1782",
+            "knowledge_1805",
+            "knowledge_1832",
+            "knowledge_1845",
+            "knowledge_1852",
+            "knowledge_1869",
+            "knowledge_1894",
+            "knowledge_1928",
+            "knowledge_1939",
+            "knowledge_1952",
+            "knowledge_1978",
+            "knowledge_1981",
+            "knowledge_1986",
+            "knowledge_2005",
+            "knowledge_2023",
+            "knowledge_2027",
+            "knowledge_2052",
+            "knowledge_2056",
+            "knowledge_2071",
+            "knowledge_2072",
+            "knowledge_2116",
+            "knowledge_2130",
+            "knowledge_2133",
+            "knowledge_2146",
+            "knowledge_2152",
+            "knowledge_2173",
+            "knowledge_2199",
+            "knowledge_2203",
+            "knowledge_2235",
+            "knowledge_2238",
+            "knowledge_2247",
+            "knowledge_2255",
+            "knowledge_2270",
+            "knowledge_2283",
+            "knowledge_2289",
+            "knowledge_2297",
+            "knowledge_2300",
+            "knowledge_2311",
+            "knowledge_2353",
+            "knowledge_2370",
+            "knowledge_2374",
+            "knowledge_2385",
+            "knowledge_2415",
+            "knowledge_2420",
+            "knowledge_2427",
+            "knowledge_2436",
+            "knowledge_2446",
+            "knowledge_2461",
+            "knowledge_2462",
+            "knowledge_2466",
+            "knowledge_2472",
+            "knowledge_2479",
+            "knowledge_2482",
+            "knowledge_2485",
+            "knowledge_2495",
+            "knowledge_2497",
+            "knowledge_2520",
+            "knowledge_2537",
+            "knowledge_2552",
+            "knowledge_2591",
+            "knowledge_2595",
+            "knowledge_2600",
+            "knowledge_2623",
+            "knowledge_2624",
+            "knowledge_2630",
+            "knowledge_2657",
+            "knowledge_2661",
+            "knowledge_2667",
+            "knowledge_2681",
+            "knowledge_2689",
+            "knowledge_2701",
+            "knowledge_2704",
+            "knowledge_2733",
+            "knowledge_2741",
+            "knowledge_2755",
+            "knowledge_2765",
+            "knowledge_2766",
+            "knowledge_2769",
+            "knowledge_2784",
+            "knowledge_2785",
+            "knowledge_2791",
+            "knowledge_2802",
+            "knowledge_2812",
+            "knowledge_2833",
+            "knowledge_2860",
+            "knowledge_2880",
+            "knowledge_2894",
+            "knowledge_2896",
+            "knowledge_2899",
+            "knowledge_2922",
+            "knowledge_2944",
+            "knowledge_2948",
+            "knowledge_2963",
+            "knowledge_2968",
+            "knowledge_2969",
+            "knowledge_2980",
+            "knowledge_3002",
+            "knowledge_3005",
+            "knowledge_3008",
+            "knowledge_3020",
+            "knowledge_3058",
+            "knowledge_3075",
+            "knowledge_3091",
+            "knowledge_3099",
+            "knowledge_3144",
+            "knowledge_3150",
+            "knowledge_3176",
+            "knowledge_3189",
+            "knowledge_3194",
+            "knowledge_3209",
+            "knowledge_3211",
+            "knowledge_3220",
+            "knowledge_3227",
+            "knowledge_3228",
+            "knowledge_3233",
+            "knowledge_3236",
+            "knowledge_3277",
+            "knowledge_3285",
+            "knowledge_3288",
+            "knowledge_3334",
+            "knowledge_3359",
+            "knowledge_3370",
+            "knowledge_3425",
+            "knowledge_3439",
+            "knowledge_3509",
+            "knowledge_3554",
+            "knowledge_3565",
+            "knowledge_3580",
+            "knowledge_3582",
+            "knowledge_3607",
+            "knowledge_3616",
+            "knowledge_3623",
+            "knowledge_3631",
+            "knowledge_3656",
+            "knowledge_3674",
+            "knowledge_3676",
+            "knowledge_3680",
+            "knowledge_3684",
+            "knowledge_3698",
+            "knowledge_3703",
+            "knowledge_3717",
+            "knowledge_3723",
+            "knowledge_3754",
+            "knowledge_3765",
+            "knowledge_3796",
+            "knowledge_3810",
+            "knowledge_3834",
+            "knowledge_3837",
+            "knowledge_3839",
+            "knowledge_3841",
+            "knowledge_3842",
+            "knowledge_3857"
+          ],
+          "hash": "26dabaff88403b5a62cb1d2a992778e38540c30a69613121a6515b97a4c48d1a",
+          "seed": 20260101
+        },
+        "application": {
+          "available": 125,
+          "picked": 125,
+          "hash": "cc7f5b346c114f442a2d40f8bf4a591fe0b6655bb658a033cfaaeeb78adf2aa6",
+          "seed": 20260102,
+          "perSubTask": {
+            "ESG分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "c9cf62462028"
+            },
+            "ESG情感分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "b0dd1e087617"
+            },
+            "产品相关信息问答": {
+              "available": 5,
+              "picked": 5,
+              "hash": "f9d04a09e62c"
+            },
+            "会议内容摘要": {
+              "available": 5,
+              "picked": 5,
+              "hash": "4f37c1111c70"
+            },
+            "保险文档问答": {
+              "available": 5,
+              "picked": 5,
+              "hash": "ee884c83651b"
+            },
+            "制度政策问答": {
+              "available": 5,
+              "picked": 5,
+              "hash": "293bc132adc5"
+            },
+            "合规政策审核": {
+              "available": 5,
+              "picked": 5,
+              "hash": "3774212b790f"
+            },
+            "客服对话摘要": {
+              "available": 5,
+              "picked": 5,
+              "hash": "2f75ca00fe11"
+            },
+            "研报标题生成": {
+              "available": 5,
+              "picked": 5,
+              "hash": "f00e8fe3f170"
+            },
+            "研报观点问答": {
+              "available": 5,
+              "picked": 5,
+              "hash": "0da91cb92d87"
+            },
+            "行业情感信息抽取": {
+              "available": 5,
+              "picked": 5,
+              "hash": "d4a017b93e67"
+            },
+            "财报内容问答": {
+              "available": 5,
+              "picked": 5,
+              "hash": "4db0306cbd70"
+            },
+            "财报要点审核": {
+              "available": 5,
+              "picked": 5,
+              "hash": "307c9a1e9605"
+            },
+            "资讯标题生成": {
+              "available": 5,
+              "picked": 5,
+              "hash": "ab6dd451698f"
+            },
+            "金融中英翻译": {
+              "available": 5,
+              "picked": 5,
+              "hash": "664e52570fcf"
+            },
+            "金融事件主体抽取": {
+              "available": 5,
+              "picked": 5,
+              "hash": "510ef4d5d750"
+            },
+            "金融事件分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "db89c2a14e5e"
+            },
+            "金融事件因果关系抽取": {
+              "available": 5,
+              "picked": 5,
+              "hash": "fe22d2e4035c"
+            },
+            "金融事件抽取": {
+              "available": 5,
+              "picked": 5,
+              "hash": "ce062757ca81"
+            },
+            "金融会议业务分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "2627dda83d65"
+            },
+            "金融文档标题分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "b8b5659991c3"
+            },
+            "金融术语解释": {
+              "available": 5,
+              "picked": 5,
+              "hash": "8b128c1f63db"
+            },
+            "金融英中翻译": {
+              "available": 5,
+              "picked": 5,
+              "hash": "a8eed4999937"
+            },
+            "金融行业分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "afe7b7197c45"
+            },
+            "银行客服对话意图分类": {
+              "available": 5,
+              "picked": 5,
+              "hash": "3436a5699602"
+            }
+          }
+        }
+      },
+      "notes": [
+        "知识题 3864 → 抽 300；应用题 125 → 抽 125（25 子任务各 5 条，全量）"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "deepseek-flash": {
+          "metrics": {
+            "knowledge": {
+              "metric": "accuracy（官方口径）",
+              "overall": {
+                "group": "__ALL__",
+                "n": 298,
+                "correct": 268,
+                "wrong": 30,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 89.93,
+                "accuracyPct": 89.93,
+                "ci95": [
+                  85.99,
+                  92.86
+                ]
+              },
+              "byTaskType": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 298,
+                  "correct": 268,
+                  "wrong": 30,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 89.93,
+                  "accuracyPct": 89.93,
+                  "ci95": [
+                    85.99,
+                    92.86
+                  ]
+                },
+                "判断题": {
+                  "group": "判断题",
+                  "n": 25,
+                  "correct": 22,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 88,
+                  "accuracyPct": 88,
+                  "ci95": [
+                    70.04,
+                    95.83
+                  ]
+                },
+                "单项选择题": {
+                  "group": "单项选择题",
+                  "n": 191,
+                  "correct": 182,
+                  "wrong": 9,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 95.29,
+                  "accuracyPct": 95.29,
+                  "ci95": [
+                    91.29,
+                    97.5
+                  ]
+                },
+                "多项选择题": {
+                  "group": "多项选择题",
+                  "n": 82,
+                  "correct": 64,
+                  "wrong": 18,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 78.05,
+                  "accuracyPct": 78.05,
+                  "ci95": [
+                    67.95,
+                    85.64
+                  ]
+                }
+              },
+              "bySubject": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 298,
+                  "correct": 268,
+                  "wrong": 30,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 89.93,
+                  "accuracyPct": 89.93,
+                  "ci95": [
+                    85.99,
+                    92.86
+                  ]
+                },
+                "判断题 / 证券从业资格": {
+                  "group": "判断题 / 证券从业资格",
+                  "n": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    20.65,
+                    100
+                  ]
+                },
+                "单项选择题 / 注册会计师": {
+                  "group": "单项选择题 / 注册会计师",
+                  "n": 21,
+                  "correct": 19,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 90.48,
+                  "accuracyPct": 90.48,
+                  "ci95": [
+                    71.09,
+                    97.35
+                  ]
+                },
+                "多项选择题 / 银行初级资格": {
+                  "group": "多项选择题 / 银行初级资格",
+                  "n": 9,
+                  "correct": 6,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 66.67,
+                  "accuracyPct": 66.67,
+                  "ci95": [
+                    35.42,
+                    87.94
+                  ]
+                },
+                "多项选择题 / 中级经济师": {
+                  "group": "多项选择题 / 中级经济师",
+                  "n": 20,
+                  "correct": 17,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 85,
+                  "accuracyPct": 85,
+                  "ci95": [
+                    63.96,
+                    94.76
+                  ]
+                },
+                "单项选择题 / 初级经济师": {
+                  "group": "单项选择题 / 初级经济师",
+                  "n": 22,
+                  "correct": 20,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 90.91,
+                  "accuracyPct": 90.91,
+                  "ci95": [
+                    72.18,
+                    97.47
+                  ]
+                },
+                "单项选择题 / 基金从业资格": {
+                  "group": "单项选择题 / 基金从业资格",
+                  "n": 29,
+                  "correct": 28,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 96.55,
+                  "accuracyPct": 96.55,
+                  "ci95": [
+                    82.82,
+                    99.39
+                  ]
+                },
+                "单项选择题 / 银从中级资格": {
+                  "group": "单项选择题 / 银从中级资格",
+                  "n": 13,
+                  "correct": 12,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 92.31,
+                  "accuracyPct": 92.31,
+                  "ci95": [
+                    66.69,
+                    98.63
+                  ]
+                },
+                "单项选择题 / 银行初级资格": {
+                  "group": "单项选择题 / 银行初级资格",
+                  "n": 18,
+                  "correct": 18,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    82.41,
+                    100
+                  ]
+                },
+                "多项选择题 / 银从中级资格": {
+                  "group": "多项选择题 / 银从中级资格",
+                  "n": 8,
+                  "correct": 6,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 75,
+                  "accuracyPct": 75,
+                  "ci95": [
+                    40.93,
+                    92.85
+                  ]
+                },
+                "多项选择题 / 黄金从业资格": {
+                  "group": "多项选择题 / 黄金从业资格",
+                  "n": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    20.65,
+                    100
+                  ]
+                },
+                "判断题 / 银行初级资格": {
+                  "group": "判断题 / 银行初级资格",
+                  "n": 13,
+                  "correct": 11,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 84.62,
+                  "accuracyPct": 84.62,
+                  "ci95": [
+                    57.76,
+                    95.67
+                  ]
+                },
+                "多项选择题 / 注册会计师": {
+                  "group": "多项选择题 / 注册会计师",
+                  "n": 11,
+                  "correct": 10,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 90.91,
+                  "accuracyPct": 90.91,
+                  "ci95": [
+                    62.26,
+                    98.38
+                  ]
+                },
+                "单项选择题 / 金融理财师（AFP）": {
+                  "group": "单项选择题 / 金融理财师（AFP）",
+                  "n": 12,
+                  "correct": 12,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    75.75,
+                    100
+                  ]
+                },
+                "单项选择题 / 初级会计职称": {
+                  "group": "单项选择题 / 初级会计职称",
+                  "n": 8,
+                  "correct": 7,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 87.5,
+                  "accuracyPct": 87.5,
+                  "ci95": [
+                    52.91,
+                    97.76
+                  ]
+                },
+                "单项选择题 / 期货从业资格": {
+                  "group": "单项选择题 / 期货从业资格",
+                  "n": 11,
+                  "correct": 10,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 90.91,
+                  "accuracyPct": 90.91,
+                  "ci95": [
+                    62.26,
+                    98.38
+                  ]
+                },
+                "多项选择题 / 初级会计职称": {
+                  "group": "多项选择题 / 初级会计职称",
+                  "n": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    60.97,
+                    100
+                  ]
+                },
+                "单项选择题 / 中级经济师": {
+                  "group": "单项选择题 / 中级经济师",
+                  "n": 36,
+                  "correct": 35,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 97.22,
+                  "accuracyPct": 97.22,
+                  "ci95": [
+                    85.83,
+                    99.51
+                  ]
+                },
+                "判断题 / 初级会计职称": {
+                  "group": "判断题 / 初级会计职称",
+                  "n": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    43.85,
+                    100
+                  ]
+                },
+                "判断题 / 黄金从业资格": {
+                  "group": "判断题 / 黄金从业资格",
+                  "n": 2,
+                  "correct": 2,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    34.24,
+                    100
+                  ]
+                },
+                "单项选择题 / 保险从业资格": {
+                  "group": "单项选择题 / 保险从业资格",
+                  "n": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    56.55,
+                    100
+                  ]
+                },
+                "多项选择题 / 初级经济师": {
+                  "group": "多项选择题 / 初级经济师",
+                  "n": 9,
+                  "correct": 4,
+                  "wrong": 5,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 44.44,
+                  "accuracyPct": 44.44,
+                  "ci95": [
+                    18.88,
+                    73.34
+                  ]
+                },
+                "单项选择题 / 证券专项考试": {
+                  "group": "单项选择题 / 证券专项考试",
+                  "n": 11,
+                  "correct": 11,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    74.12,
+                    100
+                  ]
+                },
+                "判断题 / 期货从业资格": {
+                  "group": "判断题 / 期货从业资格",
+                  "n": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    20.65,
+                    100
+                  ]
+                },
+                "多项选择题 / 反假货币知识": {
+                  "group": "多项选择题 / 反假货币知识",
+                  "n": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    43.85,
+                    100
+                  ]
+                },
+                "多项选择题 / 证券从业资格": {
+                  "group": "多项选择题 / 证券从业资格",
+                  "n": 6,
+                  "correct": 4,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 66.67,
+                  "accuracyPct": 66.67,
+                  "ci95": [
+                    30,
+                    90.32
+                  ]
+                },
+                "单项选择题 / 反假货币知识": {
+                  "group": "单项选择题 / 反假货币知识",
+                  "n": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    20.65,
+                    100
+                  ]
+                },
+                "多项选择题 / 期货从业资格": {
+                  "group": "多项选择题 / 期货从业资格",
+                  "n": 7,
+                  "correct": 5,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 71.43,
+                  "accuracyPct": 71.43,
+                  "ci95": [
+                    35.89,
+                    91.78
+                  ]
+                },
+                "判断题 / 银从中级资格": {
+                  "group": "判断题 / 银从中级资格",
+                  "n": 5,
+                  "correct": 4,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 80,
+                  "accuracyPct": 80,
+                  "ci95": [
+                    37.55,
+                    96.38
+                  ]
+                },
+                "单项选择题 / 证券从业资格": {
+                  "group": "单项选择题 / 证券从业资格",
+                  "n": 3,
+                  "correct": 3,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    43.85,
+                    100
+                  ]
+                },
+                "单项选择题 / 黄金从业资格": {
+                  "group": "单项选择题 / 黄金从业资格",
+                  "n": 1,
+                  "correct": 1,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    20.65,
+                    100
+                  ]
+                },
+                "多项选择题 / 证券专项考试": {
+                  "group": "多项选择题 / 证券专项考试",
+                  "n": 2,
+                  "correct": 2,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    34.24,
+                    100
+                  ]
+                }
+              },
+              "abstainRate": 0.67,
+              "extractMode": {
+                "compact": 298,
+                "none": 2
+              },
+              "errors": 2,
+              "multiSelectAccuracy": {
+                "p": 0.7804878048780488,
+                "lo": 0.6794774330026092,
+                "hi": 0.8563932870212487,
+                "n": 82,
+                "k": 64,
+                "accuracyPct": 78.05
+              },
+              "singleSelectAccuracy": {
+                "p": 0.9528795811518325,
+                "lo": 0.9128858436859398,
+                "hi": 0.9750148920912248,
+                "n": 191,
+                "k": 182,
+                "accuracyPct": 95.29
+              }
+            },
+            "application": {
+              "metric": "分类/抽取/问答=判对率；生成/翻译=ROUGE-L（自实现，非官方分数）",
+              "overallGraded": {
+                "group": "__ALL__",
+                "n": 90,
+                "correct": 44,
+                "wrong": 46,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 48.89,
+                "accuracyPct": 48.89,
+                "ci95": [
+                  38.82,
+                  59.05
+                ]
+              },
+              "byTaskType": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 90,
+                  "correct": 44,
+                  "wrong": 46,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 48.89,
+                  "accuracyPct": 48.89,
+                  "ci95": [
+                    38.82,
+                    59.05
+                  ]
+                },
+                "金融文本分类": {
+                  "group": "金融文本分类",
+                  "n": 45,
+                  "correct": 29,
+                  "wrong": 16,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 64.44,
+                  "accuracyPct": 64.44,
+                  "ci95": [
+                    49.84,
+                    76.78
+                  ]
+                },
+                "金融咨询": {
+                  "group": "金融咨询",
+                  "n": 25,
+                  "correct": 8,
+                  "wrong": 17,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 32,
+                  "accuracyPct": 32,
+                  "ci95": [
+                    17.2,
+                    51.59
+                  ]
+                },
+                "金融文本抽取": {
+                  "group": "金融文本抽取",
+                  "n": 20,
+                  "correct": 7,
+                  "wrong": 13,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 35,
+                  "accuracyPct": 35,
+                  "ci95": [
+                    18.12,
+                    56.71
+                  ]
+                }
+              },
+              "bySubTask": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 90,
+                  "correct": 44,
+                  "wrong": 46,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 48.89,
+                  "accuracyPct": 48.89,
+                  "ci95": [
+                    38.82,
+                    59.05
+                  ]
+                },
+                "金融文本分类 / ESG分类": {
+                  "group": "金融文本分类 / ESG分类",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "金融文本分类 / ESG情感分类": {
+                  "group": "金融文本分类 / ESG情感分类",
+                  "n": 5,
+                  "correct": 0,
+                  "wrong": 5,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 0,
+                  "accuracyPct": 0,
+                  "ci95": [
+                    0,
+                    43.45
+                  ]
+                },
+                "金融咨询 / 产品相关信息问答": {
+                  "group": "金融咨询 / 产品相关信息问答",
+                  "n": 5,
+                  "correct": 2,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 40,
+                  "accuracyPct": 40,
+                  "ci95": [
+                    11.76,
+                    76.93
+                  ]
+                },
+                "金融咨询 / 保险文档问答": {
+                  "group": "金融咨询 / 保险文档问答",
+                  "n": 5,
+                  "correct": 1,
+                  "wrong": 4,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 20,
+                  "accuracyPct": 20,
+                  "ci95": [
+                    3.62,
+                    62.45
+                  ]
+                },
+                "金融咨询 / 制度政策问答": {
+                  "group": "金融咨询 / 制度政策问答",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "金融文本分类 / 合规政策审核": {
+                  "group": "金融文本分类 / 合规政策审核",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "金融咨询 / 研报观点问答": {
+                  "group": "金融咨询 / 研报观点问答",
+                  "n": 5,
+                  "correct": 0,
+                  "wrong": 5,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 0,
+                  "accuracyPct": 0,
+                  "ci95": [
+                    0,
+                    43.45
+                  ]
+                },
+                "金融文本抽取 / 行业情感信息抽取": {
+                  "group": "金融文本抽取 / 行业情感信息抽取",
+                  "n": 5,
+                  "correct": 2,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 40,
+                  "accuracyPct": 40,
+                  "ci95": [
+                    11.76,
+                    76.93
+                  ]
+                },
+                "金融咨询 / 财报内容问答": {
+                  "group": "金融咨询 / 财报内容问答",
+                  "n": 5,
+                  "correct": 2,
+                  "wrong": 3,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 40,
+                  "accuracyPct": 40,
+                  "ci95": [
+                    11.76,
+                    76.93
+                  ]
+                },
+                "金融文本分类 / 财报要点审核": {
+                  "group": "金融文本分类 / 财报要点审核",
+                  "n": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    56.55,
+                    100
+                  ]
+                },
+                "金融文本抽取 / 金融事件主体抽取": {
+                  "group": "金融文本抽取 / 金融事件主体抽取",
+                  "n": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    56.55,
+                    100
+                  ]
+                },
+                "金融文本分类 / 金融事件分类": {
+                  "group": "金融文本分类 / 金融事件分类",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "金融文本抽取 / 金融事件因果关系抽取": {
+                  "group": "金融文本抽取 / 金融事件因果关系抽取",
+                  "n": 5,
+                  "correct": 0,
+                  "wrong": 5,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 0,
+                  "accuracyPct": 0,
+                  "ci95": [
+                    0,
+                    43.45
+                  ]
+                },
+                "金融文本抽取 / 金融事件抽取": {
+                  "group": "金融文本抽取 / 金融事件抽取",
+                  "n": 5,
+                  "correct": 0,
+                  "wrong": 5,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 0,
+                  "accuracyPct": 0,
+                  "ci95": [
+                    0,
+                    43.45
+                  ]
+                },
+                "金融文本分类 / 金融会议业务分类": {
+                  "group": "金融文本分类 / 金融会议业务分类",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "金融文本分类 / 金融文档标题分类": {
+                  "group": "金融文本分类 / 金融文档标题分类",
+                  "n": 5,
+                  "correct": 5,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    56.55,
+                    100
+                  ]
+                },
+                "金融文本分类 / 金融行业分类": {
+                  "group": "金融文本分类 / 金融行业分类",
+                  "n": 5,
+                  "correct": 4,
+                  "wrong": 1,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 80,
+                  "accuracyPct": 80,
+                  "ci95": [
+                    37.55,
+                    96.38
+                  ]
+                },
+                "金融文本分类 / 银行客服对话意图分类": {
+                  "group": "金融文本分类 / 银行客服对话意图分类",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                }
+              },
+              "meanRougeL": 0.555,
+              "rougeLByTask": {
+                "金融文本分类": {
+                  "n": 45,
+                  "mean": 0.6643
+                },
+                "金融咨询": {
+                  "n": 25,
+                  "mean": 0.6462
+                },
+                "金融文本生成": {
+                  "n": 25,
+                  "mean": 0.3002
+                },
+                "金融文本抽取": {
+                  "n": 20,
+                  "mean": 0.4983
+                },
+                "金融翻译": {
+                  "n": 10,
+                  "mean": 0.5857
+                }
+              },
+              "errors": 0
+            }
+          },
+          "seconds": 355,
+          "rows": 425,
+          "detail": "bench/external/out/run-2026-09-14T03-50-02/cflue.deepseek-flash.json",
+          "usage": {
+            "model": "deepseek-flash",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 451,
+            "failed": 0,
+            "promptTokens": 104533,
+            "completionTokens": 318347,
+            "reasoningTokens": 312239,
+            "cacheHitTokens": 36969,
+            "estimatedCostCNY": 0.689,
+            "pricePerMTok": {
+              "in": 0.5,
+              "out": 2
+            }
+          }
+        }
+      }
+    },
+    "fineval": {
+      "title": "FinEval 金融严谨性（数值计算 + 指标抽取）",
+      "layer": "数值严谨性层：从给定检索内容做金融数值计算与指标抽取",
+      "source": {
+        "repo": "SUFE-AIFLM-Lab/FinEval",
+        "ref": "main",
+        "paper": "https://aclanthology.org/2025.naacl-long.318.pdf"
+      },
+      "sample": {
+        "numerical": {
+          "available": 42,
+          "picked": 42,
+          "hash": "f25bb69f55cd85414fc676fbc40ea742ce6dcf961a258bb2dec81f8ee7e1a315",
+          "seed": 20260101
+        },
+        "index": {
+          "available": 340,
+          "picked": 340,
+          "hash": "7e10d59243e0a1c7fc6795bc0a86b4c06c0b915b110a3f38438bd7d1fcf47b23",
+          "seed": 20260102
+        }
+      },
+      "notes": [
+        "数值计算 42 → 抽 42（全量 42）",
+        "指标抽取 340 → 抽 340",
+        "FinEval 经典学术/行业选择题未随仓库公开（data-v2 为 .rar 且测试集答案不公开），因此这不是 FinEval 总分",
+        "题目自带的检索内容（基座query）已包含在提示词里，属\"给定证据\"口径，不测检索能力"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "deepseek-flash": {
+          "metrics": {
+            "numerical": {
+              "metric": "判对率（标准答案字符串包含 或 数值相对误差 ≤1%，含量纲换算）",
+              "overall": {
+                "group": "__ALL__",
+                "n": 42,
+                "correct": 36,
+                "wrong": 6,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 85.71,
+                "accuracyPct": 85.71,
+                "ci95": [
+                  72.16,
+                  93.28
+                ]
+              },
+              "byGroup": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 42,
+                  "correct": 36,
+                  "wrong": 6,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 85.71,
+                  "accuracyPct": 85.71,
+                  "ci95": [
+                    72.16,
+                    93.28
+                  ]
+                },
+                "金融严谨性/数值计算": {
+                  "group": "金融严谨性/数值计算",
+                  "n": 42,
+                  "correct": 36,
+                  "wrong": 6,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 85.71,
+                  "accuracyPct": 85.71,
+                  "ci95": [
+                    72.16,
+                    93.28
+                  ]
+                }
+              },
+              "viaContains": 12,
+              "viaNumeric": 36,
+              "errors": 0
+            },
+            "indexExtraction": {
+              "metric": "语句召回（一条语句的全部数字都出现才算召回）+ 数字召回；完整率=全部语句命中（苛刻口径）",
+              "overall": {
+                "group": "__ALL__",
+                "n": 340,
+                "correct": 32,
+                "wrong": 308,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 9.41,
+                "accuracyPct": 9.41,
+                "ci95": [
+                  6.75,
+                  12.98
+                ]
+              },
+              "bySubject": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 340,
+                  "correct": 32,
+                  "wrong": 308,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 9.41,
+                  "accuracyPct": 9.41,
+                  "ci95": [
+                    6.75,
+                    12.98
+                  ]
+                },
+                "股票": {
+                  "group": "股票",
+                  "n": 187,
+                  "correct": 4,
+                  "wrong": 183,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 2.14,
+                  "accuracyPct": 2.14,
+                  "ci95": [
+                    0.83,
+                    5.37
+                  ]
+                },
+                "宏观": {
+                  "group": "宏观",
+                  "n": 38,
+                  "correct": 1,
+                  "wrong": 37,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 2.63,
+                  "accuracyPct": 2.63,
+                  "ci95": [
+                    0.47,
+                    13.5
+                  ]
+                },
+                "基金": {
+                  "group": "基金",
+                  "n": 115,
+                  "correct": 27,
+                  "wrong": 88,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 23.48,
+                  "accuracyPct": 23.48,
+                  "ci95": [
+                    16.67,
+                    32
+                  ]
+                }
+              },
+              "meanStatementRecall": 0.4002,
+              "meanNumberRecall": 0.6996,
+              "meanStatementsPerQuestion": 25.4412,
+              "completeRatePct": 9.41,
+              "errors": 0
+            }
+          },
+          "seconds": 1032.7,
+          "rows": 382,
+          "detail": "bench/external/out/run-2026-09-14T03-50-02/fineval.deepseek-flash.json",
+          "usage": {
+            "model": "deepseek-flash",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 411,
+            "failed": 0,
+            "promptTokens": 862388,
+            "completionTokens": 537201,
+            "reasoningTokens": 445630,
+            "cacheHitTokens": 764887,
+            "estimatedCostCNY": 1.5056,
+            "pricePerMTok": {
+              "in": 0.5,
+              "out": 2
+            }
+          }
+        }
+      }
+    },
+    "fineval-mm": {
+      "title": "FinEval-MM（财报图表截图四选一）",
+      "layer": "多模态读取层：从财报/研报图表截图中取数",
+      "source": {
+        "repo": "SUFE-AIFLM-Lab/FinEval",
+        "ref": "main",
+        "paper": "https://aclanthology.org/2025.naacl-long.318.pdf"
+      },
+      "sample": {
+        "multimodal": {
+          "available": 371,
+          "picked": 150,
+          "hash": "f368c3a8d37c035db9fba08b94767adf8189b38c8f81ac7fbb1809be7408ae96",
+          "seed": 20260103,
+          "perStratum": {
+            "产业分析推断": {
+              "available": 22,
+              "picked": 9,
+              "hash": "31f54ce3e2e2"
+            },
+            "投资分析": {
+              "available": 17,
+              "picked": 7,
+              "hash": "cb8933d2d56c"
+            },
+            "智能选股策略回测分析": {
+              "available": 66,
+              "picked": 27,
+              "hash": "86f2bc10a52b"
+            },
+            "股票k线解读": {
+              "available": 38,
+              "picked": 15,
+              "hash": "3d81b7d97871"
+            },
+            "财务指标分析": {
+              "available": 41,
+              "picked": 17,
+              "hash": "64ff456f9129"
+            },
+            "财务数据统计": {
+              "available": 51,
+              "picked": 21,
+              "hash": "a8daecf2b5e9"
+            },
+            "资产配置分析": {
+              "available": 17,
+              "picked": 7,
+              "hash": "3c7fd6684516"
+            },
+            "金融信息识别": {
+              "available": 15,
+              "picked": 6,
+              "hash": "2af006050789"
+            },
+            "金融实体关系解读": {
+              "available": 17,
+              "picked": 7,
+              "hash": "859d86648ea8"
+            },
+            "金融市场情绪洞察": {
+              "available": 8,
+              "picked": 5,
+              "hash": "a7ab6e3c9e31"
+            },
+            "金融情景分析": {
+              "available": 34,
+              "picked": 14,
+              "hash": "fcf4c7048e7d"
+            },
+            "金融数据推理与理解": {
+              "available": 39,
+              "picked": 15,
+              "hash": "6dc5cd20586b"
+            },
+            "金融策略优化": {
+              "available": 2,
+              "picked": 0,
+              "hash": "e3b0c44298fc"
+            },
+            "金融风险与政策分析​": {
+              "available": 4,
+              "picked": 0,
+              "hash": "e3b0c44298fc"
+            }
+          }
+        },
+        "coverage": {
+          "funnel": {
+            "rows": 1000,
+            "withImage": 1000,
+            "withImageAndAnswer": 943,
+            "resolvableImage": 464,
+            "usable": 371
+          },
+          "missingBySubdir": {
+            "31": 2,
+            "32": 2,
+            "33": 3,
+            "lc": 113,
+            "pg": 166,
+            "sdt": 149,
+            "hg": 8,
+            "frg": 14,
+            "fs": 6,
+            "os": 9,
+            "cc": 6,
+            "L3Q3_4": 1
+          },
+          "totalWithImage": 943,
+          "available": 371,
+          "coveragePct": 39.3
+        },
+        "roundDistribution": {
+          "1": 283,
+          "1.0": 20,
+          "2.0": 21,
+          "3.0": 20,
+          "4.0": 16,
+          "5.0": 8,
+          "6.0": 3
+        }
+      },
+      "notes": [
+        "数据可得性漏斗：TSV 总行 1000 → 带图 1000 → 带图且有答案 943 → 图像在仓库中确实存在 464 → 选项≥2 可用 371",
+        "拿不到图像的目录（按引用次数）：figure/pg×166、figure/sdt×149、figure/lc×113、figure/frg×14、figure/os×9、figure/hg×8、figure/fs×6、figure/cc×6、figure/33×3、figure/31×2、figure/32×2、figure/L3Q3_4×1——仓库未发布、HF 镜像返回 401",
+        "本项只在可用子集（371 题）上分层抽 150 题；round 字段分布 {\"1\":283,\"1.0\":20,\"2.0\":21,\"3.0\":20,\"4.0\":16,\"5.0\":8,\"6.0\":3}",
+        "本轮按单轮提问（不构造多轮上下文）"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "deepseek-flash": {
+          "metrics": {
+            "multimodal": {
+              "metric": "四选一准确率",
+              "overall": {
+                "group": "__ALL__",
+                "n": 150,
+                "correct": 99,
+                "wrong": 27,
+                "abstain": 24,
+                "ungraded": 0,
+                "accuracy": 66,
+                "accuracyPct": 66,
+                "ci95": [
+                  58.1,
+                  73.1
+                ]
+              },
+              "byFintype": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 150,
+                  "correct": 99,
+                  "wrong": 27,
+                  "abstain": 24,
+                  "ungraded": 0,
+                  "accuracy": 66,
+                  "accuracyPct": 66,
+                  "ci95": [
+                    58.1,
+                    73.1
+                  ]
+                },
+                "FinEval-MM/金融市场情绪洞察": {
+                  "group": "FinEval-MM/金融市场情绪洞察",
+                  "n": 5,
+                  "correct": 3,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 60,
+                  "accuracyPct": 60,
+                  "ci95": [
+                    23.07,
+                    88.24
+                  ]
+                },
+                "FinEval-MM/金融情景分析": {
+                  "group": "FinEval-MM/金融情景分析",
+                  "n": 14,
+                  "correct": 8,
+                  "wrong": 0,
+                  "abstain": 6,
+                  "ungraded": 0,
+                  "accuracy": 57.14,
+                  "accuracyPct": 57.14,
+                  "ci95": [
+                    32.59,
+                    78.62
+                  ]
+                },
+                "FinEval-MM/产业分析推断": {
+                  "group": "FinEval-MM/产业分析推断",
+                  "n": 9,
+                  "correct": 9,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    70.08,
+                    100
+                  ]
+                },
+                "FinEval-MM/投资分析": {
+                  "group": "FinEval-MM/投资分析",
+                  "n": 7,
+                  "correct": 6,
+                  "wrong": 0,
+                  "abstain": 1,
+                  "ungraded": 0,
+                  "accuracy": 85.71,
+                  "accuracyPct": 85.71,
+                  "ci95": [
+                    48.69,
+                    97.43
+                  ]
+                },
+                "FinEval-MM/股票k线解读": {
+                  "group": "FinEval-MM/股票k线解读",
+                  "n": 15,
+                  "correct": 11,
+                  "wrong": 2,
+                  "abstain": 2,
+                  "ungraded": 0,
+                  "accuracy": 73.33,
+                  "accuracyPct": 73.33,
+                  "ci95": [
+                    48.05,
+                    89.1
+                  ]
+                },
+                "FinEval-MM/财务数据统计": {
+                  "group": "FinEval-MM/财务数据统计",
+                  "n": 21,
+                  "correct": 13,
+                  "wrong": 3,
+                  "abstain": 5,
+                  "ungraded": 0,
+                  "accuracy": 61.9,
+                  "accuracyPct": 61.9,
+                  "ci95": [
+                    40.88,
+                    79.25
+                  ]
+                },
+                "FinEval-MM/金融实体关系解读": {
+                  "group": "FinEval-MM/金融实体关系解读",
+                  "n": 7,
+                  "correct": 5,
+                  "wrong": 2,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 71.43,
+                  "accuracyPct": 71.43,
+                  "ci95": [
+                    35.89,
+                    91.78
+                  ]
+                },
+                "FinEval-MM/财务指标分析": {
+                  "group": "FinEval-MM/财务指标分析",
+                  "n": 17,
+                  "correct": 11,
+                  "wrong": 1,
+                  "abstain": 5,
+                  "ungraded": 0,
+                  "accuracy": 64.71,
+                  "accuracyPct": 64.71,
+                  "ci95": [
+                    41.3,
+                    82.69
+                  ]
+                },
+                "FinEval-MM/金融信息识别": {
+                  "group": "FinEval-MM/金融信息识别",
+                  "n": 6,
+                  "correct": 6,
+                  "wrong": 0,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 100,
+                  "accuracyPct": 100,
+                  "ci95": [
+                    60.97,
+                    100
+                  ]
+                },
+                "FinEval-MM/智能选股策略回测分析": {
+                  "group": "FinEval-MM/智能选股策略回测分析",
+                  "n": 27,
+                  "correct": 21,
+                  "wrong": 5,
+                  "abstain": 1,
+                  "ungraded": 0,
+                  "accuracy": 77.78,
+                  "accuracyPct": 77.78,
+                  "ci95": [
+                    59.24,
+                    89.39
+                  ]
+                },
+                "FinEval-MM/资产配置分析": {
+                  "group": "FinEval-MM/资产配置分析",
+                  "n": 7,
+                  "correct": 3,
+                  "wrong": 3,
+                  "abstain": 1,
+                  "ungraded": 0,
+                  "accuracy": 42.86,
+                  "accuracyPct": 42.86,
+                  "ci95": [
+                    15.82,
+                    74.95
+                  ]
+                },
+                "FinEval-MM/金融数据推理与理解": {
+                  "group": "FinEval-MM/金融数据推理与理解",
+                  "n": 15,
+                  "correct": 3,
+                  "wrong": 9,
+                  "abstain": 3,
+                  "ungraded": 0,
+                  "accuracy": 20,
+                  "accuracyPct": 20,
+                  "ci95": [
+                    7.05,
+                    45.19
+                  ]
+                }
+              },
+              "abstainRate": 16,
+              "meanImageKB": 153.4,
+              "errors": 0
+            }
+          },
+          "seconds": 216.4,
+          "rows": 150,
+          "detail": "bench/external/out/run-2026-09-14T03-50-02/fineval-mm.deepseek-flash.json",
+          "usage": {
+            "model": "deepseek-flash",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 150,
+            "failed": 0,
+            "promptTokens": 135013,
+            "completionTokens": 143850,
+            "reasoningTokens": 143597,
+            "cacheHitTokens": 17792,
+            "estimatedCostCNY": 0.3552,
+            "pricePerMTok": {
+              "in": 0.5,
+              "out": 2
+            }
+          }
+        }
+      }
+    },
+    "bfcl": {
+      "title": "BFCL v4（工具调用：simple / multiple / irrelevance）",
+      "layer": "工具调用层：平台 25 个工具与 MCP 接入的底座能力",
+      "source": {
+        "repo": "ShishirPatil/gorilla",
+        "ref": "main",
+        "paper": "https://gorilla.cs.berkeley.edu/leaderboard.html"
+      },
+      "sample": {
+        "simple": {
+          "available": 400,
+          "picked": 200,
+          "hash": "2c50fe1f1e9c88efc941640e6323f22ba1cde7295d29a3ec126974a82a441519",
+          "seed": 20260107,
+          "label": "simple（单函数）"
+        },
+        "multiple": {
+          "available": 200,
+          "picked": 200,
+          "hash": "61b4abdd212fd39d0f183d47006fe446535f383bd0706617145458c8ac2581dc",
+          "seed": 20260109,
+          "label": "multiple（多函数选一）"
+        },
+        "irrelevance": {
+          "available": 240,
+          "picked": 120,
+          "hash": "b60676c6db6ae5b95b5e5ea07a476eb3e859da2676d33ae42a24e331927d1772",
+          "seed": 20260112,
+          "label": "irrelevance（应拒调）"
+        }
+      },
+      "notes": [
+        "判分为官方 ast_checker.py 的自实现移植（含错误类型分类），不是官方 checker，不得与官方榜单分数直接等同",
+        "函数 schema 由 BFCL 的 Python 口径（type=dict/float）转换为 JSON Schema 后传入，转换器固定并可复查",
+        "未测 parallel / multi-turn / exec / live 子集：需要执行环境与多轮交互"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "deepseek-flash": {
+          "metrics": {
+            "overall": {
+              "group": "__ALL__",
+              "n": 520,
+              "correct": 455,
+              "wrong": 65,
+              "abstain": 0,
+              "ungraded": 0,
+              "accuracy": 87.5,
+              "accuracyPct": 87.5,
+              "ci95": [
+                84.38,
+                90.07
+              ]
+            },
+            "byCategory": {
+              "__ALL__": {
+                "group": "__ALL__",
+                "n": 520,
+                "correct": 455,
+                "wrong": 65,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 87.5,
+                "accuracyPct": 87.5,
+                "ci95": [
+                  84.38,
+                  90.07
+                ]
+              },
+              "BFCL/simple（单函数）": {
+                "group": "BFCL/simple（单函数）",
+                "n": 200,
+                "correct": 189,
+                "wrong": 11,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 94.5,
+                "accuracyPct": 94.5,
+                "ci95": [
+                  90.42,
+                  96.9
+                ]
+              },
+              "BFCL/multiple（多函数选一）": {
+                "group": "BFCL/multiple（多函数选一）",
+                "n": 200,
+                "correct": 177,
+                "wrong": 23,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 88.5,
+                "accuracyPct": 88.5,
+                "ci95": [
+                  83.34,
+                  92.21
+                ]
+              },
+              "BFCL/irrelevance（应拒调）": {
+                "group": "BFCL/irrelevance（应拒调）",
+                "n": 120,
+                "correct": 89,
+                "wrong": 31,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 74.17,
+                "accuracyPct": 74.17,
+                "ci95": [
+                  65.67,
+                  81.16
+                ]
+              }
+            },
+            "errorTypeDistribution": {
+              "simple_function_checker:unclear": 366,
+              "value_error:string": 6,
+              "value_error:dict_key": 2,
+              "value_error:others": 8,
+              "value_error:list/tuple": 8,
+              "simple_function_checker:wrong_count": 1,
+              "multiple_function_checker:wrong_count": 8,
+              "simple_function_checker:wrong_func_name": 1,
+              "irrelevance:called_a_function": 31
+            },
+            "wrongFunctionName": 1,
+            "overCallRate": 8,
+            "errors": 0,
+            "scoring": "自实现 AST 判定（对照官方 ast_checker.py 移植）"
+          },
+          "seconds": 103.4,
+          "rows": 520,
+          "detail": "bench/external/out/run-2026-09-14T03-50-02/bfcl.deepseek-flash.json",
+          "usage": {
+            "model": "deepseek-flash",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 520,
+            "failed": 0,
+            "promptTokens": 264464,
+            "completionTokens": 81936,
+            "reasoningTokens": 27791,
+            "cacheHitTokens": 134912,
+            "estimatedCostCNY": 0.2961,
+            "pricePerMTok": {
+              "in": 0.5,
+              "out": 2
+            }
+          }
+        }
+      }
+    },
+    "omnidocbench": {
+      "title": "OmniDocBench（demo 18 页整页转写）",
+      "layer": "文档读取层：页面图像 → 结构化文本（中文研报/杂志/报纸等）",
+      "source": {
+        "repo": "opendatalab/OmniDocBench",
+        "ref": "main",
+        "paper": "https://arxiv.org/abs/2412.07626"
+      },
+      "sample": {
+        "pages": {
+          "available": 18,
+          "picked": 18,
+          "hash": "4a780eccf8ce9e257183ee7019ed0d852936ddf279fb1348fd5d44ce7c95b79d",
+          "seed": 20260101
+        },
+        "byLanguage": {
+          "english": 7,
+          "simplified_chinese": 10,
+          "en_ch_mixed": 1
+        }
+      },
+      "notes": [
+        "官方 demo 共 18 页（全集 981 页），本轮全量跑 demo",
+        "其中含表格的页面 9 页、含公式的 2 页",
+        "GT 文本 = 标注 text 字段 + 表格 html 去标签 + 公式 latex（表格在标注里没有 text 字段，只取 text 会漏掉表格内容）",
+        "指标为自实现的片段召回/数字召回/编辑距离比/ROUGE-L，**不是**官方 TEDS/CDM/编辑距离口径",
+        "中文页面占比见 byLanguage；研报类页面与平台场景最接近"
+      ],
+      "graderValidation": null,
+      "runs": {
+        "deepseek-flash": {
+          "metrics": {
+            "metric": "自实现保真度：片段召回 / 数字召回 / 字符编辑距离比 / ROUGE-L（非官方 TEDS/CDM 口径）",
+            "pages": {
+              "n": 18,
+              "pass": 6,
+              "passRatePct": 33.33,
+              "threshold": "片段召回≥80% 且 数字召回≥90%"
+            },
+            "meanSegmentRecall": 0.5813,
+            "meanNumberRecall": 0.7525,
+            "meanEditRatio": 0.1386,
+            "meanRougeL": 0.9047,
+            "tablePages": {
+              "n": 9,
+              "meanSegmentRecall": 0.7052,
+              "meanNumberRecall": 0.8709,
+              "meanEditRatio": 0.0655,
+              "note": "含表格页面：财报/研报里最要紧的一类，单独列出"
+            },
+            "nonTablePages": {
+              "n": 9,
+              "meanSegmentRecall": 0.4574,
+              "meanNumberRecall": 0.6341,
+              "meanEditRatio": 0.2117
+            },
+            "bySource": {
+              "PPT2PDF": {
+                "n": 2,
+                "meanSegmentRecall": 0.4,
+                "meanNumberRecall": null,
+                "meanEditRatio": 0.0308
+              },
+              "academic_literature": {
+                "n": 2,
+                "meanSegmentRecall": 0.303,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.1063
+              },
+              "book": {
+                "n": 2,
+                "meanSegmentRecall": 0.8801,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.0782
+              },
+              "magazine": {
+                "n": 2,
+                "meanSegmentRecall": 0.7134,
+                "meanNumberRecall": 0.9904,
+                "meanEditRatio": 0.0783
+              },
+              "exam_paper": {
+                "n": 2,
+                "meanSegmentRecall": 0.4407,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.1444
+              },
+              "colorful_textbook": {
+                "n": 2,
+                "meanSegmentRecall": 0.6926,
+                "meanNumberRecall": 0.5,
+                "meanEditRatio": 0.1479
+              },
+              "note": {
+                "n": 2,
+                "meanSegmentRecall": 0.7197,
+                "meanNumberRecall": 0.9286,
+                "meanEditRatio": 0.0551
+              },
+              "newspaper": {
+                "n": 2,
+                "meanSegmentRecall": 0.1781,
+                "meanNumberRecall": 0.6035,
+                "meanEditRatio": 0.5456
+              },
+              "research_report": {
+                "n": 2,
+                "meanSegmentRecall": 0.9038,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.0609
+              }
+            },
+            "byLanguage": {
+              "english": {
+                "n": 7,
+                "meanSegmentRecall": 0.4459,
+                "meanNumberRecall": 0.9636,
+                "meanEditRatio": 0.0983
+              },
+              "simplified_chinese": {
+                "n": 10,
+                "meanSegmentRecall": 0.6568,
+                "meanNumberRecall": 0.8585,
+                "meanEditRatio": 0.1761
+              },
+              "en_ch_mixed": {
+                "n": 1,
+                "meanSegmentRecall": 0.7727,
+                "meanNumberRecall": 1,
+                "meanEditRatio": 0.0464
+              }
+            },
+            "errors": 0,
+            "truncated": 0,
+            "gtComposition": "text + table-html(去标签) + equation-latex",
+            "notCovered": "表格结构（TEDS）、公式（CDM）、阅读顺序指标未实现"
+          },
+          "seconds": 44.7,
+          "rows": 18,
+          "detail": "bench/external/out/run-2026-09-14T03-50-02/omnidocbench.deepseek-flash.json",
+          "usage": {
+            "model": "deepseek-flash",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 18,
+            "failed": 0,
+            "promptTokens": 16421,
+            "completionTokens": 21875,
+            "reasoningTokens": 4095,
+            "cacheHitTokens": 2176,
+            "estimatedCostCNY": 0.052,
+            "pricePerMTok": {
+              "in": 0.5,
+              "out": 2
+            }
+          }
+        }
+      }
+    },
+    "financebench": {
+      "title": "FinanceBench（开源子集，oracle / closedBook 双口径）",
+      "layer": "财报文档问答层：有证据时的数值作答与证据引用",
+      "source": {
+        "repo": "patronus-ai/financebench",
+        "ref": "main",
+        "paper": "https://arxiv.org/abs/2311.11944"
+      },
+      "sample": {
+        "questions": {
+          "available": 150,
+          "picked": 150,
+          "hash": "b0d4c5e27113c847904a15bd642423e05044b717c543c636c77184ce82d890c5",
+          "seed": 20260101
+        },
+        "byType": {
+          "metrics-generated": 50,
+          "domain-relevant": 50,
+          "novel-generated": 50
+        }
+      },
+      "notes": [
+        "口径：oracle（题目自带证据文本）/ closedBook（不给证据）；官方开源子集，非官方全量 10,231 题",
+        "证据文本来自仓库自带 evidence 字段（原文片段），因此本项不测检索能力，只测\"有证据时能否答对\"",
+        "判分：确定性判分（数值容差/包含）+ 交叉模型裁判（用另一个模型判，避免同源偏好），并先用论文标签验证判分器"
+      ],
+      "graderValidation": [
+        {
+          "label": "GPT-4 (oracle)",
+          "mode": "oracle",
+          "rows": 150,
+          "publishedLabels": {
+            "Correct Answer": 126,
+            "Incorrect Answer": 15,
+            "Refusal": 9
+          },
+          "publishedAccuracyPct": 84,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 92.31,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_10420",
+              "mine": false,
+              "theirs": true,
+              "pred": "The FY2022 net income for AES is $(546) million. The total assets for FY2022 and",
+              "gold": "-0.02"
+            },
+            {
+              "id": "financebench_id_05718",
+              "mine": false,
+              "theirs": true,
+              "pred": "American Water Works paid out $389 million in cash dividends for FY2020.",
+              "gold": "0.4"
+            },
+            {
+              "id": "financebench_id_03473",
+              "mine": false,
+              "theirs": true,
+              "pred": "The FY2017 net income for Coca Cola is $1,248 million. The total assets for FY20",
+              "gold": "0.01"
+            },
+            {
+              "id": "financebench_id_03849",
+              "mine": false,
+              "theirs": true,
+              "pred": "The capex as a % of revenue for MGM Resorts for FY2018 - FY2020 can be calculate",
+              "gold": "0.079"
+            }
+          ]
+        },
+        {
+          "label": "GPT-4 (closed book)",
+          "mode": "closedBook",
+          "rows": 150,
+          "publishedLabels": {
+            "Refusal": 142,
+            "Correct Answer": 7,
+            "Incorrect Answer": 1
+          },
+          "publishedAccuracyPct": 4.67,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 100,
+          "disagreementSample": []
+        },
+        {
+          "label": "GPT-4-1106-preview (oracle)",
+          "mode": "oracle",
+          "rows": 150,
+          "publishedLabels": {
+            "Correct Answer": 128,
+            "Incorrect Answer": 22
+          },
+          "publishedAccuracyPct": 85.33,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 92.31,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_05718",
+              "mine": false,
+              "theirs": true,
+              "pred": "According to the Consolidated Statements of Cash Flows provided for American Wat",
+              "gold": "0.4"
+            },
+            {
+              "id": "financebench_id_03473",
+              "mine": false,
+              "theirs": true,
+              "pred": "To calculate the Return on Assets (ROA) for Coca-Cola for FY2017, we need to use",
+              "gold": "0.01"
+            },
+            {
+              "id": "financebench_id_10130",
+              "mine": true,
+              "theirs": false,
+              "pred": "To calculate the Days Payable Outstanding (DPO) for Corning for FY2020, we need ",
+              "gold": "63.86"
+            },
+            {
+              "id": "financebench_id_03849",
+              "mine": false,
+              "theirs": true,
+              "pred": "To calculate the 3-year average of capital expenditures (capex) as a percentage ",
+              "gold": "0.079"
+            }
+          ]
+        },
+        {
+          "label": "Claude-2 (in-context)",
+          "mode": "inContext",
+          "rows": 150,
+          "publishedLabels": {
+            "Incorrect Answer": 91,
+            "Correct Answer": 56,
+            "Refusal": 3
+          },
+          "publishedAccuracyPct": 37.33,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 84.62,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_07507",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here is a summary of Adobe's key financial information for fiscal years 2016-20",
+              "gold": "0.654"
+            },
+            {
+              "id": "financebench_id_08135",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here is a summary of the key information in Amazon's 2017 10-K report:\n\n- Amazo",
+              "gold": "0.308"
+            },
+            {
+              "id": "financebench_id_08286",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here is a summary of the key information from Amazon's 2019 10-K report:\n\n- Ama",
+              "gold": "11588"
+            },
+            {
+              "id": "financebench_id_05718",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here are some key points about regulatory liabilities from the passage:\n\n- Regu",
+              "gold": "0.4"
+            },
+            {
+              "id": "financebench_id_09724",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here are the key points regarding Coca-Cola's pension and other postretirement ",
+              "gold": "0.397"
+            }
+          ]
+        },
+        {
+          "label": "Llama2-70B (single store)",
+          "mode": "singleStore",
+          "rows": 150,
+          "publishedLabels": {
+            "Incorrect Answer": 81,
+            "Correct Answer": 62,
+            "Refusal": 7
+          },
+          "publishedAccuracyPct": 41.33,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 90.38,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_03473",
+              "mine": false,
+              "theirs": true,
+              "pred": " To calculate the FY2017 return on assets (ROA) for Coca Cola, we need to first ",
+              "gold": "0.01"
+            },
+            {
+              "id": "financebench_id_09724",
+              "mine": true,
+              "theirs": false,
+              "pred": " Sure, I can help you with that!\n\nTo calculate Coca Cola's FY2021 COGS % margin,",
+              "gold": "0.397"
+            },
+            {
+              "id": "financebench_id_04458",
+              "mine": true,
+              "theirs": false,
+              "pred": " Sure, I can help you with that!\n\nTo calculate the FY2015 unadjusted EBITDA % ma",
+              "gold": "0.054"
+            },
+            {
+              "id": "financebench_id_03282",
+              "mine": true,
+              "theirs": false,
+              "pred": " Based on the information provided in the Consolidated Balance Sheet, Netflix's ",
+              "gold": "5466"
+            },
+            {
+              "id": "financebench_id_04784",
+              "mine": true,
+              "theirs": false,
+              "pred": " The FY2018 - FY2019 change in unadjusted operating income % margin for Walmart ",
+              "gold": "0.002"
+            }
+          ]
+        }
+      ],
+      "runs": {
+        "deepseek-flash": {
+          "metrics": {
+            "judgeGraded": {
+              "metric": "LLM 裁判（由 deepseek-flash 判，三分类，与论文标签同构）",
+              "byMode": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 300,
+                  "correct": 190,
+                  "wrong": 105,
+                  "abstain": 5,
+                  "ungraded": 0,
+                  "accuracy": 63.33,
+                  "accuracyPct": 63.33,
+                  "ci95": [
+                    57.74,
+                    68.59
+                  ]
+                },
+                "oracle": {
+                  "group": "oracle",
+                  "n": 150,
+                  "correct": 123,
+                  "wrong": 27,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 82,
+                  "accuracyPct": 82,
+                  "ci95": [
+                    75.08,
+                    87.32
+                  ]
+                },
+                "closedBook": {
+                  "group": "closedBook",
+                  "n": 150,
+                  "correct": 67,
+                  "wrong": 78,
+                  "abstain": 5,
+                  "ungraded": 0,
+                  "accuracy": 44.67,
+                  "accuracyPct": 44.67,
+                  "ci95": [
+                    36.94,
+                    52.66
+                  ]
+                }
+              },
+              "judgeModel": "deepseek-flash",
+              "judgeIsSameModel": true,
+              "judgeCaveat": "裁判与候选为同一模型：同源裁判可能对自身输出更宽容，故本口径的绝对值应偏保守解读；确定性口径与论文标签验证（92.31%）作为交叉校验",
+              "verdictDistribution": {
+                "CORRECT": 190,
+                "REFUSAL": 11,
+                "INCORRECT": 99
+              }
+            },
+            "deterministic": {
+              "metric": "确定性判分（数值相对误差 ≤1% 或 归一化包含）",
+              "byMode": {
+                "oracle": {
+                  "n": 150,
+                  "correct": 53,
+                  "accuracyPct": 35.33,
+                  "ci95": [
+                    28.14,
+                    43.26
+                  ]
+                },
+                "closedBook": {
+                  "n": 150,
+                  "correct": 29,
+                  "accuracyPct": 19.33,
+                  "ci95": [
+                    13.81,
+                    26.39
+                  ]
+                }
+              }
+            },
+            "byQuestionType": {
+              "__ALL__": {
+                "group": "__ALL__",
+                "n": 150,
+                "correct": 123,
+                "wrong": 27,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 82,
+                "accuracyPct": 82,
+                "ci95": [
+                  75.08,
+                  87.32
+                ]
+              },
+              "FinanceBench/metrics-generated": {
+                "group": "FinanceBench/metrics-generated",
+                "n": 50,
+                "correct": 44,
+                "wrong": 6,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 88,
+                "accuracyPct": 88,
+                "ci95": [
+                  76.19,
+                  94.38
+                ]
+              },
+              "FinanceBench/domain-relevant": {
+                "group": "FinanceBench/domain-relevant",
+                "n": 50,
+                "correct": 39,
+                "wrong": 11,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 78,
+                "accuracyPct": 78,
+                "ci95": [
+                  64.76,
+                  87.25
+                ]
+              },
+              "FinanceBench/novel-generated": {
+                "group": "FinanceBench/novel-generated",
+                "n": 50,
+                "correct": 40,
+                "wrong": 10,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 80,
+                "accuracyPct": 80,
+                "ci95": [
+                  66.96,
+                  88.76
+                ]
+              }
+            },
+            "oracleRefusalRate": 6,
+            "errors": 0,
+            "judgeSource": "deepseek-flash",
+            "judgeIsSameModel": true
+          },
+          "seconds": 766.9,
+          "rows": 300,
+          "detail": "bench/external/out/run-2026-09-14T04-32-08/financebench.deepseek-flash.json",
+          "usage": {
+            "model": "deepseek-flash",
+            "baseUrl": "https://api.deepseek.com/v1",
+            "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+            "keyMask": "sk-a39…84cc",
+            "calls": 390,
+            "failed": 0,
+            "promptTokens": 130979,
+            "completionTokens": 709680,
+            "reasoningTokens": 695573,
+            "cacheHitTokens": 72936,
+            "estimatedCostCNY": 1.4848,
+            "pricePerMTok": {
+              "in": 0.5,
+              "out": 2
+            }
+          },
+          "auxUsage": [
+            {
+              "role": "裁判",
+              "model": "deepseek-flash",
+              "baseUrl": "https://api.deepseek.com/v1",
+              "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+              "keyMask": "sk-a39…84cc",
+              "calls": 329,
+              "failed": 0,
+              "promptTokens": 98226,
+              "completionTokens": 215818,
+              "reasoningTokens": 214808,
+              "cacheHitTokens": 6651,
+              "estimatedCostCNY": 0.4807,
+              "pricePerMTok": {
+                "in": 0.5,
+                "out": 2
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "modelUsage": {
+    "deepseek-flash": {
+      "model": "deepseek-flash",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+      "keyMask": "sk-a39…84cc",
+      "calls": 1940,
+      "failed": 0,
+      "promptTokens": 1513798,
+      "completionTokens": 1812889,
+      "reasoningTokens": 312239,
+      "cacheHitTokens": 1029672,
+      "estimatedCostCNY": 4.3827,
+      "pricePerMTok": {
+        "in": 0.5,
+        "out": 2
+      }
+    },
+    "deepseek-flash（裁判调用）": {
+      "role": "裁判",
+      "model": "deepseek-flash",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
+      "keyMask": "sk-a39…84cc",
+      "calls": 329,
+      "failed": 0,
+      "promptTokens": 98226,
+      "completionTokens": 215818,
+      "reasoningTokens": 214808,
+      "cacheHitTokens": 6651,
+      "estimatedCostCNY": 0.4807,
+      "pricePerMTok": {
+        "in": 0.5,
+        "out": 2
+      }
+    }
+  },
+  "notes": [
+    "所有外部数据均按 repo@ref + sha256 锁定，见 out/manifest.json",
+    "本节数字回答的是\"模型与读取链路\"的能力，平台的端到端能力见 FinRisk-Bench 与 bench/ 套件",
+    "图像类基准只跑实测支持图像输入的模型",
+    "本次为合并模式：cflue、fineval、fineval-mm、bfcl、omnidocbench 为历史结果，其余为重跑结果"
+  ]
+}

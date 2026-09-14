@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-09-14T04:32:14.459Z",
+  "note": "口径 B 的平台侧 LLM 用量，直接读平台数据库（chat_session 表）",
+  "runs": [
+    {
+      "run": "platform-chain-2026-09-14T03-23-53",
+      "sessions": 6,
+      "llmCalls": 6,
+      "promptTokens": 22957,
+      "completionTokens": 1320,
+      "cacheHitTokens": 21632,
+      "cacheMissTokens": 1325,
+      "cacheHitRatePct": 94.2,
+      "estimatedCostCNY": 0.0141
+    },
+    {
+      "run": "platform-chain-2026-09-14T03-24-12",
+      "sessions": 7,
+      "llmCalls": 9,
+      "promptTokens": 37728,
+      "completionTokens": 1283,
+      "cacheHitTokens": 34304,
+      "cacheMissTokens": 3424,
+      "cacheHitRatePct": 90.9,
+      "estimatedCostCNY": 0.0214
+    },
+    {
+      "run": "platform-chain-2026-09-14T03-41-12",
+      "sessions": 80,
+      "llmCalls": 116,
+      "promptTokens": 527056,
+      "completionTokens": 35486,
+      "cacheHitTokens": 477312,
+      "cacheMissTokens": 49744,
+      "cacheHitRatePct": 90.6,
+      "estimatedCostCNY": 0.3345
+    }
+  ],
+  "latest": {
+    "run": "platform-chain-2026-09-14T03-41-12",
+    "sessions": 80,
+    "llmCalls": 116,
+    "promptTokens": 527056,
+    "completionTokens": 35486,
+    "cacheHitTokens": 477312,
+    "cacheMissTokens": 49744,
+    "cacheHitRatePct": 90.6,
+    "estimatedCostCNY": 0.3345
+  }
+}

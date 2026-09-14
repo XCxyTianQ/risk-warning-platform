@@ -2,11 +2,15 @@ name: Bench (评测)
 
 # M0：每次 push / PR 跑确定性套件（探针 + 平台量化指标），产出并归档评测报告。
 # GUI 冒烟在独立 job 里"实验性"尝试（CI 无界面时自动跳过，不会误判为失败）。
+# 外部基准对齐（M4）在**手动触发或每周定时**的独立 job 里跑：它依赖外部网络与真实模型配额，
+# 不适合作为每次提交的门禁，因此 continue-on-error 且只在手动/定时时运行。
 on:
   push:
     branches: ['main']
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * 1'   # 每周一 02:00 UTC
 
 permissions:
   contents: read
@@ -131,4 +135,71 @@ jobs:
             bench/report/bench-report.json
             bench/report/bench-report.md
             bench/report/logs/
+          if-no-files-found: warn
+
+  external-alignment:
+    name: 外部基准对齐（手动 / 每周定时）
+    # 为什么不是每次提交都跑：要联网抓外部数据、要消耗真实模型配额（数千次调用），
+    # 且外部站点抖动会造成假失败。因此只做"信息性"运行，continue-on-error 不拦主干。
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: windows-latest
+    timeout-minutes: 120
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install python-docx
+        run: pip install python-docx
+
+      - name: 抓取外部基准数据（版本锁定 + sha256 清单）
+        run: node bench/external/prepare.js --with-assets
+
+      - name: 出数前自检
+        run: node bench/external/tools/preflight.js
+
+      - name: 先验证判分器（不消耗模型调用）
+        run: node bench/external/run.js --only financebench --validate-only --merge
+
+      - name: 跑对齐（小样本档位，两模型）
+        env:
+          RWP_LLM_API_KEY: ${{ secrets.RWP_LLM_API_KEY }}
+          RWP_LLM_MODEL: deepseek-flash
+        run: node bench/external/run.js --small --concurrency 4 --merge
+
+      - name: 生成对齐报告（Word + Markdown）
+        if: always()
+        run: python bench/external/report/make-alignment-report.py
+
+      - name: Publish summary
+        if: always()
+        shell: pwsh
+        run: |
+          $md = 'docs/reports/External-Alignment-v1.md'
+          if (Test-Path $md) {
+            Get-Content $md -Encoding UTF8 -TotalCount 120 | Add-Content -Path $env:GITHUB_STEP_SUMMARY -Encoding UTF8
+          } else {
+            '外部对齐报告未生成（缺 API Key 或外部数据不可达）' | Add-Content -Path $env:GITHUB_STEP_SUMMARY
+          }
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: external-alignment
+          path: |
+            bench/external/reports/
+            bench/external/out/manifest.json
+            bench/external/out/external-reference-numbers.json
+            docs/reports/External-Alignment-v1.docx
+            docs/reports/External-Alignment-v1.md
           if-no-files-found: warn
