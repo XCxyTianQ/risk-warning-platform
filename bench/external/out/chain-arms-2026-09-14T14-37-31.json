@@ -1,0 +1,3329 @@
+{
+  "generatedAt": "2026-09-14T14:37:32.015Z",
+  "mode": "chain-arms",
+  "model": "deepseek-flash",
+  "seed": 20260101,
+  "nCflue": 60,
+  "dataDir": "bench\\external\\out\\chain-arms-2026-09-14T14-37-31",
+  "arms": [
+    {
+      "id": "B0",
+      "label": "基线（现状：平台默认）",
+      "presetId": null,
+      "n": 60,
+      "correct": 44,
+      "accuracyPct": 73.33,
+      "usedTools": 0,
+      "emptyAnswers": 1,
+      "meanMs": 2923,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 4102,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_58",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 894,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_83",
+          "gold": "ABDE",
+          "prediction": "**ABDE**",
+          "correct": true,
+          "how": "bold",
+          "ms": 1538,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_176",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2433,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_342",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1720,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_345",
+          "gold": "A",
+          "prediction": "**A**",
+          "correct": true,
+          "how": "bold",
+          "ms": 2352,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_370",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1270,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_423",
+          "gold": "B",
+          "prediction": "**B**",
+          "correct": true,
+          "how": "bold",
+          "ms": 1755,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_494",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 902,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_518",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1688,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_576",
+          "gold": "A",
+          "prediction": "**A**\n\n（依据《证券投资基金法》第五十七条：基金募集期限届满未达到成立条件的，基金管理人应以固有财产承担募集产生的债务和费用，并在募集期限届满后**30日内**返还投资人已交纳的款项，**加计银行同期存款利息**。）",
+          "correct": true,
+          "how": "bold",
+          "ms": 2339,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_730",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 906,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_741",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 817,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_831",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1273,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_872",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1048,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_998",
+          "gold": "AB",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 3946,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1089",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1356,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1118",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 983,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1274",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1286,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1360",
+          "gold": "AB",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 3605,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1383",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1412,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1456",
+          "gold": "BC",
+          "prediction": "**B、C**\n\n（判断标准为「住所」和「居住时间」两项，本题考查的是两者的结合。）",
+          "correct": true,
+          "how": "weak-scan",
+          "ms": 2754,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1477",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1341,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1510",
+          "gold": "ACDE",
+          "prediction": "**ACD**\n\n（避税筹划的特征：非违法性、策划性、权利性。）",
+          "correct": false,
+          "how": "bold",
+          "ms": 2273,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1609",
+          "gold": "BE",
+          "prediction": "**C**",
+          "correct": false,
+          "how": "bold",
+          "ms": 16018,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1704",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 907,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1767",
+          "gold": "AD",
+          "prediction": "**D**（优先获得股息）\n\n（优先股的核心优先权是**优先分配股利**与**优先分配剩余财产**，其中最主要、最典型的体现是优先获得股息；优先股通常无重大决策表决权，也不享有优先出席股东大会的权利。）",
+          "correct": false,
+          "how": "bold",
+          "ms": 4247,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1782",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1158,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1952",
+          "gold": "ABCD",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 1985,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2027",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 940,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2056",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 994,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2255",
+          "gold": "ABCDE",
+          "prediction": "**ABCDE**\n\n（注：该题实际为多项选择题，五项均为影响行业兴衰的主要因素。）",
+          "correct": true,
+          "how": "bold",
+          "ms": 1740,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2270",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1796,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2370",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 818,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2415",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 2704,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2466",
+          "gold": "ABDE",
+          "prediction": "**ABDE**",
+          "correct": true,
+          "how": "bold",
+          "ms": 3903,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2479",
+          "gold": "AD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1721,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2537",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 3016,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2595",
+          "gold": "ABCDE",
+          "prediction": "ABCE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1593,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2689",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1130,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2784",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 2387,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2802",
+          "gold": "ABC",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 2281,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2880",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1207,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2896",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 892,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2899",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 2258,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3058",
+          "gold": "BC",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1255,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3075",
+          "gold": "AD",
+          "prediction": "",
+          "correct": false,
+          "how": "none",
+          "ms": 20969,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3150",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1558,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3189",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 16614,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3194",
+          "gold": "ABD",
+          "prediction": "**ABD**（C 错误：从业人数应为不超过 **300 人**，不是 500 人）\n\n小型微利企业须**同时满足**四项条件：从事国家非限制和禁止行业、年度应纳税所得额不超过 300 万元、从业人数不超过 300 人、资产总额不超过 5000 万元。本题为多选题更准确；若必须单选，请核对题干是否漏了\"不符合\"或是否只保留一个数字项。",
+          "correct": true,
+          "how": "bold",
+          "ms": 6546,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3209",
+          "gold": "ABCD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2662,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3277",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1075,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3334",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 674,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3370",
+          "gold": "D",
+          "prediction": "**D. 分保费**",
+          "correct": true,
+          "how": "weak-single",
+          "ms": 6699,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3425",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1169,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3509",
+          "gold": "CD",
+          "prediction": "**C**",
+          "correct": false,
+          "how": "bold",
+          "ms": 1064,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3580",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 892,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3680",
+          "gold": "D",
+          "prediction": "D\n\n**依据（简要核算）**：购房时可贷额度＝7.5万×(1−1.0654⁻³⁰)/0.0654≈97.5万元，故需自备首付≈150−97.5＝52.5万元；按年增长3%、年投资报酬率6%增长型年金，4年年末存入的终值系数＝[(1.06)⁴−(1.03)⁴]/0.03≈4.566，首年投资额≈52.5/4.566≈11.49万元，占年收入28万元的比重≈41%。",
+          "correct": true,
+          "how": "weak-scan",
+          "ms": 9668,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3834",
+          "gold": "BD",
+          "prediction": "**B、C、D**\n\n（说明：本题实为多项选择，\"正确的有\"——B、C、D 三项均成立；A 不成立，因为实值期权的时间溢价一般大于 0，少数深度实值美式期权才可能为负，故\"小于 0\"的说法错误。）",
+          "correct": false,
+          "how": "weak-scan",
+          "ms": 5232,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3837",
+          "gold": "D",
+          "prediction": "**D**",
+          "correct": true,
+          "how": "bold",
+          "ms": 1588,
+          "toolCalls": []
+        }
+      ]
+    },
+    {
+      "id": "B1",
+      "label": "去工具（白名单匹配不到任何工具）",
+      "presetId": 5,
+      "n": 59,
+      "correct": 41,
+      "accuracyPct": 69.49,
+      "usedTools": 0,
+      "emptyAnswers": 1,
+      "meanMs": 2893,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2055,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_58",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 777,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_83",
+          "gold": "ABDE",
+          "prediction": "**ABDE**",
+          "correct": true,
+          "how": "bold",
+          "ms": 2189,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_176",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1370,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_342",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 778,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_345",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2475,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_370",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1285,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_423",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1877,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_494",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1277,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_518",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1595,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_576",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2763,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_730",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1208,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_741",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1191,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_831",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 863,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_872",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1380,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_998",
+          "gold": "AB",
+          "prediction": "B. 5元",
+          "correct": false,
+          "how": "weak-single",
+          "ms": 7010,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1089",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1126,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1118",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 716,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1274",
+          "gold": "B",
+          "prediction": "",
+          "correct": null,
+          "error": "平台返回错误：模型调用失败：LLM 网络错误: error decoding response body"
+        },
+        {
+          "id": "knowledge_1360",
+          "gold": "AB",
+          "prediction": "**A、B、E**\n\n（智力主要指记忆能力、推理能力、空间感觉能力等心智要素；社交技能与关系处理能力属于社交/情绪能力范畴，不归入智力。）",
+          "correct": false,
+          "how": "weak-scan",
+          "ms": 2760,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1383",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 985,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1456",
+          "gold": "BC",
+          "prediction": "B、C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1888,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1477",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1150,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1510",
+          "gold": "ACDE",
+          "prediction": "**ACDE**",
+          "correct": true,
+          "how": "bold",
+          "ms": 1336,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1609",
+          "gold": "BE",
+          "prediction": "**B、E**",
+          "correct": false,
+          "how": "weak-single",
+          "ms": 4457,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1704",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1243,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1767",
+          "gold": "AD",
+          "prediction": "D",
+          "correct": false,
+          "how": "compact",
+          "ms": 1618,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1782",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1942,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1952",
+          "gold": "ABCD",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 3098,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2027",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1125,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2056",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1255,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2255",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1127,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2270",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 11698,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2370",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1123,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2415",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 3267,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2466",
+          "gold": "ABDE",
+          "prediction": "**A、B、D、E**\n\n（说明：该题为知识产权法律题，不属于本平台企业经营风险数据范围，以上为依据现行《专利法》《商标法》《著作权法》及《民法典》关于赔偿计算顺序的判断。C 项错在\"直接按许可费\"，法定表述为\"参照许可使用费的倍数合理确定\"。）",
+          "correct": false,
+          "how": "weak-scan",
+          "ms": 4628,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2479",
+          "gold": "AD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2482,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2537",
+          "gold": "ABCDE",
+          "prediction": "**ABCD**",
+          "correct": false,
+          "how": "bold",
+          "ms": 4496,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2595",
+          "gold": "ABCDE",
+          "prediction": "**A、B、C、E**（消费税、资源税、教育费附加、城市维护建设税）",
+          "correct": false,
+          "how": "weak-scan",
+          "ms": 2189,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2689",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1156,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2784",
+          "gold": "C",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 4715,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2802",
+          "gold": "ABC",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 970,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2880",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 973,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2896",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1228,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2899",
+          "gold": "D",
+          "prediction": "**D**",
+          "correct": true,
+          "how": "bold",
+          "ms": 1710,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3058",
+          "gold": "BC",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1314,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3075",
+          "gold": "AD",
+          "prediction": "",
+          "correct": false,
+          "how": "none",
+          "ms": 20794,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3150",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 948,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3189",
+          "gold": "ABCD",
+          "prediction": "**ABCD**",
+          "correct": true,
+          "how": "bold",
+          "ms": 3789,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3194",
+          "gold": "ABD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 11844,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3209",
+          "gold": "ABCD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1280,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3277",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2106,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3334",
+          "gold": "A",
+          "prediction": "A\n\n（同业拆入资金只能用于弥补票据结算、联行汇差头寸不足和解决临时性周转资金需要，不得用于发放固定资产贷款或投资。）",
+          "correct": true,
+          "how": "weak-scan",
+          "ms": 1416,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3370",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 3557,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3425",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1117,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3509",
+          "gold": "CD",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 2074,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3580",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 901,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3680",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 5477,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3834",
+          "gold": "BD",
+          "prediction": "BCD\n\n**依据**：美式期权随时可行权，故期权价值 ≥ 内在价值，时间溢价 ≥ 0。\n- A 错：实值期权时间溢价 ≥ 0（不可能小于 0）。\n- B 对：未到期的虚值期权执行只会带来负收益，理性投资者不会执行。\n- C 对：虚值期权内在价值为 0，其价值即全部为时间溢价，未到期时大于 0。\n- D 对：实值期权含时间溢价（如无股利美式看涨期权），提前执行会损失时间价值，故不一定会被执行。",
+          "correct": false,
+          "how": "weak-scan",
+          "ms": 15836,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3837",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1656,
+          "toolCalls": []
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "label": "改提示（通用知识题直接作答）",
+      "presetId": 6,
+      "n": 58,
+      "correct": 43,
+      "accuracyPct": 74.14,
+      "usedTools": 0,
+      "emptyAnswers": 0,
+      "meanMs": 1901,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2510,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_58",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 912,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_83",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1462,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_176",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1578,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_342",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 797,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_345",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1920,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_370",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1156,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_423",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1311,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_494",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 743,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_518",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 927,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_576",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1633,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_730",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 904,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_741",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1367,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_831",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1154,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_872",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1119,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_998",
+          "gold": "AB",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 6425,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1089",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1092,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1118",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1041,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1274",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1945,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1360",
+          "gold": "AB",
+          "prediction": "ABE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1384,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1383",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1106,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1456",
+          "gold": "BC",
+          "prediction": "BC",
+          "correct": true,
+          "how": "compact",
+          "ms": 1266,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1477",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1164,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1510",
+          "gold": "ACDE",
+          "prediction": "ACD",
+          "correct": false,
+          "how": "compact",
+          "ms": 2416,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1609",
+          "gold": "BE",
+          "prediction": "",
+          "correct": null,
+          "error": "平台返回错误：模型调用失败：LLM 网络错误: error decoding response body"
+        },
+        {
+          "id": "knowledge_1704",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1280,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1767",
+          "gold": "AD",
+          "prediction": "D",
+          "correct": false,
+          "how": "compact",
+          "ms": 1542,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1782",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 4934,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1952",
+          "gold": "ABCD",
+          "prediction": "ABCDE",
+          "correct": false,
+          "how": "compact",
+          "ms": 4545,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2027",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 894,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2056",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1071,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2255",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1193,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2270",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2487,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2370",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1039,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2415",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 5427,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2466",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1811,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2479",
+          "gold": "AD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2964,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2537",
+          "gold": "ABCDE",
+          "prediction": "ABCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 1780,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2595",
+          "gold": "ABCDE",
+          "prediction": "ABCE",
+          "correct": false,
+          "how": "compact",
+          "ms": 2629,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2689",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1111,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2784",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1186,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2802",
+          "gold": "ABC",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 1205,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2880",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1125,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2896",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 904,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2899",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 894,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3058",
+          "gold": "BC",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1663,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3075",
+          "gold": "AD",
+          "prediction": "AD",
+          "correct": true,
+          "how": "compact",
+          "ms": 11393,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3150",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1986,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3189",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 2642,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3194",
+          "gold": "ABD",
+          "prediction": "ABD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1528,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3209",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1563,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3277",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 931,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3334",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1072,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3370",
+          "gold": "D",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1107,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3425",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 909,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3509",
+          "gold": "CD",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1841,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3580",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1139,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3680",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 3674,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3834",
+          "gold": "BD",
+          "prediction": "",
+          "correct": null,
+          "error": "平台返回错误：模型调用失败：LLM 网络错误: error decoding response body"
+        },
+        {
+          "id": "knowledge_3837",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1474,
+          "toolCalls": []
+        }
+      ]
+    },
+    {
+      "id": "B3",
+      "label": "改提示 + 去工具",
+      "presetId": 7,
+      "n": 60,
+      "correct": 45,
+      "accuracyPct": 75,
+      "usedTools": 0,
+      "emptyAnswers": 0,
+      "meanMs": 1867,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2220,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_58",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1024,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_83",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 2349,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_176",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2477,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_342",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1775,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_345",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1815,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_370",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 636,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_423",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1871,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_494",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1325,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_518",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 948,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_576",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1326,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_730",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 627,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_741",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 971,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_831",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 838,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_872",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 640,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_998",
+          "gold": "AB",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 3060,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1089",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 819,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1118",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 809,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1274",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1753,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1360",
+          "gold": "AB",
+          "prediction": "ABE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1244,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1383",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 908,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1456",
+          "gold": "BC",
+          "prediction": "BC",
+          "correct": true,
+          "how": "compact",
+          "ms": 969,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1477",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1037,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1510",
+          "gold": "ACDE",
+          "prediction": "ACD",
+          "correct": false,
+          "how": "compact",
+          "ms": 1268,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1609",
+          "gold": "BE",
+          "prediction": "BE",
+          "correct": true,
+          "how": "compact",
+          "ms": 12820,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1704",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 951,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1767",
+          "gold": "AD",
+          "prediction": "D",
+          "correct": false,
+          "how": "compact",
+          "ms": 1911,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1782",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1250,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1952",
+          "gold": "ABCD",
+          "prediction": "ABCDE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1986,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2027",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1017,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2056",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 945,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2255",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 723,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2270",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1518,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2370",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 661,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2415",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 5230,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2466",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1079,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2479",
+          "gold": "AD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2615,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2537",
+          "gold": "ABCDE",
+          "prediction": "ABCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 2166,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2595",
+          "gold": "ABCDE",
+          "prediction": "ABCE",
+          "correct": false,
+          "how": "compact",
+          "ms": 4591,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2689",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 866,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2784",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1682,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2802",
+          "gold": "ABC",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 2810,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2880",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 810,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2896",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 868,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2899",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1184,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3058",
+          "gold": "BC",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 638,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3075",
+          "gold": "AD",
+          "prediction": "AD",
+          "correct": true,
+          "how": "compact",
+          "ms": 3150,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3150",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 854,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3189",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 2129,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3194",
+          "gold": "ABD",
+          "prediction": "ABD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1377,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3209",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 2204,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3277",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 949,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3334",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 763,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3370",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 2714,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3425",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1147,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3509",
+          "gold": "CD",
+          "prediction": "ABCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 5076,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3580",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 990,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3680",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 3927,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3834",
+          "gold": "BD",
+          "prediction": "BCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 4009,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3837",
+          "gold": "D",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1681,
+          "toolCalls": []
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "label": "改提示 + 载入技能",
+      "presetId": 8,
+      "n": 60,
+      "correct": 46,
+      "accuracyPct": 76.67,
+      "usedTools": 0,
+      "emptyAnswers": 1,
+      "meanMs": 2316,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2416,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_58",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 780,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_83",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1142,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_176",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 2892,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_342",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 978,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_345",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1889,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_370",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1182,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_423",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1931,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_494",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1085,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_518",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1334,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_576",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1531,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_730",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1070,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_741",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 620,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_831",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1004,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_872",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1116,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_998",
+          "gold": "AB",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 9226,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1089",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 634,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1118",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 532,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1274",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2506,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1360",
+          "gold": "AB",
+          "prediction": "ABE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1322,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1383",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 565,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1456",
+          "gold": "BC",
+          "prediction": "BC",
+          "correct": true,
+          "how": "compact",
+          "ms": 878,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1477",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1633,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1510",
+          "gold": "ACDE",
+          "prediction": "ACD",
+          "correct": false,
+          "how": "compact",
+          "ms": 860,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1609",
+          "gold": "BE",
+          "prediction": "",
+          "correct": false,
+          "how": "none",
+          "ms": 21933,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1704",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1157,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1767",
+          "gold": "AD",
+          "prediction": "D",
+          "correct": false,
+          "how": "compact",
+          "ms": 3912,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1782",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1093,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1952",
+          "gold": "ABCD",
+          "prediction": "ABCDE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1115,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2027",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 683,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2056",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 793,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2255",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1023,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2270",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2116,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2370",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 937,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2415",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 9000,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2466",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1928,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2479",
+          "gold": "AD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 2486,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2537",
+          "gold": "ABCDE",
+          "prediction": "ABCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 3568,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2595",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 6907,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2689",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1394,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2784",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 3168,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2802",
+          "gold": "ABC",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 1118,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2880",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1074,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2896",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1044,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2899",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1775,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3058",
+          "gold": "BC",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 1167,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3075",
+          "gold": "AD",
+          "prediction": "AD",
+          "correct": true,
+          "how": "compact",
+          "ms": 2028,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3150",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1266,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3189",
+          "gold": "ABCD",
+          "prediction": "ABC",
+          "correct": false,
+          "how": "compact",
+          "ms": 2602,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3194",
+          "gold": "ABD",
+          "prediction": "ABD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1334,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3209",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1713,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3277",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 886,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3334",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 643,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3370",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 4088,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3425",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 753,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3509",
+          "gold": "CD",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 4867,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3580",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1192,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3680",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 4773,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3834",
+          "gold": "BD",
+          "prediction": "BCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 2223,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3837",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 2066,
+          "toolCalls": []
+        }
+      ]
+    },
+    {
+      "id": "B5",
+      "label": "改提示 + 去工具 + 载入技能",
+      "presetId": 9,
+      "n": 60,
+      "correct": 47,
+      "accuracyPct": 78.33,
+      "usedTools": 0,
+      "emptyAnswers": 1,
+      "meanMs": 2005,
+      "rows": [
+        {
+          "id": "knowledge_43",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 2686,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_58",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 886,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_83",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 6773,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_176",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1679,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_342",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 841,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_345",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1570,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_370",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1319,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_423",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 1479,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_494",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 879,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_518",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 976,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_576",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1126,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_730",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 722,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_741",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 819,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_831",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 981,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_872",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1265,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_998",
+          "gold": "AB",
+          "prediction": "",
+          "correct": false,
+          "how": "none",
+          "ms": 19340,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1089",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 722,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1118",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 796,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1274",
+          "gold": "B",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1386,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1360",
+          "gold": "AB",
+          "prediction": "ABE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1397,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1383",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 950,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1456",
+          "gold": "BC",
+          "prediction": "BC",
+          "correct": true,
+          "how": "compact",
+          "ms": 835,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1477",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1254,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1510",
+          "gold": "ACDE",
+          "prediction": "ACD",
+          "correct": false,
+          "how": "compact",
+          "ms": 3102,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1609",
+          "gold": "BE",
+          "prediction": "BE",
+          "correct": true,
+          "how": "compact",
+          "ms": 7210,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1704",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 921,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1767",
+          "gold": "AD",
+          "prediction": "D",
+          "correct": false,
+          "how": "compact",
+          "ms": 1566,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1782",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 684,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_1952",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 2031,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2027",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1128,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2056",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1025,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2255",
+          "gold": "ABCDE",
+          "prediction": "ABCDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 1230,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2270",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1901,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2370",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 784,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2415",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 2850,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2466",
+          "gold": "ABDE",
+          "prediction": "ABDE",
+          "correct": true,
+          "how": "compact",
+          "ms": 2207,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2479",
+          "gold": "AD",
+          "prediction": "A",
+          "correct": false,
+          "how": "compact",
+          "ms": 1848,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2537",
+          "gold": "ABCDE",
+          "prediction": "ABCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 2989,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2595",
+          "gold": "ABCDE",
+          "prediction": "ABCE",
+          "correct": false,
+          "how": "compact",
+          "ms": 1674,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2689",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1131,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2784",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 3429,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2802",
+          "gold": "ABC",
+          "prediction": "B",
+          "correct": false,
+          "how": "compact",
+          "ms": 923,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2880",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 696,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2896",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1206,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_2899",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1323,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3058",
+          "gold": "BC",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 822,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3075",
+          "gold": "AD",
+          "prediction": "AD",
+          "correct": true,
+          "how": "compact",
+          "ms": 2200,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3150",
+          "gold": "C",
+          "prediction": "C",
+          "correct": true,
+          "how": "compact",
+          "ms": 1297,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3189",
+          "gold": "ABCD",
+          "prediction": "ABC",
+          "correct": false,
+          "how": "compact",
+          "ms": 1413,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3194",
+          "gold": "ABD",
+          "prediction": "ABD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1756,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3209",
+          "gold": "ABCD",
+          "prediction": "ABCD",
+          "correct": true,
+          "how": "compact",
+          "ms": 1863,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3277",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 450,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3334",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 782,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3370",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 2508,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3425",
+          "gold": "A",
+          "prediction": "A",
+          "correct": true,
+          "how": "compact",
+          "ms": 1101,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3509",
+          "gold": "CD",
+          "prediction": "C",
+          "correct": false,
+          "how": "compact",
+          "ms": 3527,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3580",
+          "gold": "B",
+          "prediction": "B",
+          "correct": true,
+          "how": "compact",
+          "ms": 948,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3680",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 5809,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3834",
+          "gold": "BD",
+          "prediction": "BCD",
+          "correct": false,
+          "how": "compact",
+          "ms": 1984,
+          "toolCalls": []
+        },
+        {
+          "id": "knowledge_3837",
+          "gold": "D",
+          "prediction": "D",
+          "correct": true,
+          "how": "compact",
+          "ms": 1298,
+          "toolCalls": []
+        }
+      ]
+    }
+  ],
+  "best": {
+    "id": "B5",
+    "label": "改提示 + 去工具 + 载入技能",
+    "accuracyPct": 78.33,
+    "presetId": 9
+  },
+  "directReference": 88.33
+}
