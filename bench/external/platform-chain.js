@@ -111,6 +111,7 @@ async function uploadImage(port, file, filename) {
   const nCflue = Number(arg('--cflue', 60))
   const nMm = Number(arg('--mm', 20))
   const seed = Number(arg('--seed', 20260101))
+  const presetArm = arg('--preset-arm', '') // 例如 B5：提示词修复 + 去工具 + 载入技能
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
   const dataDir = path.join(OUT, `platform-chain-${stamp}`)
   fs.mkdirSync(dataDir, { recursive: true })
@@ -118,7 +119,37 @@ async function uploadImage(port, file, filename) {
   console.log('=== 口径 B：经平台链路复测（同一种子、同一批题）===')
   const { child, port, llm } = await startBackend({ dataDir })
   console.log(`后端已启动：http://127.0.0.1:${port}（模型 ${llm.model}，Key 来源 ${llm.keySource}）`)
-  const out = { generatedAt: new Date().toISOString(), mode: 'platform-chain', model: llm.model, port, seed, cflue: null, finevalMm: null }
+  const out = { generatedAt: new Date().toISOString(), mode: 'platform-chain', model: llm.model, port, seed, presetArm: presetArm || null, cflue: null, finevalMm: null }
+
+  // ---------- 可选：装载消融预设（提示词修复 / 去工具 / 技能）----------
+  let presetId = null
+  if (presetArm) {
+    const ARMS = require('./lib/chain-presets')
+    const arm = ARMS.byId(presetArm)
+    if (!arm) throw new Error(`未知预设组 ${presetArm}（可选 ${ARMS.LIST.map((a) => a.id).join(',')}）`)
+    if (arm.skill) {
+      const r = await fetch(`http://127.0.0.1:${port}/api/skills`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(arm.skill),
+      })
+      const j = await r.json()
+      if (j.error) throw new Error(`建技能失败：${j.error}`)
+      console.log(`技能已建：${arm.skill.name} → id=${j.skill_id ?? j.id}`)
+    }
+    const body = { name: `bench-${arm.id}`, description: arm.label, prompt_extra: arm.promptExtra, enabled: true }
+    if (arm.tools) body.tools = arm.tools
+    if (arm.skill) body.skills = [arm.skill.name]
+    const r = await fetch(`http://127.0.0.1:${port}/api/plugins/presets`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    })
+    const j = await r.json()
+    if (j.error) throw new Error(`建预设失败：${j.error}`)
+    presetId = j.preset_id ?? j.id ?? null
+    if (!presetId) throw new Error(`建预设未返回 preset_id：${JSON.stringify(j).slice(0, 160)}`)
+    out.presetId = presetId
+    console.log(`预设已建：bench-${arm.id} → id=${presetId}（tools=${JSON.stringify(arm.tools)} skills=${arm.skill ? JSON.stringify([arm.skill.name]) : '[]'}）`)
+  }
+  const withPreset = (b) => (presetId ? { ...b, preset_id: presetId } : b)
 
   try {
     // ---------- CFLUE 知识题：与口径 A 完全相同的抽样方式 ----------
@@ -133,7 +164,7 @@ async function uploadImage(port, file, filename) {
         const msg = `请回答下面的单项选择题，并直接给出正确选项的字母（不要解释）：\n\n${t.question}\n${opts}`
         const t0 = Date.now()
         try {
-          const r = await chatStream(port, { message: msg })
+          const r = await chatStream(port, withPreset({ message: msg }))
           const g = G.gradeMcq(r.text, t.gold)
           rows.push({ id: t.id, group: t.group, gold: t.gold, prediction: r.text.slice(0, 500), grade: g, correct: g.correct, ms: Date.now() - t0, toolCalls: r.toolCalls, events: r.events.length, error: null })
           process.stdout.write(`\r  CFLUE ${rows.length}/${kn.length}`)
@@ -176,7 +207,7 @@ async function uploadImage(port, file, filename) {
           const attId = await uploadImage(port, imgPath, path.basename(t.image))
           const opts = t.choices.map((c) => `${c.key}. ${c.text}`).join('\n')
           const msg = `${t.question}\n${opts}\n\n请阅读附件图片后作答，只输出选项字母。`
-          const r = await chatStream(port, { message: msg, attachment_ids: [attId] }, { timeoutMs: 240000 })
+          const r = await chatStream(port, withPreset({ message: msg, attachment_ids: [attId] }), { timeoutMs: 240000 })
           const g = G.gradeMcq(r.text, t.gold)
           rows.push({ id: t.id, group: t.group, gold: t.gold, prediction: r.text.slice(0, 500), grade: g, correct: g.correct, ms: Date.now() - t0, toolCalls: r.toolCalls, attachmentId: attId, error: null })
           process.stdout.write(`\r  FinEval-MM ${rows.length}/${tasks.length}`)

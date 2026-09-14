@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-09-14T15:30:49.470Z",
+  "question": "把平台链路（口径 B）加入模型对比",
+  "chainFile": "platform-chain-2026-09-14T15-00-37.json",
+  "note": [
+    "平台链路与直连模型不是同一口径：前者带平台系统提示 + 预设 + 25 工具 + 会话编排，后者只有 harness 提示词。",
+    "因此本表按**同一基准、分口径**并列，不与\"原生模型\"数字混算。",
+    "BFCL 对平台链路口径上不适用（平台无法注入 BFCL 的合成函数），已在表内注明原因而非留空。"
+  ],
+  "benchmarks": [
+    {
+      "id": "cflue",
+      "name": "CFLUE 中文金融知识（300 题）",
+      "chainAvailable": true
+    },
+    {
+      "id": "fineval-mm",
+      "name": "FinEval-MM 图表题（150 题）",
+      "chainAvailable": true
+    },
+    {
+      "id": "financebench",
+      "name": "FinanceBench oracle（150 题）",
+      "chainAvailable": false,
+      "why": "链路未接入：需要把论文证据段落作为长文本投喂，脚本尚未支持（下一步）"
+    },
+    {
+      "id": "bfcl",
+      "name": "BFCL v4 工具调用（520 题）",
+      "chainAvailable": false,
+      "why": "**口径上不适用**：BFCL 考的是模型对\"给定函数 schema\"的调用，而平台链路用的是平台自己的 25 个工具，无法注入 BFCL 的合成函数"
+    },
+    {
+      "id": "omnidocbench",
+      "name": "OmniDocBench 整页转写（18 页）",
+      "chainAvailable": false,
+      "why": "链路可支持（图片上传已有），本轮未跑"
+    }
+  ],
+  "rows": [
+    {
+      "id": "platform-chain",
+      "label": "平台链路（口径 B，deepseek-flash）",
+      "kind": "chain",
+      "presetArm": "B5",
+      "presetId": 5,
+      "cflue": {
+        "n": 298,
+        "accuracyPct": 82.55,
+        "meanMs": 2276,
+        "usedTools": 0,
+        "empty": 9
+      },
+      "finevalMm": {
+        "n": 150,
+        "accuracyPct": 68.67,
+        "meanMs": 4504,
+        "usedTools": 0
+      }
+    },
+    {
+      "id": "direct",
+      "label": "直连模型（口径 A，harness 提示词，无平台编排）",
+      "kind": "direct",
+      "cflue": {
+        "n": 298,
+        "accuracyPct": 89.93
+      },
+      "finevalMm": {
+        "n": 150,
+        "accuracyPct": 66
+      }
+    }
+  ],
+  "externalModels": [
+    {
+      "id": "claude-fable-5-1",
+      "label": "Claude Fable 5.1",
+      "tier": "frontier",
+      "financebenchOraclePct": 94.67,
+      "bfclPct": 90.96,
+      "finevalMmPct": 64.67,
+      "cfluePct": null
+    },
+    {
+      "id": "deepseek-flash",
+      "label": "DeepSeek-V4.1-Flash",
+      "tier": "ours",
+      "financebenchOraclePct": 92,
+      "bfclPct": 89.04,
+      "finevalMmPct": 66,
+      "cfluePct": null
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "label": "GPT-5.6 Luna",
+      "tier": "samegen",
+      "financebenchOraclePct": 91.33,
+      "bfclPct": 83.08,
+      "finevalMmPct": null,
+      "cfluePct": null
+    },
+    {
+      "id": "gpt-6-astra",
+      "label": "GPT-6 Astra",
+      "tier": "frontier",
+      "financebenchOraclePct": 90.67,
+      "bfclPct": 83.27,
+      "finevalMmPct": 71.33,
+      "cfluePct": null
+    },
+    {
+      "id": "glm-5.3-flash",
+      "label": "GLM-5.3-Flash",
+      "tier": "samegen",
+      "financebenchOraclePct": 90,
+      "bfclPct": 88.27,
+      "finevalMmPct": null,
+      "cfluePct": null
+    }
+  ],
+  "samegen": [
+    {
+      "id": "deepseek-flash",
+      "label": "DeepSeek-V4.1-Flash（官方直连）",
+      "oraclePct": 92,
+      "bfclPct": 89.04
+    },
+    {
+      "id": "zen-deepseek-v4-flash",
+      "label": "DeepSeek-V4-Flash（网关路由，对照组）",
+      "oraclePct": 92,
+      "bfclPct": 89.23
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "label": "GPT-5.6 Luna（网关）",
+      "oraclePct": 91.33,
+      "bfclPct": 83.08
+    },
+    {
+      "id": "glm-5.3-flash",
+      "label": "GLM-5.3-Flash（网关）",
+      "oraclePct": 90,
+      "bfclPct": 88.27
+    }
+  ]
+}
