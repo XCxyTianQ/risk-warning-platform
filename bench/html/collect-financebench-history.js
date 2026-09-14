@@ -153,6 +153,57 @@ try {
   out.b1Restructure = { error: String(e.message).slice(0, 120) }
 }
 
+// 7) D1 端到端文档问答（open-book）：与 oracle 口径、论文检索口径同表对照
+const expDirD1 = path.join(EXT, 'out', 'experiments')
+if (fs.existsSync(expDirD1)) {
+  const d1files = fs.readdirSync(expDirD1).filter((f) => /^d1-(dev|test|all)-.*\.json$/.test(f)).sort()
+  if (d1files.length) {
+    out.d1 = {
+      note: 'D1 = 不喂论文标注的证据段落，改为给整篇 10-K（我们用 pypdf 从原始 PDF 抽取的文本），由检索先找段落再作答。',
+      runs: d1files.map((f) => {
+        const j = JSON.parse(fs.readFileSync(path.join(expDirD1, f), 'utf8'))
+        const ok = (j.rows || []).filter((r) => !r.error)
+        const hit = ok.filter((r) => r.retrieval && r.retrieval.hit).length
+        return {
+          file: f, label: j.label, split: j.split, n: ok.length,
+          accuracyPct: j.accuracyPct, retrievalHitPct: j.retrievalHitPct,
+          meanEvidenceChars: Math.round(ok.reduce((s, r) => s + (r.evidenceChars || 0), 0) / Math.max(1, ok.length)),
+          k: j.k, rerank: !!j.rerank, recallK: j.recallK || null, judgeVotes: j.judgeVotes || 1,
+          byType: j.byType,
+          joint: {
+            hitCorrect: ok.filter((r) => r.retrieval && r.retrieval.hit && r.judge === 'CORRECT').length,
+            hitWrong: ok.filter((r) => r.retrieval && r.retrieval.hit && r.judge !== 'CORRECT').length,
+            missCorrect: ok.filter((r) => r.retrieval && !r.retrieval.hit && r.judge === 'CORRECT').length,
+            missWrong: ok.filter((r) => r.retrieval && !r.retrieval.hit && r.judge !== 'CORRECT').length,
+          },
+          retrievalFrom: hit,
+        }
+      }),
+    }
+  }
+}
+
+// 8) 检索调优与重排调优（离线跑出来的，零 API 成本）
+for (const [key, f] of [['retrievalTuning', 'd1-retrieval-tuning.json'], ['rerankTuning', 'd1-rerank-tuning.json']]) {
+  const p = path.join(EXT, 'out', f)
+  if (fs.existsSync(p)) out[key] = JSON.parse(fs.readFileSync(p, 'utf8'))
+}
+
+// 9) PDF 抽取清单（多少份文档、多少字、有没有空页）
+const pdfManifest = path.join(EXT, 'out', 'd1-extract-manifest.json')
+if (fs.existsSync(pdfManifest)) {
+  const m = JSON.parse(fs.readFileSync(pdfManifest, 'utf8'))
+  const ok = (m.docs || []).filter((d) => !d.error)
+  out.pdfExtraction = {
+    docs: ok.length,
+    failed: (m.docs || []).length - ok.length,
+    totalChars: ok.reduce((s, d) => s + (d.chars || 0), 0),
+    meanChars: Math.round(ok.reduce((s, d) => s + (d.chars || 0), 0) / Math.max(1, ok.length)),
+    docsWithEmptyPages: ok.filter((d) => (d.emptyPages || 0) > 0).length,
+    tool: 'pypdf + cryptography（评测侧依赖，不在产品内）',
+  }
+}
+
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2))
 console.log(`已写出 ${path.relative(REPO, OUT)}\n`)
 for (const [k, v] of Object.entries(out.variants)) {

@@ -93,14 +93,20 @@ if (fs.existsSync(jp)) {
       if (row.ourVerdict === 'CORRECT') { byType[t].correct++; correct++ }
     }
     const n = (r.rows || []).length
+    // 口径归类：oracle（给证据）/ retrieval（向量库检索）/ closedBook（闭卷）
+    const mode = /singlestore|sharedstore|检索/.test(r.file + r.label) ? 'retrieval'
+      : /closedbook/i.test(r.file) ? 'closedBook'
+        : 'oracle'
     sameJudge.models.push({
       label: r.label,
+      file: r.file,
+      mode,
       paperAccuracyPct: r.paperAccuracyPct,
       ourJudgeAccuracyPct: Number(((correct / Math.max(1, n)) * 100).toFixed(2)),
       n,
       byType: Object.fromEntries(TYPES.map((t) => [t, { n: byType[t].n, accuracyPct: byType[t].n ? Number(((byType[t].correct / byType[t].n) * 100).toFixed(2)) : null }])),
     })
-    console.log(`统一裁判：${r.label} 论文 ${r.paperAccuracyPct}% → 我们裁判 ${sameJudge.models[sameJudge.models.length - 1].ourJudgeAccuracyPct}%`)
+    console.log(`统一裁判：${r.label} 论文 ${r.paperAccuracyPct}% → 我们裁判 ${sameJudge.models[sameJudge.models.length - 1].ourJudgeAccuracyPct}%（口径 ${mode}）`)
   }
   out.sameJudge = sameJudge
 }

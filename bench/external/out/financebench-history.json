@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T08:11:19.470Z",
+  "generatedAt": "2026-09-14T10:48:05.065Z",
   "note": "FinanceBench oracle 口径的改进记录：A0=原提示词（含拒答邀请），A1=去保守化；均由同一个裁判（deepseek-flash）判定。",
   "variants": {
     "A0（最新一次）": {
@@ -438,6 +438,42 @@
         "deltaPp": 1.33,
         "changedToWrong": 6,
         "changedToCorrect": 8
+      },
+      {
+        "label": "GPT-4（single store 检索）",
+        "n": 150,
+        "paperAccuracyPct": 42,
+        "ourJudgeAccuracyPct": 37.33,
+        "deltaPp": -4.67,
+        "changedToWrong": 9,
+        "changedToCorrect": 2
+      },
+      {
+        "label": "GPT-4-1106（single store 检索）",
+        "n": 150,
+        "paperAccuracyPct": 50,
+        "ourJudgeAccuracyPct": 42.67,
+        "deltaPp": -7.33,
+        "changedToWrong": 13,
+        "changedToCorrect": 2
+      },
+      {
+        "label": "GPT-4（shared store 检索）",
+        "n": 150,
+        "paperAccuracyPct": 16.67,
+        "ourJudgeAccuracyPct": 15.33,
+        "deltaPp": -1.33,
+        "changedToWrong": 3,
+        "changedToCorrect": 1
+      },
+      {
+        "label": "GPT-4-1106（shared store 检索）",
+        "n": 150,
+        "paperAccuracyPct": 19.33,
+        "ourJudgeAccuracyPct": 18.67,
+        "deltaPp": -0.67,
+        "changedToWrong": 5,
+        "changedToCorrect": 4
       }
     ]
   },
@@ -521,5 +557,490 @@
     "tableRows": 1945,
     "invariantFailures": 0,
     "charRatioPct": 108.7
+  },
+  "d1": {
+    "note": "D1 = 不喂论文标注的证据段落，改为给整篇 10-K（我们用 pypdf 从原始 PDF 抽取的文本），由检索先找段落再作答。",
+    "runs": [
+      {
+        "file": "d1-all-2026-09-14T10-44-33.json",
+        "label": "D1 端到端文档问答（BM25 top-16，整篇 10-K，k=16）",
+        "split": "all",
+        "n": 150,
+        "accuracyPct": 70,
+        "retrievalHitPct": 76,
+        "meanEvidenceChars": 23099,
+        "k": 16,
+        "rerank": false,
+        "recallK": null,
+        "judgeVotes": 3,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "correct": 36,
+            "hit": 47
+          },
+          "novel-generated": {
+            "n": 50,
+            "correct": 36,
+            "hit": 40
+          },
+          "domain-relevant": {
+            "n": 50,
+            "correct": 33,
+            "hit": 27
+          }
+        },
+        "joint": {
+          "hitCorrect": 88,
+          "hitWrong": 26,
+          "missCorrect": 17,
+          "missWrong": 19
+        },
+        "retrievalFrom": 114
+      },
+      {
+        "file": "d1-dev-2026-09-14T09-18-27.json",
+        "label": "D1 端到端文档问答（BM25 top-8，整篇 10-K，k=8）",
+        "split": "dev",
+        "n": 51,
+        "accuracyPct": 47.06,
+        "retrievalHitPct": 49.02,
+        "meanEvidenceChars": 11717,
+        "k": 8,
+        "rerank": false,
+        "recallK": null,
+        "judgeVotes": 3,
+        "byType": {
+          "novel-generated": {
+            "n": 14,
+            "correct": 7,
+            "hit": 8
+          },
+          "domain-relevant": {
+            "n": 19,
+            "correct": 9,
+            "hit": 4
+          },
+          "metrics-generated": {
+            "n": 18,
+            "correct": 8,
+            "hit": 13
+          }
+        },
+        "joint": {
+          "hitCorrect": 17,
+          "hitWrong": 8,
+          "missCorrect": 7,
+          "missWrong": 19
+        },
+        "retrievalFrom": 25
+      },
+      {
+        "file": "d1-dev-2026-09-14T09-45-13.json",
+        "label": "D1 端到端文档问答（BM25 top-16，整篇 10-K，k=16）",
+        "split": "dev",
+        "n": 60,
+        "accuracyPct": 70,
+        "retrievalHitPct": 76.67,
+        "meanEvidenceChars": 23285,
+        "k": 16,
+        "rerank": false,
+        "recallK": null,
+        "judgeVotes": 3,
+        "byType": {
+          "novel-generated": {
+            "n": 20,
+            "correct": 16,
+            "hit": 16
+          },
+          "domain-relevant": {
+            "n": 20,
+            "correct": 14,
+            "hit": 12
+          },
+          "metrics-generated": {
+            "n": 20,
+            "correct": 12,
+            "hit": 18
+          }
+        },
+        "joint": {
+          "hitCorrect": 34,
+          "hitWrong": 12,
+          "missCorrect": 8,
+          "missWrong": 6
+        },
+        "retrievalFrom": 46
+      },
+      {
+        "file": "d1-dev-2026-09-14T10-11-51.json",
+        "label": "D1 端到端文档问答（BM25 top-16，整篇 10-K，k=16）",
+        "split": "dev",
+        "n": 60,
+        "accuracyPct": 70,
+        "retrievalHitPct": 78.33,
+        "meanEvidenceChars": 23210,
+        "k": 16,
+        "rerank": false,
+        "recallK": null,
+        "judgeVotes": 3,
+        "byType": {
+          "novel-generated": {
+            "n": 20,
+            "correct": 14,
+            "hit": 16
+          },
+          "domain-relevant": {
+            "n": 20,
+            "correct": 14,
+            "hit": 12
+          },
+          "metrics-generated": {
+            "n": 20,
+            "correct": 14,
+            "hit": 19
+          }
+        },
+        "joint": {
+          "hitCorrect": 35,
+          "hitWrong": 12,
+          "missCorrect": 7,
+          "missWrong": 6
+        },
+        "retrievalFrom": 47
+      }
+    ]
+  },
+  "retrievalTuning": {
+    "generatedAt": "2026-09-14T09:26:09.890Z",
+    "n": 150,
+    "strategies": [
+      {
+        "id": "S0",
+        "desc": "BM25 top-k（D1 v1 基线）",
+        "k": 8,
+        "hitPct": 59.33,
+        "coveragePct": 33.19,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 35
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 17
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 37
+          }
+        }
+      },
+      {
+        "id": "S1",
+        "desc": "+ 同义词扩展",
+        "k": 8,
+        "hitPct": 64,
+        "coveragePct": 38.82,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 37
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 20
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 39
+          }
+        }
+      },
+      {
+        "id": "S2",
+        "desc": "+ 行项目短语加权",
+        "k": 8,
+        "hitPct": 64,
+        "coveragePct": 39.98,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 37
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 20
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 39
+          }
+        }
+      },
+      {
+        "id": "S3",
+        "desc": "+ 报表路由加权",
+        "k": 8,
+        "hitPct": 67.33,
+        "coveragePct": 40.98,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 39
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 23
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 39
+          }
+        }
+      },
+      {
+        "id": "S4",
+        "desc": "+ 年份邻近加权",
+        "k": 8,
+        "hitPct": 68,
+        "coveragePct": 41.98,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 39
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 23
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 40
+          }
+        }
+      },
+      {
+        "id": "S5",
+        "desc": "S4 + k=16",
+        "k": 16,
+        "hitPct": 77.33,
+        "coveragePct": 51.51,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 46
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 28
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 42
+          }
+        }
+      },
+      {
+        "id": "S6",
+        "desc": "S4 + k=24",
+        "k": 24,
+        "hitPct": 80.67,
+        "coveragePct": 58.08,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 47
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 32
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 42
+          }
+        }
+      }
+    ]
+  },
+  "rerankTuning": {
+    "generatedAt": "2026-09-14T09:50:21.243Z",
+    "n": 150,
+    "configs": [
+      {
+        "id": "A",
+        "desc": "加权 top-8（= D1 v2 的 k=8 版本）",
+        "k": 8,
+        "rerank": false,
+        "hitPct": 65.33,
+        "coveragePct": 40.35,
+        "meanChars": 11604,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 38
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 21
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 39
+          }
+        }
+      },
+      {
+        "id": "B",
+        "desc": "召回 24 → 重排取 8",
+        "k": 8,
+        "rerank": true,
+        "recallK": 24,
+        "hitPct": 65.33,
+        "coveragePct": 40.33,
+        "meanChars": 11577,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 42
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 21
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 35
+          }
+        }
+      },
+      {
+        "id": "C",
+        "desc": "召回 24 → 重排取 12",
+        "k": 12,
+        "rerank": true,
+        "recallK": 24,
+        "hitPct": 74,
+        "coveragePct": 47.17,
+        "meanChars": 17323,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 46
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 25
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 40
+          }
+        }
+      },
+      {
+        "id": "D",
+        "desc": "召回 40 → 重排取 8",
+        "k": 8,
+        "rerank": true,
+        "recallK": 40,
+        "hitPct": 64.67,
+        "coveragePct": 40.65,
+        "meanChars": 11577,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 40
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 22
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 35
+          }
+        }
+      },
+      {
+        "id": "E",
+        "desc": "召回 24 → 重排取 16",
+        "k": 16,
+        "rerank": true,
+        "recallK": 24,
+        "hitPct": 76,
+        "coveragePct": 51.09,
+        "meanChars": 23025,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 47
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 27
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 40
+          }
+        }
+      },
+      {
+        "id": "F",
+        "desc": "加权 top-16（= D1 v2 实跑配置）",
+        "k": 16,
+        "rerank": false,
+        "hitPct": 76.67,
+        "coveragePct": 49.87,
+        "meanChars": 23056,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 45
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 28
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 42
+          }
+        }
+      },
+      {
+        "id": "G",
+        "desc": "加权 top-24",
+        "k": 24,
+        "rerank": false,
+        "hitPct": 80,
+        "coveragePct": 57.3,
+        "meanChars": 34235,
+        "perType": {
+          "metrics-generated": {
+            "n": 50,
+            "hit": 47
+          },
+          "domain-relevant": {
+            "n": 50,
+            "hit": 31
+          },
+          "novel-generated": {
+            "n": 50,
+            "hit": 42
+          }
+        }
+      }
+    ]
+  },
+  "pdfExtraction": {
+    "docs": 85,
+    "failed": 0,
+    "totalChars": 41134181,
+    "meanChars": 483932,
+    "docsWithEmptyPages": 21,
+    "tool": "pypdf + cryptography（评测侧依赖，不在产品内）"
   }
 }

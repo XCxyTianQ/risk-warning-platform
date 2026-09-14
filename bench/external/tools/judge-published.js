@@ -21,6 +21,11 @@ const FILES = [
   ['financebench_results_gpt4_oracle.jsonl', 'GPT-4（oracle）'],
   ['financebench_results_gpt4_1106_oracle.jsonl', 'GPT-4-1106（oracle）'],
   ['financebench_results_claude2_incontext.jsonl', 'Claude-2（in-context）'],
+  // 检索口径（论文的向量库 RAG）：与我们的 D1 端到端文档问答做同裁判对照
+  ['financebench_results_gpt4_singlestore.jsonl', 'GPT-4（single store 检索）'],
+  ['financebench_results_gpt4_sharedstore.jsonl', 'GPT-4（shared store 检索）'],
+  ['financebench_results_gpt4_1106_singlestore.jsonl', 'GPT-4-1106（single store 检索）'],
+  ['financebench_results_gpt4_1106_sharedstore.jsonl', 'GPT-4-1106（shared store 检索）'],
 ]
 
 ;(async () => {
@@ -77,8 +82,14 @@ const FILES = [
     console.log(`   论文判错/我们判对 ${stats.changedToCorrect} 条；论文判对/我们判错 ${stats.changedToWrong} 条；我们判为拒答 ${stats.refused} 条`)
   }
   const file = path.join(OUT, 'judge-published.json')
-  fs.writeFileSync(file, JSON.stringify({ generatedAt: new Date().toISOString(), judgeModel: judge.describe(),
-    judgeVotes: votes, results }, null, 2))
-  console.log(`\n产物 → ${path.relative(path.join(EXT, '..', '..'), file)}`)
+  // 合并而不是覆盖：单跑一个文件时不能把之前算好的其它模型结果丢掉
+  const prev = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { results: [] }
+  const merged = new Map((prev.results || []).map((r) => [r.file, r]))
+  for (const r of results) merged.set(r.file, r)
+  fs.writeFileSync(file, JSON.stringify({
+    generatedAt: new Date().toISOString(), judgeModel: judge.describe(), judgeVotes: votes,
+    results: [...merged.values()],
+  }, null, 2))
+  console.log(`\n产物 → ${path.relative(path.join(EXT, '..', '..'), file)}（累计 ${merged.size} 个模型）`)
   console.log(`记账：${judge.describe().calls} 次裁判调用，约 ¥${judge.describe().estimatedCostCNY}`)
 })().catch((e) => { console.error(e); process.exit(1) })

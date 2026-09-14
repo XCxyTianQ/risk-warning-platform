@@ -1,0 +1,854 @@
+{
+  "docs": [
+    {
+      "file": "3M_2018_10K.pdf",
+      "bytes": 1252586,
+      "sha256": "faf10c53fc6f1a8aa346ec3db79145e3ae6fbb3753c8064924e174d0a973934d",
+      "pages": 160,
+      "chars": 614496,
+      "charsPerPage": 3840.6,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "3M_2022_10K.pdf",
+      "bytes": 1655681,
+      "sha256": "d5cf549543a24b04228fd2af979ff2ca94cf64fb008a789340cb9117fbcfde5d",
+      "pages": 252,
+      "chars": 934765,
+      "charsPerPage": 3709.4,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "3M_2023Q2_10Q.pdf",
+      "bytes": 5287301,
+      "sha256": "3e66115793459f42185feeeab4e7f07dd27ab6dd465d0694ce415e861029cf93",
+      "pages": 92,
+      "chars": 352717,
+      "charsPerPage": 3833.9,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "ACTIVISIONBLIZZARD_2019_10K.pdf",
+      "bytes": 1274941,
+      "sha256": "017f1bbc1e37f2945a41fa2b5cf39d822e1e9d435a2c2b9c6b1cc76cd114a2df",
+      "pages": 198,
+      "chars": 630750,
+      "charsPerPage": 3185.6,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "ADOBE_2015_10K.pdf",
+      "bytes": 1457725,
+      "sha256": "f9ddba652f19e20752d98b1b4cedcebcb1a9a6d11dd23ab2e2f00f009a164c24",
+      "pages": 116,
+      "chars": 475524,
+      "charsPerPage": 4099.3,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "ADOBE_2016_10K.pdf",
+      "bytes": 4171413,
+      "sha256": "655153cdaed14d7093e98ff75595bf850a0d2299fa851ccf5b344ebc2d5038ae",
+      "pages": 112,
+      "chars": 414832,
+      "charsPerPage": 3703.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "ADOBE_2017_10K.pdf",
+      "bytes": 4028448,
+      "sha256": "ace32580369138998de84a0d0e24943766aa8374a17b823fdfae980b9c1458bd",
+      "pages": 107,
+      "chars": 401307,
+      "charsPerPage": 3750.5,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "ADOBE_2018_10K.pdf",
+      "bytes": 4226085,
+      "sha256": "9544def28e9c7c2f31cffedbc5275d3a6a9bd984619d7aedaa0c7285860a2376",
+      "pages": 112,
+      "chars": 419093,
+      "charsPerPage": 3741.9,
+      "emptyPages": 0,
+      "questions": 0
+    },
+    {
+      "file": "ADOBE_2022_10K.pdf",
+      "bytes": 620288,
+      "sha256": "ce8c716abac26bfa38ae6b71d703112852c8591a4bb19f7c1177beb1dfc87ad2",
+      "pages": 99,
+      "chars": 374725,
+      "charsPerPage": 3785.1,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "AES_2022_10K.pdf",
+      "bytes": 4479324,
+      "sha256": "9c5de2227534c4d6bf3d805f635bad5d82eddf8e4183a85a3d1311b48b50291d",
+      "pages": 257,
+      "chars": 905797,
+      "charsPerPage": 3524.5,
+      "emptyPages": 2,
+      "questions": 3
+    },
+    {
+      "file": "AMAZON_2017_10K.pdf",
+      "bytes": 627047,
+      "sha256": "f8af08ff6c4147351ec3a6e5e2c74e104678ce68fb0d6d476b1e43f685c09a3f",
+      "pages": 85,
+      "chars": 295980,
+      "charsPerPage": 3482.1,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "AMAZON_2019_10K.pdf",
+      "bytes": 619184,
+      "sha256": "d7df8c6cf3e351a8d68c7473be4159723d545260a32dbc82a8dd11c254c5584a",
+      "pages": 83,
+      "chars": 282775,
+      "charsPerPage": 3406.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "AMCOR_2020_10K.pdf",
+      "bytes": 8364895,
+      "sha256": "da158d5c68835374bcc52205663aa7653af1c2a6b31b09ab775c6e02a40da026",
+      "pages": 195,
+      "chars": 560800,
+      "charsPerPage": 2875.9,
+      "emptyPages": 10,
+      "questions": 1
+    },
+    {
+      "file": "AMCOR_2022_8K_dated-2022-07-01.pdf",
+      "bytes": 147921,
+      "sha256": "1de32e72c265486469f3b1c7cbfbe064a27055e60f7b43a81439986dda9025ad",
+      "pages": 9,
+      "chars": 24273,
+      "charsPerPage": 2697.0,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "AMCOR_2023Q2_10Q.pdf",
+      "bytes": 455017,
+      "sha256": "71c39c3f338fc81a99e128e8e871e265818657670a7d29a62c454c905f94524c",
+      "pages": 57,
+      "chars": 123605,
+      "charsPerPage": 2168.5,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "AMCOR_2023Q4_EARNINGS.pdf",
+      "bytes": 244702,
+      "sha256": "d155b7808e78167831648f476b7e3578e2d98645dee30862bbef4ff50fa24bf4",
+      "pages": 14,
+      "chars": 43807,
+      "charsPerPage": 3129.1,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "AMCOR_2023_10K.pdf",
+      "bytes": 1108309,
+      "sha256": "84d7a0291a12f4e68352750dccda3754c78eefdf06e0b5462046357a1ed53332",
+      "pages": 156,
+      "chars": 486340,
+      "charsPerPage": 3117.6,
+      "emptyPages": 0,
+      "questions": 4
+    },
+    {
+      "file": "AMD_2015_10K.pdf",
+      "bytes": 2474122,
+      "sha256": "105fff1c4af84a3d974b0f3fa224122e782aedca60fa3609f2789c80549dd8f6",
+      "pages": 215,
+      "chars": 761159,
+      "charsPerPage": 3540.3,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "AMD_2022_10K.pdf",
+      "bytes": 5122473,
+      "sha256": "a3bd74088fae0ad4aa03d04998a1f4c64fd0b3c693841601b0ac49b46cf5c1f4",
+      "pages": 121,
+      "chars": 413012,
+      "charsPerPage": 3413.3,
+      "emptyPages": 0,
+      "questions": 7
+    },
+    {
+      "file": "AMERICANEXPRESS_2022_10K.pdf",
+      "bytes": 2436166,
+      "sha256": "d3bbc7ab23d6160e07eab50a359e4d68c40efff9fde3baa168e7c40e06f568e6",
+      "pages": 260,
+      "chars": 821798,
+      "charsPerPage": 3160.8,
+      "emptyPages": 0,
+      "questions": 7
+    },
+    {
+      "file": "AMERICANWATERWORKS_2020_10K.pdf",
+      "bytes": 1437123,
+      "sha256": "6b43f1ed70b67c06483d28f8054270d597bce8507f298af2b1b6d9356d728602",
+      "pages": 152,
+      "chars": 626669,
+      "charsPerPage": 4122.8,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "AMERICANWATERWORKS_2021_10K.pdf",
+      "bytes": 1975636,
+      "sha256": "701528ae6d14a77229468a829ee18f01ed439d5be012d0a915d2683335051029",
+      "pages": 181,
+      "chars": 679583,
+      "charsPerPage": 3754.6,
+      "emptyPages": 4,
+      "questions": 1
+    },
+    {
+      "file": "AMERICANWATERWORKS_2022_10K.pdf",
+      "bytes": 2729077,
+      "sha256": "aea336531f1f8b10ecee1dd61066aab29794504f1f4a1407c857bd1e20d7da40",
+      "pages": 306,
+      "chars": 1015229,
+      "charsPerPage": 3317.7,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "BESTBUY_2017_10K.pdf",
+      "bytes": 776434,
+      "sha256": "4570187fa697f252e08c8f99c409446fbcde05b08358851d34d4cb1c8bd1cec8",
+      "pages": 109,
+      "chars": 355119,
+      "charsPerPage": 3258.0,
+      "emptyPages": 2,
+      "questions": 1
+    },
+    {
+      "file": "BESTBUY_2019_10K.pdf",
+      "bytes": 782117,
+      "sha256": "d3228e9acd2ce498b97a9d2cb99c2330b9a04687b7947908646d205b3eadf30d",
+      "pages": 107,
+      "chars": 361227,
+      "charsPerPage": 3376.0,
+      "emptyPages": 2,
+      "questions": 1
+    },
+    {
+      "file": "BESTBUY_2023_10K.pdf",
+      "bytes": 703034,
+      "sha256": "7ca465d31a08be29e8c08d756644d33d818c7254a1215720f265227005cda696",
+      "pages": 75,
+      "chars": 302787,
+      "charsPerPage": 4037.2,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "BESTBUY_2024Q2_10Q.pdf",
+      "bytes": 442386,
+      "sha256": "cf9efb922bdd28d726d7e1605c5fa1f263dda72e033989e3bc9ee3a3bb356c03",
+      "pages": 30,
+      "chars": 102254,
+      "charsPerPage": 3408.5,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "BLOCK_2016_10K.pdf",
+      "bytes": 864350,
+      "sha256": "5ef866a19b1110dcdbd1b0bc3c513a04e3d05322384c754cf394ad63f9af8191",
+      "pages": 121,
+      "chars": 394786,
+      "charsPerPage": 3262.7,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "BLOCK_2020_10K.pdf",
+      "bytes": 1159158,
+      "sha256": "c19a9fb25db3270e3a908c202855f4a54f000a06bf19a8b284331810228646fe",
+      "pages": 158,
+      "chars": 550346,
+      "charsPerPage": 3483.2,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "BOEING_2018_10K.pdf",
+      "bytes": 967741,
+      "sha256": "6f1ace34b3b01778ad7d92d43ccd2f76513d5159ef48fbc07b510296cf2d07dc",
+      "pages": 136,
+      "chars": 389102,
+      "charsPerPage": 2861.0,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "BOEING_2022_10K.pdf",
+      "bytes": 1366995,
+      "sha256": "09285ff7ee737d3302977104aa05cc53c9dfb0161f3461a89b583dc38b9f2ab6",
+      "pages": 190,
+      "chars": 509155,
+      "charsPerPage": 2679.8,
+      "emptyPages": 2,
+      "questions": 7
+    },
+    {
+      "file": "COCACOLA_2017_10K.pdf",
+      "bytes": 1790599,
+      "sha256": "b57c75cf20916904f31c6aa7644d6c110f019adf7c76782c7d0ede7b95c65ac1",
+      "pages": 197,
+      "chars": 748382,
+      "charsPerPage": 3798.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "COCACOLA_2021_10K.pdf",
+      "bytes": 9762541,
+      "sha256": "46a7059b9da795cd1ea9862d5b4f82a21e9b72e799351927a11f5cb4c528b592",
+      "pages": 183,
+      "chars": 693463,
+      "charsPerPage": 3789.4,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "COCACOLA_2022_10K.pdf",
+      "bytes": 9485744,
+      "sha256": "9f91bb914d94d014cfca96e1021c932d5476d8b8ac2a933767bac4c438fd7a71",
+      "pages": 183,
+      "chars": 671014,
+      "charsPerPage": 3666.7,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "CORNING_2020_10K.pdf",
+      "bytes": 1180865,
+      "sha256": "ef471ab9ff6067f117977df6df8b4b5007066286b733981475ac2ccf48d91e59",
+      "pages": 138,
+      "chars": 448015,
+      "charsPerPage": 3246.5,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "CORNING_2021_10K.pdf",
+      "bytes": 1131912,
+      "sha256": "8023fac91ad417f996b692c506ee0e097effd091e698275288e4126cb8a2020e",
+      "pages": 125,
+      "chars": 438272,
+      "charsPerPage": 3506.2,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "CORNING_2022_10K.pdf",
+      "bytes": 1399926,
+      "sha256": "a63f102f045826b38ad21a606c33710f62932646fd7c0f1852ce411a4397a3ee",
+      "pages": 159,
+      "chars": 492648,
+      "charsPerPage": 3098.4,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "COSTCO_2021_10K.pdf",
+      "bytes": 765319,
+      "sha256": "29e05b3862cf6ffa6cfda34ac82a9fa0fe76b67338c5924da3325c2ee3b08748",
+      "pages": 76,
+      "chars": 221646,
+      "charsPerPage": 2916.4,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "CVSHEALTH_2018_10K.pdf",
+      "bytes": 1868195,
+      "sha256": "bdc800e3f52a3e1d7a79c0973af3e94122fa08a76e335ea8305df60a09e1a0dc",
+      "pages": 392,
+      "chars": 1445403,
+      "charsPerPage": 3687.3,
+      "emptyPages": 2,
+      "questions": 1
+    },
+    {
+      "file": "CVSHEALTH_2022_10K.pdf",
+      "bytes": 1898137,
+      "sha256": "183c196a41793cd50002ff6b88f8c6d32e4fcb1117ab490a732414e1208cda8f",
+      "pages": 213,
+      "chars": 854189,
+      "charsPerPage": 4010.3,
+      "emptyPages": 1,
+      "questions": 3
+    },
+    {
+      "file": "FOOTLOCKER_2022_8K_dated-2022-05-20.pdf",
+      "bytes": 116133,
+      "sha256": "865f22331a5943a85e53e38d1753addbeb6c42270853cddd0abc73ab23d150e9",
+      "pages": 4,
+      "chars": 6717,
+      "charsPerPage": 1679.2,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "FOOTLOCKER_2022_8K_dated_2022-08-19.pdf",
+      "bytes": 316459,
+      "sha256": "70fd2d5bfc6955424196b372a5273ffbc74d2f0153f291e10e73edc37962a14e",
+      "pages": 31,
+      "chars": 84477,
+      "charsPerPage": 2725.1,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "GENERALMILLS_2019_10K.pdf",
+      "bytes": 920782,
+      "sha256": "e8120ce31b22136e15c14115cdfbf3ddc548e58f15b6febc350c422a4c12d9db",
+      "pages": 140,
+      "chars": 448451,
+      "charsPerPage": 3203.2,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "GENERALMILLS_2020_10K.pdf",
+      "bytes": 2342475,
+      "sha256": "626dd53f9b52e5895b7a7073e1c491008769970609c10e2f6cf8247ed85d6fae",
+      "pages": 127,
+      "chars": 439895,
+      "charsPerPage": 3463.7,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "GENERALMILLS_2022_10K.pdf",
+      "bytes": 1083414,
+      "sha256": "27f2cc507ffc056de3b679d124d51b80bd043ce7b8e867c59e2cdfe1d2ea5de3",
+      "pages": 127,
+      "chars": 406035,
+      "charsPerPage": 3197.1,
+      "emptyPages": 8,
+      "questions": 1
+    },
+    {
+      "file": "JOHNSON_JOHNSON_2022Q4_EARNINGS.pdf",
+      "bytes": 729392,
+      "sha256": "7ae6bf6f9a998d19e23fd796b58b0f2015085c74712253b78fb90174c12436a7",
+      "pages": 24,
+      "chars": 71822,
+      "charsPerPage": 2992.6,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "JOHNSON_JOHNSON_2022_10K.pdf",
+      "bytes": 1941368,
+      "sha256": "dba7d6cc97734abd6dcbc1a6a34f82b5d228e60d0a1a32425a90404fd4d3e290",
+      "pages": 151,
+      "chars": 519891,
+      "charsPerPage": 3443.0,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "JOHNSON_JOHNSON_2023Q2_EARNINGS.pdf",
+      "bytes": 1212840,
+      "sha256": "db1f3419d309440e644dc3cdfbb74758e67734dd181e5dbabc7479d0ab92d026",
+      "pages": 24,
+      "chars": 71282,
+      "charsPerPage": 2970.1,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "JOHNSON_JOHNSON_2023_8K_dated-2023-08-30.pdf",
+      "bytes": 455282,
+      "sha256": "0601a4b9f15e4400ced1b2ccb81c309cb66844fbac6b975a76dc490501bea95a",
+      "pages": 27,
+      "chars": 57065,
+      "charsPerPage": 2113.5,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "JPMORGAN_2021Q1_10Q.pdf",
+      "bytes": 2285253,
+      "sha256": "62518c05b02265dc13ca257d9ec0be0aec4449dad53db0c77d93444e7e2cfe97",
+      "pages": 179,
+      "chars": 604369,
+      "charsPerPage": 3376.4,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "JPMORGAN_2022Q2_10Q.pdf",
+      "bytes": 2290421,
+      "sha256": "7d715f552d4eeb6b2a1ea8ae02237b5767306907e761270ac23d74ac5b7e44b5",
+      "pages": 197,
+      "chars": 643448,
+      "charsPerPage": 3266.2,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "JPMORGAN_2022_10K.pdf",
+      "bytes": 6947859,
+      "sha256": "c269899950f36edfa496e3c8447a51d86d0a206442a96dc24dcd9317d55b957c",
+      "pages": 382,
+      "chars": 1555640,
+      "charsPerPage": 4072.4,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "JPMORGAN_2023Q2_10Q.pdf",
+      "bytes": 2573600,
+      "sha256": "eef2d9c1fdb5dc82be48166487a9e451c8544aec932a01fb06309ea7cd7122f5",
+      "pages": 217,
+      "chars": 735852,
+      "charsPerPage": 3391.0,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "KRAFTHEINZ_2019_10K.pdf",
+      "bytes": 1531923,
+      "sha256": "df1340e7b002e5f412d4c9073292d0f48a2988fd347d5a4f44d017b9680fbae2",
+      "pages": 152,
+      "chars": 548782,
+      "charsPerPage": 3610.4,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "LOCKHEEDMARTIN_2020_10K.pdf",
+      "bytes": 1372193,
+      "sha256": "1e68051a649270779fc5cb68806612a28d7d81288ed75dd37aa1858717bf55a0",
+      "pages": 132,
+      "chars": 524002,
+      "charsPerPage": 3969.7,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "LOCKHEEDMARTIN_2021_10K.pdf",
+      "bytes": 1347017,
+      "sha256": "d2486265fedea887bcc621f0b2dbb9670e66fe05203e1378b8e650c9564732fb",
+      "pages": 136,
+      "chars": 535993,
+      "charsPerPage": 3941.1,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "LOCKHEEDMARTIN_2022_10K.pdf",
+      "bytes": 1398312,
+      "sha256": "9a2317300d0f1e2623ba291fe9ec38fc779c1d1ad989dcfe6f862b77435c6923",
+      "pages": 130,
+      "chars": 520297,
+      "charsPerPage": 4002.3,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "MGMRESORTS_2018_10K.pdf",
+      "bytes": 1421540,
+      "sha256": "1b540737f91716aaa23b062499e6cab9c51d258e151f37eb8c65646bb588a0da",
+      "pages": 188,
+      "chars": 705806,
+      "charsPerPage": 3754.3,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "MGMRESORTS_2020_10K.pdf",
+      "bytes": 1383002,
+      "sha256": "98a9a55baf838309d16a730fd63efbcd146be1911b61abb3658b1774f360b099",
+      "pages": 150,
+      "chars": 613931,
+      "charsPerPage": 4092.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "MGMRESORTS_2022Q4_EARNINGS.pdf",
+      "bytes": 737922,
+      "sha256": "fe9126b17c3656e50d53741b13cb5fb233d4adaf922e4d84072b1d5e564fbfbd",
+      "pages": 15,
+      "chars": 48779,
+      "charsPerPage": 3251.9,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "MGMRESORTS_2022_10K.pdf",
+      "bytes": 1755866,
+      "sha256": "130b96c1309c97aaedcabee2fa5d5421e54491e618273bd33c3b1aeddad323ec",
+      "pages": 220,
+      "chars": 699777,
+      "charsPerPage": 3180.8,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "MGMRESORTS_2023Q2_10Q.pdf",
+      "bytes": 661891,
+      "sha256": "09c02fd40073570ae0826d707674154a9cd55a895e94096a82fcf0a4447ea64d",
+      "pages": 62,
+      "chars": 173724,
+      "charsPerPage": 2802.0,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "MICROSOFT_2016_10K.pdf",
+      "bytes": 838415,
+      "sha256": "f3555bd5ea1802770cc8f2a7ca766392e16fe6504f18688db681d852029404dc",
+      "pages": 121,
+      "chars": 408320,
+      "charsPerPage": 3374.5,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "MICROSOFT_2023_10K.pdf",
+      "bytes": 726155,
+      "sha256": "e534af371c824aab19b8d01f8bc0e9d1e0a3fb418a33119c5224a53d20a0d37b",
+      "pages": 116,
+      "chars": 380322,
+      "charsPerPage": 3278.6,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "NETFLIX_2015_10K.pdf",
+      "bytes": 578489,
+      "sha256": "b22ca874ef08f383bd0b1071677d44f4a242af668f855f00dc9c6d4ac94148e2",
+      "pages": 72,
+      "chars": 235578,
+      "charsPerPage": 3271.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "NETFLIX_2017_10K.pdf",
+      "bytes": 651011,
+      "sha256": "981a69bba010dd1709c74ccec9ca26c61635c02a4f22b76345d26021e88077d6",
+      "pages": 73,
+      "chars": 239096,
+      "charsPerPage": 3275.3,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "NIKE_2018_10K.pdf",
+      "bytes": 962221,
+      "sha256": "31de66f1e37cabf1785e0ffa66955bf003bf2a9dcf3f4ebe93732d063b7b6ebe",
+      "pages": 97,
+      "chars": 406034,
+      "charsPerPage": 4185.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "NIKE_2019_10K.pdf",
+      "bytes": 909932,
+      "sha256": "7dbdf1bcbf37dd6d6e694ce95bcb23cd6943d08cc9cd1e5ee9832ed8f7eebdc6",
+      "pages": 104,
+      "chars": 372938,
+      "charsPerPage": 3585.9,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "NIKE_2021_10K.pdf",
+      "bytes": 877882,
+      "sha256": "73b54e5e0b1b0b33e51ac314f6d9a9db0bcc286269feb24a3445a5f1ff0f7789",
+      "pages": 109,
+      "chars": 402758,
+      "charsPerPage": 3695.0,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "NIKE_2023_10K.pdf",
+      "bytes": 3463188,
+      "sha256": "51f5a0fc6ede20de4f5cfdeae8791a57bdd65c95db2ceb263eb120696ff90172",
+      "pages": 106,
+      "chars": 374987,
+      "charsPerPage": 3537.6,
+      "emptyPages": 1,
+      "questions": 1
+    },
+    {
+      "file": "PAYPAL_2022_10K.pdf",
+      "bytes": 4371232,
+      "sha256": "0c1dd6cd170261c6bd778de382a211a56a3bb1e009a429246370c97fa0defab3",
+      "pages": 134,
+      "chars": 482332,
+      "charsPerPage": 3599.5,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "PEPSICO_2021_10K.pdf",
+      "bytes": 2139398,
+      "sha256": "f2c7cf1969c7f6dfc8c0596824e1d6b3cc70f662ee2dd06be84bb27af5635364",
+      "pages": 549,
+      "chars": 1119216,
+      "charsPerPage": 2038.6,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "PEPSICO_2022_10K.pdf",
+      "bytes": 2993516,
+      "sha256": "7d8a9f3374e429c58f101319e2da8a0e601a89859e1e4f6854163dd5f8ce6b47",
+      "pages": 503,
+      "chars": 1178751,
+      "charsPerPage": 2343.4,
+      "emptyPages": 0,
+      "questions": 5
+    },
+    {
+      "file": "PEPSICO_2023Q1_EARNINGS.pdf",
+      "bytes": 987394,
+      "sha256": "a705483ea6c548a2f67c421bc24ced391a6beb8487600b44b54e9ae2aca1f31c",
+      "pages": 16,
+      "chars": 36147,
+      "charsPerPage": 2259.2,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "PEPSICO_2023_8K_dated-2023-05-05.pdf",
+      "bytes": 102321,
+      "sha256": "e8591d6f83d810a0f9edfc540a1a21aa6269a6de4c756b5eb808d5dbbea330ed",
+      "pages": 5,
+      "chars": 6145,
+      "charsPerPage": 1229.0,
+      "emptyPages": 0,
+      "questions": 1
+    },
+    {
+      "file": "PEPSICO_2023_8K_dated-2023-05-30.pdf",
+      "bytes": 1460889,
+      "sha256": "8e8f99f270b065e105636f54b2684f4c4170b3fc80845ae2f393bf66f3291d2c",
+      "pages": 172,
+      "chars": 538935,
+      "charsPerPage": 3133.3,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "PFIZER_2021_10K.pdf",
+      "bytes": 1171782,
+      "sha256": "ff3307d5f633c5dbe59a976f5ff5e086af04ba5a5135f2b6411c89538a22a665",
+      "pages": 143,
+      "chars": 695101,
+      "charsPerPage": 4860.8,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "Pfizer_2023Q2_10Q.pdf",
+      "bytes": 743533,
+      "sha256": "bf6c059a1dd71bd56581c94bce650bd85b56de2f4d0a25b45f05804a8bd6684d",
+      "pages": 72,
+      "chars": 270807,
+      "charsPerPage": 3761.2,
+      "emptyPages": 2,
+      "questions": 3
+    },
+    {
+      "file": "ULTABEAUTY_2023Q4_EARNINGS.pdf",
+      "bytes": 99758,
+      "sha256": "c7df6210a627042e231c9579982648a43f3ff8b630b4020540330c2a85e0d781",
+      "pages": 9,
+      "chars": 21197,
+      "charsPerPage": 2355.2,
+      "emptyPages": 0,
+      "questions": 4
+    },
+    {
+      "file": "ULTABEAUTY_2023_10K.pdf",
+      "bytes": 4954215,
+      "sha256": "cdf2ebcfbc2eb9ecf880126d38b186cac1f683dae5bcb50cad15176bfc449ff4",
+      "pages": 105,
+      "chars": 317450,
+      "charsPerPage": 3023.3,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "VERIZON_2021_10K.pdf",
+      "bytes": 2098068,
+      "sha256": "f7fcb508f920e3df9a07bc858a6d9f0d3cd1e976a46efe72375c9ffb983822ac",
+      "pages": 120,
+      "chars": 486174,
+      "charsPerPage": 4051.4,
+      "emptyPages": 0,
+      "questions": 2
+    },
+    {
+      "file": "VERIZON_2022_10K.pdf",
+      "bytes": 2315268,
+      "sha256": "403d7346e8a059472863d1789527f16e5127a61c2f6c4429012e6227f27576d7",
+      "pages": 124,
+      "chars": 491114,
+      "charsPerPage": 3960.6,
+      "emptyPages": 0,
+      "questions": 3
+    },
+    {
+      "file": "WALMART_2018_10K.pdf",
+      "bytes": 1599075,
+      "sha256": "661512df698c895a4a5ab3d4ab879fd8ffc8f17a9038e27bcb208401982b6c15",
+      "pages": 304,
+      "chars": 960281,
+      "charsPerPage": 3158.8,
+      "emptyPages": 2,
+      "questions": 1
+    },
+    {
+      "file": "WALMART_2019_10K.pdf",
+      "bytes": 7211754,
+      "sha256": "f1d1b052c2b68c5d68e3575de7069dc47914f03abb02771d2629b10bf7d9e377",
+      "pages": 155,
+      "chars": 454744,
+      "charsPerPage": 2933.8,
+      "emptyPages": 29,
+      "questions": 1
+    },
+    {
+      "file": "WALMART_2020_10K.pdf",
+      "bytes": 1132390,
+      "sha256": "0f9e2ebc9432caef54fe932ec91ccc6fea3eac89f370073462ae002eabb71a34",
+      "pages": 170,
+      "chars": 602875,
+      "charsPerPage": 3546.3,
+      "emptyPages": 3,
+      "questions": 1
+    }
+  ]
+}

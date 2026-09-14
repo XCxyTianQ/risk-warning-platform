@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-09-14T09:26:09.890Z",
+  "n": 150,
+  "strategies": [
+    {
+      "id": "S0",
+      "desc": "BM25 top-k（D1 v1 基线）",
+      "k": 8,
+      "hitPct": 59.33,
+      "coveragePct": 33.19,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 35
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 17
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 37
+        }
+      }
+    },
+    {
+      "id": "S1",
+      "desc": "+ 同义词扩展",
+      "k": 8,
+      "hitPct": 64,
+      "coveragePct": 38.82,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 37
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 20
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 39
+        }
+      }
+    },
+    {
+      "id": "S2",
+      "desc": "+ 行项目短语加权",
+      "k": 8,
+      "hitPct": 64,
+      "coveragePct": 39.98,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 37
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 20
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 39
+        }
+      }
+    },
+    {
+      "id": "S3",
+      "desc": "+ 报表路由加权",
+      "k": 8,
+      "hitPct": 67.33,
+      "coveragePct": 40.98,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 39
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 23
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 39
+        }
+      }
+    },
+    {
+      "id": "S4",
+      "desc": "+ 年份邻近加权",
+      "k": 8,
+      "hitPct": 68,
+      "coveragePct": 41.98,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 39
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 23
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 40
+        }
+      }
+    },
+    {
+      "id": "S5",
+      "desc": "S4 + k=16",
+      "k": 16,
+      "hitPct": 77.33,
+      "coveragePct": 51.51,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 46
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 28
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 42
+        }
+      }
+    },
+    {
+      "id": "S6",
+      "desc": "S4 + k=24",
+      "k": 24,
+      "hitPct": 80.67,
+      "coveragePct": 58.08,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 47
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 32
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 42
+        }
+      }
+    }
+  ]
+}

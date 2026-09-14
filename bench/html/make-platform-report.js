@@ -360,7 +360,7 @@ function radar(axes, series, { size = 560, max = 100, rings = 4 } = {}) {
     const poly = axes.map((_, i) => pt(i, v).map((x) => x.toFixed(1)).join(',')).join(' ')
     g += `<polygon points="${poly}" class="${r === rings ? 'rd-ring-outer' : 'rd-ring'}"/>`
   }
-  // 刻度说明写在图注里（外环=100%，每环 25%），图内不再塞数字
+  // 刻度说明写在图注里（外环=100%，每环 25），图内不再塞数字
   const bounds = { x0: cx - R, x1: cx + R, y0: cy - R, y1: cy + R }
   const track = (x, y) => {
     bounds.x0 = Math.min(bounds.x0, x); bounds.x1 = Math.max(bounds.x1, x)
@@ -419,14 +419,14 @@ const radarAxes = radarData && radarData.sameJudge
       note: 'n=50',
       values: Object.fromEntries([
         ['ours', dig(radarData, `ours.byType.${t}.accuracyPct`, 0)],
-        ...radarData.sameJudge.models.map((m) => [m.label, dig(m, `byType.${t}.accuracyPct`, 0)]),
+        ...radarData.sameJudge.models.filter((m) => m.mode === 'oracle').map((m) => [m.label, dig(m, `byType.${t}.accuracyPct`, 0)]),
       ]),
     }))
   : []
 const radarSeries = radarData && radarData.sameJudge
   ? [
       { key: 'ours', label: '本平台（deepseek-flash，A1 提示词）', color: C.platform, emph: true, width: 2.6, fill: 0.16 },
-      ...radarData.sameJudge.models.map((m, i) => ({
+      ...radarData.sameJudge.models.filter((m) => m.mode === 'oracle').map((m, i) => ({
         key: m.label,
         label: `${m.label}（论文答案 · 同裁判）`,
         color: [C.baseline, C.finance, C.bad][i] || C.baseline,
@@ -924,7 +924,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   </div>
 
   ${fbHistory ? `
-  <h4>从 82.0% 到 ${pct(dig(fbHistory, 'variants.A1（最新一次）.accuracyPct', null), 1)}%：改动只有一句提示词</h4>
+  <h4>从 82.0% 到 ${pct(dig(fbHistory, 'variants.A1（最新一次）.accuracyPct', null), 1)}：改动只有一句提示词</h4>
   <p style="font-size:13px;color:var(--c-ink-2)">单次裁判在 n=60 上有 <strong>±2~3 题</strong>的噪声（诊断时发现同一份数字答案会被判成不同结论），
   因此所有变体的存量答案都用 <strong>judge@${dig(fbHistory, 'variantComparison.judgeVotes', 3)} 多数投票</strong>重判后再比较——下表即重判结果。</p>
   <table>
@@ -960,21 +960,97 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   ` : ''}
 
   <div class="callout warn"><span class="t">这张图与这张表该怎么读（四条都别跳过）</span>
-    ① <strong>同一裁判下我们在这一层领先</strong>：${pct(dig(radarData, 'ours.accuracyPct', null), 1)}% 对 GPT-4 ${pct(dig(radarData, 'sameJudge.models.0.ourJudgeAccuracyPct', null), 1)}%、GPT-4-1106 ${pct(dig(radarData, 'sameJudge.models.1.ourJudgeAccuracyPct', null), 1)}%——但差距主要来自<strong>裁判口径与提示词口径的对齐</strong>，不是模型突然变强；
+    ① <strong>同一裁判下我们在这一层领先</strong>：${pct(dig(radarData, 'ours.accuracyPct', null), 1)} 对 GPT-4 ${pct(dig(radarData, 'sameJudge.models.0.ourJudgeAccuracyPct', null), 1)}、GPT-4-1106 ${pct(dig(radarData, 'sameJudge.models.1.ourJudgeAccuracyPct', null), 1)}——但差距主要来自<strong>裁判口径与提示词口径的对齐</strong>，不是模型突然变强；
     ② <strong>A1 的增益依赖 oracle 前提</strong>：它利用了"证据必然充分"这一条（oracle 口径的 evidence 就是论文标注的支撑段落）。在真实检索场景里检索可能没命中，这条前提不成立 —— 因此这是<strong>把口径拉齐</strong>，不是生产环境的普适提升；
     ③ <strong>裁判仍是同源的</strong>（flash 判 flash）：用同一裁判判双方答案消除了"尺子不同"的问题，但消不掉"偏袒自己"的可能，彻底解决需要独立裁判；
-    ④ 未纳入的公开结果还有 <strong>Llama2-70B single-store（论文 ${pct((radarData.models.find((m) => m.mode === 'retrieval') || {}).accuracyPct ?? null, 1)}%）</strong>——那是<strong>检索口径</strong>，与 oracle 条件不同，合并会把"检索没命中"算成"模型不会读"。</div>
+    ④ 未纳入的公开结果还有 <strong>Llama2-70B single-store（论文 ${pct((radarData.models.find((m) => m.mode === 'retrieval') || {}).accuracyPct ?? null, 1)}）</strong>——那是<strong>检索口径</strong>，与 oracle 条件不同，合并会把"检索没命中"算成"模型不会读"。</div>
   <div class="callout good"><span class="t">我们在这一层的定位（以及真正的优势在哪）</span>
-    在同一把尺子下，本平台 ${pct(dig(radarData, 'ours.accuracyPct', null), 1)}%，高于 GPT-4（${pct(dig(radarData, 'sameJudge.models.0.ourJudgeAccuracyPct', null), 1)}%）与 GPT-4-1106（${pct(dig(radarData, 'sameJudge.models.1.ourJudgeAccuracyPct', null), 1)}%），
+    在同一把尺子下，本平台 ${pct(dig(radarData, 'ours.accuracyPct', null), 1)}，高于 GPT-4（${pct(dig(radarData, 'sameJudge.models.0.ourJudgeAccuracyPct', null), 1)}）与 GPT-4-1106（${pct(dig(radarData, 'sameJudge.models.1.ourJudgeAccuracyPct', null), 1)}），
     但"问答题高几个点"并不是平台的价值主张。真正的差异化在<strong>这一层之外</strong>：
     ① 端到端预警（六维 AUC ${n1(t5rows.st.platAuc * 100, 1)} vs 三行规则 ${n1(t5rows.st.baseAuc * 100, 1)}，且领先来自数据面更宽）；
     ② 结构化抽取 / 勾稽校验 / 指标测算的确定性能力（T1/T3/T4 全部 ${pct(finrisk.t1F1, 0)} 且 MAPE ${n1(finrisk.t1Mape, 4)}%）；
-    ③ 25 个工具的受控编排与审批闸门（BFCL ${pct(bfclOverall.accuracyPct, 1)}%）；
-    ④ 无证据时不硬答（闭卷口径我们 ${pct(closedBook ? closedBook.ours : null, 1)}% vs GPT-4 ${pct(closedBook ? closedBook.gpt4 : null, 2)}%——但我们对闭卷已有语料污染，见 6.2）。
+    ③ 25 个工具的受控编排与审批闸门（BFCL ${pct(bfclOverall.accuracyPct, 1)}）；
+    ④ 无证据时不硬答（闭卷口径我们 ${pct(closedBook ? closedBook.ours : null, 1)} vs GPT-4 ${pct(closedBook ? closedBook.gpt4 : null, 2)}——但我们对闭卷已有语料污染，见 6.2）。
     这些维度<strong>没有可比的公开多方数字</strong>，所以本页不给它们编雷达轴。</div>
   ` : '<p style="color:var(--c-muted)">（未生成雷达数据：先跑 node bench/html/prepare-radar-data.js）</p>'}
 
-  <h3>5.2 外部对照表：同题同集，可直接并列</h3>
+  <h3>5.5 端到端文档问答（D1）：不给答案段，只给整篇 10-K</h3>
+  ${fbHistory && fbHistory.d1 ? (() => {
+    const runs = fbHistory.d1.runs || []
+    const all = runs.find((r) => r.split === 'all')
+    const devRuns = runs.filter((r) => r.split === 'dev')
+    const v1 = devRuns[0]
+    const last = devRuns[devRuns.length - 1]
+    const retrieval = (dig(radarData, 'sameJudge.models', []) || []).filter((m) => m.mode === 'retrieval')
+    const p = fbHistory.pdfExtraction || {}
+    return `
+  <p>前面 5.1–5.3 都是 <strong>oracle 口径</strong>：直接把论文标注的支撑段落喂给模型。真实场景里没有这个待遇——
+  模型必须先<strong>自己从几百页年报里找到那一页</strong>。D1 就是这条链路：
+  下载 84 份原始 10-K PDF（${n1(157.9, 1)} MB）→ 抽取文本（${num(p.docs)} 份 / ${num(p.totalChars)} 字）→
+  切块与检索 → 作答。全程使用与 A1 完全相同的作答提示词，唯一差别是证据来自检索而非论文标注。</p>
+
+  <div class="grid4">
+    <div class="kpi"><div class="v">${num(p.docs)}</div><div class="k">份 10-K PDF 抽取成功</div><div class="s">${num(p.totalChars)} 字，平均 ${num(p.meanChars)} 字/份；${num(p.docsWithEmptyPages)} 份含空页（扫描页）</div></div>
+    <div class="kpi"><div class="v">${last ? pct(last.retrievalHitPct, 1) : pct(v1.retrievalHitPct, 1)}</div><div class="k">检索命中率（dev，含标准证据段）</div><div class="s">从 v1 的 ${pct(v1.retrievalHitPct, 1)} 提到 ${pct(last.retrievalHitPct, 1)}</div></div>
+    <div class="kpi"><div class="v">${all ? pct(all.accuracyPct, 1) : pct(last.accuracyPct, 1)}</div><div class="k">端到端答题准确率（${all ? 'n=150' : 'dev n=' + last.n}）</div><div class="s">对照 oracle 口径 ${pct(dig(radarData, 'ours.accuracyPct', null), 1)}</div></div>
+    <div class="kpi"><div class="v">${n1(dig(radarData, 'sameJudge.models', []).filter((m) => m.mode === 'retrieval' && /1106/.test(m.label))[0]?.ourJudgeAccuracyPct ?? 0, 1)}</div><div class="k">论文最好的检索口径（GPT-4-1106 single store）</div><div class="s">同一裁判判定</div></div>
+  </div>
+
+  <table>
+    <caption>表 12d　D1 三个版本的迭代（dev 60 题；检索与答题分开度量）</caption>
+    <thead><tr><th>版本</th><th class="n">检索命中率</th><th class="n">答题准确率</th><th class="n">证据长度</th><th>这一步做了什么</th></tr></thead>
+    <tbody>
+      ${devRuns.map((r, i) => `<tr${i === devRuns.length - 1 ? ' style="background:var(--c-good-soft)"' : ''}><td>${esc(r.label)}</td><td class="n">${pct(r.retrievalHitPct, 1)}</td><td class="n ${i === devRuns.length - 1 ? 'best' : ''}">${pct(r.accuracyPct, 1)}</td><td class="n">${num(r.meanEvidenceChars)} 字</td><td style="font-size:12.5px">${i === 0 ? 'BM25 基线（k=8）' : i === 1 ? '同义词扩展 + 行项目/报表/年份加权，k=16' : '先召回 24 块再按精确性信号重排到 16'}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">离线调参（零 API 成本）给出的完整曲线：
+  同义词扩展 59.3→64.0%、行项目加权 64.0%、报表路由 →67.3%、年份邻近 →68.0%、<strong>k 从 8 提到 16 →77.3%</strong>、k=24 →80.7%。
+  <strong>k 的影响大于所有词法技巧之和</strong>；而重排把"指标类"的答题从 12/20 修到 14/20、检索命中提到 78.3%，
+  代价是"新颖生成"从 16/20 降到 14/20（重排偏好含行项目与数字的块，叙述题吃亏），净效果持平。</p>
+
+  <div class="figure">
+    <div class="cap">图 4　D1 的诊断：检索命中与答题对错的联合分布（dev 60 题）</div>
+    ${groupedBars([
+      { label: 'D1 v2（k=16）', bars: [
+        { name: '命中且答对', value: last.joint.hitCorrect / 60, color: C.platform },
+        { name: '命中却答错', value: last.joint.hitWrong / 60, color: C.warn },
+        { name: '未命中却答对', value: last.joint.missCorrect / 60, color: C.finance },
+        { name: '未命中且答错', value: last.joint.missWrong / 60, color: C.bad },
+      ] },
+      { label: 'D1 v1（k=8）', bars: [
+        { name: '命中且答对', value: v1.joint.hitCorrect / v1.n, color: C.platform },
+        { name: '命中却答错', value: v1.joint.hitWrong / v1.n, color: C.warn },
+        { name: '未命中却答对', value: v1.joint.missCorrect / v1.n, color: C.finance },
+        { name: '未命中且答错', value: v1.joint.missWrong / v1.n, color: C.bad },
+      ] },
+    ], { max: 1, fmt: (v) => (v * 100).toFixed(0) + '%' })}
+  </div>
+  <p style="font-size:13px;color:var(--c-ink-2)">读法：v1 的主要失分是<strong>"未命中且答错"</strong>（召回问题）；
+  提升到 v2 后，失分结构反转为<strong>"命中却答错"多于"未命中且答错"</strong>（12 : 6）——瓶颈从召回转到精度，
+  这也是下一步该做重排而不是继续加大 k 的原因。<strong>"未命中却答对"7 题</strong>则提醒我们：
+  这个数字里仍含记忆成分（与 6.2 节的闭卷污染一致）。</p>
+
+  <table>
+    <caption>表 12e　端到端文档问答 vs 论文的检索口径（同一批 150 题、同一裁判）</caption>
+    <thead><tr><th>方案</th><th class="n">论文标签</th><th class="n">同一裁判</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr style="background:var(--c-good-soft)"><td><b>本平台 D1（自建 BM25+金融启发式检索）</b></td><td class="n">—</td><td class="n best">${all ? pct(all.accuracyPct, 1) : pct(last.accuracyPct, 1)}<span style="font-size:11px">（${all ? 'n=150' : 'dev'}）</span></td><td style="font-size:12.5px">文本抽取 + 检索 + 作答全链路自建</td></tr>
+      ${retrieval.map((m) => `<tr><td>${esc(m.label)}（论文）</td><td class="n">${pct(m.paperAccuracyPct, 2)}</td><td class="n">${pct(m.ourJudgeAccuracyPct, 2)}</td><td style="font-size:12.5px">向量库检索（single store = 每文档单库；shared store = 全库混检）</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <div class="callout warn"><span class="t">这张表怎么读（四条）</span>
+    ① <strong>我们的 D1 明显高于论文的全部检索口径</strong>（${all ? pct(all.accuracyPct, 1) : pct(last.accuracyPct, 1)} 对 37.3%/42.7%/15.3%/18.7%），
+    说明"BM25 + 金融启发式"在这批 10-K 上强于论文的向量库检索——但这是<strong>两种检索方案的对比</strong>，不是模型能力的对比（模型同为 GPT-4 级别，我们用的是 flash）；
+    ② <strong>口径仍不完全对齐</strong>：论文的流水线在检索不到时大量<strong>拒答</strong>（single store 拒答 71/150，shared store 拒答 112/150），
+    而我们的提示词要求"证据必含答案、未陈述则推导"，这会系统性抬高我们的分；
+    ③ D1 的 ${all ? pct(all.accuracyPct, 1) : pct(last.accuracyPct, 1)} 与 oracle 的 ${pct(dig(radarData, 'ours.accuracyPct', null), 1)} 之间的差距，
+    就是"自己找段落"相对"直接给段落"的代价——<strong>这段差距正是检索技术的价值空间</strong>；
+    ④ <strong>D1 不是产品链路</strong>：平台后端的附件只接受图片（png/jpeg/webp/gif/bmp），<strong>不支持 PDF</strong>。
+    本轮 PDF 抽取与检索都在评测侧完成（pypdf + Node）。要把它变成产品能力，需要给 Rust 后端加 PDF 抽取依赖、
+    扩展附件类型与前端上传入口——这是一个明确的、有量化收益预期的工程项。</div>
+  ` })() : '<p style="color:var(--c-muted)">（未找到 D1 产物：先跑 bench/external/d1/run-d1.js）</p>'}
+
+  <h3>5.6 外部对照表：同题同集，可直接并列</h3>
   <table>
     <caption>表 2　FinanceBench 开源子集 150 题：论文公开结果（由仓库逐题标签统计）与我们同题对比</caption>
     <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">准确率</th><th>说明</th></tr></thead>
@@ -987,7 +1063,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <p style="font-size:12.5px;color:var(--c-muted)">判分器可信度先被验证：用我们的确定性判分重判论文公开答案，与论文标签一致率 ${pct(Math.min(...(graderVal || [{ deterministicAgreementPct: 0 }]).map((g) => g.deterministicAgreementPct || 0)), 1)}–100%；
   初版未做量纲换算时只有 61.5%，修正过程记录在案。</p>
 
-  <h3>5.3 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
+  <h3>5.7 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
   <table>
     <caption>表 3　BFCL v4 非实时子集（n=${num(bfclOverall.n)}）；判分为自实现 AST 判定，非官方 checker</caption>
     <thead><tr><th>子集</th><th class="n">通过率</th><th class="n">n</th><th>含义</th></tr></thead>
@@ -1001,9 +1077,9 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   ${Object.entries(bfclErrors).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${esc({ 'irrelevance:called_a_function': '不该调用却调用了', 'value_error:string': '字符串取值不符', 'value_error:others': '取值不符', 'value_error:list/tuple': '列表参数不符', 'value_error:dict_key': '字典键不符', 'simple_function_checker:wrong_count': '调用个数不对', 'multiple_function_checker:wrong_count': '调用个数不对', 'simple_function_checker:wrong_func_name': '函数名选错' }[k] || k)} ${v}`).join('、')}。
   其中 <strong>"不该调用却调用了" ${bfclErrors['irrelevance:called_a_function'] || 0} 例</strong>对应平台里"乱调工具"的风险，是工具层安全边界最该盯的数字。</p>
 
-  <h3>5.4 文档读取：图像输入无法靠记忆作弊</h3>
+  <h3>5.8 文档读取：图像输入无法靠记忆作弊</h3>
   <div class="figure">
-    <div class="cap">图 4　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
+    <div class="cap">图 5　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
     ${pairedBars([
       { label: '数字召回', a: dig(omniM, 'nonTablePages.meanNumberRecall', 0), b: dig(omniM, 'tablePages.meanNumberRecall', 0), aLabel: '非表格页（9 页）', bLabel: '含表格页（9 页）' },
       { label: '片段召回', a: dig(omniM, 'nonTablePages.meanSegmentRecall', 0), b: dig(omniM, 'tablePages.meanSegmentRecall', 0) },
@@ -1027,7 +1103,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   <h3>6.1 平台链路在客观题上比直连模型低 ${chainCflue && chainBareCflue ? n1(Math.abs(chainBareCflue.pct - chainCflue.accuracyPct), 1) : '18.8'} 个百分点</h3>
   <div class="figure">
-    <div class="cap">图 5　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
+    <div class="cap">图 6　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
     ${dumbbell([
       { label: 'CFLUE 知识题', a: chainBareCflue ? chainBareCflue.pct : 88.3, b: chainCflue ? chainCflue.accuracyPct : 69.5, aLabel: '直连模型', bLabel: '平台链路', delta: `−${chainCflue && chainBareCflue ? n1(chainBareCflue.pct - chainCflue.accuracyPct, 1) : '18.8'}pp` },
       { label: 'FinEval-MM 图片题', a: chainBareMm ? chainBareMm.pct : 90, b: chainMm ? chainMm.accuracyPct : 90, aLabel: '直连模型', bLabel: '平台链路', delta: chainBareMm && chainMm ? `${(chainMm.accuracyPct - chainBareMm.pct) >= 0 ? '+' : ''}${n1(chainMm.accuracyPct - chainBareMm.pct, 1)}pp` : '持平' },
@@ -1093,7 +1169,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   <h3>7.2 数据可得性：拿不到的东西也是结论</h3>
   <div class="figure">
-    <div class="cap">图 6　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
+    <div class="cap">图 7　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
     ${funnel([
       { top: 1000, value: 1000, label: `${num(dig(ext, 'benchmarks.fineval-mm.sample.coverage.funnel.rows', 1000))} 行题目`, note: '15 个题型文件全量', color: C.platform },
       { top: 1000, value: dig(ext, 'benchmarks.fineval-mm.sample.coverage.funnel.withImageAndAnswer', 943), label: `${num(dig(ext, 'benchmarks.fineval-mm.sample.coverage.funnel.withImageAndAnswer', 943))} 行带图且有答案`, note: '其余缺答案字段', color: '#1f8f86' },
@@ -1175,7 +1251,7 @@ node bench/html/make-platform-report.js</code></pre>
   <div class="pillars">
     <div class="pillar"><div class="n">结论 一</div><div class="h">不是功能多，而是每条能力都有数字</div>
       <div class="q">${facts.tools} 个工具、${facts.tables} 张表、六个风险维度，对应 ${summary.suites ? summary.suites.total : '—'} 个回归套件与 ${lockSummary.benchmarks} 组外部基准；
-      工具调用 BFCL ${pct(bfclOverall.accuracyPct, 1)}%，抽取字段级 F1 ${pct(finrisk.t1F1, 1)}%。</div>
+      工具调用 BFCL ${pct(bfclOverall.accuracyPct, 1)}，抽取字段级 F1 ${pct(finrisk.t1F1, 1)}。</div>
       <div class="v">${num(finrisk.t1Cells)} 单元格 / ${num(bfclOverall.n)} 道工具题</div>
     </div>
     <div class="pillar b"><div class="n">结论 二</div><div class="h">效果有内部真值，也有外部坐标</div>
@@ -1196,8 +1272,8 @@ node bench/html/make-platform-report.js</code></pre>
     六维模型对退市风险、处罚立案、任一高危事件的
     AUC 分别为 ${n1(t5rows.st.platAuc * 100, 1)} / ${n1(t5rows.penalty.platAuc * 100, 1)} / ${n1(t5rows.any.platAuc * 100, 1)}，
     全面高于"三行财务规则"基线，并能提前约 ${num(t5rows.any.lead)} 天给出信号。
-    能力同时有外部坐标：中文金融知识 CFLUE ${pct(cflueKn.accuracyPct, 1)}、工具调用 BFCL ${pct(bfclOverall.accuracyPct, 1)}%、
-    财报问答 FinanceBench oracle ${pct(fbOracle.accuracyPct, 1)}%（与论文公开的 GPT-4 同一批题、同一口径）。
+    能力同时有外部坐标：中文金融知识 CFLUE ${pct(cflueKn.accuracyPct, 1)}、工具调用 BFCL ${pct(bfclOverall.accuracyPct, 1)}、
+    财报问答 FinanceBench oracle ${pct(fbOracle.accuracyPct, 1)}（与论文公开的 GPT-4 同一批题、同一口径）。
     全部 ${num(totalCalls)} 次模型调用成本约 ¥${n1(grandCost, 2)}，且每一条数字都能用仓库里的命令复现。
   </div>
 </section>

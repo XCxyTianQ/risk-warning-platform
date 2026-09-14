@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T08:11:19.680Z",
+  "generatedAt": "2026-09-14T10:26:47.883Z",
   "types": [
     "metrics-generated",
     "domain-relevant",
@@ -139,6 +139,8 @@
     "models": [
       {
         "label": "GPT-4（oracle）",
+        "file": "financebench_results_gpt4_oracle.jsonl",
+        "mode": "oracle",
         "paperAccuracyPct": 84,
         "ourJudgeAccuracyPct": 76,
         "n": 150,
@@ -159,6 +161,8 @@
       },
       {
         "label": "GPT-4-1106（oracle）",
+        "file": "financebench_results_gpt4_1106_oracle.jsonl",
+        "mode": "oracle",
         "paperAccuracyPct": 85.33,
         "ourJudgeAccuracyPct": 78.67,
         "n": 150,
@@ -179,6 +183,8 @@
       },
       {
         "label": "Claude-2（in-context）",
+        "file": "financebench_results_claude2_incontext.jsonl",
+        "mode": "oracle",
         "paperAccuracyPct": 37.33,
         "ourJudgeAccuracyPct": 38.67,
         "n": 150,
@@ -194,6 +200,94 @@
           "novel-generated": {
             "n": 50,
             "accuracyPct": 58
+          }
+        }
+      },
+      {
+        "label": "GPT-4（single store 检索）",
+        "file": "financebench_results_gpt4_singlestore.jsonl",
+        "mode": "retrieval",
+        "paperAccuracyPct": 42,
+        "ourJudgeAccuracyPct": 37.33,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 34
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 30
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 48
+          }
+        }
+      },
+      {
+        "label": "GPT-4-1106（single store 检索）",
+        "file": "financebench_results_gpt4_1106_singlestore.jsonl",
+        "mode": "retrieval",
+        "paperAccuracyPct": 50,
+        "ourJudgeAccuracyPct": 42.67,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 44
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 36
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 48
+          }
+        }
+      },
+      {
+        "label": "GPT-4（shared store 检索）",
+        "file": "financebench_results_gpt4_sharedstore.jsonl",
+        "mode": "retrieval",
+        "paperAccuracyPct": 16.67,
+        "ourJudgeAccuracyPct": 15.33,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 10
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 14
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 22
+          }
+        }
+      },
+      {
+        "label": "GPT-4-1106（shared store 检索）",
+        "file": "financebench_results_gpt4_1106_sharedstore.jsonl",
+        "mode": "retrieval",
+        "paperAccuracyPct": 19.33,
+        "ourJudgeAccuracyPct": 18.67,
+        "n": 150,
+        "byType": {
+          "metrics-generated": {
+            "n": 50,
+            "accuracyPct": 12
+          },
+          "domain-relevant": {
+            "n": 50,
+            "accuracyPct": 20
+          },
+          "novel-generated": {
+            "n": 50,
+            "accuracyPct": 24
           }
         }
       }

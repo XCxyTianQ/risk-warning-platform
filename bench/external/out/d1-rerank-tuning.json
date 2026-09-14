@@ -1,0 +1,171 @@
+{
+  "generatedAt": "2026-09-14T09:50:21.243Z",
+  "n": 150,
+  "configs": [
+    {
+      "id": "A",
+      "desc": "加权 top-8（= D1 v2 的 k=8 版本）",
+      "k": 8,
+      "rerank": false,
+      "hitPct": 65.33,
+      "coveragePct": 40.35,
+      "meanChars": 11604,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 38
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 21
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 39
+        }
+      }
+    },
+    {
+      "id": "B",
+      "desc": "召回 24 → 重排取 8",
+      "k": 8,
+      "rerank": true,
+      "recallK": 24,
+      "hitPct": 65.33,
+      "coveragePct": 40.33,
+      "meanChars": 11577,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 42
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 21
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 35
+        }
+      }
+    },
+    {
+      "id": "C",
+      "desc": "召回 24 → 重排取 12",
+      "k": 12,
+      "rerank": true,
+      "recallK": 24,
+      "hitPct": 74,
+      "coveragePct": 47.17,
+      "meanChars": 17323,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 46
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 25
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 40
+        }
+      }
+    },
+    {
+      "id": "D",
+      "desc": "召回 40 → 重排取 8",
+      "k": 8,
+      "rerank": true,
+      "recallK": 40,
+      "hitPct": 64.67,
+      "coveragePct": 40.65,
+      "meanChars": 11577,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 40
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 22
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 35
+        }
+      }
+    },
+    {
+      "id": "E",
+      "desc": "召回 24 → 重排取 16",
+      "k": 16,
+      "rerank": true,
+      "recallK": 24,
+      "hitPct": 76,
+      "coveragePct": 51.09,
+      "meanChars": 23025,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 47
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 27
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 40
+        }
+      }
+    },
+    {
+      "id": "F",
+      "desc": "加权 top-16（= D1 v2 实跑配置）",
+      "k": 16,
+      "rerank": false,
+      "hitPct": 76.67,
+      "coveragePct": 49.87,
+      "meanChars": 23056,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 45
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 28
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 42
+        }
+      }
+    },
+    {
+      "id": "G",
+      "desc": "加权 top-24",
+      "k": 24,
+      "rerank": false,
+      "hitPct": 80,
+      "coveragePct": 57.3,
+      "meanChars": 34235,
+      "perType": {
+        "metrics-generated": {
+          "n": 50,
+          "hit": 47
+        },
+        "domain-relevant": {
+          "n": 50,
+          "hit": 31
+        },
+        "novel-generated": {
+          "n": 50,
+          "hit": 42
+        }
+      }
+    }
+  ]
+}

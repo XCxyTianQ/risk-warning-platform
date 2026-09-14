@@ -835,6 +835,60 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
             "在平台里对应「该走一个工具却走了多个」的多余调用与额度消耗。"
         )
 
+    # 4.7 D1：端到端文档问答（open-book）
+    hist_d1 = dig(hist, "d1", None) if hist else None
+    if hist_d1:
+        H("4.7 端到端文档问答 D1：不给答案段，只给整篇 10-K（open-book 口径）", 2)
+        pdf = dig(hist, "pdfExtraction", {}) or {}
+        P("前面各节都是 **oracle 口径**：直接把论文标注的支撑段落喂给模型。真实场景没有这个待遇——"
+          "模型必须自己从几百页年报里找到那一页。D1 就是这条链路：下载 84 份原始 10-K PDF（157.9 MB）→ "
+          f"抽取文本（{pdf.get('docs')} 份 / {pdf.get('totalChars'):,} 字）→ 切块与检索 → 作答；"
+          "作答提示词与 A1 完全相同，唯一差别是证据来自检索。")
+        runs = hist_d1.get("runs", [])
+        dev_runs = [r for r in runs if r.get("split") == "dev"]
+        all_run = next((r for r in runs if r.get("split") == "all"), None)
+        rows = []
+        for i, r in enumerate(dev_runs):
+            rows.append([
+                r.get("label"), f"{r.get('n')}", pct(r.get("retrievalHitPct")), pct(r.get("accuracyPct")),
+                f"{r.get('meanEvidenceChars'):,}",
+                "BM25 基线（k=8）" if i == 0 else ("同义词扩展 + 行项目/报表/年份加权，k=16" if i == 1 else "先召回 24 再按精确性信号重排到 16"),
+            ])
+        if rows:
+            T(["版本", "n", "检索命中率", "答题准确率", "证据长度", "这一步做了什么"],
+              rows,
+              caption="表 12d　D1 三个版本的迭代（dev 60 题；检索与答题分开度量）",
+              note="离线调参（零 API 成本）得到的完整曲线：同义词扩展 59.3→64.0%、行项目加权 64.0%、报表路由 →67.3%、"
+                   "年份邻近 →68.0%、k 从 8 提到 16 →77.3%、k=24 →80.7%。k 的影响大于所有词法技巧之和。"
+                   "重排把「指标类」答题从 12/20 修到 14/20，代价是「新颖生成」从 16/20 降到 14/20，净效果持平。",
+              widths=[4.4, 1.0, 2.0, 2.0, 1.8, 5.0])
+        # 联合分布：说明瓶颈从召回转到精度
+        last = dev_runs[-1] if dev_runs else None
+        first = dev_runs[0] if dev_runs else None
+        if last and first:
+            P("**联合分布（检索命中 × 答题对错）**：")
+            T(["版本", "命中且答对", "命中却答错", "未命中却答对", "未命中且答错", "结论"],
+              [[first.get("label"), first["joint"]["hitCorrect"], first["joint"]["hitWrong"], first["joint"]["missCorrect"], first["joint"]["missWrong"], "主要失分是召回"],
+               [last.get("label"), last["joint"]["hitCorrect"], last["joint"]["hitWrong"], last["joint"]["missCorrect"], last["joint"]["missWrong"], "瓶颈已转为精度（命中却答错更多）"]],
+              caption="表 12e　D1 的失分结构变化（dev 60 题）",
+              note="「未命中却答对」的题提醒：这个数字里仍含记忆成分（与 4.4 节闭卷污染一致）。",
+              widths=[4.4, 2.0, 2.0, 2.2, 2.2, 4.0])
+        retrieval_models = [m for m in (dig(radar, "sameJudge.models", []) or []) if m.get("mode") == "retrieval"]
+        if retrieval_models:
+            rows = [["本平台 D1（自建 BM25 + 金融启发式检索）", "—",
+                     pct(all_run.get("accuracyPct") if all_run else (last.get("accuracyPct") if last else None)),
+                     f"n={(all_run.get('n') if all_run else (last.get('n') if last else '—'))}"]]
+            for m in retrieval_models:
+                rows.append([f"{m.get('label')}（论文）", pct(m.get("paperAccuracyPct")), pct(m.get("ourJudgeAccuracyPct")), "向量库检索"])
+            T(["方案", "论文标签", "同一裁判", "n / 说明"], rows,
+              caption="表 12f　端到端文档问答 vs 论文的检索口径（同一批 150 题、同一裁判）",
+              note="四条读法：① 我们的 D1 明显高于论文的全部检索口径（说明 BM25+金融启发式在这批 10-K 上强于向量库检索），"
+                   "但这是**两种检索方案的对比**，不是模型能力对比；② 口径仍不完全对齐——论文流水线在检索不到时大量拒答"
+                   "（single store 71/150、shared store 112/150），而我们的提示词要求推导，会系统性抬高我们的分；"
+                   "③ D1 与 oracle 的差距就是「自己找段落」相对「直接给段落」的代价，即检索技术的价值空间；"
+                   "④ **D1 不是产品链路**：平台后端附件只接受图片，不支持 PDF，抽取与检索都在评测侧完成。",
+              widths=[5.6, 2.0, 2.0, 3.0])
+
     # 4.6 OmniDocBench
     if "omnidocbench" in benches:
         b = benches["omnidocbench"]
