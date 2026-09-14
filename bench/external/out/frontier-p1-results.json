@@ -1,0 +1,142 @@
+{
+  "generatedAt": "2026-09-14T12:55:09.062Z",
+  "stage": "P0 + P1",
+  "p0": {
+    "models": [
+      "claude-fable-5-1",
+      "gpt-6-astra"
+    ],
+    "text": "ok",
+    "vision": "ok（Fable 5.1 in=4788 / Astra in=6494 tokens，两家的图像确实进入上下文）",
+    "tools": "ok"
+  },
+  "p1a": {
+    "bench": "FinanceBench oracle, dev 60, A1 提示词, 同一裁判 claude-sonnet-5",
+    "note": "注意：实验脚本内自带的 88.33% 是三家用各自裁判得到的（我方自判）——不同尺子的相同数字不可比，已用同一裁判重判",
+    "results": {
+      "deepseek-flash": {
+        "file": "exp-A1-dev-2026-09-14T05-31-51.json",
+        "n": 60,
+        "correct": 51,
+        "accuracyPct": 85,
+        "byType": {
+          "metrics-generated": {
+            "n": 20,
+            "c": 17
+          },
+          "novel-generated": {
+            "n": 20,
+            "c": 19
+          },
+          "domain-relevant": {
+            "n": 20,
+            "c": 15
+          }
+        },
+        "originalJudge": "deepseek-flash",
+        "originalAccuracyPct": 88.33
+      },
+      "gpt-6-astra": {
+        "file": "exp-A1-dev-2026-09-14T12-27-34.json",
+        "n": 60,
+        "correct": 53,
+        "accuracyPct": 88.33,
+        "byType": {
+          "metrics-generated": {
+            "n": 20,
+            "c": 18
+          },
+          "domain-relevant": {
+            "n": 20,
+            "c": 16
+          },
+          "novel-generated": {
+            "n": 20,
+            "c": 19
+          }
+        },
+        "originalJudge": "claude-sonnet-5",
+        "originalAccuracyPct": 88.33
+      },
+      "claude-fable-5-1": {
+        "file": "exp-A1-dev-2026-09-14T12-29-32.json",
+        "n": 60,
+        "correct": 54,
+        "accuracyPct": 90,
+        "byType": {
+          "metrics-generated": {
+            "n": 20,
+            "c": 19
+          },
+          "novel-generated": {
+            "n": 20,
+            "c": 19
+          },
+          "domain-relevant": {
+            "n": 20,
+            "c": 16
+          }
+        },
+        "originalJudge": "claude-sonnet-5",
+        "originalAccuracyPct": 88.33
+      }
+    }
+  },
+  "p1b": {
+    "bench": "BFCL v4 520 题（确定性判分，无裁判）",
+    "frontier": {
+      "claude-fable-5-1": {
+        "model": "claude-fable-5-1",
+        "overallPct": 90.96,
+        "simplePct": 95.5,
+        "multiplePct": 92,
+        "irrelevancePct": 81.67,
+        "calls": 520,
+        "costUSD": 7.52,
+        "seconds": 708.5,
+        "source": "external/out/run-2026-09-14T12-33-53/bfcl.claude-fable-5-1.json"
+      },
+      "gpt-6-astra": {
+        "model": "gpt-6-astra",
+        "overallPct": 83.27,
+        "simplePct": 83,
+        "multiplePct": 83,
+        "irrelevancePct": 84.17,
+        "calls": 520,
+        "costUSD": 2.44,
+        "seconds": 445.2,
+        "source": "external/out/run-2026-09-14T12-26-28/bfcl.gpt-6-astra.json"
+      }
+    },
+    "comparison": {
+      "deepseek-flash": {
+        "overallPct": 89.04,
+        "simplePct": 94.5,
+        "multiplePct": 91,
+        "irrelevancePct": 76.67,
+        "label": "DeepSeek-V4.1-Flash（官方直连）"
+      },
+      "zen-deepseek-v4-flash": {
+        "overallPct": 89.23,
+        "simplePct": 94.5,
+        "multiplePct": 92,
+        "irrelevancePct": 75.83,
+        "label": "DeepSeek-V4-Flash（网关路由，对照组）"
+      },
+      "gpt-5.6-luna": {
+        "overallPct": 83.08,
+        "simplePct": 84,
+        "multiplePct": 83.5,
+        "irrelevancePct": 80.83,
+        "label": "GPT-5.6 Luna（网关）"
+      },
+      "glm-5.3-flash": {
+        "overallPct": 88.27,
+        "simplePct": 92.5,
+        "multiplePct": 91.5,
+        "irrelevancePct": 75.83,
+        "label": "GLM-5.3-Flash（网关）"
+      }
+    }
+  }
+}

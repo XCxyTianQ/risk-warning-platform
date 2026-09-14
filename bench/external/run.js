@@ -211,10 +211,12 @@ async function main() {
   report.modelUsage = usageTotals
 
   fs.mkdirSync(REPORTS, { recursive: true })
-  const jsonFile = path.join(REPORTS, `external-alignment-${VERSION}${dry ? '-plan' : ''}.json`)
+  // 写文件必须用 reportFile/reportBase（而不是硬编码 v1 名字），否则 --report-name 形同虚设，
+  // 多模型运行会继续覆盖 official 产物（这个坑踩了两次）
+  const jsonFile = reportFile
   fs.writeFileSync(jsonFile, JSON.stringify(report, null, 2))
   const md = renderMarkdown(report)
-  const mdFile = path.join(REPORTS, `external-alignment-${VERSION}${dry ? '-plan' : ''}.md`)
+  const mdFile = path.join(REPORTS, `${reportBase}${dry ? '-plan' : ''}.md`)
   fs.writeFileSync(mdFile, md)
   console.log(`\n聚合产物 → ${path.relative(process.cwd(), jsonFile)}`)
   console.log(`人读报告 → ${path.relative(process.cwd(), mdFile)}`)

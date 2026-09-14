@@ -63,6 +63,12 @@ bench/external/out/*
 !bench/external/out/provider-probe.json
 !bench/external/out/gateway-catalog.json
 !bench/external/out/same-generation-models.json
+!bench/external/out/zen-price-probe.json
+!bench/external/out/frontier-pricing-probe.json
+!bench/external/out/frontier-cost-estimate.json
+!bench/external/out/frontier-cost-recalibrated.json
+!bench/external/out/rejudge-exp-claude-sonnet-5.json
+!bench/external/out/frontier-p1-results.json
 !bench/external/out/judge-matrix-financebench.json
 !bench/external/out/samegen-results.json
 !bench/external/out/d1-retrieval-tuning.json

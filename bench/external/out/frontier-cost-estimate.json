@@ -1,0 +1,239 @@
+{
+  "generatedAt": "2026-09-14T12:22:47.699Z",
+  "reasoningMultiplier": 1,
+  "prices": {
+    "claude-fable-5-1": {
+      "in": 10,
+      "cacheRead": 0.25,
+      "out": 50,
+      "note": "Anthropic 官方（apidog/OrcaRouter 核对）：$10 / 缓存读 $0.25 / $50；批量 $5/$25"
+    },
+    "gpt-6-astra": {
+      "in": 10,
+      "cacheRead": 1,
+      "out": 50,
+      "note": "OpenAI 标准档（≤272K）：$10 / 缓存读 $1 / $50；>272K 为 $20/$2/$75；Batch/Flex 半价"
+    },
+    "gpt-5.6-luna": {
+      "in": 0.2,
+      "cacheRead": 0.02,
+      "out": 1.2,
+      "note": "网关价（对照用）"
+    },
+    "deepseek-flash": {
+      "in": 0.3,
+      "cacheRead": 0.006,
+      "out": 1.2,
+      "note": "官方 peak 价（对照用）"
+    }
+  },
+  "measuredProfile": {
+    "cflue": {
+      "n": 423,
+      "inPerCall": 233,
+      "outPerCall": 532,
+      "cacheHitRate": 0.36303834419566383,
+      "totalIn": 98659,
+      "totalOut": 225159
+    },
+    "bfcl": {
+      "n": 520,
+      "inPerCall": 509,
+      "outPerCall": 158,
+      "cacheHitRate": 0.6455056264746809,
+      "totalIn": 264464,
+      "totalOut": 82171
+    },
+    "fineval": {
+      "n": 382,
+      "inPerCall": 1948,
+      "outPerCall": 1181,
+      "cacheHitRate": 0.8766992952863202,
+      "totalIn": 744132,
+      "totalOut": 451186
+    },
+    "fineval-mm": {
+      "n": 150,
+      "inPerCall": 900,
+      "outPerCall": 959,
+      "cacheHitRate": 0.1317799026760386,
+      "totalIn": 135013,
+      "totalOut": 143850
+    },
+    "omnidocbench": {
+      "n": 18,
+      "inPerCall": 912,
+      "outPerCall": 1215,
+      "cacheHitRate": 0.13251324523476038,
+      "totalIn": 16421,
+      "totalOut": 21875
+    },
+    "financebench": {
+      "n": 300,
+      "inPerCall": 387,
+      "outPerCall": 1339,
+      "cacheHitRate": 0.5988696190771137,
+      "totalIn": 116244,
+      "totalOut": 401744
+    }
+  },
+  "plans": [
+    {
+      "id": "P0 连通性与能力自检",
+      "desc": "文本/图像/工具各 1 次 × 2 模型",
+      "benchSpec": {
+        "probe": {
+          "calls": 6,
+          "inPerCall": 1200,
+          "outPerCall": 800,
+          "cacheHitRate": 0
+        }
+      }
+    },
+    {
+      "id": "P1 锚定小样",
+      "desc": "FinanceBench oracle 50 题 + BFCL 200 题（方向性读数）",
+      "benchSpec": {
+        "financebench": {
+          "scale": 0.3333333333333333
+        },
+        "bfcl": {
+          "scale": 0.38461538461538464
+        }
+      }
+    },
+    {
+      "id": "P2 锚定全量",
+      "desc": "FinanceBench oracle 150 题 + BFCL 520 题（与同代测试同口径）",
+      "benchSpec": {
+        "financebench": {
+          "scale": 1
+        },
+        "bfcl": {
+          "scale": 1
+        }
+      }
+    },
+    {
+      "id": "P3 完整六组",
+      "desc": "CFLUE + FinEval + BFCL + FinanceBench + FinEval-MM + OmniDocBench",
+      "benchSpec": {
+        "cflue": {
+          "scale": 1
+        },
+        "fineval": {
+          "scale": 1
+        },
+        "bfcl": {
+          "scale": 1
+        },
+        "financebench": {
+          "scale": 1
+        },
+        "fineval-mm": {
+          "scale": 1
+        },
+        "omnidocbench": {
+          "scale": 1
+        }
+      }
+    }
+  ],
+  "estimates": [
+    {
+      "id": "P0 连通性与能力自检",
+      "desc": "文本/图像/工具各 1 次 × 2 模型",
+      "fableUSD": 0.31,
+      "astraUSD": 0.31,
+      "totalUSD": 0.62
+    },
+    {
+      "id": "P1 锚定小样",
+      "desc": "FinanceBench oracle 50 题 + BFCL 200 题（方向性读数）",
+      "fableUSD": 8.81,
+      "astraUSD": 8.88,
+      "totalUSD": 17.69
+    },
+    {
+      "id": "P2 锚定全量",
+      "desc": "FinanceBench oracle 150 题 + BFCL 520 题（与同代测试同口径）",
+      "fableUSD": 25.66,
+      "astraUSD": 25.84,
+      "totalUSD": 51.49
+    },
+    {
+      "id": "P3 完整六组",
+      "desc": "CFLUE + FinEval + BFCL + FinanceBench + FinEval-MM + OmniDocBench",
+      "fableUSD": 70.79,
+      "astraUSD": 71.5,
+      "totalUSD": 142.29
+    }
+  ],
+  "byBenchmark": [
+    {
+      "bench": "cflue",
+      "calls": 423,
+      "outPerCall": 532,
+      "astraUSD": 11.92,
+      "fableUSD": 11.89
+    },
+    {
+      "bench": "bfcl",
+      "calls": 520,
+      "outPerCall": 158,
+      "astraUSD": 5.22,
+      "fableUSD": 5.09
+    },
+    {
+      "bench": "fineval",
+      "calls": 382,
+      "outPerCall": 1181,
+      "astraUSD": 24.13,
+      "fableUSD": 23.64
+    },
+    {
+      "bench": "fineval-mm",
+      "calls": 150,
+      "outPerCall": 959,
+      "astraUSD": 8.38,
+      "fableUSD": 8.37
+    },
+    {
+      "bench": "omnidocbench",
+      "calls": 18,
+      "outPerCall": 1215,
+      "astraUSD": 1.24,
+      "fableUSD": 1.24
+    },
+    {
+      "bench": "financebench",
+      "calls": 300,
+      "outPerCall": 1339,
+      "astraUSD": 20.62,
+      "fableUSD": 20.57
+    }
+  ],
+  "sensitivity": [
+    {
+      "multiplier": 0.5,
+      "totalUSD": 27.3
+    },
+    {
+      "multiplier": 1,
+      "totalUSD": 51.49
+    },
+    {
+      "multiplier": 1.5,
+      "totalUSD": 75.69
+    },
+    {
+      "multiplier": 2,
+      "totalUSD": 99.88
+    },
+    {
+      "multiplier": 3,
+      "totalUSD": 148.27
+    }
+  ],
+  "note": "依据我们自己的实测 token 画像 ×公开价目；网关对这两个型号未公布价目，实际计费以工作区账单为准"
+}

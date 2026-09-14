@@ -193,6 +193,111 @@
           }
         }
       ]
+    },
+    {
+      "at": "2026-09-14T12:25:49.740Z",
+      "results": [
+        {
+          "id": "claude-fable-5-1",
+          "baseUrl": "https://opencode.ai/zen/v1",
+          "model": "claude-fable-5-1",
+          "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+          "text": {
+            "ok": true,
+            "answer": "B",
+            "finish": "end_turn",
+            "tokens": 3
+          },
+          "vision": {
+            "ok": true,
+            "inTokens": 4788,
+            "out": "图片最上方没有标题，只有正文。图中唯一的标题是右页中部的：\n\n二、“比较美术学”的中西视域"
+          },
+          "tools": {
+            "ok": true,
+            "calls": 1,
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          },
+          "usage": {
+            "model": "claude-fable-5-1",
+            "provider": "claude-fable-5-1",
+            "vendor": "Anthropic（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 3,
+            "failed": 0,
+            "promptTokens": 5242,
+            "completionTokens": 330,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": 5242,
+            "estimatedCostCNY": 0.49,
+            "estimatedCostUSD": 0.0689,
+            "pricePerMTokUSD": {
+              "hit": 0.25,
+              "miss": 10,
+              "out": 50,
+              "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          }
+        },
+        {
+          "id": "gpt-6-astra",
+          "baseUrl": "https://opencode.ai/zen/v1",
+          "model": "gpt-6-astra",
+          "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+          "text": {
+            "ok": true,
+            "answer": "B",
+            "finish": "completed",
+            "tokens": 5
+          },
+          "vision": {
+            "ok": true,
+            "inTokens": 6494,
+            "out": "二、“比较美术学”的中西视域"
+          },
+          "tools": {
+            "ok": true,
+            "calls": 1,
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          },
+          "usage": {
+            "model": "gpt-6-astra",
+            "provider": "gpt-6-astra",
+            "vendor": "OpenAI（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 3,
+            "failed": 0,
+            "promptTokens": 6601,
+            "completionTokens": 43,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": 6601,
+            "estimatedCostCNY": 0.48,
+            "estimatedCostUSD": 0.0682,
+            "pricePerMTokUSD": {
+              "hit": 1,
+              "miss": 10,
+              "out": 50,
+              "note": "标准档（≤272K 输入）：输入 $10 / 缓存读 $1 / 输出 $50；>272K 为 $20/$2/$75；Batch/Flex 半价，Fast 模式翻倍"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          }
+        }
+      ]
     }
   ]
 }

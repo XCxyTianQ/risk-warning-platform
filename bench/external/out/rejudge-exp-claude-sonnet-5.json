@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-09-14T12:53:33.366Z",
+  "judge": "claude-sonnet-5",
+  "split": "dev(60)",
+  "results": {
+    "deepseek-flash": {
+      "file": "exp-A1-dev-2026-09-14T05-31-51.json",
+      "n": 60,
+      "correct": 51,
+      "accuracyPct": 85,
+      "byType": {
+        "metrics-generated": {
+          "n": 20,
+          "c": 17
+        },
+        "novel-generated": {
+          "n": 20,
+          "c": 19
+        },
+        "domain-relevant": {
+          "n": 20,
+          "c": 15
+        }
+      },
+      "originalJudge": "deepseek-flash",
+      "originalAccuracyPct": 88.33
+    },
+    "gpt-6-astra": {
+      "file": "exp-A1-dev-2026-09-14T12-27-34.json",
+      "n": 60,
+      "correct": 53,
+      "accuracyPct": 88.33,
+      "byType": {
+        "metrics-generated": {
+          "n": 20,
+          "c": 18
+        },
+        "domain-relevant": {
+          "n": 20,
+          "c": 16
+        },
+        "novel-generated": {
+          "n": 20,
+          "c": 19
+        }
+      },
+      "originalJudge": "claude-sonnet-5",
+      "originalAccuracyPct": 88.33
+    },
+    "claude-fable-5-1": {
+      "file": "exp-A1-dev-2026-09-14T12-29-32.json",
+      "n": 60,
+      "correct": 54,
+      "accuracyPct": 90,
+      "byType": {
+        "metrics-generated": {
+          "n": 20,
+          "c": 19
+        },
+        "novel-generated": {
+          "n": 20,
+          "c": 19
+        },
+        "domain-relevant": {
+          "n": 20,
+          "c": 16
+        }
+      },
+      "originalJudge": "claude-sonnet-5",
+      "originalAccuracyPct": 88.33
+    }
+  },
+  "usage": {
+    "model": "claude-sonnet-5",
+    "provider": "claude-sonnet-5",
+    "vendor": "Anthropic（经 OpenCode Zen）",
+    "baseUrl": "https://opencode.ai/zen/v1",
+    "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+    "keyMask": "sk-iap…lZKV",
+    "calls": 180,
+    "failed": 0,
+    "promptTokens": 76205,
+    "completionTokens": 2413,
+    "reasoningTokens": 0,
+    "cacheHitTokens": 0,
+    "cacheMissTokens": 76205,
+    "estimatedCostCNY": 1.25,
+    "estimatedCostUSD": 0.1765,
+    "pricePerMTokUSD": {
+      "hit": 0.2,
+      "miss": 2,
+      "out": 10,
+      "note": "网关价"
+    },
+    "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+    "usdCnyRate": 7.1
+  }
+}
