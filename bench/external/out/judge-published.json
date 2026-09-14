@@ -1,33 +1,34 @@
 {
-  "generatedAt": "2026-09-14T05:49:21.306Z",
+  "generatedAt": "2026-09-14T08:07:48.707Z",
   "judgeModel": {
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com/v1",
     "keySource": "C:\\Users\\admin\\Desktop\\KEY.txt",
     "keyMask": "sk-a39…84cc",
-    "calls": 472,
+    "calls": 1413,
     "failed": 0,
-    "promptTokens": 235056,
-    "completionTokens": 219629,
-    "reasoningTokens": 218117,
-    "cacheHitTokens": 6656,
-    "estimatedCostCNY": 0.5568,
+    "promptTokens": 707292,
+    "completionTokens": 611976,
+    "reasoningTokens": 607443,
+    "cacheHitTokens": 438899,
+    "estimatedCostCNY": 1.5776,
     "pricePerMTok": {
       "in": 0.5,
       "out": 2
     }
   },
+  "judgeVotes": 3,
   "results": [
     {
       "label": "GPT-4（oracle）",
       "file": "financebench_results_gpt4_oracle.jsonl",
       "n": 150,
       "paperAccuracyPct": 84,
-      "ourJudgeAccuracyPct": 75.33,
-      "deltaPp": -8.67,
+      "ourJudgeAccuracyPct": 76,
+      "deltaPp": -8,
       "refused": 9,
       "changedToCorrect": 1,
-      "changedToWrong": 14,
+      "changedToWrong": 13,
       "rows": [
         {
           "id": "financebench_id_03029",
@@ -446,7 +447,7 @@
         {
           "id": "financebench_id_06272",
           "paperLabel": "Correct Answer",
-          "ourVerdict": "INCORRECT",
+          "ourVerdict": "CORRECT",
           "answer": "The dividend payout ratio is calculated by dividing the total cash dividends paid by the net income attributable to shareholders. \n\nFrom the cash flow statement, we can see that the total cash dividends paid in FY2022 is $7,616 million. \n\nFrom the income statement, the net income attributable to sha"
         },
         {
@@ -1849,11 +1850,11 @@
       "file": "financebench_results_claude2_incontext.jsonl",
       "n": 150,
       "paperAccuracyPct": 37.33,
-      "ourJudgeAccuracyPct": 38,
-      "deltaPp": 0.67,
-      "refused": 3,
+      "ourJudgeAccuracyPct": 38.67,
+      "deltaPp": 1.33,
+      "refused": 4,
       "changedToCorrect": 8,
-      "changedToWrong": 7,
+      "changedToWrong": 6,
       "rows": [
         {
           "id": "financebench_id_03029",
@@ -2230,7 +2231,7 @@
         {
           "id": "financebench_id_00464",
           "paperLabel": "Refusal",
-          "ourVerdict": "INCORRECT",
+          "ourVerdict": "REFUSAL",
           "answer": " I apologize, upon reviewing the document I do not see any specific mention of when deferral elections become irrevocable. The closest information I could find is in Section 3.3 which discusses the timing requirements around deferral elections, but does not explicitly state when they become irrevoca"
         },
         {
@@ -2392,7 +2393,7 @@
         {
           "id": "financebench_id_00711",
           "paperLabel": "Incorrect Answer",
-          "ourVerdict": "INCORRECT",
+          "ourVerdict": "REFUSAL",
           "answer": " Here are the key points I gathered from the filing to answer your question:\n\n- Roughly how many times has JnJ sold its inventory in FY2022? \n- JnJ does not disclose inventory turnover specifically. However, based on the information provided, it does not seem meaningful to calculate inventory turnov"
         },
         {
@@ -2656,7 +2657,7 @@
         {
           "id": "financebench_id_00724",
           "paperLabel": "Incorrect Answer",
-          "ourVerdict": "REFUSAL",
+          "ourVerdict": "INCORRECT",
           "answer": "\nHello! How may I help you today?"
         },
         {
@@ -2716,7 +2717,7 @@
         {
           "id": "financebench_id_02024",
           "paperLabel": "Correct Answer",
-          "ourVerdict": "INCORRECT",
+          "ourVerdict": "CORRECT",
           "answer": " Based on the filing, here are the key details to answer the question:\n\n- In 2024, Verizon expects to pay $2.1 billion for its retirees. This is disclosed under the section \"Estimated Future Benefit Payments\" where it shows the expected benefit payments to retirees in 2024 is $1.097 billion for Pens"
         },
         {

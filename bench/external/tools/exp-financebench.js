@@ -15,6 +15,7 @@ const path = require('node:path')
 const F = require('../lib/fetch')
 const G = require('../lib/grade')
 const K = require('../lib/kit')
+const R = require('../lib/restructure')
 const { ModelClient, mapLimit } = require('../lib/model')
 const { mulberry32, hashOf } = require('../lib/sample')
 
@@ -26,6 +27,28 @@ fs.mkdirSync(REPORTS, { recursive: true })
 
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : d }
 const has = (n) => process.argv.includes(n)
+
+/**
+ * 裁判多数投票：同一份答案判 N 次取多数。
+ * 为什么需要：诊断 B1 负结果时发现，有 2/6 的"退化"其实是**同一份数字答案被判成了不同结论**
+ * （同源裁判不稳定）。单次裁判带来 ±2~3 题（n=60）的噪声，足以把真实差异淹没。
+ * 平票时按 INCORRECT 计（保守）。
+ */
+async function judgeWithVotes(judge, { question, gold, pred }, votes) {
+  if (votes <= 1) {
+    const jr = await judge.chat({ system: 'You are a strict grader. Output exactly one word.', user: K.judgePrompt({ question, gold, pred }), maxTokens: 2048, kind: 'exp-judge' })
+    return K.parseJudgeVerdict(jr.text)
+  }
+  const all = await Promise.all(
+    Array.from({ length: votes }, () =>
+      judge.chat({ system: 'You are a strict grader. Output exactly one word.', user: K.judgePrompt({ question, gold, pred }), maxTokens: 2048, kind: 'exp-judge' })
+        .then((r) => K.parseJudgeVerdict(r.text)).catch(() => 'ERROR'))
+  )
+  const tally = {}
+  for (const v of all) tally[v] = (tally[v] || 0) + 1
+  const best = Object.entries(tally).sort((a, b) => b[1] - a[1] || (a[0] === 'INCORRECT' ? -1 : 1))[0]
+  return best ? best[0] : 'ERROR'
+}
 
 // ---------------------------------------------------------------- 提示词变体
 const BASE_SYS = 'You are a financial analyst answering questions about corporate filings. Be concise and factual.'
@@ -81,12 +104,59 @@ ${q}
 [Document evidence]
 ${ev}`,
   },
+  B1: {
+    label: 'B1 证据结构化（确定性重排成 Markdown 表）+ A1',
+    preprocess: (ev) => R.restructure(ev),
+    system: BASE_SYS,
+    user: (q, ev) => `Answer the following question using ONLY the document evidence provided below. The evidence may already be laid out as Markdown tables (line items in rows, periods in columns) — use them as-is. It always contains the information needed; derive the answer if it is not stated verbatim.
+
+[Question]
+${q}
+
+[Document evidence]
+${ev}`,
+  },
+  B1b: {
+    label: 'B1b 仅 LLM 结构化（让模型先把证据转成表格）再作答',
+    structureStage: true,
+    system: BASE_SYS,
+    user: (q, ev) => `Answer the following question using ONLY the document evidence provided below. It always contains the information needed; derive the answer if it is not stated verbatim.
+
+[Question]
+${q}
+
+[Document evidence]
+${ev}`,
+  },
+  B1c: {
+    label: 'B1c 确定性重排 + LLM 结构化 + 作答（三阶段，最贵）',
+    preprocess: (ev) => R.restructure(ev),
+    structureStage: true,
+    system: BASE_SYS,
+    user: (q, ev) => `Answer the following question using ONLY the document evidence provided below. It always contains the information needed; derive the answer if it is not stated verbatim.
+
+[Question]
+${q}
+
+[Document evidence]
+${ev}`,
+  },
   B2: {
     label: 'B2 两阶段：先抽取候选行项目，再据此作答',
     twoStage: true,
     system: BASE_SYS,
   },
 }
+
+/** "只结构化、不作答"的提示词：把断行文本重排成 Markdown 表，不允许摘要或省略 */
+const STRUCTURE_SYS = 'You reformat raw document text into Markdown tables. You never summarize, never omit a number, and never answer questions.'
+const structureUser = (ev) => `Reformat the following document text into Markdown tables. Rules:
+- Keep every number and every label; do not summarize, drop, or add anything.
+- Put line items in rows and periods in columns when the layout allows.
+- Keep narrative paragraphs as plain text between tables.
+
+[Document text]
+${ev}`
 
 // ---------------------------------------------------------------- 切分（固定种子，分层）
 function loadQuestions() {
@@ -144,6 +214,38 @@ function baselineRows() {
     for (const [k, v] of Object.entries(VARIANTS)) console.log(`${k}: ${v.label}`)
     return
   }
+
+  // --rejudge：把某个变体的**存量答案**用多数投票裁判重判，不重新调用作答模型
+  const rejudge = arg('--rejudge', '')
+  if (rejudge) {
+    const src = JSON.parse(fs.readFileSync(path.resolve(EXT, 'out', 'experiments', rejudge), 'utf8'))
+    const questions = loadQuestions()
+    const qmap = new Map(questions.map((q) => [q.id, q]))
+    const votes = Number(arg('--judge-votes', 3))
+    const judge = new ModelClient({ model: arg('--judge', 'deepseek-flash') })
+    console.log(`=== 重判 ${rejudge}（裁判投票 ${votes} 次/题，n=${src.rows.length}）===`)
+    let done = 0
+    const rows = await mapLimit(src.rows, Number(arg('--concurrency', 6)), async (r) => {
+      const q = qmap.get(r.id)
+      if (!q || r.error) return r
+      const v = await judgeWithVotes(judge, { question: q.question, gold: q.gold, pred: r.prediction || '' }, votes)
+      done++
+      if (done % 15 === 0) process.stdout.write(`\r    重判 ${done}/${src.rows.length}`)
+      return { ...r, judge: v }
+    })
+    process.stdout.write('\n')
+    const ok = rows.filter((r) => !r.error)
+    const correct = ok.filter((r) => r.judge === 'CORRECT').length
+    const byType = {}
+    for (const r of ok) { byType[r.type] = byType[r.type] || { n: 0, correct: 0 }; byType[r.type].n++; if (r.judge === 'CORRECT') byType[r.type].correct++ }
+    console.log(`    重判后：${correct}/${ok.length} = ${((correct / ok.length) * 100).toFixed(1)}%（原单次裁判 ${src.accuracyPct}%）`)
+    for (const [t, v] of Object.entries(byType)) console.log(`      ${t}: ${v.correct}/${v.n}`)
+    const outFile = path.join(REPORTS, rejudge.replace(/\.json$/, `-rejudge${votes}.json`))
+    fs.writeFileSync(outFile, JSON.stringify({ ...src, judgeVotes: votes, accuracyPct: Number(((correct / ok.length) * 100).toFixed(2)), correct, rows, rejudgedAt: new Date().toISOString(), usage: { judge: judge.describe() } }, null, 2))
+    console.log(`    产物 → ${path.relative(path.join(EXT, '..', '..'), outFile)}；裁判调用 ${judge.describe().calls} 次，约 ¥${judge.describe().estimatedCostCNY}`)
+    return
+  }
+
   const variantKey = arg('--variant', 'A1')
   const which = arg('--split', 'dev')
   const variant = VARIANTS[variantKey]
@@ -164,12 +266,24 @@ function baselineRows() {
 
   const client = new ModelClient({ model: arg('--model', 'deepseek-flash') })
   const judge = new ModelClient({ model: arg('--judge', 'deepseek-flash') })
+  const judgeVotes = Number(arg('--judge-votes', 1))
   const rows = []
   let done = 0
   await mapLimit(tasks, Number(arg('--concurrency', 4)), async (t) => {
     const t0 = Date.now()
     try {
       let pred = ''
+      let ev = t.evidence
+      let evStats = null
+      if (variant.preprocess) {
+        const r = variant.preprocess(ev)
+        ev = r.markdown
+        evStats = r.stats
+      }
+      if (variant.structureStage) {
+        const st = await client.chat({ system: STRUCTURE_SYS, user: structureUser(ev), maxTokens: 4096, kind: 'exp-structure' })
+        if (st.text && st.text.length > 200) ev = st.text
+      }
       if (variant.twoStage) {
         const stage1 = await client.chat({
           system: 'You extract figures from financial filings. Output only the extracted lines, no commentary.',
@@ -179,7 +293,7 @@ function baselineRows() {
 ${t.question}
 
 [Document evidence]
-${t.evidence}`,
+${ev}`,
           maxTokens: 2048, kind: 'exp-stage1',
         })
         const stage2 = await client.chat({
@@ -189,15 +303,10 @@ ${t.evidence}`,
         })
         pred = stage2.text
       } else {
-        const r = await client.chat({ system: variant.system, user: variant.user(t.question, t.evidence), maxTokens: 2048, kind: `exp-${variantKey}` })
+        const r = await client.chat({ system: variant.system, user: variant.user(t.question, ev), maxTokens: 2048, kind: `exp-${variantKey}` })
         pred = r.text
       }
-      const jr = await judge.chat({
-        system: 'You are a strict grader. Output exactly one word.',
-        user: K.judgePrompt({ question: t.question, gold: t.gold, pred }),
-        maxTokens: 2048, kind: 'exp-judge',
-      })
-      const verdict = K.parseJudgeVerdict(jr.text)
+      const verdict = await judgeWithVotes(judge, { question: t.question, gold: t.gold, pred }, judgeVotes)
       const det = G.numericMatch(pred, t.gold)
       const isNum = /^-?\$?\s?[\d,]+(\.\d+)?%?$/.test(t.gold.trim())
       done++
@@ -205,6 +314,7 @@ ${t.evidence}`,
       rows.push({
         id: t.id, type: t.type, gold: t.gold, prediction: pred.slice(0, 800), judge: verdict,
         deterministic: isNum && det ? det.hit : G.normChars(pred).includes(G.normChars(t.gold)),
+        evidenceStats: evStats ? { tables: evStats.tables, rows: evStats.rows, periods: evStats.periodCount, preserved: evStats.numbersPreserved } : undefined,
         ms: Date.now() - t0, error: null,
       })
     } catch (e) {

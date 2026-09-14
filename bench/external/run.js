@@ -155,6 +155,7 @@ async function main() {
           client,
           candidateModel: model,
           fbVariant: arg('--fb-variant', 'A0'),
+          judgeVotes: Number(arg('--judge-votes', 1)),
           concurrency,
           log: (m) => console.log(m),
           getClient: (m) => new ModelClient({ model: m }),

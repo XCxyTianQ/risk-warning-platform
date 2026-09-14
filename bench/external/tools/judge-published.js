@@ -25,22 +25,35 @@ const FILES = [
 
 ;(async () => {
   const only = arg('--file', '')
+  const votes = Number(arg('--judge-votes', 1))
   const list = only ? FILES.filter(([f]) => f === only) : FILES
   const judge = new ModelClient({ model: arg('--judge', 'deepseek-flash') })
+  /** 多数投票：单次裁判有 ±2~3 题噪声，对照表必须与主表用同一口径 */
+  const judgeOnce = async (r) => {
+    const jr = await judge.chat({
+      system: 'You are a strict grader. Output exactly one word.',
+      user: K.judgePrompt({ question: r.question, gold: r.gold_answer, pred: String(r.model_answer || '') }),
+      maxTokens: 2048, kind: 'judge-published',
+    })
+    return K.parseJudgeVerdict(jr.text)
+  }
+  const judgeMany = async (r) => {
+    if (votes <= 1) return judgeOnce(r)
+    const all = await Promise.all(Array.from({ length: votes }, () => judgeOnce(r).catch(() => 'ERROR')))
+    const tally = {}
+    for (const v of all) tally[v] = (tally[v] || 0) + 1
+    return Object.entries(tally).sort((a, b) => b[1] - a[1] || (a[0] === 'INCORRECT' ? -1 : 1))[0][0]
+  }
   const results = []
   for (const [file, label] of list) {
     const rows = F.parseJsonl(F.rawText('financebench/' + file.replace('financebench_', '').replace('.jsonl', '') + '.jsonl')).rows
     let done = 0
     const judged = await mapLimit(rows, Number(arg('--concurrency', 5)), async (r) => {
       try {
-        const jr = await judge.chat({
-          system: 'You are a strict grader. Output exactly one word.',
-          user: K.judgePrompt({ question: r.question, gold: r.gold_answer, pred: String(r.model_answer || '') }),
-          maxTokens: 2048, kind: 'judge-published',
-        })
+        const verdict = await judgeMany(r)
         done++
         if (done % 25 === 0) process.stdout.write(`\r    ${label} ${done}/${rows.length}`)
-        return { id: r.financebench_id, paperLabel: r.label, ourVerdict: K.parseJudgeVerdict(jr.text), answer: String(r.model_answer || '').slice(0, 300) }
+        return { id: r.financebench_id, paperLabel: r.label, ourVerdict: verdict, answer: String(r.model_answer || '').slice(0, 300) }
       } catch (e) {
         return { id: r.financebench_id, paperLabel: r.label, ourVerdict: 'ERROR', error: String(e.message).slice(0, 150) }
       }
@@ -64,7 +77,8 @@ const FILES = [
     console.log(`   论文判错/我们判对 ${stats.changedToCorrect} 条；论文判对/我们判错 ${stats.changedToWrong} 条；我们判为拒答 ${stats.refused} 条`)
   }
   const file = path.join(OUT, 'judge-published.json')
-  fs.writeFileSync(file, JSON.stringify({ generatedAt: new Date().toISOString(), judgeModel: judge.describe(), results }, null, 2))
+  fs.writeFileSync(file, JSON.stringify({ generatedAt: new Date().toISOString(), judgeModel: judge.describe(),
+    judgeVotes: votes, results }, null, 2))
   console.log(`\n产物 → ${path.relative(path.join(EXT, '..', '..'), file)}`)
   console.log(`记账：${judge.describe().calls} 次裁判调用，约 ¥${judge.describe().estimatedCostCNY}`)
 })().catch((e) => { console.error(e); process.exit(1) })

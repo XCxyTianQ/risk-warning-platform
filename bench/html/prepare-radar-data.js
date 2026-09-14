@@ -108,11 +108,21 @@ if (fs.existsSync(jp)) {
 // A1 提示词变体的分题型（dev + test 合计 150 题，来自实验产物）
 const expDir = path.join(REPO, 'bench', 'external', 'out', 'experiments')
 if (fs.existsSync(expDir)) {
-  const files = fs.readdirSync(expDir).filter((f) => /^exp-A1-(dev|test)-.*\.json$/.test(f))
+  // 同一 (变体, 切分) 可能既有单次裁判版本、也有 judge@3 重判版本；
+  // 重判版本更可信，优先用它，且绝不能把两份都算进去（否则样本量会重复计数）
+  const all = fs.readdirSync(expDir).filter((f) => /^exp-A1-(dev|test)-.*\.json$/.test(f))
+  const byKey = new Map()
+  for (const f of all) {
+    const m = f.match(/^exp-A1-(dev|test)-/)
+    const key = m[1]
+    const isRejudge = /-rejudge\d+\.json$/.test(f)
+    const prev = byKey.get(key)
+    if (!prev || (isRejudge && !prev.isRejudge)) byKey.set(key, { f, isRejudge })
+  }
   const rows = []
-  for (const f of files) {
+  for (const { f, isRejudge } of byKey.values()) {
     const j = JSON.parse(fs.readFileSync(path.join(expDir, f), 'utf8'))
-    for (const r of j.rows || []) if (!r.error) rows.push(r)
+    for (const r of j.rows || []) if (!r.error) rows.push({ ...r, judgeVotes: j.judgeVotes || 1 })
   }
   if (rows.length) {
     const byType = {}
@@ -128,10 +138,11 @@ if (fs.existsSync(expDir)) {
       label: '本平台（A1 去保守化提示词）',
       n: rows.length,
       accuracyPct: Number(((correct / rows.length) * 100).toFixed(2)),
+      judgeVotes: Math.max(...rows.map((r) => r.judgeVotes || 1)),
       byType: Object.fromEntries(TYPES.map((t) => [t, { n: byType[t].n, accuracyPct: byType[t].n ? Number(((byType[t].correct / byType[t].n) * 100).toFixed(2)) : null }])),
-      sources: files,
+      sources: [...byKey.values()].map((x) => x.f),
     }
-    console.log(`A1 变体（dev+test 合计 n=${rows.length}）总体 ${out.oursA1.accuracyPct}%`)
+    console.log(`A1 变体（dev+test 合计 n=${rows.length}，裁判投票 ${out.oursA1.judgeVotes}）总体 ${out.oursA1.accuracyPct}%`)
     console.log(`   ${TYPES.map((t) => `${t}: ${out.oursA1.byType[t].accuracyPct}%`).join('  ')}`)
   }
 }

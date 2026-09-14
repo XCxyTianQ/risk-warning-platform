@@ -20,6 +20,8 @@ const VIEWPORTS = [
   { name: '02-finrisk', sel: '#finrisk', theme: 'light' },
   { name: '03-radar', sel: '.chart.radar', theme: 'light' },
   { name: '04-external', sel: '#external h3:nth-of-type(2)', theme: 'light' },
+  { name: '04b-variants', sel: '#external h4', theme: 'light' },
+  { name: '04c-b1', sel: '#external .callout.bad', theme: 'light' },
   { name: '05-honest', sel: '#honest', theme: 'light' },
   { name: '06-data', sel: '#data', theme: 'light' },
   { name: '07-cost', sel: '#cost', theme: 'light' },

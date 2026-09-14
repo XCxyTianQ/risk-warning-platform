@@ -711,6 +711,8 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
                 ("A1-dev", "A1 · dev 选型", "dev 60"),
                 ("A1-test", "A1 · 冻结 test 验证", "test 90"),
                 ("A2-dev", "A2 A1 + 先写行项目与单位", "dev 60"),
+                ("B1-dev", "B1 证据结构化（确定性重排）+ A1", "dev 60"),
+                ("B1b-dev", "B1b 仅 LLM 结构化后再作答", "dev 60"),
                 ("B2-dev", "B2 两阶段（先抽取行项目再作答）", "dev 60"),
             ]:
                 if key in v:
@@ -719,17 +721,31 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
                                  (f"{item.get('deltaQuestions'):+d} 题" if item.get("deltaQuestions") is not None else "—"),
                                  item.get("verdicts", {}).get("REFUSAL", 0)])
             if rows:
-                T(["提示词变体", "切分", "n", "准确率", "相对基线", "拒答"],
+                T(["提示词/证据处理变体", "切分", "n", "准确率", "相对基线", "拒答"],
                   rows,
-                  caption="表 12b　提示词变体实验（同一裁判；选型只在 dev，test 冻结后只跑一次）",
-                  note="失分诊断显示：原提示词主动邀请「证据不足就拒答」，导致 9/150 题直接弃答——"
-                       "而 oracle 口径给的 evidence 就是论文标注的支撑段落，答案必在其中。修正后拒答清零。"
-                       "A2 与 A1 持平（未采用）；两阶段抽取反而更差且贵 3.5 倍（未采用）。",
+                  caption="表 12b　变体实验（同一裁判多数投票；选型只在 dev，test 冻结后只跑一次）",
+                  note="单次裁判在 n=60 上有 ±2~3 题噪声（诊断中发现同一份数字答案会被判成不同结论），"
+                       "因此所有变体的存量答案都用 judge@3 多数投票重判后再比较。"
+                       "A1 有效（拒答 9→0）；A2 与 A1 持平；B1/B1b/B2 均低于 A1 约 5pp。",
                   widths=[4.6, 1.8, 1.2, 1.8, 1.8, 1.2])
             P("**A1 的边界（必须同时说清）**：它利用了 oracle 口径「证据必然充分」这一前提；"
               "真实检索场景下检索可能没命中，该前提不成立。因此这是<strong>把口径拉齐</strong>，"
               "而不是生产环境的普适提升。此外裁判与候选模型同源（flash 判 flash），"
               "同一裁判判双方答案消除了「尺子不同」，但消不掉「偏袒自己」的可能。")
+            # B1 的负结果必须单独写清楚，否则后人会重复走一遍
+            hist_b1 = dig(hist, "b1Restructure", {}) if hist else {}
+            if hist_b1:
+                P("**B1 是负结果（证据结构化没有帮上忙）**：把 PDF 抽出的断行文本确定性地重排成 Markdown 表"
+                  f"（{hist_b1.get('tables')} 张表 / {hist_b1.get('tableRows')} 行，覆盖 {pct(hist_b1.get('coveragePct'))} 的证据，"
+                  f"字符数为原文的 {pct(hist_b1.get('charRatioPct'))}），并加了硬约束「数字不许丢、不许编造」"
+                  f"——150 条证据全部通过（失败 {hist_b1.get('invariantFailures')} 条）。逻辑上这该有帮助，实测却低 5.0pp，原因三条：")
+                B("「不丢数字」不等于「列对齐正确」：实现的 v1 版本曾把 8 列子表强行按 2 列对齐，数字一个没丢但全部串列，"
+                  "答案随之出错；这一版 bug 是被自检脚本抓出来的，修复后重测仍然更差，说明问题不止于此。")
+                B(f"只能安全结构化 {pct(hist_b1.get('coveragePct'))} 的证据，其余保持原文，输入变成「半结构化混合体」，反而增加了理解成本。")
+                B("重排破坏了原始排版里的隐含线索（哪些数字属于同一期间、哪些属于同一小节），而这些线索对模型是有用的。")
+                B("让模型自己转表格（B1b）同样低 5pp，且成本是 A1 的 6 倍；两阶段抽取（B2）亦然。")
+                P("记录这条负结果的价值在于：它省掉了后续再验证一遍「结构化能否提分」的成本，"
+                  "也说明<strong>本平台的 T1 结构化能力虽然在自己的基准上满分，但把它硬套到「问答证据」上并不自动转化为分数</strong>。")
         # 同题同口径的多方分题型对比（雷达图的数据底稿）
         radar = load(EXT / "out" / "radar-data.json")
         if radar:

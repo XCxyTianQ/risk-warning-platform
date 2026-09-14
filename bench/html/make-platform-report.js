@@ -925,18 +925,36 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
   ${fbHistory ? `
   <h4>从 82.0% 到 ${pct(dig(fbHistory, 'variants.A1（最新一次）.accuracyPct', null), 1)}%：改动只有一句提示词</h4>
+  <p style="font-size:13px;color:var(--c-ink-2)">单次裁判在 n=60 上有 <strong>±2~3 题</strong>的噪声（诊断时发现同一份数字答案会被判成不同结论），
+  因此所有变体的存量答案都用 <strong>judge@${dig(fbHistory, 'variantComparison.judgeVotes', 3)} 多数投票</strong>重判后再比较——下表即重判结果。</p>
   <table>
-    <caption>表 12b　提示词变体实验（同一裁判；dev 用于选型、test 冻结后只跑一次）</caption>
-    <thead><tr><th>变体</th><th class="n">切分</th><th class="n">n</th><th class="n">准确率</th><th class="n">相对基线</th><th class="n">拒答</th><th>结论</th></tr></thead>
+    <caption>表 12b　提示词与证据处理变体（dev 60 题，同一裁判多数投票；选型只在 dev，选定后在冻结 test 上验证一次）</caption>
+    <thead><tr><th>变体</th><th class="n">准确率</th><th class="n">相对 A1</th><th class="n">指标类</th><th class="n">领域推理</th><th class="n">新颖生成</th><th>结论</th></tr></thead>
     <tbody>
-      <tr><td>A0 原提示词（含"无法确定就拒答"）</td><td class="n">全量</td><td class="n">150</td><td class="n">${pct(dig(fbHistory, 'variants.A0（最新一次）.accuracyPct', null), 1)}</td><td class="n">—</td><td class="n">9</td><td style="font-size:12.5px">基线</td></tr>
-      <tr style="background:var(--c-good-soft)"><td><b>A1 去保守化（证据必含答案，未陈述则推导）</b></td><td class="n">全量</td><td class="n">150</td><td class="n best">${pct(dig(fbHistory, 'variants.A1（最新一次）.accuracyPct', null), 1)}</td><td class="n">+4.67pp</td><td class="n">0</td><td style="font-size:12.5px">✅ 采用</td></tr>
-      <tr><td>A1 · dev 选型</td><td class="n">dev</td><td class="n">60</td><td class="n">${pct(dig(fbHistory, 'variants.A1-dev.accuracyPct', null), 1)}</td><td class="n">+10.0pp</td><td class="n">0</td><td style="font-size:12.5px">相对同题号基线 78.3%</td></tr>
-      <tr><td>A1 · <b>冻结 test 验证</b></td><td class="n">test</td><td class="n">90</td><td class="n">${pct(dig(fbHistory, 'variants.A1-test.accuracyPct', null), 1)}</td><td class="n">+4.4pp</td><td class="n">0</td><td style="font-size:12.5px">选型只在 dev，test 只跑一次</td></tr>
-      <tr><td>A2 A1 + 先写行项目与单位</td><td class="n">dev</td><td class="n">60</td><td class="n">${pct(dig(fbHistory, 'variants.A2-dev.accuracyPct', null), 1)}</td><td class="n">+10.0pp</td><td class="n">0</td><td style="font-size:12.5px">与 A1 持平 → 未采用（仅让输出更可审计）</td></tr>
-      <tr><td>B2 两阶段（先抽取行项目再作答）</td><td class="n">dev</td><td class="n">60</td><td class="n">${pct(dig(fbHistory, 'variants.B2-dev.accuracyPct', null), 1)}</td><td class="n">+5.0pp</td><td class="n">1</td><td style="font-size:12.5px">❌ 不如 A1 且贵 3.5 倍 → 未采用</td></tr>
+      ${(dig(fbHistory, 'variantComparison.rows', []) || []).map((r) => {
+        const label = {
+          A0: 'A0 原提示词（含"无法确定就拒答"）',
+          A1: 'A1 去保守化（证据必含答案，未陈述则推导）',
+          A2: 'A2 A1 + 先写行项目与单位',
+          B1: 'B1 证据结构化（确定性重排成 Markdown 表）+ A1',
+          B1b: 'B1b 让模型先把证据转成表格（仅 LLM 结构化）',
+          B2: 'B2 两阶段：先抽取候选行项目再作答',
+        }[r.variant] || r.variant
+        const verdict = { A0: '基线（9 题拒答）', A1: '✅ 采用', A2: '与 A1 持平且更啰嗦 → 不采用', B1: '❌ 比 A1 低 5.0pp → 不采用', B1b: '❌ 比 A1 低 5.0pp，且贵 6 倍 → 不采用', B2: '❌ 比 A1 低 5.0pp → 不采用' }[r.variant] || ''
+        const delta = r.variant === 'A1' ? '—' : `${r.accuracyPct - 88.3 >= 0 ? '+' : ''}${(r.accuracyPct - 88.3).toFixed(1)}pp`
+        return `<tr${r.variant === 'A1' ? ' style="background:var(--c-good-soft)"' : ''}><td>${esc(label)}</td><td class="n ${r.variant === 'A1' ? 'best' : ''}">${pct(r.accuracyPct, 1)}</td><td class="n">${delta}</td><td class="n">${esc(r.byType['metrics-generated'] || '—')}</td><td class="n">${esc(r.byType['domain-relevant'] || '—')}</td><td class="n">${esc(r.byType['novel-generated'] || '—')}</td><td style="font-size:12.5px">${verdict}</td></tr>`
+      }).join('')}
+      <tr><td>A1 · <b>冻结 test 验证</b></td><td class="n">${pct(dig(fbHistory, 'variants.A1-test.accuracyPct', null), 1)}</td><td class="n">+1.7pp</td><td class="n">93.3%</td><td class="n">90.0%</td><td class="n">86.7%</td><td style="font-size:12.5px">test 90 题，只跑一次</td></tr>
     </tbody>
   </table>
+  <div class="callout bad"><span class="t">B1 是负结果：证据结构化没有帮上忙，反而拖低 5 个百分点</span>
+    我们把 PDF 抽出的断行文本确定性地重排成 Markdown 表（${num(dig(fbHistory, 'b1Restructure.tables', null))} 张表 / ${num(dig(fbHistory, 'b1Restructure.tableRows', null))} 行，
+    覆盖 ${pct(dig(fbHistory, 'b1Restructure.coveragePct', null), 1)} 的证据），并给它加了硬约束：
+    <strong>数字不许丢、不许编造</strong>（150 条证据全部通过，见 <code>bench/html/check-restructure.js</code>）。逻辑上这该有帮助，实测却更低，原因有三条，都值得记下来：
+    <br>① <strong>"不丢数字"不等于"列对齐正确"</strong>——v1 版本曾把 8 列的子表强行按 2 列对齐，数字一个没丢但全部串列，答案随之出错（这条 bug 是自检发现的，修复后重测）；
+    <br>② <strong>只能安全结构化 ${pct(dig(fbHistory, 'b1Restructure.coveragePct', null), 0)} 的证据</strong>，其余保持原文，于是输入变成"半结构化混合体"，反而增加了理解成本；
+    <br>③ <strong>重排破坏了原始排版里的隐含线索</strong>（哪些数字属于同一期间、哪些是同一小节），而这些线索对模型是有用的。
+    <br>让模型自己转表格（B1b）同样低 5pp，且成本是 A1 的 6 倍。两阶段抽取（B2）亦同。这就是"为什么不把负结果藏起来"：它省掉了后面再走一遍弯路的成本。</div>
   <p style="font-size:12.5px;color:var(--c-muted)">同一变体多次运行之间有 1~3pp 波动（A0 历次 ${JSON.stringify(dig(fbHistory, 'variants.A0（最新一次）.accuracySpreadPct', []))}%），
   因此这些差值只能读作"量级差异"，不能读作精确提升。</p>
   ` : ''}

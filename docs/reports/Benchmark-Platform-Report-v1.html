@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 14:08</span>
+    <span class="chip">报告生成 2026-09-14 16:11</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -190,7 +190,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <div class="kpi"><div class="v">79.8%</div><div class="k">预警 AUC（测试集 n=1,348）</div><div class="s">对照"三行财务规则" 63.3%，提升 <b>+16.6pp</b></div></div>
     <div class="kpi"><div class="v">100.0%</div><div class="k">抽取字段级 F1（258 个单元格）</div><div class="s">MAPE 0.0000%；勾稽缺陷召回 100%、误报 0%</div></div>
     <div class="kpi"><div class="v">89.9%</div><div class="k">CFLUE 中文金融知识（n=298）</div><div class="s">单选 95.3%、多选 78.0%、判断 88.0%</div></div>
-    <div class="kpi"><div class="v">¥4.85</div><div class="k">整轮外部对齐的模型成本</div><div class="s">2,248 次调用；结论不靠钱堆</div></div>
+    <div class="kpi"><div class="v">¥5.07</div><div class="k">整轮外部对齐的模型成本</div><div class="s">2,260 次调用；结论不靠钱堆</div></div>
   </div>
 </header>
 
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>12,063 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>12,726 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -340,7 +340,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <div class="kpi"><div class="v">89.9%</div><div class="k">CFLUE 中文金融知识</div><div class="s">单选 95.3%、多选 78.0%、判断 88.0%</div></div>
     <div class="kpi"><div class="v">85.7%</div><div class="k">FinEval 金融数值计算</div><div class="s">全量 42 题；指标抽取数字召回 0.70</div></div>
     <div class="kpi"><div class="v">66.0%</div><div class="k">FinEval-MM 图表截图四选一</div><div class="s">n=150，12 类题型分层抽样</div></div>
-    <div class="kpi"><div class="v">86.7%</div><div class="k">FinanceBench oracle（给证据）</div><div class="s">closedBook 47.3%（含记忆成分，见 06 节）</div></div>
+    <div class="kpi"><div class="v">88.7%</div><div class="k">FinanceBench oracle（给证据）</div><div class="s">closedBook 44.7%（含记忆成分，见 06 节）</div></div>
     <div class="kpi"><div class="v">87.5%</div><div class="k">BFCL v4 工具调用</div><div class="s">simple 94.5% / multiple 88.5% / 应拒调 74.2%</div></div>
     <div class="kpi"><div class="v">0.752</div><div class="k">OmniDocBench 数字召回（18 页）</div><div class="s">含表格页 0.871；片段召回 0.581</div></div>
   </div>
@@ -361,7 +361,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <caption>表 12a　裁判校准：论文公开答案在「论文标签」与「我们的裁判」下的差异（同一批 150 题）</caption>
     <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">论文标签</th><th class="n">我们的裁判重判</th><th class="n">差值</th><th>含义</th></tr></thead>
     <tbody>
-      <tr><td>GPT-4（oracle）</td><td class="n">150</td><td class="n">84.00%</td><td class="n">75.33%</td><td class="n">-8.67pp</td><td style="font-size:12.5px">我们的裁判明显更严：把「大体答对但表述/单位不同」判成错</td></tr><tr><td>GPT-4-1106（oracle）</td><td class="n">150</td><td class="n">85.33%</td><td class="n">78.67%</td><td class="n">-6.66pp</td><td style="font-size:12.5px">我们的裁判明显更严：把「大体答对但表述/单位不同」判成错</td></tr><tr><td>Claude-2（in-context）</td><td class="n">150</td><td class="n">37.33%</td><td class="n">38.00%</td><td class="n">0.67pp</td><td style="font-size:12.5px">两家裁判基本一致：答案本来就大量是错的</td></tr>
+      <tr><td>GPT-4（oracle）</td><td class="n">150</td><td class="n">84.00%</td><td class="n">76.00%</td><td class="n">-8.00pp</td><td style="font-size:12.5px">我们的裁判明显更严：把「大体答对但表述/单位不同」判成错</td></tr><tr><td>GPT-4-1106（oracle）</td><td class="n">150</td><td class="n">85.33%</td><td class="n">78.67%</td><td class="n">-6.66pp</td><td style="font-size:12.5px">我们的裁判明显更严：把「大体答对但表述/单位不同」判成错</td></tr><tr><td>Claude-2（in-context）</td><td class="n">150</td><td class="n">37.33%</td><td class="n">38.67%</td><td class="n">1.34pp</td><td style="font-size:12.5px">两家裁判基本一致：答案本来就大量是错的</td></tr>
     </tbody>
   </table>
   <p style="font-size:12.5px;color:var(--c-muted)">读法：宽严差异<strong>只出现在高分模型</strong>上（GPT-4 −8.67pp、GPT-4-1106 −6.67pp），
@@ -371,13 +371,13 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <div class="figure">
     <div class="cap">图 3　同一裁判口径下的分题型准确率（oracle 口径，每类 50 题；本平台使用修正后的 A1 提示词，外环为 100%、每环 25%）</div>
     <div style="display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);gap:20px;align-items:center">
-      <div><svg viewBox="48 19 423 432" class="chart radar" role="img"><polygon points="260.0,207.2 300.5,277.4 219.5,277.4" class="rd-ring"/><polygon points="260.0,160.4 341.1,300.8 178.9,300.8" class="rd-ring"/><polygon points="260.0,113.6 381.6,324.2 138.4,324.2" class="rd-ring"/><polygon points="260.0,66.8 422.1,347.6 97.9,347.6" class="rd-ring-outer"/><line x1="260" y1="254" x2="260.0" y2="66.8" class="rd-axis"/><text x="260.0" y="40.8" class="rd-label" text-anchor="middle">指标类问题</text><text x="260.0" y="54.8" class="axis sub" text-anchor="middle">n=50</text><line x1="260" y1="254" x2="422.1" y2="347.6" class="rd-axis"/><text x="422.1" y="377.6" class="rd-label" text-anchor="middle">领域推理问题</text><text x="422.1" y="391.6" class="axis sub" text-anchor="middle">n=50</text><line x1="260" y1="254" x2="97.9" y2="347.6" class="rd-axis"/><text x="97.9" y="377.6" class="rd-label" text-anchor="middle">新颖生成问题</text><text x="97.9" y="391.6" class="axis sub" text-anchor="middle">n=50</text><polygon points="260.0,108.0 380.0,323.3 140.0,323.3" fill="var(--c-baseline)" fill-opacity="0.1" stroke="var(--c-baseline)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="260.0" cy="108.0" r="3.2" fill="var(--c-baseline)"/><circle cx="380.0" cy="323.3" r="3.2" fill="var(--c-baseline)"/><circle cx="140.0" cy="323.3" r="3.2" fill="var(--c-baseline)"/><polygon points="260.0,115.5 392.9,330.8 130.3,328.9" fill="var(--c-finance)" fill-opacity="0.1" stroke="var(--c-finance)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="260.0" cy="115.5" r="3.2" fill="var(--c-finance)"/><circle cx="392.9" cy="330.8" r="3.2" fill="var(--c-finance)"/><circle cx="130.3" cy="328.9" r="3.2" fill="var(--c-finance)"/><polygon points="260.0,205.3 311.9,284.0 169.2,306.4" fill="var(--c-baseline)" fill-opacity="0.1" stroke="var(--c-baseline)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="260.0" cy="205.3" r="3.2" fill="var(--c-baseline)"/><circle cx="311.9" cy="284.0" r="3.2" fill="var(--c-baseline)"/><circle cx="169.2" cy="306.4" r="3.2" fill="var(--c-baseline)"/><polygon points="260.0,93.0 396.2,332.6 114.1,338.2" fill="var(--c-platform)" fill-opacity="0.16" stroke="var(--c-platform)" stroke-width="2.6" stroke-dasharray="" stroke-linejoin="round"/><circle cx="260.0" cy="93.0" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="260.0" y="112.0" class="rd-val" text-anchor="middle">86</text><circle cx="396.2" cy="332.6" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="383.2" y="329.1" class="rd-val" text-anchor="middle">84</text><circle cx="114.1" cy="338.2" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="127.1" y="334.7" class="rd-val" text-anchor="middle">90</text></svg></div>
+      <div><svg viewBox="48 19 423 432" class="chart radar" role="img"><polygon points="260.0,207.2 300.5,277.4 219.5,277.4" class="rd-ring"/><polygon points="260.0,160.4 341.1,300.8 178.9,300.8" class="rd-ring"/><polygon points="260.0,113.6 381.6,324.2 138.4,324.2" class="rd-ring"/><polygon points="260.0,66.8 422.1,347.6 97.9,347.6" class="rd-ring-outer"/><line x1="260" y1="254" x2="260.0" y2="66.8" class="rd-axis"/><text x="260.0" y="40.8" class="rd-label" text-anchor="middle">指标类问题</text><text x="260.0" y="54.8" class="axis sub" text-anchor="middle">n=50</text><line x1="260" y1="254" x2="422.1" y2="347.6" class="rd-axis"/><text x="422.1" y="377.6" class="rd-label" text-anchor="middle">领域推理问题</text><text x="422.1" y="391.6" class="axis sub" text-anchor="middle">n=50</text><line x1="260" y1="254" x2="97.9" y2="347.6" class="rd-axis"/><text x="97.9" y="377.6" class="rd-label" text-anchor="middle">新颖生成问题</text><text x="97.9" y="391.6" class="axis sub" text-anchor="middle">n=50</text><polygon points="260.0,104.2 380.0,323.3 140.0,323.3" fill="var(--c-baseline)" fill-opacity="0.1" stroke="var(--c-baseline)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="260.0" cy="104.2" r="3.2" fill="var(--c-baseline)"/><circle cx="380.0" cy="323.3" r="3.2" fill="var(--c-baseline)"/><circle cx="140.0" cy="323.3" r="3.2" fill="var(--c-baseline)"/><polygon points="260.0,115.5 392.9,330.8 130.3,328.9" fill="var(--c-finance)" fill-opacity="0.1" stroke="var(--c-finance)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="260.0" cy="115.5" r="3.2" fill="var(--c-finance)"/><circle cx="392.9" cy="330.8" r="3.2" fill="var(--c-finance)"/><circle cx="130.3" cy="328.9" r="3.2" fill="var(--c-finance)"/><polygon points="260.0,205.3 311.9,284.0 166.0,308.3" fill="var(--c-baseline)" fill-opacity="0.1" stroke="var(--c-baseline)" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round"/><circle cx="260.0" cy="205.3" r="3.2" fill="var(--c-baseline)"/><circle cx="311.9" cy="284.0" r="3.2" fill="var(--c-baseline)"/><circle cx="166.0" cy="308.3" r="3.2" fill="var(--c-baseline)"/><polygon points="260.0,85.5 396.2,332.6 110.8,340.1" fill="var(--c-platform)" fill-opacity="0.16" stroke="var(--c-platform)" stroke-width="2.6" stroke-dasharray="" stroke-linejoin="round"/><circle cx="260.0" cy="85.5" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="260.0" y="104.5" class="rd-val" text-anchor="middle">90</text><circle cx="396.2" cy="332.6" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="383.2" y="329.1" class="rd-val" text-anchor="middle">84</text><circle cx="110.8" cy="340.1" r="4.6" fill="var(--c-platform)" stroke="#fff" stroke-width="1.3"/><text x="123.8" y="336.6" class="rd-val" text-anchor="middle">92</text></svg></div>
       <div>
         <table style="margin-top:0;font-size:12.5px">
           <thead><tr><th>模型 / 口径</th><th class="n">总体</th><th class="n">指标类</th><th class="n">领域推理</th><th class="n">新颖生成</th></tr></thead>
           <tbody>
-            <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）</b><div class="chip good" style="margin-top:4px">同一裁判</div></td><td class="n best">86.7%</td><td class="n">86%</td><td class="n">84%</td><td class="n">90%</td></tr>
-            <tr><td>GPT-4（oracle）<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">75.3%</td><td class="n">78%</td><td class="n">74%</td><td class="n">74%</td></tr><tr><td>GPT-4-1106（oracle）<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">78.7%</td><td class="n">74%</td><td class="n">82%</td><td class="n">80%</td></tr><tr><td>Claude-2（in-context）<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">38.0%</td><td class="n">26%</td><td class="n">32%</td><td class="n">56%</td></tr>
+            <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）</b><div class="chip good" style="margin-top:4px">同一裁判</div></td><td class="n best">88.7%</td><td class="n">90%</td><td class="n">84%</td><td class="n">92%</td></tr>
+            <tr><td>GPT-4（oracle）<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">76.0%</td><td class="n">80%</td><td class="n">74%</td><td class="n">74%</td></tr><tr><td>GPT-4-1106（oracle）<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">78.7%</td><td class="n">74%</td><td class="n">82%</td><td class="n">80%</td></tr><tr><td>Claude-2（in-context）<div class="chip src" style="margin-top:4px">论文答案 · 我们裁判</div></td><td class="n">38.7%</td><td class="n">26%</td><td class="n">32%</td><td class="n">58%</td></tr>
           </tbody>
         </table>
         <p style="font-size:12.5px;color:var(--c-muted);margin-top:8px">每格样本量均为 50 题；"总体"为 150 题合计。本平台一行与其它三行<strong>由同一个裁判判定</strong>。</p>
@@ -387,35 +387,41 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   </div>
 
   
-  <h4>从 82.0% 到 86.7%%：改动只有一句提示词</h4>
+  <h4>从 82.0% 到 88.7%%：改动只有一句提示词</h4>
+  <p style="font-size:13px;color:var(--c-ink-2)">单次裁判在 n=60 上有 <strong>±2~3 题</strong>的噪声（诊断时发现同一份数字答案会被判成不同结论），
+  因此所有变体的存量答案都用 <strong>judge@3 多数投票</strong>重判后再比较——下表即重判结果。</p>
   <table>
-    <caption>表 12b　提示词变体实验（同一裁判；dev 用于选型、test 冻结后只跑一次）</caption>
-    <thead><tr><th>变体</th><th class="n">切分</th><th class="n">n</th><th class="n">准确率</th><th class="n">相对基线</th><th class="n">拒答</th><th>结论</th></tr></thead>
+    <caption>表 12b　提示词与证据处理变体（dev 60 题，同一裁判多数投票；选型只在 dev，选定后在冻结 test 上验证一次）</caption>
+    <thead><tr><th>变体</th><th class="n">准确率</th><th class="n">相对 A1</th><th class="n">指标类</th><th class="n">领域推理</th><th class="n">新颖生成</th><th>结论</th></tr></thead>
     <tbody>
-      <tr><td>A0 原提示词（含"无法确定就拒答"）</td><td class="n">全量</td><td class="n">150</td><td class="n">82.0%</td><td class="n">—</td><td class="n">9</td><td style="font-size:12.5px">基线</td></tr>
-      <tr style="background:var(--c-good-soft)"><td><b>A1 去保守化（证据必含答案，未陈述则推导）</b></td><td class="n">全量</td><td class="n">150</td><td class="n best">86.7%</td><td class="n">+4.67pp</td><td class="n">0</td><td style="font-size:12.5px">✅ 采用</td></tr>
-      <tr><td>A1 · dev 选型</td><td class="n">dev</td><td class="n">60</td><td class="n">88.3%</td><td class="n">+10.0pp</td><td class="n">0</td><td style="font-size:12.5px">相对同题号基线 78.3%</td></tr>
-      <tr><td>A1 · <b>冻结 test 验证</b></td><td class="n">test</td><td class="n">90</td><td class="n">90.0%</td><td class="n">+4.4pp</td><td class="n">0</td><td style="font-size:12.5px">选型只在 dev，test 只跑一次</td></tr>
-      <tr><td>A2 A1 + 先写行项目与单位</td><td class="n">dev</td><td class="n">60</td><td class="n">88.3%</td><td class="n">+10.0pp</td><td class="n">0</td><td style="font-size:12.5px">与 A1 持平 → 未采用（仅让输出更可审计）</td></tr>
-      <tr><td>B2 两阶段（先抽取行项目再作答）</td><td class="n">dev</td><td class="n">60</td><td class="n">83.3%</td><td class="n">+5.0pp</td><td class="n">1</td><td style="font-size:12.5px">❌ 不如 A1 且贵 3.5 倍 → 未采用</td></tr>
+      <tr><td>A0 原提示词（含&quot;无法确定就拒答&quot;）</td><td class="n ">80.0%</td><td class="n">-8.3pp</td><td class="n">18/20</td><td class="n">14/20</td><td class="n">16/20</td><td style="font-size:12.5px">基线（9 题拒答）</td></tr><tr style="background:var(--c-good-soft)"><td>A1 去保守化（证据必含答案，未陈述则推导）</td><td class="n best">88.3%</td><td class="n">—</td><td class="n">19/20</td><td class="n">14/20</td><td class="n">20/20</td><td style="font-size:12.5px">✅ 采用</td></tr><tr><td>A2 A1 + 先写行项目与单位</td><td class="n ">86.7%</td><td class="n">-1.6pp</td><td class="n">18/20</td><td class="n">14/20</td><td class="n">20/20</td><td style="font-size:12.5px">与 A1 持平且更啰嗦 → 不采用</td></tr><tr><td>B1 证据结构化（确定性重排成 Markdown 表）+ A1</td><td class="n ">83.3%</td><td class="n">-5.0pp</td><td class="n">18/20</td><td class="n">14/20</td><td class="n">18/20</td><td style="font-size:12.5px">❌ 比 A1 低 5.0pp → 不采用</td></tr><tr><td>B1b 让模型先把证据转成表格（仅 LLM 结构化）</td><td class="n ">83.3%</td><td class="n">-5.0pp</td><td class="n">17/20</td><td class="n">14/20</td><td class="n">19/20</td><td style="font-size:12.5px">❌ 比 A1 低 5.0pp，且贵 6 倍 → 不采用</td></tr><tr><td>B2 两阶段：先抽取候选行项目再作答</td><td class="n ">83.3%</td><td class="n">-5.0pp</td><td class="n">17/20</td><td class="n">14/20</td><td class="n">19/20</td><td style="font-size:12.5px">❌ 比 A1 低 5.0pp → 不采用</td></tr>
+      <tr><td>A1 · <b>冻结 test 验证</b></td><td class="n">90.0%</td><td class="n">+1.7pp</td><td class="n">93.3%</td><td class="n">90.0%</td><td class="n">86.7%</td><td style="font-size:12.5px">test 90 题，只跑一次</td></tr>
     </tbody>
   </table>
+  <div class="callout bad"><span class="t">B1 是负结果：证据结构化没有帮上忙，反而拖低 5 个百分点</span>
+    我们把 PDF 抽出的断行文本确定性地重排成 Markdown 表（437 张表 / 1,945 行，
+    覆盖 57.3% 的证据），并给它加了硬约束：
+    <strong>数字不许丢、不许编造</strong>（150 条证据全部通过，见 <code>bench/html/check-restructure.js</code>）。逻辑上这该有帮助，实测却更低，原因有三条，都值得记下来：
+    <br>① <strong>"不丢数字"不等于"列对齐正确"</strong>——v1 版本曾把 8 列的子表强行按 2 列对齐，数字一个没丢但全部串列，答案随之出错（这条 bug 是自检发现的，修复后重测）；
+    <br>② <strong>只能安全结构化 57% 的证据</strong>，其余保持原文，于是输入变成"半结构化混合体"，反而增加了理解成本；
+    <br>③ <strong>重排破坏了原始排版里的隐含线索</strong>（哪些数字属于同一期间、哪些是同一小节），而这些线索对模型是有用的。
+    <br>让模型自己转表格（B1b）同样低 5pp，且成本是 A1 的 6 倍。两阶段抽取（B2）亦同。这就是"为什么不把负结果藏起来"：它省掉了后面再走一遍弯路的成本。</div>
   <p style="font-size:12.5px;color:var(--c-muted)">同一变体多次运行之间有 1~3pp 波动（A0 历次 [82,83.33]%），
   因此这些差值只能读作"量级差异"，不能读作精确提升。</p>
   
 
   <div class="callout warn"><span class="t">这张图与这张表该怎么读（四条都别跳过）</span>
-    ① <strong>同一裁判下我们在这一层领先</strong>：86.7%% 对 GPT-4 75.3%%、GPT-4-1106 78.7%%——但差距主要来自<strong>裁判口径与提示词口径的对齐</strong>，不是模型突然变强；
+    ① <strong>同一裁判下我们在这一层领先</strong>：88.7%% 对 GPT-4 76.0%%、GPT-4-1106 78.7%%——但差距主要来自<strong>裁判口径与提示词口径的对齐</strong>，不是模型突然变强；
     ② <strong>A1 的增益依赖 oracle 前提</strong>：它利用了"证据必然充分"这一条（oracle 口径的 evidence 就是论文标注的支撑段落）。在真实检索场景里检索可能没命中，这条前提不成立 —— 因此这是<strong>把口径拉齐</strong>，不是生产环境的普适提升；
     ③ <strong>裁判仍是同源的</strong>（flash 判 flash）：用同一裁判判双方答案消除了"尺子不同"的问题，但消不掉"偏袒自己"的可能，彻底解决需要独立裁判；
     ④ 未纳入的公开结果还有 <strong>Llama2-70B single-store（论文 41.3%%）</strong>——那是<strong>检索口径</strong>，与 oracle 条件不同，合并会把"检索没命中"算成"模型不会读"。</div>
   <div class="callout good"><span class="t">我们在这一层的定位（以及真正的优势在哪）</span>
-    在同一把尺子下，本平台 86.7%%，高于 GPT-4（75.3%%）与 GPT-4-1106（78.7%%），
+    在同一把尺子下，本平台 88.7%%，高于 GPT-4（76.0%%）与 GPT-4-1106（78.7%%），
     但"问答题高几个点"并不是平台的价值主张。真正的差异化在<strong>这一层之外</strong>：
     ① 端到端预警（六维 AUC 79.8 vs 三行规则 63.3，且领先来自数据面更宽）；
     ② 结构化抽取 / 勾稽校验 / 指标测算的确定性能力（T1/T3/T4 全部 100% 且 MAPE 0.0000%）；
     ③ 25 个工具的受控编排与审批闸门（BFCL 87.5%%）；
-    ④ 无证据时不硬答（闭卷口径我们 47.3%% vs GPT-4 4.67%%——但我们对闭卷已有语料污染，见 6.2）。
+    ④ 无证据时不硬答（闭卷口径我们 44.7%% vs GPT-4 4.67%%——但我们对闭卷已有语料污染，见 6.2）。
     这些维度<strong>没有可比的公开多方数字</strong>，所以本页不给它们编雷达轴。</div>
   
 
@@ -425,8 +431,8 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">准确率</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td>GPT-4 (oracle)（论文）</td><td class="n">150</td><td class="n">84.00%</td><td>我方判分器与论文标签一致率 92.31%</td></tr><tr><td>GPT-4 (closed book)（论文）</td><td class="n">150</td><td class="n">4.67%</td><td>我方判分器与论文标签一致率 100.00%</td></tr><tr><td>GPT-4-1106-preview (oracle)（论文）</td><td class="n">150</td><td class="n">85.33%</td><td>我方判分器与论文标签一致率 92.31%</td></tr><tr><td>Claude-2 (in-context)（论文）</td><td class="n">150</td><td class="n">37.33%</td><td>我方判分器与论文标签一致率 84.62%</td></tr><tr><td>Llama2-70B (single store)（论文）</td><td class="n">150</td><td class="n">41.33%</td><td>我方判分器与论文标签一致率 90.38%</td></tr>
-      <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）oracle</b></td><td class="n">150</td><td class="n best">86.67%</td><td>裁判口径；确定性口径 34.67%</td></tr>
-      <tr><td>本平台 closedBook</td><td class="n">150</td><td class="n">47.33%</td><td>不给任何文档；论文同口径 GPT-4 为 4.67%</td></tr>
+      <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）oracle</b></td><td class="n">150</td><td class="n best">88.67%</td><td>裁判口径；确定性口径 34.67%</td></tr>
+      <tr><td>本平台 closedBook</td><td class="n">150</td><td class="n">44.67%</td><td>不给任何文档；论文同口径 GPT-4 为 4.67%</td></tr>
     </tbody>
   </table>
   <p style="font-size:12.5px;color:var(--c-muted)">判分器可信度先被验证：用我们的确定性判分重判论文公开答案，与论文标签一致率 84.6%–100%；
@@ -483,16 +489,16 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <caption>表 4　闭卷口径交叉核查（n=150）：把裁判判定与确定性判分交叉看</caption>
     <thead><tr><th>交叉情况</th><th class="n">题数</th><th>说明</th></tr></thead>
     <tbody>
-      <tr><td>裁判判对且确定性也判对</td><td class="n">29</td><td>模型给出了与标准答案一致的数值</td></tr>
+      <tr><td>裁判判对且确定性也判对</td><td class="n">25</td><td>模型给出了与标准答案一致的数值</td></tr>
       <tr><td>仅裁判判对</td><td class="n">42</td><td>标准答案为长句，确定性判分无法覆盖</td></tr>
-      <tr><td>仅确定性判对</td><td class="n">2</td><td>裁判口径更严（单位/表述不同）</td></tr>
-      <tr><td>两者都不对</td><td class="n">77</td><td>含拒答 3 题</td></tr>
+      <tr><td>仅确定性判对</td><td class="n">5</td><td>裁判口径更严（单位/表述不同）</td></tr>
+      <tr><td>两者都不对</td><td class="n">78</td><td>含拒答 2 题</td></tr>
     </tbody>
   </table>
   <p>抽查可见模型在<strong>没有任何文档</strong>时给出具体数字：3M FY2018 资本开支 1,577 百万美元、
   Amazon FY2017 DPO 93.86 天、Adobe FY2022 营业利润率 34.6%、AMD FY2022 速动比率 1.58。
-  论文里 GPT-4 闭卷只有 4.67%，我们测得 47.3%。
-  <strong>结论</strong>：FinanceBench 的闭卷切分对该模型已发生污染，oracle 的 86.7% 含记忆成分；
+  论文里 GPT-4 闭卷只有 4.67%，我们测得 44.7%。
+  <strong>结论</strong>：FinanceBench 的闭卷切分对该模型已发生污染，oracle 的 88.7% 含记忆成分；
   文档阅读能力以 OmniDocBench（图像输入）与 FinEval-MM 为准。</p>
 
   <h3>6.3 其余三条如实记录</h3>
@@ -538,7 +544,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
 <section id="cost">
   <h2><span class="no">08</span>成本与复现：数字不是钱堆出来的</h2>
-  <p class="takeaway">整轮外部对齐共 <b>2,248 次模型调用</b>，估算 <b>¥4.85</b>；
+  <p class="takeaway">整轮外部对齐共 <b>2,260 次模型调用</b>，估算 <b>¥5.07</b>；
   自建基准与回归测试只用公开接口与本地计算，<b>不产生模型费用</b>。</p>
   <div class="two">
     <div class="card">
@@ -546,9 +552,9 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <table>
         <thead><tr><th>用途</th><th class="n">调用</th><th class="n">输入 tokens</th><th class="n">输出 tokens</th><th class="n">费用</th></tr></thead>
         <tbody>
-          <tr><td>deepseek-flash</td><td class="n">1,926</td><td class="n">1,515,114</td><td class="n">1,684,566</td><td class="n">¥4.13</td></tr><tr><td>deepseek-flash（裁判调用）</td><td class="n">322</td><td class="n">97,594</td><td class="n">169,629</td><td class="n">¥0.39</td></tr>
+          <tr><td>deepseek-flash</td><td class="n">1,939</td><td class="n">1,512,975</td><td class="n">1,787,875</td><td class="n">¥4.33</td></tr><tr><td>deepseek-flash（裁判调用）</td><td class="n">321</td><td class="n">97,142</td><td class="n">176,187</td><td class="n">¥0.40</td></tr>
           <tr><td>口径 B 平台侧（读平台数据库）</td><td class="n">116</td><td class="n">527,056</td><td class="n">35,486</td><td class="n">¥0.33</td></tr>
-          <tr><td><b>合计</b></td><td class="n"><b>2,364</b></td><td class="n">—</td><td class="n">—</td><td class="n"><b>¥4.85</b></td></tr>
+          <tr><td><b>合计</b></td><td class="n"><b>2,376</b></td><td class="n">—</td><td class="n">—</td><td class="n"><b>¥5.07</b></td></tr>
         </tbody>
       </table>
       <p style="font-size:12.5px;color:var(--c-muted)">输入侧缓存命中率约 64%，
@@ -630,8 +636,8 @@ node bench/html/make-platform-report.js</code></pre>
     AUC 分别为 79.8 / 77.2 / 73.5，
     全面高于"三行财务规则"基线，并能提前约 255 天给出信号。
     能力同时有外部坐标：中文金融知识 CFLUE 89.9%、工具调用 BFCL 87.5%%、
-    财报问答 FinanceBench oracle 86.7%%（与论文公开的 GPT-4 同一批题、同一口径）。
-    全部 2,248 次模型调用成本约 ¥4.85，且每一条数字都能用仓库里的命令复现。
+    财报问答 FinanceBench oracle 88.7%%（与论文公开的 GPT-4 同一批题、同一口径）。
+    全部 2,260 次模型调用成本约 ¥5.07，且每一条数字都能用仓库里的命令复现。
   </div>
 </section>
 

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T06:07:17.046Z",
+  "generatedAt": "2026-09-14T08:11:19.470Z",
   "note": "FinanceBench oracle 口径的改进记录：A0=原提示词（含拒答邀请），A1=去保守化；均由同一个裁判（deepseek-flash）判定。",
   "variants": {
     "A0（最新一次）": {
@@ -39,19 +39,20 @@
     "A1（最新一次）": {
       "label": "A1 去保守化提示词",
       "variant": "A1",
-      "runDir": "run-2026-09-14T05-51-53",
+      "runDir": "run-2026-09-14T07-47-02",
       "judgeModel": "deepseek-flash",
       "n": 150,
-      "correct": 130,
-      "accuracyPct": 86.67,
+      "correct": 133,
+      "accuracyPct": 88.67,
       "verdicts": {
-        "CORRECT": 130,
-        "INCORRECT": 20
+        "CORRECT": 133,
+        "INCORRECT": 16,
+        "UNPARSED": 1
       },
       "byType": {
         "metrics-generated": {
           "n": 50,
-          "accuracyPct": 86
+          "accuracyPct": 90
         },
         "domain-relevant": {
           "n": 50,
@@ -59,31 +60,33 @@
         },
         "novel-generated": {
           "n": 50,
-          "accuracyPct": 90
+          "accuracyPct": 92
         }
       },
-      "source": "bench/external/out/run-2026-09-14T05-51-53/financebench.deepseek-flash.json",
-      "timesRun": 1,
+      "source": "bench/external/out/run-2026-09-14T07-47-02/financebench.deepseek-flash.json",
+      "timesRun": 2,
       "accuracySpreadPct": [
         86.67,
-        86.67
+        88.67
       ]
     },
     "A0-dev": {
       "label": "A0 基线（原提示词，含\"无法确定就拒答\"）",
       "split": "dev",
+      "judgeVotes": 3,
+      "rejudged": true,
       "n": 60,
-      "correct": 47,
-      "accuracyPct": 78.33,
+      "correct": 48,
+      "accuracyPct": 80,
       "verdicts": {
-        "CORRECT": 47,
-        "INCORRECT": 9,
+        "CORRECT": 48,
+        "INCORRECT": 8,
         "REFUSAL": 4
       },
       "byType": {
         "metrics-generated": {
           "n": 20,
-          "accuracyPct": 85
+          "accuracyPct": 90
         },
         "domain-relevant": {
           "n": 20,
@@ -96,11 +99,13 @@
       },
       "baselinePctOnSameIds": 76.67,
       "deltaQuestions": 1,
-      "source": "bench/external/out/experiments/exp-A0-dev-2026-09-14T05-30-33.json"
+      "source": "bench/external/out/experiments/exp-A0-dev-2026-09-14T05-30-33-rejudge3.json"
     },
     "A1-dev": {
       "label": "A1 去保守化（证据必含答案，未直接陈述则推导）",
       "split": "dev",
+      "judgeVotes": 3,
+      "rejudged": true,
       "n": 60,
       "correct": 53,
       "accuracyPct": 88.33,
@@ -124,11 +129,13 @@
       },
       "baselinePctOnSameIds": 76.67,
       "deltaQuestions": 7,
-      "source": "bench/external/out/experiments/exp-A1-dev-2026-09-14T05-31-51.json"
+      "source": "bench/external/out/experiments/exp-A1-dev-2026-09-14T05-31-51-rejudge3.json"
     },
     "A1-test": {
       "label": "A1 去保守化（证据必含答案，未直接陈述则推导）",
       "split": "test",
+      "judgeVotes": 3,
+      "rejudged": true,
       "n": 90,
       "correct": 81,
       "accuracyPct": 90,
@@ -152,22 +159,24 @@
       },
       "baselinePctOnSameIds": 85.56,
       "deltaQuestions": 4,
-      "source": "bench/external/out/experiments/exp-A1-test-2026-09-14T05-44-28.json"
+      "source": "bench/external/out/experiments/exp-A1-test-2026-09-14T05-44-28-rejudge3.json"
     },
     "A2-dev": {
       "label": "A2 去保守化 + 先写行项目与单位再给结论",
       "split": "dev",
+      "judgeVotes": 3,
+      "rejudged": true,
       "n": 60,
-      "correct": 53,
-      "accuracyPct": 88.33,
+      "correct": 52,
+      "accuracyPct": 86.67,
       "verdicts": {
-        "CORRECT": 53,
-        "INCORRECT": 7
+        "CORRECT": 52,
+        "INCORRECT": 8
       },
       "byType": {
         "metrics-generated": {
           "n": 20,
-          "accuracyPct": 95
+          "accuracyPct": 90
         },
         "domain-relevant": {
           "n": 20,
@@ -180,11 +189,73 @@
       },
       "baselinePctOnSameIds": 76.67,
       "deltaQuestions": 7,
-      "source": "bench/external/out/experiments/exp-A2-dev-2026-09-14T05-35-38.json"
+      "source": "bench/external/out/experiments/exp-A2-dev-2026-09-14T05-35-38-rejudge3.json"
+    },
+    "B1-dev": {
+      "label": "B1 证据结构化（确定性重排成 Markdown 表）+ A1",
+      "split": "dev",
+      "judgeVotes": 3,
+      "rejudged": true,
+      "n": 60,
+      "correct": 50,
+      "accuracyPct": 83.33,
+      "verdicts": {
+        "CORRECT": 50,
+        "INCORRECT": 10
+      },
+      "byType": {
+        "metrics-generated": {
+          "n": 20,
+          "accuracyPct": 90
+        },
+        "domain-relevant": {
+          "n": 20,
+          "accuracyPct": 70
+        },
+        "novel-generated": {
+          "n": 20,
+          "accuracyPct": 90
+        }
+      },
+      "baselinePctOnSameIds": 81.67,
+      "deltaQuestions": 1,
+      "source": "bench/external/out/experiments/exp-B1-dev-2026-09-14T07-36-42-rejudge3.json"
+    },
+    "B1b-dev": {
+      "label": "B1b 仅 LLM 结构化（让模型先把证据转成表格）再作答",
+      "split": "dev",
+      "judgeVotes": 3,
+      "rejudged": true,
+      "n": 60,
+      "correct": 50,
+      "accuracyPct": 83.33,
+      "verdicts": {
+        "INCORRECT": 10,
+        "CORRECT": 50
+      },
+      "byType": {
+        "metrics-generated": {
+          "n": 20,
+          "accuracyPct": 85
+        },
+        "domain-relevant": {
+          "n": 20,
+          "accuracyPct": 70
+        },
+        "novel-generated": {
+          "n": 20,
+          "accuracyPct": 95
+        }
+      },
+      "baselinePctOnSameIds": 81.67,
+      "deltaQuestions": 1,
+      "source": "bench/external/out/experiments/exp-B1b-dev-2026-09-14T07-33-32-rejudge3.json"
     },
     "B2-dev": {
       "label": "B2 两阶段：先抽取候选行项目，再据此作答",
       "split": "dev",
+      "judgeVotes": 3,
+      "rejudged": true,
       "n": 60,
       "correct": 50,
       "accuracyPct": 83.33,
@@ -209,7 +280,7 @@
       },
       "baselinePctOnSameIds": 76.67,
       "deltaQuestions": 4,
-      "source": "bench/external/out/experiments/exp-B2-dev-2026-09-14T05-40-14.json"
+      "source": "bench/external/out/experiments/exp-B2-dev-2026-09-14T05-40-14-rejudge3.json"
     }
   },
   "runs": [
@@ -296,6 +367,34 @@
         }
       },
       "source": "bench/external/out/run-2026-09-14T05-51-53/financebench.deepseek-flash.json"
+    },
+    {
+      "variant": "A1",
+      "runDir": "run-2026-09-14T07-47-02",
+      "judgeModel": "deepseek-flash",
+      "n": 150,
+      "correct": 133,
+      "accuracyPct": 88.67,
+      "verdicts": {
+        "CORRECT": 133,
+        "INCORRECT": 16,
+        "UNPARSED": 1
+      },
+      "byType": {
+        "metrics-generated": {
+          "n": 50,
+          "accuracyPct": 90
+        },
+        "domain-relevant": {
+          "n": 50,
+          "accuracyPct": 84
+        },
+        "novel-generated": {
+          "n": 50,
+          "accuracyPct": 92
+        }
+      },
+      "source": "bench/external/out/run-2026-09-14T07-47-02/financebench.deepseek-flash.json"
     }
   ],
   "driftNote": "同一提示词多次运行之间会有 1~3 个百分点的波动（temperature=0 也不完全确定），因此分数只用于判断量级与方向。",
@@ -317,9 +416,9 @@
         "label": "GPT-4（oracle）",
         "n": 150,
         "paperAccuracyPct": 84,
-        "ourJudgeAccuracyPct": 75.33,
-        "deltaPp": -8.67,
-        "changedToWrong": 14,
+        "ourJudgeAccuracyPct": 76,
+        "deltaPp": -8,
+        "changedToWrong": 13,
         "changedToCorrect": 1
       },
       {
@@ -335,11 +434,92 @@
         "label": "Claude-2（in-context）",
         "n": 150,
         "paperAccuracyPct": 37.33,
-        "ourJudgeAccuracyPct": 38,
-        "deltaPp": 0.67,
-        "changedToWrong": 7,
+        "ourJudgeAccuracyPct": 38.67,
+        "deltaPp": 1.33,
+        "changedToWrong": 6,
         "changedToCorrect": 8
       }
     ]
+  },
+  "variantComparison": {
+    "note": "单次裁判在 n=60 上有 ±2~3 题噪声（诊断中发现同一份数字答案会被判成不同结论），因此全部变体的存量答案用 judge@3 多数投票重判后再比较。",
+    "judgeVotes": 3,
+    "split": "dev(60)",
+    "rows": [
+      {
+        "variant": "A0",
+        "correct": 48,
+        "n": 60,
+        "accuracyPct": 80,
+        "byType": {
+          "metrics-generated": "18/20",
+          "novel-generated": "16/20",
+          "domain-relevant": "14/20"
+        }
+      },
+      {
+        "variant": "A1",
+        "correct": 53,
+        "n": 60,
+        "accuracyPct": 88.3,
+        "byType": {
+          "metrics-generated": "19/20",
+          "novel-generated": "20/20",
+          "domain-relevant": "14/20"
+        }
+      },
+      {
+        "variant": "A2",
+        "correct": 52,
+        "n": 60,
+        "accuracyPct": 86.7,
+        "byType": {
+          "metrics-generated": "18/20",
+          "domain-relevant": "14/20",
+          "novel-generated": "20/20"
+        }
+      },
+      {
+        "variant": "B1",
+        "correct": 50,
+        "n": 60,
+        "accuracyPct": 83.3,
+        "byType": {
+          "metrics-generated": "18/20",
+          "domain-relevant": "14/20",
+          "novel-generated": "18/20"
+        }
+      },
+      {
+        "variant": "B1b",
+        "correct": 50,
+        "n": 60,
+        "accuracyPct": 83.3,
+        "byType": {
+          "domain-relevant": "14/20",
+          "metrics-generated": "17/20",
+          "novel-generated": "19/20"
+        }
+      },
+      {
+        "variant": "B2",
+        "correct": 50,
+        "n": 60,
+        "accuracyPct": 83.3,
+        "byType": {
+          "metrics-generated": "17/20",
+          "domain-relevant": "14/20",
+          "novel-generated": "19/20"
+        }
+      }
+    ]
+  },
+  "b1Restructure": {
+    "note": "确定性重排：把\"标签 + 若干数字行\"按期间表头对齐成 Markdown 表；硬约束是\"数字不许丢、不许编造\"。",
+    "coveragePct": 57.3,
+    "tables": 437,
+    "tableRows": 1945,
+    "invariantFailures": 0,
+    "charRatioPct": 108.7
   }
 }

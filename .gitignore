@@ -58,3 +58,4 @@ bench/external/out/*
 !bench/external/out/financebench-split.json
 !bench/external/out/judge-published.json
 !bench/external/out/financebench-history.json
+!bench/external/out/variant-comparison.json

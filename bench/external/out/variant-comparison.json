@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-09-14T07:47:24.750Z",
+  "judgeVotes": 3,
+  "split": "dev(60)",
+  "results": [
+    {
+      "variant": "A0",
+      "file": "exp-A0-dev-2026-09-14T05-30-33.json",
+      "correct": 48,
+      "n": 60,
+      "pct": 80,
+      "byType": {
+        "metrics-generated": "18/20",
+        "novel-generated": "16/20",
+        "domain-relevant": "14/20"
+      }
+    },
+    {
+      "variant": "A1",
+      "file": "exp-A1-dev-2026-09-14T05-31-51.json",
+      "correct": 53,
+      "n": 60,
+      "pct": 88.3,
+      "byType": {
+        "metrics-generated": "19/20",
+        "novel-generated": "20/20",
+        "domain-relevant": "14/20"
+      }
+    },
+    {
+      "variant": "A2",
+      "file": "exp-A2-dev-2026-09-14T05-35-38.json",
+      "correct": 52,
+      "n": 60,
+      "pct": 86.7,
+      "byType": {
+        "metrics-generated": "18/20",
+        "domain-relevant": "14/20",
+        "novel-generated": "20/20"
+      }
+    },
+    {
+      "variant": "B1",
+      "file": "exp-B1-dev-2026-09-14T07-36-42.json",
+      "correct": 50,
+      "n": 60,
+      "pct": 83.3,
+      "byType": {
+        "metrics-generated": "18/20",
+        "domain-relevant": "14/20",
+        "novel-generated": "18/20"
+      }
+    },
+    {
+      "variant": "B1b",
+      "file": "exp-B1b-dev-2026-09-14T07-33-32.json",
+      "correct": 50,
+      "n": 60,
+      "pct": 83.3,
+      "byType": {
+        "domain-relevant": "14/20",
+        "metrics-generated": "17/20",
+        "novel-generated": "19/20"
+      }
+    },
+    {
+      "variant": "B2",
+      "file": "exp-B2-dev-2026-09-14T05-40-14.json",
+      "correct": 50,
+      "n": 60,
+      "pct": 83.3,
+      "byType": {
+        "metrics-generated": "17/20",
+        "domain-relevant": "14/20",
+        "novel-generated": "19/20"
+      }
+    }
+  ]
+}

@@ -77,17 +77,27 @@ for (const v of [...new Set(history.map((h) => h.variant))]) {
 }
 out.driftNote = '同一提示词多次运行之间会有 1~3 个百分点的波动（temperature=0 也不完全确定），因此分数只用于判断量级与方向。'
 
-// 2) 实验产物（dev/test 分开的那些）
+// 2) 实验产物（dev/test 分开的那些）；同一 (变体, 切分) 只取一份，优先 judge@3 重判版本
 const expDir = path.join(EXT, 'out', 'experiments')
 if (fs.existsSync(expDir)) {
+  const pick = new Map()
   for (const f of fs.readdirSync(expDir).filter((x) => x.endsWith('.json')).sort()) {
+    const m = f.match(/^exp-([A-Za-z0-9]+)-(dev|test)-/)
+    if (!m) continue
+    const key = `${m[1]}-${m[2]}`
+    const isRejudge = /-rejudge\d+\.json$/.test(f)
+    const prev = pick.get(key)
+    if (!prev || (isRejudge && !prev.isRejudge)) pick.set(key, { f, isRejudge })
+  }
+  for (const { f, isRejudge } of pick.values()) {
     const j = JSON.parse(fs.readFileSync(path.join(expDir, f), 'utf8'))
     const key = `${j.variant}-${j.split}`
-    out.variants[key] = out.variants[key] || {}
     const rows = (j.rows || []).map((r) => ({ group: `FinanceBench/${r.type}`, grade: { judge: r.judge }, error: r.error }))
     out.variants[key] = {
       label: j.label,
       split: j.split,
+      judgeVotes: j.judgeVotes || 1,
+      rejudged: isRejudge,
       ...stats(rows),
       baselinePctOnSameIds: j.baselinePct,
       deltaQuestions: j.deltaQuestions,
@@ -112,6 +122,35 @@ if (fs.existsSync(jp)) {
     note: '把论文公开答案送进我们的裁判重判：差值说明两套裁判的宽严差异，不改变任何一方的答案质量。',
     rows: (j.results || []).map((r) => ({ label: r.label, n: r.n, paperAccuracyPct: r.paperAccuracyPct, ourJudgeAccuracyPct: r.ourJudgeAccuracyPct, deltaPp: r.deltaPp, changedToWrong: r.changedToWrong, changedToCorrect: r.changedToCorrect })),
   }
+}
+
+// 5) 同一裁判（多数投票）下的变体横向对比
+const vc = path.join(EXT, 'out', 'variant-comparison.json')
+if (fs.existsSync(vc)) {
+  const j = JSON.parse(fs.readFileSync(vc, 'utf8'))
+  out.variantComparison = {
+    note: '单次裁判在 n=60 上有 ±2~3 题噪声（诊断中发现同一份数字答案会被判成不同结论），因此全部变体的存量答案用 judge@3 多数投票重判后再比较。',
+    judgeVotes: j.judgeVotes,
+    split: j.split,
+    rows: j.results.filter((r) => r.pct !== undefined).map((r) => ({ variant: r.variant, correct: r.correct, n: r.n, accuracyPct: r.pct, byType: r.byType })),
+  }
+}
+
+// 6) B1 证据结构化的实现指标（覆盖率 + 硬约束）
+try {
+  const { execFileSync } = require('node:child_process')
+  const txt = execFileSync('node', [path.join(REPO, 'bench', 'html', 'check-restructure.js')], { cwd: REPO, encoding: 'utf8' })
+  const pick = (re) => { const m = txt.match(re); return m ? Number(m[1]) : null }
+  out.b1Restructure = {
+    note: '确定性重排：把"标签 + 若干数字行"按期间表头对齐成 Markdown 表；硬约束是"数字不许丢、不许编造"。',
+    coveragePct: pick(/产出至少 1 张表的证据：\d+（([\d.]+)%）/),
+    tables: pick(/共生成表格 (\d+) 张/),
+    tableRows: pick(/表格行 (\d+) 行/),
+    invariantFailures: pick(/硬约束（数字多重集一致）\*\*：失败 (\d+) 条/),
+    charRatioPct: pick(/结构化后 \d+（([\d.]+)%）/),
+  }
+} catch (e) {
+  out.b1Restructure = { error: String(e.message).slice(0, 120) }
 }
 
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2))
