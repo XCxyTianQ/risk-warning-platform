@@ -1353,7 +1353,7 @@ node bench/html/make-platform-report.js</code></pre>
     <div class="card">
       <h4>尚未纳入的评测层</h4>
       <ul>
-        <li><strong>T2 图片/扫描件读取</strong>（≥150 张）与 <strong>T6 Agent 工具链</strong>（≥120 条意图）尚未纳入自建基准——本轮只用外部 FinEval-MM / BFCL 间接覆盖。</li>
+        <li><strong>T2 图片/扫描件读取</strong>已补齐：外部 FinEval-MM ${num(dig(ext, 'benchmarks.fineval-mm.sample.coverage.available', 150))} 题图表四选一 + OmniDocBench demo 18 页整页转写，并与两个顶级模型同题对比（见 5.10）；<strong>T6 Agent 工具链</strong>仍未纳入自建基准——本轮只用 BFCL 间接覆盖。</li>
         <li><strong>T7 报告生成质量</strong>（数字可核验率、幻觉率、双人评分 κ）未做。</li>
         <li><strong>长稳测试</strong>（8 小时 / 2000 请求）与<strong>数据量放大后的性能</strong>未做：当前时延是在小库上测得。</li>
       </ul>
@@ -1385,7 +1385,9 @@ node bench/html/make-platform-report.js</code></pre>
     </div>
     <div class="pillar c"><div class="n">结论 三</div><div class="h">短板是公开的，也是可修的</div>
       <div class="q">平台链路在客观题上掉 ${chainCflue && chainBareCflue ? n1(chainBareCflue.pct - chainCflue.accuracyPct, 1) : '18.8'}pp（提示词与工具编排问题）、
-      工具"应拒调"仅 ${pct(bfclIrr.accuracyPct, 1)}、闭卷口径已被语料污染导致归因需谨慎——三条都写在这页里，并给了改法。</div>
+      工具"应拒调"仅 ${pct(bfclIrr.accuracyPct, 1)}；更要紧的是 <strong>FinanceBench 的 oracle 分数受记忆污染</strong>——
+      最贵档模型在<strong>不给任何文档</strong>时仍答对 86.67%，所以这个基准上的领先必须用"文档增量"读，
+      而我们的文档增量 ${frontier ? '+' + dig(frontier, 'models.1.documentIncrementPp', '—') + 'pp' : '全场最高'}。三条都写在这页里，并给了改法。</div>
       <div class="v">${chainCflue && chainBareCflue ? '−' + n1(chainBareCflue.pct - chainCflue.accuracyPct, 1) + 'pp' : '−18.8pp'} 待修</div>
     </div>
   </div>
@@ -1397,7 +1399,14 @@ node bench/html/make-platform-report.js</code></pre>
     AUC 分别为 ${n1(t5rows.st.platAuc * 100, 1)} / ${n1(t5rows.penalty.platAuc * 100, 1)} / ${n1(t5rows.any.platAuc * 100, 1)}，
     全面高于"三行财务规则"基线，并能提前约 ${num(t5rows.any.lead)} 天给出信号。
     能力同时有外部坐标：中文金融知识 CFLUE ${pct(cflueKn.accuracyPct, 1)}、工具调用 BFCL ${pct(bfclOverall.accuracyPct, 1)}、
-    财报问答 FinanceBench oracle ${pct(fbOracle.accuracyPct, 1)}（与论文公开的 GPT-4 同一批题、同一口径）。
+    财报问答 FinanceBench oracle ${pct(fbOracle.accuracyPct, 1)}。
+    ${frontier ? `并已与<strong>同代三家（GPT-5.6 Luna、GLM-5.3-Flash）与最贵档两家（Claude Fable 5.1、GPT-6 Astra）</strong>同题同裁判对比：
+    问答题上五家落在 ${n1(dig(frontier, 'models.4.oraclePct', 0), 1)}~${n1(dig(frontier, 'models.0.oraclePct', 0), 1)} 之间，我们排第 ${2}；
+    但把文档拿走后会看出差别——<strong>我们的文档增量 +${dig(frontier, 'models.1.documentIncrementPp', '?')}pp 为全场最高</strong>，
+    而排名第一的 Fable 5.1 只有 +${dig(frontier, 'models.0.documentIncrementPp', '?')}pp（它闭卷就能答对 ${pct(dig(frontier, 'models.0.closedBookPct', null), 1)}，即大量答案是记住的）。
+    工具调用上我们 ${pct(dig(frontier, 'models.1.bfcl.overallPct', null), 1)}，领先 Astra ${n1((dig(frontier, 'models.1.bfcl.overallPct', 0) || 0) - (dig(frontier, 'models.3.bfcl.overallPct', 0) || 0), 1)}pp、只落后 Fable ${n1((dig(frontier, 'models.0.bfcl.overallPct', 0) || 0) - (dig(frontier, 'models.1.bfcl.overallPct', 0) || 0), 1)}pp；
+    图表取数 ${pct(dig(frontier, 'vision.rows.1.finevalMm.accuracyPct', null), 1)}，领先 Fable、落后 Astra。
+    而这一切的成本是 $${dig(frontier, 'models.1.costUSD.both', '?')}，对手为 $${dig(frontier, 'models.3.costUSD.both', '?')}~$${dig(frontier, 'models.0.costUSD.both', '?')}。` : ''}
     全部 ${num(totalCalls)} 次模型调用成本约 ¥${n1(grandCost, 2)}，且每一条数字都能用仓库里的命令复现。
   </div>
 </section>

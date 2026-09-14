@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 21:54</span>
+    <span class="chip">报告生成 2026-09-14 21:56</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,943 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,952 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -756,7 +756,7 @@ node bench/html/make-platform-report.js</code></pre>
     <div class="card">
       <h4>尚未纳入的评测层</h4>
       <ul>
-        <li><strong>T2 图片/扫描件读取</strong>（≥150 张）与 <strong>T6 Agent 工具链</strong>（≥120 条意图）尚未纳入自建基准——本轮只用外部 FinEval-MM / BFCL 间接覆盖。</li>
+        <li><strong>T2 图片/扫描件读取</strong>已补齐：外部 FinEval-MM 371 题图表四选一 + OmniDocBench demo 18 页整页转写，并与两个顶级模型同题对比（见 5.10）；<strong>T6 Agent 工具链</strong>仍未纳入自建基准——本轮只用 BFCL 间接覆盖。</li>
         <li><strong>T7 报告生成质量</strong>（数字可核验率、幻觉率、双人评分 κ）未做。</li>
         <li><strong>长稳测试</strong>（8 小时 / 2000 请求）与<strong>数据量放大后的性能</strong>未做：当前时延是在小库上测得。</li>
       </ul>
@@ -788,7 +788,9 @@ node bench/html/make-platform-report.js</code></pre>
     </div>
     <div class="pillar c"><div class="n">结论 三</div><div class="h">短板是公开的，也是可修的</div>
       <div class="q">平台链路在客观题上掉 18.8pp（提示词与工具编排问题）、
-      工具"应拒调"仅 74.2%、闭卷口径已被语料污染导致归因需谨慎——三条都写在这页里，并给了改法。</div>
+      工具"应拒调"仅 74.2%；更要紧的是 <strong>FinanceBench 的 oracle 分数受记忆污染</strong>——
+      最贵档模型在<strong>不给任何文档</strong>时仍答对 86.67%，所以这个基准上的领先必须用"文档增量"读，
+      而我们的文档增量 +40.67pp。三条都写在这页里，并给了改法。</div>
       <div class="v">−18.8pp 待修</div>
     </div>
   </div>
@@ -800,7 +802,14 @@ node bench/html/make-platform-report.js</code></pre>
     AUC 分别为 79.8 / 77.2 / 73.5，
     全面高于"三行财务规则"基线，并能提前约 255 天给出信号。
     能力同时有外部坐标：中文金融知识 CFLUE 89.9%、工具调用 BFCL 87.5%、
-    财报问答 FinanceBench oracle 88.7%（与论文公开的 GPT-4 同一批题、同一口径）。
+    财报问答 FinanceBench oracle 88.7%。
+    并已与<strong>同代三家（GPT-5.6 Luna、GLM-5.3-Flash）与最贵档两家（Claude Fable 5.1、GPT-6 Astra）</strong>同题同裁判对比：
+    问答题上五家落在 90.0~94.7 之间，我们排第 2；
+    但把文档拿走后会看出差别——<strong>我们的文档增量 +40.67pp 为全场最高</strong>，
+    而排名第一的 Fable 5.1 只有 +8pp（它闭卷就能答对 86.7%，即大量答案是记住的）。
+    工具调用上我们 89.0%，领先 Astra 5.8pp、只落后 Fable 1.9pp；
+    图表取数 66.0%，领先 Fable、落后 Astra。
+    而这一切的成本是 $0.79，对手为 $5.66~$13.78。
     全部 2,260 次模型调用成本约 ¥18.44，且每一条数字都能用仓库里的命令复现。
   </div>
 </section>
