@@ -1,0 +1,502 @@
+{
+  "version": "v1",
+  "generatedAt": "2026-09-14T13:07:00.689Z",
+  "profile": "full",
+  "seed": 20260101,
+  "concurrency": 5,
+  "models": [
+    "claude-fable-5-1"
+  ],
+  "benchmarks": {
+    "financebench": {
+      "title": "FinanceBench（开源子集，oracle / closedBook 双口径）",
+      "layer": "财报文档问答层：有证据时的数值作答与证据引用",
+      "source": {
+        "repo": "patronus-ai/financebench",
+        "ref": "main",
+        "paper": "https://arxiv.org/abs/2311.11944"
+      },
+      "sample": {
+        "questions": {
+          "available": 150,
+          "picked": 150,
+          "hash": "b0d4c5e27113c847904a15bd642423e05044b717c543c636c77184ce82d890c5",
+          "seed": 20260101
+        },
+        "byType": {
+          "metrics-generated": 50,
+          "domain-relevant": 50,
+          "novel-generated": 50
+        }
+      },
+      "notes": [
+        "口径：oracle（题目自带证据文本）/ closedBook（不给证据）；官方开源子集，非官方全量 10,231 题",
+        "证据文本来自仓库自带 evidence 字段（原文片段），因此本项不测检索能力，只测\"有证据时能否答对\"",
+        "判分：确定性判分（数值容差/包含）+ 交叉模型裁判（用另一个模型判，避免同源偏好），并先用论文标签验证判分器"
+      ],
+      "graderValidation": [
+        {
+          "label": "GPT-4 (oracle)",
+          "mode": "oracle",
+          "rows": 150,
+          "publishedLabels": {
+            "Correct Answer": 126,
+            "Incorrect Answer": 15,
+            "Refusal": 9
+          },
+          "publishedAccuracyPct": 84,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 92.31,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_10420",
+              "mine": false,
+              "theirs": true,
+              "pred": "The FY2022 net income for AES is $(546) million. The total assets for FY2022 and",
+              "gold": "-0.02"
+            },
+            {
+              "id": "financebench_id_05718",
+              "mine": false,
+              "theirs": true,
+              "pred": "American Water Works paid out $389 million in cash dividends for FY2020.",
+              "gold": "0.4"
+            },
+            {
+              "id": "financebench_id_03473",
+              "mine": false,
+              "theirs": true,
+              "pred": "The FY2017 net income for Coca Cola is $1,248 million. The total assets for FY20",
+              "gold": "0.01"
+            },
+            {
+              "id": "financebench_id_03849",
+              "mine": false,
+              "theirs": true,
+              "pred": "The capex as a % of revenue for MGM Resorts for FY2018 - FY2020 can be calculate",
+              "gold": "0.079"
+            }
+          ]
+        },
+        {
+          "label": "GPT-4 (closed book)",
+          "mode": "closedBook",
+          "rows": 150,
+          "publishedLabels": {
+            "Refusal": 142,
+            "Correct Answer": 7,
+            "Incorrect Answer": 1
+          },
+          "publishedAccuracyPct": 4.67,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 100,
+          "disagreementSample": []
+        },
+        {
+          "label": "GPT-4-1106-preview (oracle)",
+          "mode": "oracle",
+          "rows": 150,
+          "publishedLabels": {
+            "Correct Answer": 128,
+            "Incorrect Answer": 22
+          },
+          "publishedAccuracyPct": 85.33,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 92.31,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_05718",
+              "mine": false,
+              "theirs": true,
+              "pred": "According to the Consolidated Statements of Cash Flows provided for American Wat",
+              "gold": "0.4"
+            },
+            {
+              "id": "financebench_id_03473",
+              "mine": false,
+              "theirs": true,
+              "pred": "To calculate the Return on Assets (ROA) for Coca-Cola for FY2017, we need to use",
+              "gold": "0.01"
+            },
+            {
+              "id": "financebench_id_10130",
+              "mine": true,
+              "theirs": false,
+              "pred": "To calculate the Days Payable Outstanding (DPO) for Corning for FY2020, we need ",
+              "gold": "63.86"
+            },
+            {
+              "id": "financebench_id_03849",
+              "mine": false,
+              "theirs": true,
+              "pred": "To calculate the 3-year average of capital expenditures (capex) as a percentage ",
+              "gold": "0.079"
+            }
+          ]
+        },
+        {
+          "label": "Claude-2 (in-context)",
+          "mode": "inContext",
+          "rows": 150,
+          "publishedLabels": {
+            "Incorrect Answer": 91,
+            "Correct Answer": 56,
+            "Refusal": 3
+          },
+          "publishedAccuracyPct": 37.33,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 84.62,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_07507",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here is a summary of Adobe's key financial information for fiscal years 2016-20",
+              "gold": "0.654"
+            },
+            {
+              "id": "financebench_id_08135",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here is a summary of the key information in Amazon's 2017 10-K report:\n\n- Amazo",
+              "gold": "0.308"
+            },
+            {
+              "id": "financebench_id_08286",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here is a summary of the key information from Amazon's 2019 10-K report:\n\n- Ama",
+              "gold": "11588"
+            },
+            {
+              "id": "financebench_id_05718",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here are some key points about regulatory liabilities from the passage:\n\n- Regu",
+              "gold": "0.4"
+            },
+            {
+              "id": "financebench_id_09724",
+              "mine": true,
+              "theirs": false,
+              "pred": " Here are the key points regarding Coca-Cola's pension and other postretirement ",
+              "gold": "0.397"
+            }
+          ]
+        },
+        {
+          "label": "Llama2-70B (single store)",
+          "mode": "singleStore",
+          "rows": 150,
+          "publishedLabels": {
+            "Incorrect Answer": 81,
+            "Correct Answer": 62,
+            "Refusal": 7
+          },
+          "publishedAccuracyPct": 41.33,
+          "deterministicGraded": 52,
+          "deterministicAgreementPct": 90.38,
+          "disagreementSample": [
+            {
+              "id": "financebench_id_03473",
+              "mine": false,
+              "theirs": true,
+              "pred": " To calculate the FY2017 return on assets (ROA) for Coca Cola, we need to first ",
+              "gold": "0.01"
+            },
+            {
+              "id": "financebench_id_09724",
+              "mine": true,
+              "theirs": false,
+              "pred": " Sure, I can help you with that!\n\nTo calculate Coca Cola's FY2021 COGS % margin,",
+              "gold": "0.397"
+            },
+            {
+              "id": "financebench_id_04458",
+              "mine": true,
+              "theirs": false,
+              "pred": " Sure, I can help you with that!\n\nTo calculate the FY2015 unadjusted EBITDA % ma",
+              "gold": "0.054"
+            },
+            {
+              "id": "financebench_id_03282",
+              "mine": true,
+              "theirs": false,
+              "pred": " Based on the information provided in the Consolidated Balance Sheet, Netflix's ",
+              "gold": "5466"
+            },
+            {
+              "id": "financebench_id_04784",
+              "mine": true,
+              "theirs": false,
+              "pred": " The FY2018 - FY2019 change in unadjusted operating income % margin for Walmart ",
+              "gold": "0.002"
+            }
+          ]
+        }
+      ],
+      "runs": {
+        "claude-fable-5-1": {
+          "metrics": {
+            "judgeGraded": {
+              "metric": "LLM 裁判（由 claude-sonnet-5 判，三分类，与论文标签同构）",
+              "byMode": {
+                "__ALL__": {
+                  "group": "__ALL__",
+                  "n": 300,
+                  "correct": 272,
+                  "wrong": 28,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 90.67,
+                  "accuracyPct": 90.67,
+                  "ci95": [
+                    86.84,
+                    93.46
+                  ]
+                },
+                "oracle": {
+                  "group": "oracle",
+                  "n": 150,
+                  "correct": 142,
+                  "wrong": 8,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 94.67,
+                  "accuracyPct": 94.67,
+                  "ci95": [
+                    89.83,
+                    97.27
+                  ]
+                },
+                "closedBook": {
+                  "group": "closedBook",
+                  "n": 150,
+                  "correct": 130,
+                  "wrong": 20,
+                  "abstain": 0,
+                  "ungraded": 0,
+                  "accuracy": 86.67,
+                  "accuracyPct": 86.67,
+                  "ci95": [
+                    80.3,
+                    91.2
+                  ]
+                }
+              },
+              "judgeModel": "claude-sonnet-5",
+              "judgeIsSameModel": false,
+              "judgeCaveat": "裁判为另一模型，避免同源偏好",
+              "verdictDistribution": {
+                "CORRECT": 272,
+                "INCORRECT": 24,
+                "REFUSAL": 4
+              }
+            },
+            "deterministic": {
+              "metric": "确定性判分（数值相对误差 ≤1% 或 归一化包含）",
+              "byMode": {
+                "oracle": {
+                  "n": 150,
+                  "correct": 53,
+                  "accuracyPct": 35.33,
+                  "ci95": [
+                    28.14,
+                    43.26
+                  ]
+                },
+                "closedBook": {
+                  "n": 150,
+                  "correct": 52,
+                  "accuracyPct": 34.67,
+                  "ci95": [
+                    27.52,
+                    42.58
+                  ]
+                }
+              }
+            },
+            "byQuestionType": {
+              "__ALL__": {
+                "group": "__ALL__",
+                "n": 150,
+                "correct": 142,
+                "wrong": 8,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 94.67,
+                "accuracyPct": 94.67,
+                "ci95": [
+                  89.83,
+                  97.27
+                ]
+              },
+              "FinanceBench/metrics-generated": {
+                "group": "FinanceBench/metrics-generated",
+                "n": 50,
+                "correct": 49,
+                "wrong": 1,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 98,
+                "accuracyPct": 98,
+                "ci95": [
+                  89.5,
+                  99.65
+                ]
+              },
+              "FinanceBench/domain-relevant": {
+                "group": "FinanceBench/domain-relevant",
+                "n": 50,
+                "correct": 46,
+                "wrong": 4,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 92,
+                "accuracyPct": 92,
+                "ci95": [
+                  81.16,
+                  96.85
+                ]
+              },
+              "FinanceBench/novel-generated": {
+                "group": "FinanceBench/novel-generated",
+                "n": 50,
+                "correct": 47,
+                "wrong": 3,
+                "abstain": 0,
+                "ungraded": 0,
+                "accuracy": 94,
+                "accuracyPct": 94,
+                "ci95": [
+                  83.78,
+                  97.94
+                ]
+              }
+            },
+            "oracleRefusalRate": 0,
+            "errors": 0,
+            "judgeSource": "claude-sonnet-5",
+            "judgeIsSameModel": false,
+            "promptVariant": "A1",
+            "promptVariantLabel": "A1 去保守化（证据必含答案，未直接陈述则推导）"
+          },
+          "seconds": 569.9,
+          "rows": 300,
+          "detail": "bench/external/out/run-2026-09-14T13-07-00/financebench.claude-fable-5-1.json",
+          "usage": {
+            "model": "claude-fable-5-1",
+            "provider": "claude-fable-5-1",
+            "vendor": "Anthropic（经 OpenCode Zen）",
+            "baseUrl": "https://opencode.ai/zen/v1",
+            "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+            "keyMask": "sk-iap…lZKV",
+            "calls": 300,
+            "failed": 0,
+            "promptTokens": 169958,
+            "completionTokens": 91177,
+            "reasoningTokens": 0,
+            "cacheHitTokens": 0,
+            "cacheMissTokens": 169958,
+            "estimatedCostCNY": 44.43,
+            "estimatedCostUSD": 6.2584,
+            "pricePerMTokUSD": {
+              "hit": 0.25,
+              "miss": 10,
+              "out": 50,
+              "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+            "usdCnyRate": 7.1
+          },
+          "auxUsage": [
+            {
+              "role": "裁判",
+              "model": "claude-sonnet-5",
+              "provider": "claude-sonnet-5",
+              "vendor": "Anthropic（经 OpenCode Zen）",
+              "baseUrl": "https://opencode.ai/zen/v1",
+              "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+              "keyMask": "sk-iap…lZKV",
+              "calls": 300,
+              "failed": 0,
+              "promptTokens": 151159,
+              "completionTokens": 2529,
+              "reasoningTokens": 0,
+              "cacheHitTokens": 0,
+              "cacheMissTokens": 151159,
+              "estimatedCostCNY": 2.33,
+              "estimatedCostUSD": 0.3276,
+              "pricePerMTokUSD": {
+                "hit": 0.2,
+                "miss": 2,
+                "out": 10,
+                "note": "网关价"
+              },
+              "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+              "usdCnyRate": 7.1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "modelUsage": {
+    "claude-fable-5-1": {
+      "model": "claude-fable-5-1",
+      "provider": "claude-fable-5-1",
+      "vendor": "Anthropic（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+      "keyMask": "sk-iap…lZKV",
+      "calls": 300,
+      "failed": 0,
+      "promptTokens": 169958,
+      "completionTokens": 91177,
+      "reasoningTokens": 0,
+      "cacheHitTokens": 0,
+      "cacheMissTokens": 169958,
+      "estimatedCostCNY": 44.43,
+      "estimatedCostUSD": 6.2584,
+      "pricePerMTokUSD": {
+        "hit": 0.25,
+        "miss": 10,
+        "out": 50,
+        "note": "官方价：输入 $10 / 缓存读 $0.25 / 输出 $50；缓存写 $12.50；批量 $5/$25"
+      },
+      "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+      "usdCnyRate": 7.1
+    },
+    "claude-sonnet-5（裁判调用）": {
+      "role": "裁判",
+      "model": "claude-sonnet-5",
+      "provider": "claude-sonnet-5",
+      "vendor": "Anthropic（经 OpenCode Zen）",
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "keySource": "C:\\Users\\admin/Desktop/KEY-OPENCODE.txt",
+      "keyMask": "sk-iap…lZKV",
+      "calls": 300,
+      "failed": 0,
+      "promptTokens": 151159,
+      "completionTokens": 2529,
+      "reasoningTokens": 0,
+      "cacheHitTokens": 0,
+      "cacheMissTokens": 151159,
+      "estimatedCostCNY": 2.33,
+      "estimatedCostUSD": 0.3276,
+      "pricePerMTokUSD": {
+        "hit": 0.2,
+        "miss": 2,
+        "out": 10,
+        "note": "网关价"
+      },
+      "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）",
+      "usdCnyRate": 7.1
+    }
+  },
+  "notes": [
+    "所有外部数据均按 repo@ref + sha256 锁定，见 out/manifest.json",
+    "本节数字回答的是\"模型与读取链路\"的能力，平台的端到端能力见 FinRisk-Bench 与 bench/ 套件",
+    "图像类基准只跑实测支持图像输入的模型"
+  ]
+}

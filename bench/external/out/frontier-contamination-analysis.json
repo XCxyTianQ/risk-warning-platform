@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-09-14T13:17:42.712Z",
+  "judge": "claude-sonnet-5",
+  "bench": "FinanceBench oracle + closedBook, n=150",
+  "note": "文档增量 = oracle − 闭卷；增量越低说明分数越依赖记忆而非阅读。闭卷下写出正确数值是记忆的直接证据。",
+  "table": [
+    {
+      "id": "claude-fable-5-1",
+      "label": "Claude Fable 5.1",
+      "n": 150,
+      "oraclePct": 94.67,
+      "closedBookPct": 86.67,
+      "documentIncrementPp": 8,
+      "recalledExactNumbersPct": 38,
+      "recalledCount": 57
+    },
+    {
+      "id": "deepseek-flash",
+      "label": "DeepSeek-V4.1-Flash（我方）",
+      "n": 150,
+      "oraclePct": 92,
+      "closedBookPct": 51.33,
+      "documentIncrementPp": 40.67,
+      "recalledExactNumbersPct": 20.67,
+      "recalledCount": 31
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "label": "GPT-5.6 Luna",
+      "n": 150,
+      "oraclePct": 91.33,
+      "closedBookPct": 42.67,
+      "documentIncrementPp": 48.67,
+      "recalledExactNumbersPct": 11.33,
+      "recalledCount": 17
+    },
+    {
+      "id": "gpt-6-astra",
+      "label": "GPT-6 Astra",
+      "n": 150,
+      "oraclePct": 90.67,
+      "closedBookPct": 50.67,
+      "documentIncrementPp": 40,
+      "recalledExactNumbersPct": 20,
+      "recalledCount": 30
+    },
+    {
+      "id": "glm-5.3-flash",
+      "label": "GLM-5.3-Flash",
+      "n": 150,
+      "oraclePct": 90,
+      "closedBookPct": 40.67,
+      "documentIncrementPp": 49.33,
+      "recalledExactNumbersPct": 12.67,
+      "recalledCount": 19
+    }
+  ]
+}
