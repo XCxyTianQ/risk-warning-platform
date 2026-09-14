@@ -41,3 +41,6 @@ bench/report/
 bench/dataset/out/*.jsonl
 bench/dataset/out/cohort.json
 bench/dataset/out/manifest.json
+
+# ===== Word/Office 临时文件 =====
+docs/reports/~$*
