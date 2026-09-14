@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 21:20</span>
+    <span class="chip">报告生成 2026-09-14 21:21</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,831 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,834 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -543,6 +543,8 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     ① <strong>三方同级，不是"我们领先"</strong>：FinanceBench oracle 上三家落在
     90.0%~92.0% 之间，
     1 道题就是 0.67pp，排序会随裁判和运行波动——所以只能说<strong>同一档</strong>，不能说领先或落后；
+    <br><strong>⚠️ 但 5.10 的发现要给这条加限制</strong>：oracle 分数受"记忆污染"影响，各家的记忆底分相差约 2 倍，
+    因此"同级"这个判断在<strong>文档增量</strong>口径下才有意义（见 5.10）；
     <br>② <strong>工具调用上我们与 GLM 同级领先，Luna 明显偏低</strong>：BFCL 是确定性判分（没有裁判主观性），
     我们 89.0% / GLM 88.3% / Luna 83.1%，
     差距集中在 simple 与 multiple 两类；
