@@ -11,14 +11,117 @@
  */
 const fs = require('node:fs')
 const path = require('node:path')
+const os = require('node:os')
 const { resolveLlm } = require('../../lib/llm')
 
 const REPO = path.resolve(__dirname, '..', '..', '..')
+const REGISTRY = path.join(__dirname, '..', 'models.json')
 
-/** 已知价目（元/百万 token）；未知模型只记 token 不记钱，避免编数 */
-const PRICES = {
-  'deepseek-flash': { in: 0.5, out: 2 },
-  'deepseek-v4-pro': { in: 2, out: 8 },
+/**
+ * 模型注册表：同代对比要跨供应商，因此"用哪个端点 + 哪个 Key + 什么价目"必须可配置。
+ * 注册表里不含密钥，只写环境变量名与 Key 文件候选路径。
+ */
+function loadRegistry() {
+  try {
+    return JSON.parse(fs.readFileSync(REGISTRY, 'utf8')).models || []
+  } catch {
+    return []
+  }
+}
+
+const expandHome = (p) => p.replace(/^~/, os.homedir()).replace('<repo>', REPO)
+
+/**
+ * 解析某个模型 id 的连接信息：环境变量 → Key 文件 → 兜底（仅 deepseek 走原有逻辑）。
+ * @returns {{id,label,baseUrl,apiModel,apiKey,keySource,priceUSD,vision,tools,role,ready,reason}}
+ */
+function resolveProvider(id, { baseUrl, apiKey, model } = {}) {
+  const reg = loadRegistry().find((m) => m.id === id || (m.aliases || []).includes(id))
+  if (!reg) {
+    // 未注册：退回旧的单供应商逻辑（保证已有命令仍可用）
+    const llm = resolveLlm(REPO, { model: model || id })
+    return {
+      id, label: id, vendor: 'unknown', baseUrl: (baseUrl || llm.baseUrl).replace(/\/+$/, ''), apiModel: model || llm.model,
+      apiKey: apiKey || llm.apiKey, keySource: apiKey ? '参数传入' : llm.keySource, priceUSD: PRICES_USD[id] || null,
+      vision: true, tools: true, ready: !!(apiKey || llm.apiKey), reason: llm.ready ? '' : `未找到 API Key（尝试过：${llm.tried.join(' / ')}）`,
+    }
+  }
+  let key = apiKey || ''
+  let keySource = key ? '参数传入' : ''
+  if (!key) {
+    for (const env of reg.keyEnv || []) {
+      if (process.env[env]) { key = process.env[env]; keySource = `env:${env}`; break }
+    }
+  }
+  if (!key) {
+    for (const f of reg.keyFiles || []) {
+      const p = expandHome(f)
+      try {
+        if (!fs.existsSync(p)) continue
+        const txt = fs.readFileSync(p, 'utf8')
+        const m = txt.match(/sk-[A-Za-z0-9_\-]{8,}/) || txt.match(/[A-Za-z0-9_\-.]{20,}/)
+        if (m) { key = m[0]; keySource = p; break }
+      } catch { /* 读不到就试下一个 */ }
+    }
+  }
+  const resolvedBase = (baseUrl || reg.baseUrl || process.env[`RWP_BASE_${id.replace(/[^a-z0-9]/gi, '_').toUpperCase()}`] || '').replace(/\/+$/, '')
+  const ready = !!key && !!resolvedBase
+  const reason = !resolvedBase ? `未配置 baseUrl（请在 bench/external/models.json 里填写 ${id} 的端点）` : !key ? `未找到 Key（环境变量 ${(reg.keyEnv || []).join('/')} 或文件 ${(reg.keyFiles || []).join(' / ')}）` : ''
+  return {
+    id,
+    label: reg.label || id,
+    vendor: reg.vendor || '',
+    baseUrl: resolvedBase,
+    apiModel: model || reg.apiModel || id,
+    apiKey: key,
+    keySource,
+    priceUSD: reg.priceUSD || null,
+    priceSource: reg.priceSource || '',
+    vision: reg.vision !== false,
+    tools: reg.tools !== false,
+    role: reg.role || '',
+    ready,
+    reason,
+  }
+}
+
+/** 列出注册表里可用于评测的模型（报告里用来写明"对手是谁"） */
+function listProviders() {
+  return loadRegistry().map((m) => {
+    const r = resolveProvider(m.id)
+    return { id: m.id, label: m.label, vendor: m.vendor, vision: m.vision !== false, tools: m.tools !== false, ready: r.ready, reason: r.reason, role: m.role || '' }
+  })
+}
+
+/**
+ * 价目表（**必须按官方定价页核对，且区分缓存命中/未命中**）。
+ *
+ * 教训：最初按"每百万 ¥0.5 输入 / ¥2 输出"的粗估记账，实际官方 Flash 价是
+ *   cache-hit 输入 $0.006、cache-miss 输入 $0.30、输出 $1.20（每百万 token，peak 时段；off-peak 减半）
+ * 缓存命中与未命中相差 50 倍，而我们的输入侧缓存命中率高达 68%——粗估会把成本算错好几倍。
+ *
+ * 来源：https://api-docs.deepseek.com/quick_start/pricing （抓取于 2026-09-14）
+ * 汇率：1 USD = 7.1 CNY（仅用于展示，报告中同时给出美元价）
+ */
+const USD_CNY = 7.1
+const PRICES_USD = {
+  'deepseek-flash': { hit: 0.006, miss: 0.3, out: 1.2, note: 'DeepSeek-V4.1-Flash，peak 价；off-peak 减半' },
+  'deepseek-v4-pro': { hit: 0.044, miss: 1.32, out: 3.96, note: 'DeepSeek-V4-Pro-0813，peak 价' },
+}
+/** 兼容旧的按 (in,out) 计价写法；新代码请用 costOf() */
+const PRICES = Object.fromEntries(Object.entries(PRICES_USD).map(([k, v]) => [k, { in: v.miss * USD_CNY, out: v.out * USD_CNY, hit: v.hit * USD_CNY, miss: v.miss * USD_CNY, note: v.note }]))
+
+/**
+ * 用真实价目计算一次用量的人民币成本：缓存命中与未命中分开计价。
+ * @param {{model:string, promptTokens:number, cacheHitTokens:number, completionTokens:number}} u
+ */
+function costOf(u) {
+  const p = PRICES_USD[u.model]
+  if (!p) return null
+  const hit = Math.min(u.cacheHitTokens || 0, u.promptTokens || 0)
+  const miss = Math.max(0, (u.promptTokens || 0) - hit)
+  const usd = (hit / 1e6) * p.hit + (miss / 1e6) * p.miss + ((u.completionTokens || 0) / 1e6) * p.out
+  return { usd: Number(usd.toFixed(4)), cny: Number((usd * USD_CNY).toFixed(2)), hitTokens: hit, missTokens: miss, price: p }
 }
 
 function mimeOf(file) {
@@ -28,12 +131,18 @@ function mimeOf(file) {
 
 class ModelClient {
   constructor({ model, apiKey, baseUrl, timeoutMs = 180000, maxRetries = 3, logger } = {}) {
-    const llm = resolveLlm(REPO, { model })
-    if (!llm.ready) throw new Error(`未找到 API Key（尝试过：${llm.tried.join(' / ')}）`)
-    this.model = model || llm.model
-    this.apiKey = apiKey || llm.apiKey
-    this.baseUrl = (baseUrl || llm.baseUrl).replace(/\/+$/, '')
-    this.keySource = llm.keySource
+    // 优先按注册表解析（支持跨供应商：DeepSeek / OpenAI / 智谱 / 聚合网关）
+    const p = resolveProvider(model || 'deepseek-flash', { apiKey, baseUrl, model })
+    if (!p.ready && !apiKey) {
+      const llm = resolveLlm(REPO, { model })
+      if (!llm.ready) throw new Error(p.reason || `未找到 API Key（尝试过：${llm.tried.join(' / ')}）`)
+    }
+    this.provider = p
+    this.model = p.apiModel || model
+    this.requestModel = this.model
+    this.apiKey = apiKey || p.apiKey
+    this.baseUrl = (baseUrl || p.baseUrl).replace(/\/+$/, '')
+    this.keySource = p.keySource
     this.timeoutMs = timeoutMs
     this.maxRetries = maxRetries
     this.log = logger || (() => {})
@@ -42,10 +151,11 @@ class ModelClient {
 
   /** 报告用：不含 Key 的自述 */
   describe() {
-    const p = PRICES[this.model]
-    const cost = p ? (this.usage.promptTokens / 1e6) * p.in + (this.usage.completionTokens / 1e6) * p.out : null
+    const c = costOf({ model: this.model, promptTokens: this.usage.promptTokens, cacheHitTokens: this.usage.cacheHitTokens, completionTokens: this.usage.completionTokens })
     return {
       model: this.model,
+      provider: this.provider ? this.provider.id : null,
+      vendor: this.provider ? this.provider.vendor : null,
       baseUrl: this.baseUrl,
       keySource: this.keySource,
       keyMask: this.apiKey ? `${this.apiKey.slice(0, 6)}…${this.apiKey.slice(-4)}` : '',
@@ -55,8 +165,12 @@ class ModelClient {
       completionTokens: this.usage.completionTokens,
       reasoningTokens: this.usage.reasoningTokens,
       cacheHitTokens: this.usage.cacheHitTokens,
-      estimatedCostCNY: cost === null ? null : Number(cost.toFixed(4)),
-      pricePerMTok: p || null,
+      cacheMissTokens: c ? c.missTokens : null,
+      estimatedCostCNY: c ? c.cny : null,
+      estimatedCostUSD: c ? c.usd : null,
+      pricePerMTokUSD: c ? c.price : null,
+      priceSource: 'https://api-docs.deepseek.com/quick_start/pricing（2026-09-14 抓取，peak 价）',
+      usdCnyRate: USD_CNY,
     }
   }
 
@@ -205,4 +319,4 @@ async function mapLimit(items, limit, fn) {
   return out
 }
 
-module.exports = { ModelClient, mapLimit, PRICES, REPO }
+module.exports = { ModelClient, mapLimit, PRICES, PRICES_USD, costOf, USD_CNY, REPO, REGISTRY, loadRegistry, resolveProvider, listProviders }

@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 18:50</span>
+    <span class="chip">报告生成 2026-09-14 18:58</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -190,7 +190,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     <div class="kpi"><div class="v">79.8%</div><div class="k">预警 AUC（测试集 n=1,348）</div><div class="s">对照"三行财务规则" 63.3%，提升 <b>+16.6pp</b></div></div>
     <div class="kpi"><div class="v">100.0%</div><div class="k">抽取字段级 F1（258 个单元格）</div><div class="s">MAPE 0.0000%；勾稽缺陷召回 100%、误报 0%</div></div>
     <div class="kpi"><div class="v">89.9%</div><div class="k">CFLUE 中文金融知识（n=298）</div><div class="s">单选 95.3%、多选 78.0%、判断 88.0%</div></div>
-    <div class="kpi"><div class="v">¥5.07</div><div class="k">整轮外部对齐的模型成本</div><div class="s">2,260 次调用；结论不靠钱堆</div></div>
+    <div class="kpi"><div class="v">¥18.44</div><div class="k">整轮外部对齐的模型成本</div><div class="s">2,260 次调用；结论不靠钱堆</div></div>
   </div>
 </header>
 
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>13,784 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>14,265 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -599,7 +599,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
 
 <section id="cost">
   <h2><span class="no">08</span>成本与复现：数字不是钱堆出来的</h2>
-  <p class="takeaway">整轮外部对齐共 <b>2,260 次模型调用</b>，估算 <b>¥5.07</b>；
+  <p class="takeaway">整轮外部对齐共 <b>2,260 次模型调用</b>，估算 <b>¥18.44</b>；
   自建基准与回归测试只用公开接口与本地计算，<b>不产生模型费用</b>。</p>
   <div class="two">
     <div class="card">
@@ -607,13 +607,18 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <table>
         <thead><tr><th>用途</th><th class="n">调用</th><th class="n">输入 tokens</th><th class="n">输出 tokens</th><th class="n">费用</th></tr></thead>
         <tbody>
-          <tr><td>deepseek-flash</td><td class="n">1,939</td><td class="n">1,512,975</td><td class="n">1,787,875</td><td class="n">¥4.33</td></tr><tr><td>deepseek-flash（裁判调用）</td><td class="n">321</td><td class="n">97,142</td><td class="n">176,187</td><td class="n">¥0.40</td></tr>
-          <tr><td>口径 B 平台侧（读平台数据库）</td><td class="n">116</td><td class="n">527,056</td><td class="n">35,486</td><td class="n">¥0.33</td></tr>
-          <tr><td><b>合计</b></td><td class="n"><b>2,376</b></td><td class="n">—</td><td class="n">—</td><td class="n"><b>¥5.07</b></td></tr>
+          <tr><td>deepseek-flash</td><td class="n">1,939</td><td class="n">1,512,975</td><td class="n">1,787,875</td><td class="n">¥16.31</td></tr><tr><td>deepseek-flash（裁判调用）</td><td class="n">321</td><td class="n">97,142</td><td class="n">176,187</td><td class="n">¥1.70</td></tr>
+          <tr><td>口径 B 平台侧（读平台数据库）</td><td class="n">116</td><td class="n">527,056</td><td class="n">35,486</td><td class="n">¥0.43</td></tr>
+          <tr><td><b>合计</b></td><td class="n"><b>2,376</b></td><td class="n">—</td><td class="n">—</td><td class="n"><b>¥18.44</b></td></tr>
         </tbody>
       </table>
       <p style="font-size:12.5px;color:var(--c-muted)">输入侧缓存命中率约 64%，
-      推理 tokens 是成本与延迟的主要来源。</p>
+      推理 tokens 是成本与延迟的主要来源。<br>
+      <strong>计价口径（已修正）</strong>：本页按官方定价页逐项计价——DeepSeek-V4.1-Flash 为
+      <strong>cache-hit 输入 $0.006 / cache-miss 输入 $0.30 / 输出 $1.20</strong>（每百万 token，peak 价；off-peak 减半），
+      来源 <a href="https://api-docs.deepseek.com/quick_start/pricing">api-docs.deepseek.com</a>。
+      早期版本按"¥0.5/¥2"的粗估记账，<strong>把成本低估了约 3.8 倍</strong>（缓存命中与未命中相差 50 倍，而我们的命中率约 68%）；
+      修正后的数字见上表。汇率按 1 USD = 7.1 CNY，仅用于展示。</p>
     </div>
     <div class="card">
       <h4>一条命令复现</h4>
@@ -692,7 +697,7 @@ node bench/html/make-platform-report.js</code></pre>
     全面高于"三行财务规则"基线，并能提前约 255 天给出信号。
     能力同时有外部坐标：中文金融知识 CFLUE 89.9%、工具调用 BFCL 87.5%、
     财报问答 FinanceBench oracle 88.7%（与论文公开的 GPT-4 同一批题、同一口径）。
-    全部 2,260 次模型调用成本约 ¥5.07，且每一条数字都能用仓库里的命令复现。
+    全部 2,260 次模型调用成本约 ¥18.44，且每一条数字都能用仓库里的命令复现。
   </div>
 </section>
 

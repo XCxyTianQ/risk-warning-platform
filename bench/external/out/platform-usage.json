@@ -11,7 +11,9 @@
       "cacheHitTokens": 21632,
       "cacheMissTokens": 1325,
       "cacheHitRatePct": 94.2,
-      "estimatedCostCNY": 0.0141
+      "estimatedCostCNY": 0.01,
+      "estimatedCostUSD": 0.0021,
+      "pricePerTokenSource": "deepseek-flash peak 价（2026-09-14）"
     },
     {
       "run": "platform-chain-2026-09-14T03-24-12",
@@ -22,7 +24,9 @@
       "cacheHitTokens": 34304,
       "cacheMissTokens": 3424,
       "cacheHitRatePct": 90.9,
-      "estimatedCostCNY": 0.0214
+      "estimatedCostCNY": 0.02,
+      "estimatedCostUSD": 0.0028,
+      "pricePerTokenSource": "deepseek-flash peak 价（2026-09-14）"
     },
     {
       "run": "platform-chain-2026-09-14T03-41-12",
@@ -33,7 +37,9 @@
       "cacheHitTokens": 477312,
       "cacheMissTokens": 49744,
       "cacheHitRatePct": 90.6,
-      "estimatedCostCNY": 0.3345
+      "estimatedCostCNY": 0.43,
+      "estimatedCostUSD": 0.0604,
+      "pricePerTokenSource": "deepseek-flash peak 价（2026-09-14）"
     }
   ],
   "latest": {
@@ -45,6 +51,9 @@
     "cacheHitTokens": 477312,
     "cacheMissTokens": 49744,
     "cacheHitRatePct": 90.6,
-    "estimatedCostCNY": 0.3345
-  }
+    "estimatedCostCNY": 0.43,
+    "estimatedCostUSD": 0.0604,
+    "pricePerTokenSource": "deepseek-flash peak 价（2026-09-14）"
+  },
+  "recomputedAt": "2026-09-14T10:56:19.756Z"
 }

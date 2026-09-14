@@ -1395,11 +1395,20 @@
             "completionTokens": 318347,
             "reasoningTokens": 312239,
             "cacheHitTokens": 36969,
-            "estimatedCostCNY": 0.689,
+            "estimatedCostCNY": 2.86,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
-            }
+            },
+            "cacheMissTokens": 67564,
+            "estimatedCostUSD": 0.4025,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
           }
         }
       }
@@ -1581,11 +1590,20 @@
             "completionTokens": 537201,
             "reasoningTokens": 445630,
             "cacheHitTokens": 764887,
-            "estimatedCostCNY": 1.5056,
+            "estimatedCostCNY": 4.82,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
-            }
+            },
+            "cacheMissTokens": 97501,
+            "estimatedCostUSD": 0.6785,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
           }
         }
       }
@@ -1942,11 +1960,20 @@
             "completionTokens": 143850,
             "reasoningTokens": 143597,
             "cacheHitTokens": 17792,
-            "estimatedCostCNY": 0.3552,
+            "estimatedCostCNY": 1.48,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
-            }
+            },
+            "cacheMissTokens": 117221,
+            "estimatedCostUSD": 0.2079,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
           }
         }
       }
@@ -2093,11 +2120,20 @@
             "completionTokens": 81936,
             "reasoningTokens": 27791,
             "cacheHitTokens": 134912,
-            "estimatedCostCNY": 0.2961,
+            "estimatedCostCNY": 0.98,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
-            }
+            },
+            "cacheMissTokens": 129552,
+            "estimatedCostUSD": 0.138,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
           }
         }
       }
@@ -2253,11 +2289,20 @@
             "completionTokens": 21875,
             "reasoningTokens": 4095,
             "cacheHitTokens": 2176,
-            "estimatedCostCNY": 0.052,
+            "estimatedCostCNY": 0.22,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
-            }
+            },
+            "cacheMissTokens": 14245,
+            "estimatedCostUSD": 0.0305,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
           }
         }
       }
@@ -2650,11 +2695,20 @@
             "completionTokens": 684666,
             "reasoningTokens": 668979,
             "cacheHitTokens": 71919,
-            "estimatedCostCNY": 1.4344,
+            "estimatedCostCNY": 5.96,
             "pricePerMTok": {
               "in": 0.5,
               "out": 2
-            }
+            },
+            "cacheMissTokens": 58237,
+            "estimatedCostUSD": 0.8395,
+            "pricePerMTokUSD": {
+              "hit": 0.006,
+              "miss": 0.3,
+              "out": 1.2,
+              "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+            },
+            "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
           },
           "auxUsage": [
             {
@@ -2669,11 +2723,20 @@
               "completionTokens": 176187,
               "reasoningTokens": 175191,
               "cacheHitTokens": 5504,
-              "estimatedCostCNY": 0.4009,
+              "estimatedCostCNY": 1.7,
               "pricePerMTok": {
                 "in": 0.5,
                 "out": 2
-              }
+              },
+              "cacheMissTokens": 91638,
+              "estimatedCostUSD": 0.2389,
+              "pricePerMTokUSD": {
+                "hit": 0.006,
+                "miss": 0.3,
+                "out": 1.2,
+                "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+              },
+              "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
             }
           ]
         }
@@ -2692,11 +2755,20 @@
       "completionTokens": 1787875,
       "reasoningTokens": 312239,
       "cacheHitTokens": 1028655,
-      "estimatedCostCNY": 4.3323,
+      "estimatedCostCNY": 16.31,
       "pricePerMTok": {
         "in": 0.5,
         "out": 2
-      }
+      },
+      "cacheMissTokens": 484320,
+      "estimatedCostUSD": 2.2969,
+      "pricePerMTokUSD": {
+        "hit": 0.006,
+        "miss": 0.3,
+        "out": 1.2,
+        "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+      },
+      "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
     },
     "deepseek-flash（裁判调用）": {
       "role": "裁判",
@@ -2710,11 +2782,20 @@
       "completionTokens": 176187,
       "reasoningTokens": 175191,
       "cacheHitTokens": 5504,
-      "estimatedCostCNY": 0.4009,
+      "estimatedCostCNY": 1.7,
       "pricePerMTok": {
         "in": 0.5,
         "out": 2
-      }
+      },
+      "cacheMissTokens": 91638,
+      "estimatedCostUSD": 0.2389,
+      "pricePerMTokUSD": {
+        "hit": 0.006,
+        "miss": 0.3,
+        "out": 1.2,
+        "note": "DeepSeek-V4.1-Flash，peak 价；off-peak 减半"
+      },
+      "priceSource": "https://api-docs.deepseek.com/quick_start/pricing（2026-09-14）"
     }
   },
   "notes": [

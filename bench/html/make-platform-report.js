@@ -1195,7 +1195,12 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
         </tbody>
       </table>
       <p style="font-size:12.5px;color:var(--c-muted)">输入侧缓存命中率约 ${n1((usageRows.reduce((s, [, u]) => s + (u.cacheHitTokens || 0), 0) / Math.max(1, usageRows.reduce((s, [, u]) => s + (u.promptTokens || 0), 0))) * 100, 0)}%，
-      推理 tokens 是成本与延迟的主要来源。</p>
+      推理 tokens 是成本与延迟的主要来源。<br>
+      <strong>计价口径（已修正）</strong>：本页按官方定价页逐项计价——DeepSeek-V4.1-Flash 为
+      <strong>cache-hit 输入 $0.006 / cache-miss 输入 $0.30 / 输出 $1.20</strong>（每百万 token，peak 价；off-peak 减半），
+      来源 <a href="https://api-docs.deepseek.com/quick_start/pricing">api-docs.deepseek.com</a>。
+      早期版本按"¥0.5/¥2"的粗估记账，<strong>把成本低估了约 3.8 倍</strong>（缓存命中与未命中相差 50 倍，而我们的命中率约 68%）；
+      修正后的数字见上表。汇率按 1 USD = 7.1 CNY，仅用于展示。</p>
     </div>
     <div class="card">
       <h4>一条命令复现</h4>
