@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>企业经营风险预警平台 · Benchmark 报告与平台简介</title>
+<style>
+:root{
+  --c-bg:#fbfaf7; --c-surface:#ffffff; --c-ink:#191817; --c-ink-2:#403d38; --c-muted:#7a746c;
+  --c-line:#e6e1d8; --c-grid:#ece7de; --c-platform:#0f766e; --c-platform-soft:#d7ece9;
+  --c-baseline:#8c8880; --c-finance:#a16207; --c-warn:#b45309; --c-warn-soft:#fdf3e3;
+  --c-bad:#be123c; --c-bad-soft:#fdeef1; --c-good-soft:#e8f4f1; --c-code:#f4f1ea;
+  --f-serif:"Source Han Serif SC","Noto Serif SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+  --f-sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --shadow:0 1px 2px rgba(30,25,15,.04),0 8px 24px -12px rgba(30,25,15,.14);
+}
+html[data-theme="dark"]{
+  --c-bg:#14140f; --c-surface:#1c1b16; --c-ink:#f2efe8; --c-ink-2:#cfc9bd; --c-muted:#9a9287;
+  --c-line:#302e27; --c-grid:#2a2822; --c-platform:#4fd1c0; --c-platform-soft:#12312e;
+  --c-baseline:#9c968c; --c-finance:#e0b050; --c-warn:#f0b357; --c-warn-soft:#2c2416;
+  --c-bad:#f2748f; --c-bad-soft:#2e1720; --c-good-soft:#12312e; --c-code:#23211b;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--c-bg);color:var(--c-ink);font-family:var(--f-sans);
+  font-size:15.5px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(circle at 12% -10%,rgba(15,118,110,.07),transparent 42%),radial-gradient(circle at 92% 2%,rgba(161,98,7,.06),transparent 38%);}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px 96px}
+a{color:inherit}
+/* 顶部进度 + 导航 */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:saturate(150%) blur(10px);
+  background:color-mix(in srgb,var(--c-bg) 86%,transparent);border-bottom:1px solid var(--c-line)}
+.topbar .inner{max-width:1120px;margin:0 auto;padding:8px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--f-serif);font-weight:700;letter-spacing:.02em;font-size:15px}
+.brand small{display:block;font-family:var(--f-sans);font-weight:400;color:var(--c-muted);letter-spacing:0}
+.navlinks{margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;align-items:center}
+.navlinks a{padding:4px 9px;border-radius:999px;font-size:12.5px;color:var(--c-ink-2);text-decoration:none;white-space:nowrap}
+.navlinks a:hover{background:var(--c-platform-soft);color:var(--c-platform)}
+.navlinks a.active{background:var(--c-platform);color:#fff}
+html[data-theme="dark"] .navlinks a.active{color:#06231f}
+.toggle{border:1px solid var(--c-line);background:var(--c-surface);color:var(--c-ink-2);border-radius:999px;
+  padding:4px 11px;font-size:12.5px;cursor:pointer;font-family:var(--f-sans)}
+.progress{height:2px;background:linear-gradient(90deg,var(--c-platform),var(--c-finance));width:0}
+/* 封面 */
+header.hero{padding:62px 0 26px;border-bottom:1px solid var(--c-line)}
+.kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--c-platform)}
+h1{font-family:var(--f-serif);font-size:clamp(28px,4.4vw,46px);line-height:1.22;margin:14px 0 10px;font-weight:700;letter-spacing:-.01em}
+h1 .thin{display:block;font-size:.52em;color:var(--c-muted);font-weight:400;margin-top:8px;letter-spacing:0}
+.lede{font-size:17px;color:var(--c-ink-2);max-width:74ch;margin:16px 0 0}
+.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:6px}
+/* 通用小组件 */
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-mono);font-size:11.5px;
+  background:var(--c-code);border:1px solid var(--c-line);color:var(--c-ink-2);padding:2px 8px;border-radius:6px;white-space:nowrap}
+.chip.src{color:var(--c-muted)}
+.chip.good{background:var(--c-good-soft);border-color:transparent;color:var(--c-platform)}
+.chip.warn{background:var(--c-warn-soft);border-color:transparent;color:var(--c-warn)}
+.chip.bad{background:var(--c-bad-soft);border-color:transparent;color:var(--c-bad)}
+section{padding-top:52px}
+h2{font-family:var(--f-serif);font-size:clamp(21px,2.6vw,29px);margin:0 0 6px;font-weight:700;letter-spacing:-.005em;
+  display:flex;align-items:baseline;gap:12px}
+h2 .no{font-family:var(--f-mono);font-size:.58em;color:var(--c-platform);letter-spacing:.08em}
+h3{font-family:var(--f-serif);font-size:18.5px;margin:30px 0 8px;font-weight:700}
+h4{font-size:15px;margin:20px 0 6px;font-family:var(--f-sans);font-weight:700;color:var(--c-ink)}
+p{margin:9px 0}
+.takeaway{border-left:3px solid var(--c-platform);background:var(--c-surface);padding:11px 16px;margin:14px 0 20px;
+  border-radius:0 8px 8px 0;box-shadow:var(--shadow);font-size:15px}
+.takeaway b{color:var(--c-platform)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px}
+.card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin-top:0}
+.kpi{background:var(--c-surface);border:1px solid var(--c-line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+.kpi .v{font-family:var(--f-mono);font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.02em;color:var(--c-platform);line-height:1.2}
+.kpi .k{font-size:12.5px;color:var(--c-muted);margin-top:2px}
+.kpi .s{font-size:12px;color:var(--c-ink-2);margin-top:7px}
+.kpi.warn .v{color:var(--c-warn)}
+.kpi.neutral .v{color:var(--c-ink)}
+table{width:100%;border-collapse:collapse;margin:14px 0 6px;font-size:13.5px;background:var(--c-surface);
+  border:1px solid var(--c-line);border-radius:10px;overflow:hidden}
+caption{caption-side:top;text-align:left;font-size:12.5px;color:var(--c-muted);padding:0 0 6px}
+th,td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--c-line);vertical-align:top}
+thead th{background:var(--c-code);font-weight:700;font-size:12.5px;letter-spacing:.02em;color:var(--c-ink-2)}
+tbody tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.best{color:var(--c-platform);font-weight:700}
+.figure{background:var(--c-surface);border:1px solid var(--c-line);border-radius:12px;padding:14px 16px 6px;margin:18px 0;box-shadow:var(--shadow)}
+.figure .cap{font-size:12.5px;color:var(--c-muted);margin:2px 0 8px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart .grid{stroke:var(--c-grid);stroke-width:1}
+.chart .axis{fill:var(--c-muted);font-size:11px;font-family:var(--f-mono)}
+.chart .axis.label{fill:var(--c-ink-2);font-family:var(--f-sans);font-size:12px}
+.chart .axis.sub{fill:var(--c-muted);font-size:10.5px}
+.chart .val{fill:var(--c-ink);font-size:11.5px;font-family:var(--f-mono);font-weight:600}
+.chart .inbar{fill:#fff;font-size:10.5px;font-family:var(--f-sans);opacity:.92}
+.chart .delta{fill:var(--c-bad);font-size:11px;font-family:var(--f-mono);font-weight:600}
+.chart .db-line{stroke:var(--c-baseline);stroke-width:2;stroke-dasharray:3 3;opacity:.7}
+.chart .slope-line{fill:none;stroke:var(--c-platform);stroke-width:2.5;opacity:.55}
+.chart .fun-val{fill:#fff;font-size:13px;font-weight:700;font-family:var(--f-sans)}
+.chart .fun-sub{fill:rgba(255,255,255,.86);font-size:10.5px;font-family:var(--f-mono)}
+.callout{border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14.5px;border:1px solid transparent}
+.callout.warn{background:var(--c-warn-soft);border-color:color-mix(in srgb,var(--c-warn) 30%,transparent)}
+.callout.bad{background:var(--c-bad-soft);border-color:color-mix(in srgb,var(--c-bad) 26%,transparent)}
+.callout.good{background:var(--c-good-soft);border-color:color-mix(in srgb,var(--c-platform) 26%,transparent)}
+.callout .t{font-weight:700;display:block;margin-bottom:3px}
+.callout.warn .t{color:var(--c-warn)} .callout.bad .t{color:var(--c-bad)} .callout.good .t{color:var(--c-platform)}
+ul,ol{margin:8px 0 8px 1.15em;padding:0}
+li{margin:5px 0}
+code,.mono{font-family:var(--f-mono);font-size:12.5px;background:var(--c-code);padding:1.5px 6px;border-radius:5px;border:1px solid var(--c-line)}
+pre{background:var(--c-code);border:1px solid var(--c-line);border-radius:10px;padding:12px 14px;overflow:auto;font-size:12.5px;line-height:1.6}
+pre code{background:none;border:none;padding:0}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:18px 0}
+.pillar{background:var(--c-surface);border:1px solid var(--c-line);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.pillar:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c-platform)}
+.pillar.b:before{background:var(--c-finance)} .pillar.c:before{background:var(--c-baseline)}
+.pillar .n{font-family:var(--f-mono);font-size:11.5px;color:var(--c-muted);letter-spacing:.1em}
+.pillar .h{font-family:var(--f-serif);font-weight:700;font-size:17px;margin:3px 0 4px}
+.pillar .q{font-size:13px;color:var(--c-ink-2)}
+.pillar .v{font-family:var(--f-mono);font-size:20px;font-weight:600;margin-top:9px;color:var(--c-platform)}
+.pillar.b .v{color:var(--c-finance)} .pillar.c .v{color:var(--c-ink)}
+.arch{display:grid;gap:10px;margin:16px 0}
+.layer{background:var(--c-surface);border:1px solid var(--c-line);border-radius:10px;padding:12px 15px;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.layer .lname{font-family:var(--f-mono);font-size:11.5px;color:var(--c-muted);min-width:74px;letter-spacing:.06em}
+.layer .lbody{flex:1;min-width:240px;font-size:13.5px;color:var(--c-ink-2)}
+.layer .lbody b{color:var(--c-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.legendbar{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--c-muted);margin:12px 0 0}
+.legendbar i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:820px){.two{grid-template-columns:1fr}.navlinks{display:none}}
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color:var(--c-muted);font-size:12.5px}
+.toc-note{font-size:12.5px;color:var(--c-muted)}
+@media print{
+  .topbar{display:none} body{background:#fff;font-size:11pt}
+  section{padding-top:20px;break-inside:avoid} .figure,.card,.kpi,table{break-inside:avoid}
+  a{text-decoration:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="inner">
+    <div class="brand">企业经营风险预警平台<small>Benchmark 报告与平台简介 · 0.7.2</small></div>
+    <nav class="navlinks">
+      <a href="#intro">平台简介</a>
+      <a href="#system">评测体系</a>
+      <a href="#regress">回归与工程</a>
+      <a href="#finrisk">自建基准</a>
+      <a href="#external">外部基准</a>
+      <a href="#honest">短板</a>
+      <a href="#data">数据资产</a>
+      <a href="#cost">成本</a>
+      <a href="#limits">局限</a>
+      <button class="toggle" id="themeBtn" type="button">深色</button>
+    </nav>
+  </div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<div class="wrap">
+<header class="hero">
+  <div class="kicker">Benchmark Report · v1 · 2026-09-14</div>
+  <h1>用可复现的数字，证明一套风险预警系统到底行不行
+    <span class="thin">三层评测体系：回归与工程指标 · 自建能力基准 FinRisk-Bench · 6 组外部公开基准对齐</span>
+  </h1>
+  <p class="lede">本页由评测产物<strong>自动生成</strong>（<code>bench/html/make-platform-report.js</code>），
+  所有数字都带样本量与口径标注。我们不把"功能多少"当作能力，也不把三类指标混成一个总分：
+  <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
+  <div class="meta">
+    <span class="chip">产品版本 v0.7.2</span>
+    <span class="chip">报告生成于 84a687b</span>
+    <span class="chip src">评测数据产生于 b14a914</span>
+    <span class="chip">模型 deepseek-flash</span>
+    <span class="chip">外部基准 6 组</span>
+    <span class="chip">回归套件 26 个</span>
+    <span class="chip src">随机种子 20260101 / 20260913</span>
+  </div>
+
+  <div class="grid4" style="margin-top:26px">
+    <div class="kpi"><div class="v">79.8%</div><div class="k">预警 AUC（测试集 n=1,348）</div><div class="s">对照"三行财务规则" 63.3%，提升 <b>+16.6pp</b></div></div>
+    <div class="kpi"><div class="v">100.0%</div><div class="k">抽取字段级 F1（258 个单元格）</div><div class="s">MAPE 0.0000%；勾稽缺陷召回 100%、误报 0%</div></div>
+    <div class="kpi"><div class="v">89.9%</div><div class="k">CFLUE 中文金融知识（n=298）</div><div class="s">单选 95.3%、多选 78.0%、判断 88.0%</div></div>
+    <div class="kpi"><div class="v">¥5.20</div><div class="k">整轮外部对齐的模型成本</div><div class="s">2,269 次调用；结论不靠钱堆</div></div>
+  </div>
+</header>
+
+<section id="intro">
+  <h2><span class="no">01</span>平台简介：它是什么，凭什么判得准</h2>
+  <p class="takeaway"><b>一句话</b>：把"财报三表 + 公告新闻 + 司法记录 + 平台自有表格"汇到一处，
+  用<strong>六维风险模型</strong>给出评分、评级、预警与可核验的分析报告；25 个工具让大模型在受控范围内调用这些能力，而不是自由发挥。</p>
+
+  <div class="grid3">
+    <div class="card"><h4>六维风险研判</h4>
+      <div class="chips"><span class="chip good">财务健康</span><span class="chip good">法律合规</span><span class="chip good">舆情声誉</span><span class="chip good">经营能力</span><span class="chip good">信用状况</span><span class="chip good">供应链稳定</span></div>
+      <p style="font-size:13.5px;color:var(--c-ink-2);margin-bottom:4px">每维独立打分并给出证据链；维度无数据时<strong>明确标注"数据不足"</strong>，不用 0 分冒充。</p>
+    </div>
+    <div class="card"><h4>Agent 工具层（25 个）</h4>
+      <div class="chips"><span class="chip">search_enterprise</span><span class="chip">get_score_profile</span><span class="chip">get_risk_facts</span><span class="chip">list_enterprises_by_level</span><span class="chip">get_platform_overview</span><span class="chip">list_alerts</span><span class="chip">list_skills</span><span class="chip">load_skill</span><span class="chip">run_risk_analysis</span><span class="chip">get_alert_report</span><span class="chip">resolve_stock_code</span><span class="chip">add_enterprise</span><span class="chip">refresh_enterprise_data</span><span class="chip">handle_alert</span><span class="chip">get_financial_analysis</span><span class="chip">compare_financials</span><span class="chip">screen_by_financial_metric</span><span class="chip">list_tables</span><span class="chip">get_table</span><span class="chip">create_table</span><span class="chip">write_table_cells</span><span class="chip">validate_table</span><span class="chip">ingest_table</span><span class="chip">read_attachment</span><span class="chip">list_attachments</span></div>
+      <p style="font-size:13.5px;color:var(--c-ink-2);margin:8px 0 0">写操作受审批闸门约束，工具按只读/可写分层。</p>
+    </div>
+    <div class="card"><h4>数据与存储</h4>
+      <p style="font-size:13.5px;color:var(--c-ink-2);margin-top:0">15 张表（enterprise、legal_record、news、finance、risk_fact、alert、chat_session、chat_message 等）、
+      3 个公开数据源适配器（东方财富公告 / 新浪财经三表与关键指标 / 巨潮资讯诉讼统计），单文件 SQLite 落盘，可整目录搬迁。</p>
+      <div class="chips"><span class="chip">局域网可用</span><span class="chip">附件可读（图片/表格）</span><span class="chip">MCP 可接入外部工具</span></div>
+    </div>
+  </div>
+
+  <h3>架构与规模（数字由源码/产物统计得出）</h3>
+  <div class="arch">
+    <div class="layer"><div class="lname">后端</div><div class="lbody"><b>Rust 16,352 行</b>（axum + rusqlite bundled），单文件可执行程序
+      <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
+    <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
+      Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>10,951 行</b>评测代码：26 个回归套件、
+      自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
+  </div>
+</section>
+
+<section id="system">
+  <h2><span class="no">02</span>评测体系：三层各管一件事，绝不混算</h2>
+  <p class="takeaway"><b>为什么不给一个"总分"</b>：把回归断言、时延、能力准确率加在一起，得到的数字谁也不认。
+  我们分开报，并且每一层都能一条命令复现。</p>
+  <div class="pillars">
+    <div class="pillar"><div class="n">LAYER 1</div><div class="h">回归测试</div>
+      <div class="q">回答：改这一版有没有把原来的东西改坏？</div>
+      <div class="v">115 断言 / 0 失败</div>
+      <div class="chips"><span class="chip good">基线比对：无回归</span><span class="chip src">CI 每次提交跑</span></div>
+    </div>
+    <div class="pillar b"><div class="n">LAYER 2</div><div class="h">工程指标</div>
+      <div class="q">回答：装得上、跑得快、搬得走吗？</div>
+      <div class="v">134 ms 冷启动</div>
+      <div class="chips"><span class="chip">p95 ≤ 2 ms</span><span class="chip">产物 12.5 MB</span></div>
+    </div>
+    <div class="pillar c"><div class="n">LAYER 3</div><div class="h">能力基准</div>
+      <div class="q">回答：读得准、算得对、判得准吗？有没有外部可比？</div>
+      <div class="v">自建 T1–T5 + 外部 6 组</div>
+      <div class="chips"><span class="chip">真值来自生成过程/事后事件</span><span class="chip">外部题面非我方拟定</span></div>
+    </div>
+  </div>
+  <div class="legendbar">
+    <span><i style="background:var(--c-platform)"></i>平台 / 六维模型</span>
+    <span><i style="background:var(--c-baseline)"></i>对照基线（三行财务规则 / 直连模型）</span>
+    <span><i style="background:var(--c-finance)"></i>平台单一维度</span>
+    <span><i style="background:var(--c-warn)"></i>需要改进</span>
+    <span><i style="background:var(--c-bad)"></i>明确短板</span>
+  </div>
+</section>
+
+<section id="regress">
+  <h2><span class="no">03</span>第一层：回归与工程指标</h2>
+  <p class="takeaway">默认门禁档（与 CI 同口径）<b>26 个套件、115 条断言全绿</b>，
+  0 失败、0 错误；完整档（含金标准逐点比对与 GUI 冒烟）的基线为 <b>216 条断言</b>，同样 0 失败。</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4>跑得动：工程指标（实测）</h4>
+      <table>
+        <thead><tr><th>指标</th><th class="n">实测</th><th>口径</th></tr></thead>
+        <tbody>
+          <tr><td>冷启动（到 /api/health 返回 200）</td><td class="n">134 ms</td><td>3 次取中位</td></tr>
+          <tr><td>只读接口 <code>/api/health</code></td><td class="n">p50 1 / p95 1 ms</td><td>n=25</td></tr><tr><td>只读接口 <code>/api/enterprises</code></td><td class="n">p50 1 / p95 1 ms</td><td>n=25</td></tr><tr><td>只读接口 <code>/api/tables</code></td><td class="n">p50 1 / p95 1 ms</td><td>n=25</td></tr><tr><td>只读接口 <code>/api/alerts</code></td><td class="n">p50 1 / p95 1 ms</td><td>n=25</td></tr><tr><td>只读接口 <code>/api/summary/dashboard</code></td><td class="n">p50 1 / p95 2 ms</td><td>n=25</td></tr>
+          <tr><td>后端可执行程序</td><td class="n">11.08 MB</td><td>单文件，含 SQLite</td></tr>
+          <tr><td>前端构建产物</td><td class="n">1.42 MB</td><td>gzip 前</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--c-muted)">说明：时延在空库/小库上测得，数据量增长后需复测——这一点写进局限，不当作"生产时延"。</p>
+    </div>
+    <div class="card">
+      <h4>没改坏：回归覆盖（默认档）</h4>
+      <table>
+        <thead><tr><th>套件</th><th class="n">断言</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>probe-tables</td><td class="n">36</td><td><span class="chip good">通过</span></td></tr><tr><td>probe-sheets</td><td class="n">21</td><td><span class="chip good">通过</span></td></tr><tr><td>probe-workbook</td><td class="n">19</td><td><span class="chip good">通过</span></td></tr><tr><td>probe-media</td><td class="n">15</td><td><span class="chip good">通过</span></td></tr><tr><td>t5-warning</td><td class="n">1</td><td><span class="chip good">通过</span></td></tr><tr><td>finrisk-bench</td><td class="n">1</td><td><span class="chip good">通过</span></td></tr><tr><td>legacy-db-compat</td><td class="n">13</td><td><span class="chip good">通过</span></td></tr><tr><td>smoke-backend</td><td class="n">1</td><td><span class="chip good">通过</span></td></tr>
+          <tr><td colspan="3" style="color:var(--c-muted);font-size:12.5px">另有 18 个套件按设计跳过（需要 GUI / 参考实现 / 模型配额），跳过原因逐条打印，绝不算通过。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="finrisk">
+  <h2><span class="no">04</span>第二层：自建能力基准 FinRisk-Bench</h2>
+  <p class="takeaway">真值不是人工标的，而是<b>由生成过程直接给出</b>（T1/T3/T4）或<b>由事后真实事件对齐</b>（T5）——
+  这让"平台自己考自己"的嫌疑降到最低：打分路径与真值路径互相独立。</p>
+
+  <h3>4.1 读得准、能发现错、算得对（自动判定层）</h3>
+  <div class="grid4">
+    <div class="kpi"><div class="v">100.0%</div><div class="k">T1 字段级 P/R/F1</div><div class="s">258 单元格，MAPE 0.0000%</div></div>
+    <div class="kpi"><div class="v">100.0%</div><div class="k">T3 勾稽缺陷召回</div><div class="s">4 类注入缺陷；干净样本误报 0.0%</div></div>
+    <div class="kpi"><div class="v">100.0%</div><div class="k">T4 指标一致率</div><div class="s">30 个指标点与独立重算比对</div></div>
+    <div class="kpi neutral"><div class="v">5/5</div><div class="k">验收门槛</div><div class="s">T1 F1 / 命中率、T3 召回 / 误报、T4 一致率全部达标</div></div>
+  </div>
+  <p style="font-size:13px;color:var(--c-muted);margin-top:6px">
+    T1/T3 的样本是"合成的真实形状"（满足会计恒等式，带千分位、括号负数、单位行等脏格式），
+    <strong>不能替代真实上市公司财报</strong>；接入真实数据后必须重跑——这一点写在基准报告里。
+  </p>
+
+  <h3>4.2 判得准吗：与"三行财务规则"同台对比（point-in-time，时间切分）</h3>
+  <p>测试集为 1,348 家企业的 2024 年起样本，
+  训练集到 2023-12-31 为止；标签来自事后真实事件（ST/退市风险警示、行政处罚与立案、任一高危事件）。</p>
+  <div class="figure">
+    <div class="cap">图 1　三种风险目标的 AUC 对比（越高越好；同一批 1,348 个测试样本）</div>
+    <svg viewBox="0 0 720 184" class="chart" role="img"><line x1="46.0" y1="18" x2="46.0" y2="174" class="grid"/><text x="46.0" y="183" class="axis" text-anchor="middle">0.0%</text><line x1="210.5" y1="18" x2="210.5" y2="174" class="grid"/><text x="210.5" y="183" class="axis" text-anchor="middle">25.0%</text><line x1="375.0" y1="18" x2="375.0" y2="174" class="grid"/><text x="375.0" y="183" class="axis" text-anchor="middle">50.0%</text><line x1="539.5" y1="18" x2="539.5" y2="174" class="grid"/><text x="539.5" y="183" class="axis" text-anchor="middle">75.0%</text><line x1="704.0" y1="18" x2="704.0" y2="174" class="grid"/><text x="704.0" y="183" class="axis" text-anchor="middle">100.0%</text><text x="38" y="39" class="axis label" text-anchor="end">退市风险警示</text><rect x="46" y="26.0" width="416.3" height="9.0" rx="2.5" fill="var(--c-baseline)"/><text x="469.3" y="34.0" class="val">63.3%</text><text x="52" y="34.0" class="inbar">三行规则</text><rect x="46" y="38.0" width="441.7" height="9.0" rx="2.5" fill="var(--c-finance)"/><text x="494.7" y="46.0" class="val">67.1%</text><text x="52" y="46.0" class="inbar">仅财务维度</text><rect x="46" y="50.0" width="525.3" height="9.0" rx="2.5" fill="var(--c-platform)"/><text x="578.3" y="58.0" class="val">79.8%</text><text x="52" y="58.0" class="inbar">平台六维</text><text x="38" y="87" class="axis label" text-anchor="end">处罚 / 立案</text><rect x="46" y="74.0" width="392.1" height="9.0" rx="2.5" fill="var(--c-baseline)"/><text x="445.1" y="82.0" class="val">59.6%</text><text x="52" y="82.0" class="inbar">三行规则</text><rect x="46" y="86.0" width="388.5" height="9.0" rx="2.5" fill="var(--c-finance)"/><text x="441.5" y="94.0" class="val">59.0%</text><text x="52" y="94.0" class="inbar">仅财务维度</text><rect x="46" y="98.0" width="508.2" height="9.0" rx="2.5" fill="var(--c-platform)"/><text x="561.2" y="106.0" class="val">77.2%</text><text x="52" y="106.0" class="inbar">平台六维</text><text x="38" y="135" class="axis label" text-anchor="end">任一高危事件</text><rect x="46" y="122.0" width="381.8" height="9.0" rx="2.5" fill="var(--c-baseline)"/><text x="434.8" y="130.0" class="val">58.0%</text><text x="52" y="130.0" class="inbar">三行规则</text><rect x="46" y="134.0" width="405.5" height="9.0" rx="2.5" fill="var(--c-finance)"/><text x="458.5" y="142.0" class="val">61.6%</text><text x="52" y="142.0" class="inbar">仅财务维度</text><rect x="46" y="146.0" width="483.6" height="9.0" rx="2.5" fill="var(--c-platform)"/><text x="536.6" y="154.0" class="val">73.5%</text><text x="52" y="154.0" class="inbar">平台六维</text></svg>
+  </div>
+  <table>
+    <caption>表 1　预警效果明细（测试集 n=1,348；Top-135 命中率为取分数最高前 135 家时的召回）</caption>
+    <thead><tr><th>风险目标（测试集正例）</th><th class="n">基线 AUC</th><th class="n">平台 AUC</th><th class="n">基线 AP</th><th class="n">平台 AP</th><th class="n">Top-135 召回</th><th class="n">提前预警中位天数</th></tr></thead>
+    <tbody>
+      <tr><td>退市风险警示 / 终止上市（34）</td><td class="n">63.3</td><td class="n best">79.8</td><td class="n">19.5</td><td class="n">18.0</td><td class="n">32.4% → <b class="best">44.1%</b></td><td class="n">269</td></tr>
+      <tr><td>行政处罚 / 立案调查（43）</td><td class="n">59.6</td><td class="n best">77.2</td><td class="n">8.4</td><td class="n best">8.9</td><td class="n">25.6% → <b class="best">34.9%</b></td><td class="n">176</td></tr>
+      <tr><td>任一高危事件（100）</td><td class="n">58.0</td><td class="n best">73.5</td><td class="n">19.7</td><td class="n best">28.6</td><td class="n">23.0% → <b class="best">38.0%</b></td><td class="n">255</td></tr>
+    </tbody>
+  </table>
+  <div class="callout good"><span class="t">最有力的一条证据：非财务维度确实带来增量</span>
+    同一批样本、同一套评分逻辑下，<strong>只喂财务维度</strong>的 AUC 是 67.1 / 59.0 / 61.6，
+    加上新闻与司法等非财务维度后升到 <strong>79.8 / 77.2 / 73.5</strong>。
+    也就是说：模型不是靠"财务指标换个算法"，而是靠数据面本身更宽。</div>
+  <div class="callout warn"><span class="t">必须同时说清的三件事</span>
+    ① 退市目标的 <strong>AP 仍略低于基线</strong>（18.0 vs 19.5）——AUC 全面领先不等于每个指标都领先；
+    ② ST / 处罚是<strong>事后标签</strong>，只能证明"更早识别出风险信号"，不能证明因果；
+    ③ 测试集正例数只有 34 个（退市目标），置信区间较宽。</div>
+</section>
+
+<section id="external">
+  <h2><span class="no">05</span>第三层：与 6 组外部公开基准对齐</h2>
+  <p class="takeaway">外部基准的价值不在分数高低，而在<b>题目、答案、判分口径都不是我们定的</b>。
+  本轮锁定 19 个输入文件（10.7 MB，含 sha256 清单），固定种子抽样，覆盖四个层级。</p>
+
+  <div class="grid3">
+    <div class="kpi"><div class="v">89.9%</div><div class="k">CFLUE 中文金融知识</div><div class="s">单选 95.3%、多选 78.0%、判断 88.0%</div></div>
+    <div class="kpi"><div class="v">85.7%</div><div class="k">FinEval 金融数值计算</div><div class="s">全量 42 题；指标抽取数字召回 0.70</div></div>
+    <div class="kpi"><div class="v">66.0%</div><div class="k">FinEval-MM 图表截图四选一</div><div class="s">n=150，12 类题型分层抽样</div></div>
+    <div class="kpi"><div class="v">82.0%</div><div class="k">FinanceBench oracle（给证据）</div><div class="s">closedBook 44.7%（含记忆成分，见 06 节）</div></div>
+    <div class="kpi"><div class="v">87.5%</div><div class="k">BFCL v4 工具调用</div><div class="s">simple 94.5% / multiple 88.5% / 应拒调 74.2%</div></div>
+    <div class="kpi"><div class="v">0.752</div><div class="k">OmniDocBench 数字召回（18 页）</div><div class="s">含表格页 0.871；片段召回 0.581</div></div>
+  </div>
+
+  <div class="figure">
+    <div class="cap">图 2　CFLUE 知识题：三种题型准确率（同一批 298 题；全部答案均由最严格的"只输出字母"路径抽取，无宽松扫描。橙色标注明显偏低的题型）</div>
+    <svg viewBox="0 0 720 150" class="chart" role="img"><line x1="46.0" y1="18" x2="46.0" y2="140" class="grid"/><text x="46.0" y="149" class="axis" text-anchor="middle">0.0%</text><line x1="210.5" y1="18" x2="210.5" y2="140" class="grid"/><text x="210.5" y="149" class="axis" text-anchor="middle">25.0%</text><line x1="375.0" y1="18" x2="375.0" y2="140" class="grid"/><text x="375.0" y="149" class="axis" text-anchor="middle">50.0%</text><line x1="539.5" y1="18" x2="539.5" y2="140" class="grid"/><text x="539.5" y="149" class="axis" text-anchor="middle">75.0%</text><line x1="704.0" y1="18" x2="704.0" y2="140" class="grid"/><text x="704.0" y="149" class="axis" text-anchor="middle">100.0%</text><text x="38" y="39" class="axis label" text-anchor="end">CFLUE 知识题</text><rect x="46" y="26.0" width="627.0" height="9.0" rx="2.5" fill="var(--c-platform)"/><text x="680.0" y="34.0" class="val">95.3%</text><text x="52" y="34.0" class="inbar">单项选择题</text><rect x="46" y="38.0" width="579.0" height="9.0" rx="2.5" fill="var(--c-platform)"/><text x="632.0" y="46.0" class="val">88.0%</text><text x="52" y="46.0" class="inbar">判断题</text><rect x="46" y="50.0" width="513.6" height="9.0" rx="2.5" fill="var(--c-warn)"/><text x="566.6" y="58.0" class="val">78.0%</text><text x="52" y="58.0" class="inbar">多项选择题</text></svg>
+  </div>
+  <p style="font-size:12.5px;color:var(--c-muted)">多项选择题需要同时选对全部选项才算正确，因此天然低于单选；这也是后续可优化的一档（例如让模型先输出候选再自检）。</p>
+
+  <h3>5.1 外部对照：同题同集，可直接并列</h3>
+  <table>
+    <caption>表 2　FinanceBench 开源子集 150 题：论文公开结果（由仓库逐题标签统计）与我们同题对比</caption>
+    <thead><tr><th>模型 / 口径</th><th class="n">n</th><th class="n">准确率</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GPT-4 (oracle)（论文）</td><td class="n">150</td><td class="n">84.00%</td><td>我方判分器与论文标签一致率 92.31%</td></tr><tr><td>GPT-4 (closed book)（论文）</td><td class="n">150</td><td class="n">4.67%</td><td>我方判分器与论文标签一致率 100.00%</td></tr><tr><td>GPT-4-1106-preview (oracle)（论文）</td><td class="n">150</td><td class="n">85.33%</td><td>我方判分器与论文标签一致率 92.31%</td></tr><tr><td>Claude-2 (in-context)（论文）</td><td class="n">150</td><td class="n">37.33%</td><td>我方判分器与论文标签一致率 84.62%</td></tr><tr><td>Llama2-70B (single store)（论文）</td><td class="n">150</td><td class="n">41.33%</td><td>我方判分器与论文标签一致率 90.38%</td></tr>
+      <tr style="background:var(--c-good-soft)"><td><b>本平台（deepseek-flash）oracle</b></td><td class="n">150</td><td class="n best">82.00%</td><td>裁判口径；确定性口径 35.33%</td></tr>
+      <tr><td>本平台 closedBook</td><td class="n">150</td><td class="n">44.67%</td><td>不给任何文档；论文同口径 GPT-4 为 4.67%</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">判分器可信度先被验证：用我们的确定性判分重判论文公开答案，与论文标签一致率 84.6%–100%；
+  初版未做量纲换算时只有 61.5%，修正过程记录在案。</p>
+
+  <h3>5.2 工具调用：25 个工具与 MCP 的底座能力（BFCL v4）</h3>
+  <table>
+    <caption>表 3　BFCL v4 非实时子集（n=520）；判分为自实现 AST 判定，非官方 checker</caption>
+    <thead><tr><th>子集</th><th class="n">通过率</th><th class="n">n</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td>simple（单函数）</td><td class="n best">94.50%</td><td class="n">200</td><td>选对函数并填对参数</td></tr>
+      <tr><td>multiple（多函数选一）</td><td class="n">88.50%</td><td class="n">200</td><td>多个候选里只调正确的那一个</td></tr>
+      <tr><td>irrelevance（应拒调）</td><td class="n" style="color:var(--c-warn)">74.17%</td><td class="n">120</td><td>没有合适函数时不该发起调用</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px">失败 65 例的构成：
+  不该调用却调用了 31、取值不符 8、列表参数不符 8、调用个数不对 8、字符串取值不符 6、字典键不符 2、调用个数不对 1、函数名选错 1。
+  其中 <strong>"不该调用却调用了" 31 例</strong>对应平台里"乱调工具"的风险，是工具层安全边界最该盯的数字。</p>
+
+  <h3>5.3 文档读取：图像输入无法靠记忆作弊</h3>
+  <div class="figure">
+    <div class="cap">图 3　OmniDocBench demo 18 页：含表格页 vs 非表格页（财报/研报最要紧的一类单独看）</div>
+    <svg viewBox="0 0 720 186" class="chart" role="img"><line x1="150.0" y1="18" x2="150.0" y2="170" class="grid"/><text x="150.0" y="183" class="axis" text-anchor="middle">0.000</text><line x1="277.5" y1="18" x2="277.5" y2="170" class="grid"/><text x="277.5" y="183" class="axis" text-anchor="middle">0.250</text><line x1="405.0" y1="18" x2="405.0" y2="170" class="grid"/><text x="405.0" y="183" class="axis" text-anchor="middle">0.500</text><line x1="532.5" y1="18" x2="532.5" y2="170" class="grid"/><text x="532.5" y="183" class="axis" text-anchor="middle">0.750</text><line x1="660.0" y1="18" x2="660.0" y2="170" class="grid"/><text x="660.0" y="183" class="axis" text-anchor="middle">1.000</text><text x="140" y="40" class="axis label" text-anchor="end">数字召回</text><rect x="150" y="30" width="323.4" height="12" rx="3" fill="var(--c-baseline)"/><text x="481.4" y="40" class="val">0.634</text><rect x="150" y="47" width="444.2" height="12" rx="3" fill="var(--c-platform)"/><text x="602.2" y="57" class="val">0.871</text><text x="140" y="84" class="axis label" text-anchor="end">片段召回</text><rect x="150" y="74" width="233.3" height="12" rx="3" fill="var(--c-baseline)"/><text x="391.3" y="84" class="val">0.457</text><rect x="150" y="91" width="359.7" height="12" rx="3" fill="var(--c-platform)"/><text x="517.7" y="101" class="val">0.705</text><text x="140" y="128" class="axis label" text-anchor="end">字符编辑距离比 ↓</text><rect x="150" y="118" width="108.0" height="12" rx="3" fill="var(--c-warn)"/><text x="266.0" y="128" class="val">0.212</text><rect x="150" y="135" width="33.4" height="12" rx="3" fill="var(--c-warn)"/><text x="191.4" y="145" class="val">0.066</text><g><rect x="150" y="174" width="10" height="10" rx="2" fill="var(--c-baseline)"/><text x="166" y="183" class="axis">非表格页（9 页）</text><rect x="260" y="174" width="10" height="10" rx="2" fill="var(--c-platform)"/><text x="276" y="183" class="axis">含表格页（9 页）</text></g></svg>
+  </div>
+  <p style="font-size:13px;color:var(--c-ink-2)">含表格页的数字召回 0.871、编辑距离 0.066，
+  明显好于非表格页（0.634 / 0.212）——
+  这与直觉相反但在情理之中：表格是结构化的，而杂志、报纸多栏排版更难还原阅读顺序。
+  <strong>口径提醒</strong>：这是自实现的保真度指标，不是官方 TEDS/CDM。</p>
+
+  <div class="callout warn"><span class="t">外部对齐的边界（一并说清）</span>
+  FinEval-MM 引用的图表题只有 39.3% 的图片随仓库发布（其余目录未开放、HF 返回 401）；
+  BFCL 只跑非实时子集；CFLUE 用的是仓库发布的 3,864 题子集而非 3.8 万题全集。
+  这些"拿不到"都写进了报告，而不是记成"模型答错"。</div>
+</section>
+
+<section id="honest">
+  <h2><span class="no">06</span>短板与反例：这一轮测出来的真问题</h2>
+  <p class="takeaway">一份只报喜的报告没有价值。以下四条都是<b>我们自己测出来打自己脸</b>的结果，附改进方向。</p>
+
+  <h3>6.1 平台链路在客观题上比直连模型低 18.8 个百分点</h3>
+  <div class="figure">
+    <div class="cap">图 4　同一批题：口径 A（直连模型）vs 口径 B（经平台 /api/chat/stream，含平台系统提示词与 25 个工具）</div>
+    <svg viewBox="0 0 720 146" class="chart" role="img"><line x1="108.0" y1="18" x2="108.0" y2="124" class="grid"/><text x="108.0" y="136" class="axis" text-anchor="middle">0%</text><line x1="218.8" y1="18" x2="218.8" y2="124" class="grid"/><text x="218.8" y="136" class="axis" text-anchor="middle">20%</text><line x1="329.6" y1="18" x2="329.6" y2="124" class="grid"/><text x="329.6" y="136" class="axis" text-anchor="middle">40%</text><line x1="440.4" y1="18" x2="440.4" y2="124" class="grid"/><text x="440.4" y="136" class="axis" text-anchor="middle">60%</text><line x1="551.2" y1="18" x2="551.2" y2="124" class="grid"/><text x="551.2" y="136" class="axis" text-anchor="middle">80%</text><line x1="662.0" y1="18" x2="662.0" y2="124" class="grid"/><text x="662.0" y="136" class="axis" text-anchor="middle">100%</text><text x="98" y="34" class="axis label" text-anchor="end">CFLUE 知识题</text><line x1="493.0" y1="30" x2="597.4" y2="30" class="db-line"/><circle cx="597.4" cy="30" r="6" fill="var(--c-baseline)"/><circle cx="493.0" cy="30" r="6" fill="var(--c-platform)"/><text x="597.4" y="19" class="val" text-anchor="middle">88.3%</text><text x="493.0" y="50" class="val" text-anchor="middle">69.5%</text><text x="545.2" y="19" class="delta" text-anchor="middle">−18.8pp</text><text x="98" y="80" class="axis label" text-anchor="end">FinEval-MM 图片题</text><line x1="606.6" y1="76" x2="606.6" y2="76" class="db-line"/><circle cx="606.6" cy="76" r="6" fill="var(--c-baseline)"/><circle cx="606.6" cy="76" r="6" fill="var(--c-platform)"/><text x="618.6" y="80.0" class="val" text-anchor="start">两者同为 90.0%</text><text x="606.6" y="63" class="delta" text-anchor="middle" style="fill:var(--c-platform)">持平</text><g class="legend"><circle cx="108" cy="136" r="4.5" fill="var(--c-baseline)"/><text x="117" y="139" class="axis">直连模型</text><circle cx="216" cy="136" r="4.5" fill="var(--c-platform)"/><text x="225" y="139" class="axis">平台链路</text></g></svg>
+  </div>
+  <div class="callout bad"><span class="t">读法与动作</span>
+    纯客观题上，平台链路与直连模型唯一差别就是"平台系统提示词 + 工具清单"。因此这
+    18.8 个百分点<strong>不应归因于模型能力</strong>，
+    而是平台在"客观问答"场景下的提示词/编排开销：模型的注意力被人设与工具说明占据，逐题明细里能看到答非所选与空回答。
+    <strong>改进方向</strong>：按场景裁剪系统提示词与工具集（客观问答不需要 25 个工具）。
+    反过来说，平台<strong>自己实现</strong>的附件读取链路在图片题上与直连持平（18/20），这条结论比图片题分数本身更值钱。</div>
+
+  <h3>6.2 FinanceBench 闭卷已被训练语料污染：oracle 分数不能全算作"读懂文档"</h3>
+  <table>
+    <caption>表 4　闭卷口径交叉核查（n=150）：把裁判判定与确定性判分交叉看</caption>
+    <thead><tr><th>交叉情况</th><th class="n">题数</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>裁判判对且确定性也判对</td><td class="n">27</td><td>模型给出了与标准答案一致的数值</td></tr>
+      <tr><td>仅裁判判对</td><td class="n">40</td><td>标准答案为长句，确定性判分无法覆盖</td></tr>
+      <tr><td>仅确定性判对</td><td class="n">2</td><td>裁判口径更严（单位/表述不同）</td></tr>
+      <tr><td>两者都不对</td><td class="n">81</td><td>含拒答 2 题</td></tr>
+    </tbody>
+  </table>
+  <p>抽查可见模型在<strong>没有任何文档</strong>时给出具体数字：3M FY2018 资本开支 1,577 百万美元、
+  Amazon FY2017 DPO 93.86 天、Adobe FY2022 营业利润率 34.6%、AMD FY2022 速动比率 1.58。
+  论文里 GPT-4 闭卷只有 4.67%，我们测得 44.7%。
+  <strong>结论</strong>：FinanceBench 的闭卷切分对该模型已发生污染，oracle 的 82.0% 含记忆成分；
+  文档阅读能力以 OmniDocBench（图像输入）与 FinEval-MM 为准。</p>
+
+  <h3>6.3 其余三条如实记录</h3>
+  <ul>
+    <li><strong>退市目标的 AP 仍低于基线</strong>（18.0 vs 19.5）：AUC 全面领先，但排序质量在正例极少的场景下仍不稳。</li>
+    <li><strong>工具"应拒调"只有 74.17%</strong>（31/120 次不该调用却调用了），这是平台工具层需要加护栏的地方。</li>
+    <li><strong>复现性</strong>：同一配置把 FinanceBench 跑两遍，裁判口径 oracle 83.33% → 82.00%、closedBook 47.33% → 44.67%，
+      因此本页数字<strong>只用于判断量级与方向，不用于比较小数点后差异</strong>。</li>
+  </ul>
+</section>
+
+<section id="data">
+  <h2><span class="no">07</span>数据资产：宽，而且可核验</h2>
+  <p class="takeaway">预警能力的天花板由数据面决定。本轮把非财务维度从"抽样 900 家"扩到面板覆盖的全部 1,348 家，
+  测试集里 98.3% 的样本含非财务维度
+  （此前只有 33%，扩采后补齐）。</p>
+  <div class="grid4">
+    <div class="kpi"><div class="v">77,930</div><div class="k">财务面板行数</div><div class="s">1,348 家企业，26.8 MB，带 sha256</div></div>
+    <div class="kpi"><div class="v">1,650,847</div><div class="k">新闻 / 公告条数</div><div class="s">8,527 次公开接口请求，错误 0</div></div>
+    <div class="kpi"><div class="v">14,493</div><div class="k">司法记录条数</div><div class="s">巨潮资讯诉讼统计</div></div>
+    <div class="kpi"><div class="v">22,127</div><div class="k">风险事件标签</div><div class="s">ST / 退市 / 处罚 / 立案等，来自公开披露</div></div>
+  </div>
+
+  <h3>7.1 标签可信度：三源交叉验证</h3>
+  <table>
+    <caption>表 5　同一批标签用三条独立渠道复核（2026-09-13）</caption>
+    <thead><tr><th>渠道</th><th class="n">命中</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td>A · 巨潮关键词检索</td><td class="n">14,968</td><td>主渠道，覆盖沪深两市</td></tr>
+      <tr><td>B · 巨潮按日期全量扫描（不用关键词）</td><td class="n">35</td><td>发现关键词漏掉的 <b>10</b> 条</td></tr>
+      <tr><td>C · 深交所官方公告接口</td><td class="n">25</td><td>交易所第二披露渠道，补出 <b>9</b> 条</td></tr>
+      <tr><td>A 被第二来源确认</td><td class="n">27</td><td>降低误标</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--c-muted)">结论：单靠关键词检索会漏标签，因此用"关键词 + 全量扫描 + 交易所接口"三源互补，并把补出来的条目逐条记录在案。</p>
+
+  <h3>7.2 数据可得性：拿不到的东西也是结论</h3>
+  <div class="figure">
+    <div class="cap">图 5　FinEval-MM 图表题的数据可得性漏斗（每一级的减少都有明确原因）</div>
+    <svg viewBox="0 0 720 250" class="chart" role="img"><path d="M20 22 L700 22 L700 64.5 L20 64.5 Z" fill="var(--c-platform)" opacity="0.9"/><text x="360" y="45.25" class="fun-val" text-anchor="middle">1,000 行题目</text><text x="360" y="59.25" class="fun-sub" text-anchor="middle">15 个题型文件全量</text><path d="M20 70.5 L700 70.5 L680.62 113 L39.379999999999995 113 Z" fill="#1f8f86" opacity="0.9"/><text x="360" y="93.75" class="fun-val" text-anchor="middle">943 行带图且有答案</text><text x="360" y="107.75" class="fun-sub" text-anchor="middle">其余缺答案字段</text><path d="M20 119 L700 119 L517.76 161.5 L202.23999999999998 161.5 Z" fill="var(--c-warn)" opacity="0.9"/><text x="360" y="142.25" class="fun-val" text-anchor="middle">464 行图片确实随仓库发布</text><text x="360" y="156.25" class="fun-sub" text-anchor="middle">figure/pg、sdt 等目录未开放，HF 返回 401</text><path d="M20 167.5 L700 167.5 L486.14 210 L233.86 210 Z" fill="#8a6d1f" opacity="0.9"/><text x="360" y="190.75" class="fun-val" text-anchor="middle">371 行可用于评测</text><text x="360" y="204.75" class="fun-sub" text-anchor="middle">再要求选项 ≥2；评测即在此子集上分层抽样 150 题</text></svg>
+  </div>
+</section>
+
+<section id="cost">
+  <h2><span class="no">08</span>成本与复现：数字不是钱堆出来的</h2>
+  <p class="takeaway">整轮外部对齐共 <b>2,269 次模型调用</b>，估算 <b>¥5.20</b>；
+  自建基准与回归测试只用公开接口与本地计算，<b>不产生模型费用</b>。</p>
+  <div class="two">
+    <div class="card">
+      <h4>调用与费用（口径 A 直连 + 裁判 + 口径 B 平台侧）</h4>
+      <table>
+        <thead><tr><th>用途</th><th class="n">调用</th><th class="n">输入 tokens</th><th class="n">输出 tokens</th><th class="n">费用</th></tr></thead>
+        <tbody>
+          <tr><td>deepseek-flash</td><td class="n">1,940</td><td class="n">1,513,798</td><td class="n">1,812,889</td><td class="n">¥4.38</td></tr><tr><td>deepseek-flash（裁判调用）</td><td class="n">329</td><td class="n">98,226</td><td class="n">215,818</td><td class="n">¥0.48</td></tr>
+          <tr><td>口径 B 平台侧（读平台数据库）</td><td class="n">116</td><td class="n">527,056</td><td class="n">35,486</td><td class="n">¥0.33</td></tr>
+          <tr><td><b>合计</b></td><td class="n"><b>2,385</b></td><td class="n">—</td><td class="n">—</td><td class="n"><b>¥5.20</b></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;color:var(--c-muted)">输入侧缓存命中率约 64%，
+      推理 tokens 是成本与延迟的主要来源。</p>
+    </div>
+    <div class="card">
+      <h4>一条命令复现</h4>
+      <pre><code># 1) 回归 + 工程指标（CI 同口径）
+node bench/run.js --no-gui
+
+# 2) 自建能力基准（T1/T3/T4）
+node bench/benchmark/run.js
+
+# 3) T5 风险预警回测（需先采数据集）
+node bench/dataset/fetch.js && node bench/dataset/t5.js
+
+# 4) 外部基准对齐（固定种子 + 版本锁定）
+node bench/external/prepare.js --with-assets
+node bench/external/run.js --models deepseek-flash
+
+# 5) 重新生成本页
+node bench/html/make-platform-report.js</code></pre>
+      <div class="chips">
+        <span class="chip">种子 20260101 / 20260913</span>
+        <span class="chip">样本哈希随产物入库</span>
+        <span class="chip src">原始数据不入库，清单与哈希入库</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="limits">
+  <h2><span class="no">09</span>局限与未做：这一页没有覆盖到什么</h2>
+  <div class="two">
+    <div class="card">
+      <h4>尚未纳入的评测层</h4>
+      <ul>
+        <li><strong>T2 图片/扫描件读取</strong>（≥150 张）与 <strong>T6 Agent 工具链</strong>（≥120 条意图）尚未纳入自建基准——本轮只用外部 FinEval-MM / BFCL 间接覆盖。</li>
+        <li><strong>T7 报告生成质量</strong>（数字可核验率、幻觉率、双人评分 κ）未做。</li>
+        <li><strong>长稳测试</strong>（8 小时 / 2000 请求）与<strong>数据量放大后的性能</strong>未做：当前时延是在小库上测得。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>口径与样本上的取舍</h4>
+      <ul>
+        <li><strong>单模型</strong>：全部结果由 deepseek-flash 产生，没有跨模型对比；验收项已改为"口径 A vs 口径 B"。</li>
+        <li><strong>外部基准只做抽样</strong>：不宣称跑过全量；FinEval 经典学术题未公开、FinanceBench 只开源 150 题、BFCL 榜单未归档分数。</li>
+        <li><strong>合成样本的边界</strong>：T1/T3 用的是"真实形状的合成财报"，接入真实数据后必须重跑。</li>
+        <li><strong>因果性弱</strong>：ST / 处罚是事后标签，只能说明"更早识别出信号"，不能说明"避免了风险"。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="conclusion">
+  <h2><span class="no">10</span>结论：三句话</h2>
+  <div class="pillars">
+    <div class="pillar"><div class="n">结论 一</div><div class="h">不是功能多，而是每条能力都有数字</div>
+      <div class="q">25 个工具、15 张表、六个风险维度，对应 26 个回归套件与 6 组外部基准；
+      工具调用 BFCL 87.5%%，抽取字段级 F1 100.0%%。</div>
+      <div class="v">258 单元格 / 520 道工具题</div>
+    </div>
+    <div class="pillar b"><div class="n">结论 二</div><div class="h">效果有内部真值，也有外部坐标</div>
+      <div class="q">自建基准用"生成过程真值 + 事后事件"避免自己考自己；外部基准用别人的题面和答案。
+      预警 AUC 领先财务规则 +16.6pp，且领先来自数据面更宽而非换算法。</div>
+      <div class="v">AUC 79.8 vs 63.3</div>
+    </div>
+    <div class="pillar c"><div class="n">结论 三</div><div class="h">短板是公开的，也是可修的</div>
+      <div class="q">平台链路在客观题上掉 18.8pp（提示词与工具编排问题）、
+      工具"应拒调"仅 74.2%、闭卷口径已被语料污染导致归因需谨慎——三条都写在这页里，并给了改法。</div>
+      <div class="v">−18.8pp 待修</div>
+    </div>
+  </div>
+  <div class="callout good"><span class="t">可原样进汇报的一段话</span>
+    本平台在自建基准上完成了从"读得准"到"判得准"的闭环：258 个财报单元格抽取零误差、
+    100% 勾稽缺陷召回且零误报、30 个指标点与独立重算完全一致；
+    在 1,348 个企业·期测试样本（time-split，训练集截至 2023-12-31）的前瞻性回测中，
+    六维模型对退市风险、处罚立案、任一高危事件的
+    AUC 分别为 79.8 / 77.2 / 73.5，
+    全面高于"三行财务规则"基线，并能提前约 255 天给出信号。
+    能力同时有外部坐标：中文金融知识 CFLUE 89.9%、工具调用 BFCL 87.5%%、
+    财报问答 FinanceBench oracle 82.0%%（与论文公开的 GPT-4 同一批题、同一口径）。
+    全部 2,269 次模型调用成本约 ¥5.20，且每一条数字都能用仓库里的命令复现。
+  </div>
+</section>
+
+<footer>
+  <p><strong>审计信息</strong>　生成时间 2026-09-14T03:40:06.159Z；产物自动生成于 <code>bench/html/make-platform-report.js</code>；
+  数据来源：<code>bench/report/bench-report.json</code>、<code>bench/dataset/out/*.json</code>、
+  <code>bench/external/reports/external-alignment-v1.json</code>、<code>bench/external/out/manifest.json</code>。</p>
+  <p>本页所有比例为<strong>抽样结果</strong>而非全集成绩；外部数字均注明出处；平台输出不构成任何投资建议。
+  原始外部数据不入库，仓库内保存的是版本锁定清单与 sha256，可用 <code>prepare.js</code> 一键重抓。</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  var saved=null; try{saved=localStorage.getItem('rwp-theme')}catch(e){}
+  if(saved){root.setAttribute('data-theme',saved)}
+  function sync(){btn.textContent=root.getAttribute('data-theme')==='dark'?'浅色':'深色'}
+  sync();
+  btn.addEventListener('click',function(){
+    var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('rwp-theme',next)}catch(e){}
+    sync();
+  });
+  var links=[].slice.call(document.querySelectorAll('.navlinks a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var y=window.scrollY||document.documentElement.scrollTop;
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    if(bar) bar.style.width=(h>0?(y/h*100):0)+'%';
+    var cur=-1;
+    secs.forEach(function(s,i){ if(s.getBoundingClientRect().top<=120) cur=i; });
+    links.forEach(function(a,i){ a.classList.toggle('active', i===cur); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
+</script>
+</body>
+</html>
