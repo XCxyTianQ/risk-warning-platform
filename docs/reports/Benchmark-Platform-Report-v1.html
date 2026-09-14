@@ -178,7 +178,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
   <strong>回归</strong>证明"没改坏"，<strong>工程</strong>证明"跑得动"，<strong>能力基准</strong>才回答"判得准不准"。</p>
   <div class="meta">
     <span class="chip">产品版本 v0.7.2</span>
-    <span class="chip">报告生成 2026-09-14 20:19</span>
+    <span class="chip">报告生成 2026-09-14 21:20</span>
     <span class="chip src">评测数据快照 b14a914</span>
     <span class="chip">模型 deepseek-flash</span>
     <span class="chip">外部基准 6 组</span>
@@ -221,7 +221,7 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
       <b>11.08 MB</b>，冷启动中位 <b>134 ms</b>；只读接口 p95 <b>≤ 2 ms</b>。</div></div>
     <div class="layer"><div class="lname">前端</div><div class="lbody"><b>Vue 3 + TypeScript 11,753 行</b>，构建产物 <b>1.42 MB</b>；
       Electron 37 打包为桌面应用（Windows / macOS）。</div></div>
-    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>14,988 行</b>评测代码：26 个回归套件、
+    <div class="layer"><div class="lname">评测</div><div class="lbody"><b>15,831 行</b>评测代码：26 个回归套件、
       自建基准 FinRisk-Bench、外部基准对齐 harness（含 6 个适配器与 9 份探测记录）。</div></div>
   </div>
 </section>
@@ -551,6 +551,53 @@ footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--c-line);color
     唯一例外是闭卷探针（51.3 vs 39.0）——那本就依赖记忆，波动大且不作为能力结论；
     <br>④ <strong>我们自己的裁判对自己更严</strong>：同一批答案，自判 88.67%，Sonnet 5 判 92.00%。
     前几节报告的分数因此偏保守——"保守"是好事，但必须知道偏在哪。</div>
+  
+  
+  <h3>5.10 超限挑战：对上当前最贵档的两个模型（2026-09-14）</h3>
+  <p>同代测试（5.9）的对手是 Luna / GLM-5.3-Flash 这一档。本节再往上打一档：
+  <strong>Claude Fable 5.1</strong> 与 <strong>GPT-6 Astra</strong>——两者价目完全相同
+  （输入 $10 / 缓存读 $0.25~1 / 输出 $50 每百万 token），是当前市场的价格顶部。
+  口径与 5.9 完全一致：FinanceBench 全量 150 题（oracle + 闭卷双口径）、BFCL v4 520 题、
+  A1 提示词、同一裁判 <strong>claude-sonnet-5</strong>（与被测各方均非同源）。</p>
+  <p style="font-size:13px">先做的能力自检（P0）：两家的文本、图像、工具三项全部通过。值得一提，
+  Fable 5.1 看那张中文版面图时给出了<strong>版面位置推理</strong>——"最上方没有标题，只有正文。
+  图中唯一的标题是右页中部的…"，而不是像其它模型那样直接吐出标题文字。</p>
+
+  <table>
+    <caption>表 12h　超限挑战结果（FinanceBench 全量 150 题 + BFCL 520 题，同一裁判）</caption>
+    <thead><tr><th>模型</th><th class="n">FinanceBench<br><span style="font-weight:400">oracle</span></th><th class="n">闭卷<br><span style="font-weight:400">不给文档</span></th><th class="n">文档增量</th><th class="n">BFCL v4<br><span style="font-weight:400">确定性判分</span></th><th class="n">两项成本</th><th class="n">相对我方</th></tr></thead>
+    <tbody>
+      <tr><td><b>Claude Fable 5.1</b><div class="chip warn" style="margin-top:4px">超限档</div></td><td class="n ">94.67%</td><td class="n">86.67%</td><td class="n"><b>+8pp</b></td><td class="n ">90.96%</td><td class="n">$13.78</td><td class="n">17.4×</td></tr><tr style="background:var(--c-good-soft)"><td><b>DeepSeek-V4.1-Flash</b><div class="chip good" style="margin-top:4px">本平台使用</div></td><td class="n best">92.00%</td><td class="n">51.33%</td><td class="n"><b>+40.67pp</b></td><td class="n best">89.04%</td><td class="n">$0.79</td><td class="n">1×</td></tr><tr><td><b>GPT-5.6 Luna</b></td><td class="n ">91.33%</td><td class="n">42.67%</td><td class="n"><b>+48.66pp</b></td><td class="n ">83.08%</td><td class="n">（未公布价目）</td><td class="n">—</td></tr><tr><td><b>GPT-6 Astra</b><div class="chip warn" style="margin-top:4px">超限档</div></td><td class="n ">90.67%</td><td class="n">50.67%</td><td class="n"><b>+40pp</b></td><td class="n ">83.27%</td><td class="n">$5.66</td><td class="n">7.2×</td></tr><tr><td><b>GLM-5.3-Flash</b></td><td class="n ">90.00%</td><td class="n">40.67%</td><td class="n"><b>+49.33pp</b></td><td class="n ">88.27%</td><td class="n">（未公布价目）</td><td class="n">—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout bad"><span class="t">最重要的发现：顶级模型的领先主要来自记忆，不是读文档</span>
+    只看 oracle，Fable 5.1（94.67%）领先我们（92.00%）2.67pp。
+    但把文档<strong>完全拿走</strong>（闭卷口径）之后，它仍然答对 86.67%——
+    <strong>文档只为它带来 8.0pp</strong>，而为我们带来 40.7pp（5.1 倍）。
+    它甚至在答案里自己写了 "Based on FY2022 figures <strong>from memory</strong>"，
+    并复现出只有读过原文才知道的数字（如某年营业利润率"下降 1.7 个百分点"）。
+    <br>更硬的一项证据：闭卷状态下，它与标准答案<strong>数值一致</strong>的题占 38.0%
+    （我方 20.7%）。
+    各家的"记忆底分"相差约 2 倍（40.7% ~ 86.7%），
+    因此<strong>oracle 分数不能直接读作"读财报能力"</strong>；按"文档真正带来多少"衡量，我们与 Astra 同级，且我们的底分说明我们没有靠背答案。</div>
+
+  <div class="callout warn"><span class="t">口径上不夸大也不回避（三条）</span>
+    ① 闭卷<strong>不等于</strong>纯记忆：部分题可凭通用金融常识推导，且我们的闭卷提示词本身鼓励"未陈述则推导"，
+    所以闭卷得分是污染的<strong>上界</strong>估计；
+    ② "闭卷下写出与标准答案一致的数值"是记忆的直接证据，这一项不依赖提示词风格；
+    ③ 这个发现<strong>不影响 BFCL 的结论</strong>（确定性判分，与记忆无关）。</div>
+
+  <div class="callout good"><span class="t">超限挑战的三条结论</span>
+    ① <strong>问答题上顶级模型只领先 2.67pp，且其中大部分是记忆红利</strong>：
+    Fable 5.1 94.67%、我们 92.00%、
+    Luna 91.33%、Astra 90.67%、
+    GLM 90.00%——五家挤在 90.0~94.7 的区间里；
+    <br>② <strong>工具调用上我们领先 Astra 5.8pp</strong>（89.04% 对 83.27%），
+    只落后 Fable 5.1 1.92pp——而这是确定性判分，没有裁判主观性；
+    <br>③ <strong>代价是 7~17 倍的钱</strong>：同样跑完这两项基准，Fable 5.1 花 $13.78、
+    Astra $5.66，我们 $0.79。
+    花十倍价钱买来的那两三个点，很大一部分是它背过这套题，而不是它更会读财报。</div>
   
   </section>
 

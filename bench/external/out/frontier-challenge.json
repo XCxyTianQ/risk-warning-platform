@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-09-14T13:18:59.271Z",
+  "title": "超限挑战（2026-09-14）：Claude Fable 5.1 与 GPT-6 Astra",
+  "setup": {
+    "bench": "FinanceBench 全量 150 题（oracle + closedBook 双口径）+ BFCL v4 520 题",
+    "judge": "claude-sonnet-5（Anthropic，与被测各方均非同源）",
+    "prompt": "A1（去保守化）",
+    "p0": "两家文本/图像/工具三项能力自检全部通过；Fable 5.1 的图像回答表现出版面位置推理"
+  },
+  "models": [
+    {
+      "id": "claude-fable-5-1",
+      "label": "Claude Fable 5.1",
+      "tier": "frontier",
+      "route": "聚合网关",
+      "n": 150,
+      "oraclePct": 94.67,
+      "closedBookPct": 86.67,
+      "documentIncrementPp": 8,
+      "byType": {
+        "metrics-generated": 98,
+        "domain-relevant": 92,
+        "novel-generated": 94
+      },
+      "bfcl": {
+        "overallPct": 90.96,
+        "simplePct": 95.5,
+        "multiplePct": 92,
+        "irrelevancePct": 81.67
+      },
+      "costUSD": {
+        "financebench150": 6.26,
+        "bfcl520": 7.52,
+        "both": 13.78
+      },
+      "recalledCount": 57,
+      "recalledExactNumbersPct": 38,
+      "costRatioVsOurs": 17.4
+    },
+    {
+      "id": "deepseek-flash",
+      "label": "DeepSeek-V4.1-Flash",
+      "tier": "ours",
+      "route": "官方直连",
+      "n": 150,
+      "oraclePct": 92,
+      "closedBookPct": 51.33,
+      "documentIncrementPp": 40.67,
+      "byType": {
+        "metrics-generated": 96,
+        "domain-relevant": 88,
+        "novel-generated": 92
+      },
+      "bfcl": {
+        "overallPct": 89.04,
+        "simplePct": 94.5,
+        "multiplePct": 91,
+        "irrelevancePct": 76.67
+      },
+      "costUSD": {
+        "financebench150": 0.345,
+        "bfcl520": 0.445,
+        "both": 0.79
+      },
+      "recalledCount": 31,
+      "recalledExactNumbersPct": 20.67,
+      "costRatioVsOurs": 1
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "label": "GPT-5.6 Luna",
+      "tier": "samegen",
+      "route": "聚合网关",
+      "n": 150,
+      "oraclePct": 91.33,
+      "closedBookPct": 42.67,
+      "documentIncrementPp": 48.66,
+      "byType": {
+        "metrics-generated": 92,
+        "domain-relevant": 88,
+        "novel-generated": 94
+      },
+      "bfcl": {
+        "overallPct": 83.08,
+        "simplePct": 84,
+        "multiplePct": 83.5,
+        "irrelevancePct": 80.83
+      },
+      "costUSD": {
+        "financebench150": null,
+        "bfcl520": null,
+        "both": null
+      },
+      "recalledCount": 17,
+      "recalledExactNumbersPct": 11.33,
+      "costRatioVsOurs": null
+    },
+    {
+      "id": "gpt-6-astra",
+      "label": "GPT-6 Astra",
+      "tier": "frontier",
+      "route": "聚合网关",
+      "n": 150,
+      "oraclePct": 90.67,
+      "closedBookPct": 50.67,
+      "documentIncrementPp": 40,
+      "byType": {
+        "metrics-generated": 96,
+        "domain-relevant": 84,
+        "novel-generated": 92
+      },
+      "bfcl": {
+        "overallPct": 83.27,
+        "simplePct": 83,
+        "multiplePct": 83,
+        "irrelevancePct": 84.17
+      },
+      "costUSD": {
+        "financebench150": 3.22,
+        "bfcl520": 2.44,
+        "both": 5.66
+      },
+      "recalledCount": 30,
+      "recalledExactNumbersPct": 20,
+      "costRatioVsOurs": 7.2
+    },
+    {
+      "id": "glm-5.3-flash",
+      "label": "GLM-5.3-Flash",
+      "tier": "samegen",
+      "route": "聚合网关",
+      "n": 150,
+      "oraclePct": 90,
+      "closedBookPct": 40.67,
+      "documentIncrementPp": 49.33,
+      "byType": {
+        "metrics-generated": 92,
+        "domain-relevant": 84,
+        "novel-generated": 94
+      },
+      "bfcl": {
+        "overallPct": 88.27,
+        "simplePct": 92.5,
+        "multiplePct": 91.5,
+        "irrelevancePct": 75.83
+      },
+      "costUSD": {
+        "financebench150": null,
+        "bfcl520": null,
+        "both": null
+      },
+      "recalledCount": 19,
+      "recalledExactNumbersPct": 12.67,
+      "costRatioVsOurs": null
+    }
+  ],
+  "headline": {
+    "finding": "顶级模型的领先主要来自记忆而非读文档：Fable 5.1 在**不给任何文档**的情况下仍答对 86.67%，其文档增量仅 +8.0pp；我方为 +40.67pp。",
+    "costNote": "Fable 5.1 的同等两项基准成本约为我方的 13 倍，Astra 约 6 倍。"
+  },
+  "caveat": [
+    "闭卷不等于纯记忆：部分题可凭通用金融常识推导，且闭卷提示词鼓励\"未陈述则推导\"，因此闭卷得分是污染的**上界**估计。",
+    "\"闭卷下写出与标准答案一致的数值\"是记忆的直接证据（抽查可见模型自述 \"from memory\" 并复现只有读过原文才知道的数字）。",
+    "闭卷分差不影响确定性判分（BFCL）的对比结论。"
+  ]
+}

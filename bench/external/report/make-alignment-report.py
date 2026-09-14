@@ -889,6 +889,57 @@ def build(align, manifest, refs, platform_chain=None, sensitivity=None, platform
                    "④ **D1 不是产品链路**：平台后端附件只接受图片，不支持 PDF，抽取与检索都在评测侧完成。",
               widths=[5.6, 2.0, 2.0, 3.0])
 
+    # 4.8 超限挑战：Fable 5.1 / GPT-6 Astra
+    fc = load(EXT / "out" / "frontier-challenge.json")
+    if fc:
+        H("4.8 超限挑战：对上当前最贵档的两个模型", 2)
+        P("同代测试的对手是 Luna / GLM-5.3-Flash 一档；本节再往上打一档——**Claude Fable 5.1** 与 **GPT-6 Astra**，"
+          "两者价目相同（输入 $10 / 缓存读 $0.25~1 / 输出 $50 每百万 token），是当前市场的价格顶部。"
+          "口径与 4.4 节完全一致：FinanceBench 全量 150 题（oracle + 闭卷双口径）、BFCL v4 520 题、A1 提示词、"
+          "同一裁判 claude-sonnet-5（与被测各方均非同源）。")
+        P("**先做的能力自检**：两家的文本、图像、工具三项全部通过。值得一提，Fable 5.1 看那张中文版面图时给出的是"
+          "**版面位置推理**——「最上方没有标题，只有正文。图中唯一的标题是右页中部的…」，而不是像其它模型那样直接吐出标题文字。")
+        rows = []
+        for m in fc.get("models", []):
+            cost = m.get("costUSD", {}).get("both")
+            rows.append([
+                m.get("label"), pct(m.get("oraclePct")), pct(m.get("closedBookPct")),
+                ("+" + str(m.get("documentIncrementPp")) + "pp") if m.get("documentIncrementPp") is not None else "—",
+                pct(dig(m, "bfcl.overallPct")),
+                ("$" + str(cost)) if cost is not None else "（未公布价目）",
+                (str(m.get("costRatioVsOurs")) + "×") if m.get("costRatioVsOurs") else "—",
+            ])
+        T(["模型", "FinanceBench oracle", "闭卷（不给文档）", "文档增量", "BFCL v4（确定性）", "两项成本", "相对我方"],
+          rows,
+          caption="表 12h　超限挑战结果（FinanceBench 全量 150 题 + BFCL 520 题，同一裁判）",
+          note="文档增量 = oracle − 闭卷。增量越低，说明分数越依赖记忆而不是阅读文档。",
+          widths=[3.4, 2.2, 2.2, 1.8, 2.2, 2.0, 1.6])
+        P("**最重要的发现：顶级模型的领先主要来自记忆，不是读文档。** 只看 oracle，Fable 5.1 领先我们 2.67pp；"
+          "但把文档**完全拿走**之后它仍然答对 " + pct(dig(fc, "models.0.closedBookPct")) + "——"
+          "文档只为它带来 " + str(dig(fc, "models.0.documentIncrementPp")) + "pp，而为我们带来 "
+          + str(dig(fc, "models.1.documentIncrementPp")) + "pp。它甚至在答案里自己写了 "
+          "\"Based on FY2022 figures **from memory**\"，并复现出只有读过原文才知道的数字"
+          "（如某年营业利润率「下降 1.7 个百分点」）。")
+        P("更硬的一项证据：闭卷状态下，它与标准答案**数值一致**的题占 "
+          + pct(dig(fc, "models.0.recalledExactNumbersPct")) + "（我方 "
+          + pct(dig(fc, "models.1.recalledExactNumbersPct")) + "）。各家的「记忆底分」相差约 2 倍"
+          "（" + pct(dig(fc, "models.4.closedBookPct")) + " ~ " + pct(dig(fc, "models.0.closedBookPct")) + "），"
+          "因此 **oracle 分数不能直接读作「读财报能力」**；按「文档真正带来多少」衡量，我们与 Astra 同级，"
+          "且我们的底分说明我们没有靠背答案。")
+        B("闭卷**不等于**纯记忆：部分题可凭通用金融常识推导，且我们的闭卷提示词鼓励「未陈述则推导」，"
+          "所以闭卷得分是污染的**上界**估计；")
+        B("「闭卷下写出与标准答案一致的数值」是记忆的直接证据，这一项不依赖提示词风格；")
+        B("这个发现**不影响 BFCL 的结论**（确定性判分，与记忆无关）。")
+        P("**三条结论**：① 问答题上顶级模型只领先 2.67pp，且其中大部分是记忆红利，五家挤在 "
+          + str(dig(fc, "models.4.oraclePct")) + "~" + str(dig(fc, "models.0.oraclePct")) + " 的区间里；"
+          "② **工具调用上我们领先 Astra 5.8pp**（" + pct(dig(fc, "models.1.bfcl.overallPct")) + " 对 "
+          + pct(dig(fc, "models.3.bfcl.overallPct")) + "），只落后 Fable 5.1 "
+          + str(round((dig(fc, "models.0.bfcl.overallPct") or 0) - (dig(fc, "models.1.bfcl.overallPct") or 0), 2)) + "pp"
+          "——这是确定性判分，没有裁判主观性；③ **代价是 7~17 倍的钱**：同样跑完这两项基准，Fable 5.1 花 $"
+          + str(dig(fc, "models.0.costUSD.both")) + "、Astra $" + str(dig(fc, "models.3.costUSD.both"))
+          + "，我们 $" + str(dig(fc, "models.1.costUSD.both")) + "。花十倍价钱买来的那两三个点，"
+          "很大一部分是它背过这套题，而不是它更会读财报。")
+
     # 4.6 OmniDocBench
     if "omnidocbench" in benches:
         b = benches["omnidocbench"]

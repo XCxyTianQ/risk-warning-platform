@@ -24,6 +24,7 @@ const VIEWPORTS = [
   { name: '04c-b1', sel: '#external .callout.bad', theme: 'light' },
   { name: '04d-d1', sel: '#external', text: '端到端文档问答（D1）', theme: 'light' },
   { name: '04e-samegen', sel: '#external', text: '同代模型对比', theme: 'light' },
+  { name: '04f-frontier', sel: '#external', text: '超限挑战', theme: 'light' },
   { name: '05-honest', sel: '#honest', theme: 'light' },
   { name: '06-data', sel: '#data', theme: 'light' },
   { name: '07-cost', sel: '#cost', theme: 'light' },
