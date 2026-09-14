@@ -1,6 +1,6 @@
 {
-  "at": "2026-09-14T01:51:21.917Z",
-  "git": "0268925",
+  "at": "2026-09-14T02:04:44.084Z",
+  "git": "7717348",
   "appVersion": "0.7.2",
   "checksPassed": 216,
   "checksFailed": 0,
@@ -132,10 +132,10 @@
     }
   },
   "metrics": {
-    "coldStartMedianMs": 133,
-    "apiP95Max": 2,
+    "coldStartMedianMs": 137,
+    "apiP95Max": 1,
     "jsRawBytes": 1401108,
     "jsFiles": 1,
-    "durationMs": 361934
+    "durationMs": 338851
   }
 }

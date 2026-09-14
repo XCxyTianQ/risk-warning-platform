@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T01:45:12.774Z",
+  "generatedAt": "2026-09-14T01:58:59.001Z",
   "target": "penalty_next_year",
   "targetLabel": "未来 12 个月受到行政处罚或立案调查",
   "data": {
@@ -34,19 +34,19 @@
     "randomBaselinePrAuc": 0.031899109792284865,
     "strata": {
       "with_nonfinancial": {
-        "n": 1017,
+        "n": 1325,
         "positives": 43,
         "baseline_rule": {
-          "rocAuc": 0.5851559142352323,
-          "prAuc": 0.08955916818106761
+          "rocAuc": 0.5951003156405326,
+          "prAuc": 0.08410866927213544
         },
         "platform_composite": {
-          "rocAuc": 0.7535456759467074,
-          "prAuc": 0.09837917143265028
+          "rocAuc": 0.7716776112904982,
+          "prAuc": 0.08991757681915383
         }
       },
       "finance_only": {
-        "n": 331,
+        "n": 23,
         "positives": 0,
         "baseline_rule": {
           "rocAuc": null,
@@ -78,8 +78,8 @@
         "label": "平台六维综合风险信号（100-综合分）",
         "n": 1348,
         "positives": 43,
-        "rocAuc": 0.7991980753809141,
-        "prAuc": 0.09214807275906342,
+        "rocAuc": 0.7723692417357213,
+        "prAuc": 0.0888512537943405,
         "topK": {
           "k": 135,
           "precision": 0.1111111111111111,
@@ -123,8 +123,8 @@
     "bestByAuc": "platform_composite",
     "baselineRocAuc": 0.5958656330749355,
     "baselinePrAuc": 0.08373645273849228,
-    "platformCompositeRocAuc": 0.7991980753809141,
-    "platformCompositePrAuc": 0.09214807275906342
+    "platformCompositeRocAuc": 0.7723692417357213,
+    "platformCompositePrAuc": 0.0888512537943405
   },
   "replay": {
     "rows": 11224,

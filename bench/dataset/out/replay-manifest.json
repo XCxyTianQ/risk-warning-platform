@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T01:45:05.232Z",
+  "generatedAt": "2026-09-14T01:58:57.259Z",
   "cutoffs": [
     "2016-04-30",
     "2017-04-30",
@@ -16,8 +16,8 @@
       "cutoff": "2016-04-30",
       "enterprises": 996,
       "financeRows": 31102,
-      "newsRows": 58303,
-      "legalRows": 351,
+      "newsRows": 61254,
+      "legalRows": 362,
       "scored": 1001,
       "withScore": 1001
     },
@@ -25,8 +25,8 @@
       "cutoff": "2017-04-30",
       "enterprises": 1082,
       "financeRows": 34408,
-      "newsRows": 111712,
-      "legalRows": 738,
+      "newsRows": 119251,
+      "legalRows": 759,
       "scored": 1087,
       "withScore": 1087
     },
@@ -34,8 +34,8 @@
       "cutoff": "2018-04-30",
       "enterprises": 1178,
       "financeRows": 38076,
-      "newsRows": 181227,
-      "legalRows": 1339,
+      "newsRows": 198637,
+      "legalRows": 1370,
       "scored": 1183,
       "withScore": 1183
     },
@@ -43,8 +43,8 @@
       "cutoff": "2019-04-30",
       "enterprises": 1260,
       "financeRows": 41874,
-      "newsRows": 261147,
-      "legalRows": 2303,
+      "newsRows": 290678,
+      "legalRows": 2379,
       "scored": 1265,
       "withScore": 1265
     },
@@ -52,8 +52,8 @@
       "cutoff": "2020-04-30",
       "enterprises": 1311,
       "financeRows": 46005,
-      "newsRows": 349167,
-      "legalRows": 3497,
+      "newsRows": 394801,
+      "legalRows": 3647,
       "scored": 1316,
       "withScore": 1316
     },
@@ -61,8 +61,8 @@
       "cutoff": "2021-04-30",
       "enterprises": 1327,
       "financeRows": 50626,
-      "newsRows": 460655,
-      "legalRows": 4925,
+      "newsRows": 530282,
+      "legalRows": 5136,
       "scored": 1332,
       "withScore": 1332
     },
@@ -70,8 +70,8 @@
       "cutoff": "2022-04-30",
       "enterprises": 1329,
       "financeRows": 55540,
-      "newsRows": 576843,
-      "legalRows": 6057,
+      "newsRows": 677996,
+      "legalRows": 6342,
       "scored": 1334,
       "withScore": 1334
     },
@@ -79,8 +79,8 @@
       "cutoff": "2023-04-30",
       "enterprises": 1348,
       "financeRows": 60698,
-      "newsRows": 700349,
-      "legalRows": 7103,
+      "newsRows": 837886,
+      "legalRows": 7454,
       "scored": 1353,
       "withScore": 1353
     },
@@ -88,8 +88,8 @@
       "cutoff": "2024-04-30",
       "enterprises": 1348,
       "financeRows": 65914,
-      "newsRows": 828214,
-      "legalRows": 8094,
+      "newsRows": 1005713,
+      "legalRows": 8540,
       "scored": 1353,
       "withScore": 1353
     }

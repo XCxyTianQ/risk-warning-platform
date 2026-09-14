@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T01:45:29.722Z",
+  "generatedAt": "2026-09-14T01:59:13.073Z",
   "target": "risk_warning_next_year",
   "targetLabel": "未来 12 个月被实施退市风险警示/终止上市",
   "data": {
@@ -34,27 +34,27 @@
     "randomBaselinePrAuc": 0.025222551928783383,
     "strata": {
       "with_nonfinancial": {
-        "n": 1017,
-        "positives": 33,
+        "n": 1325,
+        "positives": 34,
         "baseline_rule": {
-          "rocAuc": 0.6295423749692043,
-          "prAuc": 0.20427763544867622
+          "rocAuc": 0.6319884266642366,
+          "prAuc": 0.19555375806042438
         },
         "platform_composite": {
-          "rocAuc": 0.7929446908105444,
-          "prAuc": 0.19112825260195151
+          "rocAuc": 0.7980020048298173,
+          "prAuc": 0.18107516057258735
         }
       },
       "finance_only": {
-        "n": 331,
-        "positives": 1,
+        "n": 23,
+        "positives": 0,
         "baseline_rule": {
-          "rocAuc": 0.44393939393939397,
-          "prAuc": 0.008403361344537815
+          "rocAuc": null,
+          "prAuc": null
         },
         "platform_composite": {
-          "rocAuc": 0.3484848484848485,
-          "prAuc": 0.006134969325153374
+          "rocAuc": null,
+          "prAuc": null
         }
       }
     },
@@ -78,8 +78,8 @@
         "label": "平台六维综合风险信号（100-综合分）",
         "n": 1348,
         "positives": 34,
-        "rocAuc": 0.8071112006446414,
-        "prAuc": 0.18102606395233492,
+        "rocAuc": 0.7982921479093921,
+        "prAuc": 0.1799865209407867,
         "topK": {
           "k": 135,
           "precision": 0.1111111111111111,
@@ -123,8 +123,8 @@
     "bestByAuc": "platform_composite",
     "baselineRocAuc": 0.6326886919151222,
     "baselinePrAuc": 0.19522069259453192,
-    "platformCompositeRocAuc": 0.8071112006446414,
-    "platformCompositePrAuc": 0.18102606395233492
+    "platformCompositeRocAuc": 0.7982921479093921,
+    "platformCompositePrAuc": 0.1799865209407867
   },
   "replay": {
     "rows": 11224,

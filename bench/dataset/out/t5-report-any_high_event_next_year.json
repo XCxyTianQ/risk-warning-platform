@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T01:45:13.742Z",
+  "generatedAt": "2026-09-14T01:58:59.822Z",
   "target": "any_high_event_next_year",
   "targetLabel": "未来 12 个月出现任一高危事件",
   "data": {
@@ -34,27 +34,27 @@
     "randomBaselinePrAuc": 0.07418397626112759,
     "strata": {
       "with_nonfinancial": {
-        "n": 1017,
-        "positives": 98,
+        "n": 1325,
+        "positives": 100,
         "baseline_rule": {
-          "rocAuc": 0.5738213675023872,
-          "prAuc": 0.21052101438891668
+          "rocAuc": 0.5795142857142858,
+          "prAuc": 0.19806390375886473
         },
         "platform_composite": {
-          "rocAuc": 0.7296695609691102,
-          "prAuc": 0.30917375767330035
+          "rocAuc": 0.7344612244897959,
+          "prAuc": 0.28804945247995295
         }
       },
       "finance_only": {
-        "n": 331,
-        "positives": 2,
+        "n": 23,
+        "positives": 0,
         "baseline_rule": {
-          "rocAuc": 0.44376899696048633,
-          "prAuc": 0.011777438248026482
+          "rocAuc": null,
+          "prAuc": null
         },
         "platform_composite": {
-          "rocAuc": 0.19832826747720364,
-          "prAuc": 0.006212138750627002
+          "rocAuc": null,
+          "prAuc": null
         }
       }
     },
@@ -78,8 +78,8 @@
         "label": "平台六维综合风险信号（100-综合分）",
         "n": 1348,
         "positives": 100,
-        "rocAuc": 0.7597516025641026,
-        "prAuc": 0.2920371098058831,
+        "rocAuc": 0.7349399038461538,
+        "prAuc": 0.28590851381781357,
         "topK": {
           "k": 135,
           "precision": 0.2814814814814815,
@@ -123,8 +123,8 @@
     "bestByAuc": "platform_composite",
     "baselineRocAuc": 0.5802363782051282,
     "baselinePrAuc": 0.19718838683391277,
-    "platformCompositeRocAuc": 0.7597516025641026,
-    "platformCompositePrAuc": 0.2920371098058831
+    "platformCompositeRocAuc": 0.7349399038461538,
+    "platformCompositePrAuc": 0.28590851381781357
   },
   "replay": {
     "rows": 11224,
