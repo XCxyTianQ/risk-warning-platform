@@ -94,17 +94,37 @@ async function chatStream(port, body, { timeoutMs = 180000 } = {}) {
   }
 }
 
-async function uploadImage(port, file, filename) {
-  const b64 = fs.readFileSync(file).toString('base64')
-  const res = await fetch(`http://127.0.0.1:${port}/api/attachments`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename, data_base64: b64, mime: 'image/jpeg' }),
-  })
-  const j = await res.json()
-  const id = j.id || (j.attachment && j.attachment.id)
-  if (!id) throw new Error(`附件上传失败：${JSON.stringify(j).slice(0, 200)}`)
-  return id
+/**
+ * 上传图片给平台解析。
+ *
+ * **必须有超时**：这里原先没有超时，一次不返回的请求会让整个评测永久挂起——
+ * 实测踩过：后端进程跑 45 分钟、累计 CPU 仅 27.8 秒（说明在等待而非计算），
+ * 任务既不失败也不结束。fetch 的超时靠 AbortController，且 signal 同时覆盖
+ * 响应体读取（res.json()），否则 body 流卡住仍会挂。
+ */
+async function uploadImage(port, file, filename, { timeoutMs = 120000 } = {}) {
+  const ac = new AbortController()
+  const timer = setTimeout(() => ac.abort(), timeoutMs)
+  try {
+    const b64 = fs.readFileSync(file).toString('base64')
+    const res = await fetch(`http://127.0.0.1:${port}/api/attachments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, data_base64: b64, mime: 'image/jpeg' }),
+      signal: ac.signal,
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`)
+    const j = await res.json()
+    const id = j.id || (j.attachment && j.attachment.id)
+    if (!id) throw new Error(`附件上传失败：${JSON.stringify(j).slice(0, 200)}`)
+    return id
+  } catch (e) {
+    // 超时要显式区分出来，否则会被当成"附件内容有问题"而误诊
+    if (e.name === 'AbortError') throw new Error(`附件上传超时（${timeoutMs}ms）：${filename}`)
+    throw e
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 ;(async () => {

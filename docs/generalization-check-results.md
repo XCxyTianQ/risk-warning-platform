@@ -6,14 +6,23 @@
 > 复现：`node bench/external/platform-chain.js --cflue 150 --mm 0 --preset-arm B4`
 > 产物：`out/platform-chain-2026-09-15T02-00-59.json`（B4 组）、`out/platform-chain-*`（默认组）
 
-## 一、执行情况：一次挂死 + 绕过
+## 一、执行情况：一次超长运行被我误判为挂死（更正）
 
-第一次运行（CFLUE 150 + FinEval-MM 150，无预设）在 **FinEval-MM 阶段挂死**：
-后端进程运行 45 分钟、**累计 CPU 仅 27.8 秒** → 99% 时间在等待，不是计算。
-根因：`platform-chain.js` 的 `uploadImage()` 里 `fetch` **未设超时**，图片上传一旦不返回就会永久阻塞
-（`chatStream` 有超时，上传没有）。已终止该任务并清理遗留后端进程。
+第一次运行（CFLUE 150 + FinEval-MM 150，无预设）在 FinEval-MM 阶段被我终止。当时的判据是
+"后端进程运行 45 分钟、累计 CPU 仅 27.8 秒 → 99% 在等待，判定为挂死"。
 
-**这是一个需要修的实测缺陷**（建议给 `uploadImage` 加 `AbortController` 超时 + 每阶段看门狗）。
+**该判据是错的，现予更正**：修复后冒烟实测 FinEval-MM **约 15.9 秒/题**（150 题需 ~40 分钟），
+其中绝大部分时间在等 LLM 返回——**等待网络时 CPU 本来就极低**，因此"低 CPU"同样符合"正在正常工作"。
+按此推算，那次运行应在 ~45–50 分钟完成，**我是提前几分钟把它杀掉的**。
+
+仍然保留的结论：
+- `uploadImage()` **确实缺超时**（`chatStream` 有、上传没有），这是真实的健壮性缺陷，已修复；
+- 但"挂死"的定性不成立；真正的问题是 **FinEval-MM 单题耗时 ~16 s，150 题属于 40 分钟级的长任务**，
+  等待窗口必须按此设置。
+
+**修复内容**（`bench/external/platform-chain.js`）：给 `uploadImage` 加 `AbortController` 超时（默认 120 s），
+signal 同时覆盖响应体读取；超时错误单独标识为"附件上传超时"，避免与"附件内容有问题"混淆。
+冒烟验证：`--cflue 0 --mm 2` 走通上传+解析路径（100%，15.9 s/题）。
 
 ## 二、CFLUE 150 结果（已完成，可用）
 
