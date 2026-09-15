@@ -20,7 +20,14 @@ use crate::agent::tools::{build_registry_for, call_tool};
 use crate::llm::{LlmClient, LlmConfig, StreamEvent};
 use crate::state::AppState;
 
-pub const MAX_STEPS: usize = 5;
+/// 单轮对话内允许的最大工具调用轮次。
+///
+/// 原先为 5 —— 任务级测评第 1 题（"调研贵金属板块前十并逐家评估"）直接撞上这个上限：
+/// 真实的多步任务需要「确认板块 → 取成分股 → 逐一建档 → 取财务 → 出评估」，
+/// 5 轮连建档都不够，平台只能回一句"请换一种问法"。
+/// 提到 24：足够完成"取名单 + 建档若干 + 取数 + 总结"，同时仍能防止死循环。
+/// 注：轮次上限不是唯一约束，单轮输出与工具结果长度另有上限（见 MAX_TOOL_RESULT_CHARS）。
+pub const MAX_STEPS: usize = 24;
 pub const MAX_TOOL_RESULT_CHARS: usize = 6000;
 
 fn client_for(state: &AppState, preset_model: Option<&str>, max_tokens: Option<i64>) -> LlmClient {

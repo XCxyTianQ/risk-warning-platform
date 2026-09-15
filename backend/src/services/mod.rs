@@ -1,5 +1,6 @@
 //! 领域服务：规则评分、预警、企业档案、金融分析、表格对象、技能/预设/插件、MCP、设置、研判。
 
+pub mod market;
 pub mod alerts;
 pub mod attachments;
 pub mod enterprise;

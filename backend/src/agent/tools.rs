@@ -615,6 +615,44 @@ pub fn build_registry() -> ToolRegistry {
     );
 
     reg.register(
+        "list_industry_boards",
+        "列出 A 股行业板块（东方财富行业分类，含板块代码、涨跌幅、涨跌家数），用于确定“某个行业”对应哪个板块。关键词可选（如“贵金属”）。注意：行业板块与概念板块成分股不同。",
+        json!({
+            "type": "object",
+            "properties": { "keyword": { "type": "string", "description": "板块名称关键词，如 贵金属、半导体；留空返回全部行业板块" } },
+            "required": []
+        }),
+        true,
+    );
+
+    reg.register(
+        "get_board_constituents",
+        "取某行业板块的成分股，**按总市值降序**返回（含市值/PE/PB/涨跌幅）。用于回答“某行业市值前十/龙头是谁”这类“先找标”的问题；拿到名单后再用 add_enterprise + 财务/风险工具做逐一评估。",
+        json!({
+            "type": "object",
+            "properties": {
+                "board": { "type": "string", "description": "板块代码（如 BK0732）或板块名称（如 贵金属）" },
+                "limit": { "type": "integer", "description": "返回条数，默认 10，最大 100" }
+            },
+            "required": ["board"]
+        }),
+        true,
+    );
+
+    reg.register(
+        "get_stock_snapshot",
+        "取若干只股票的最新行情与估值快照（价格、涨跌幅、市盈率、市净率、总市值/流通市值）。用于交叉核对市值与估值，不返回财务与风险数据。",
+        json!({
+            "type": "object",
+            "properties": {
+                "codes": { "type": "array", "items": { "type": "string" }, "description": "6 位股票代码列表，如 [\"600547\",\"600489\"]" }
+            },
+            "required": ["codes"]
+        }),
+        true,
+    );
+
+    reg.register(
         "resolve_stock_code",
         "按企业名称或股票代码查询 A 股标的（用于添加企业前确认）：输入名称返回代码，输入代码返回证券简称。",
         json!({
@@ -1283,6 +1321,11 @@ pub fn is_async_tool(name: &str) -> bool {
             | "handle_alert"
             | "run_risk_analysis"
             | "read_attachment"
+            // 板块与行情工具要访问外部接口，必须走异步分发；
+            // 漏登记会让它们落到同步分发器并回 "unknown tool"（评测时踩过）
+            | "list_industry_boards"
+            | "get_board_constituents"
+            | "get_stock_snapshot"
     ) || name.starts_with("custom_")
         || name.starts_with("mcp_")
 }
@@ -1347,6 +1390,23 @@ pub async fn call_tool_async(state: &crate::state::AppState, name: &str, args: &
                 }
                 Err(err) => json!({ "error": format!("研判失败: {err}") }),
             }
+        }
+        "list_industry_boards" => crate::services::market::industry_boards(&arg_str(args, "keyword")).await,
+        "get_board_constituents" => {
+            let board = arg_str(args, "board");
+            let limit = {
+                let l = arg_i64(args, "limit", 10);
+                if l <= 0 { 10 } else { l.min(100) as usize }
+            };
+            crate::services::market::board_constituents(&board, limit).await
+        }
+        "get_stock_snapshot" => {
+            let codes: Vec<String> = args
+                .get("codes")
+                .and_then(|v| v.as_array())
+                .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
+                .unwrap_or_default();
+            crate::services::market::stock_snapshot(&codes).await
         }
         "resolve_stock_code" => {
             let query = arg_str(args, "name");
