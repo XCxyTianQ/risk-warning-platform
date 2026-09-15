@@ -1,0 +1,1711 @@
+{
+  "generatedAt": "2026-09-14T23:43:46.464Z",
+  "mode": "chain-financebench",
+  "model": "deepseek-flash",
+  "limit": 150,
+  "judgeVotes": 1,
+  "arms": [
+    {
+      "id": "B1",
+      "label": "仅去工具",
+      "presetId": 5,
+      "n": 150,
+      "correct": 130,
+      "accuracyPct": 86.67,
+      "refusalPct": 3.33,
+      "meanMs": 5393,
+      "rows": [
+        {
+          "id": "financebench_id_03029",
+          "type": "metrics-generated",
+          "question": "What is the FY2018 capital expenditure amount (in USD millions) for 3M? Give a response to the question by relying on the details shown in the cash flow statement.",
+          "gold": "$1577.00",
+          "prediction": "**FY2018 资本支出（CapEx）：1,577 百万美元（约 15.77 亿美元）**\n\n依据（合并现金流量表，2018 年度，\"Cash Flows from Investing Activities\" 项下）：\n- Purchases of property, plant and equipment (PP&E)：**$(1,577)** 百万 → 资本支出取该行绝对值 **1,577 百万美元**\n- 对比参考：2017 年 $(1,373) 百万、2016 年 $(1,420) 百万，2018 年同比增加约 204 百万美元（+14.9%）\n\n口径说明：\n- 表中该行以括号表示现金流出，故资本支出金额为 **1,577 百万美元**；\n- 同表另有 \"Proceeds from sale of PP&E and other assets\" 262 百万美元，若按**净额**口径则 2018 年净资本支出为 1,577 − 262 = **1,315 百万美元**。通常所述\"资本支出\"即购置 PP&E 的 1,577 百万美元。\n- 单位：百万美元（表头标注 \"(Millions)\"），期间：2018 年 1 月 1 日至 12 月 31 日。\n\n数据来自公司披露的合并现金流量表，非投资建议。",
+          "ms": 1957,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04672",
+          "type": "metrics-generated",
+          "question": "Assume that you are a public equities analyst. Answer the following question by primarily using information that is shown in the balance sheet: what is the year end FY2018 net PPNE for 3M? Answer in USD billions.",
+          "gold": "$8.70",
+          "prediction": "## 结论\n\n**3M 公司 FY2018 年末净不动产、厂房及设备（Net PP&E）≈ USD 8.74 billion（8,738 百万美元）。**\n\n## 计算依据\n\n采用资产负债表中的相关行项目：\n\n| 行项目（Dollars in millions） | 2018-12-31 | 2017-12-31 |\n|---|---|---|\n| Property, plant and equipment（原值） | 24,873 | 24,914 |\n| Less: Accumulated depreciation（累计折旧） | (16,135) | (16,048) |\n| **Property, plant and equipment net（净额）** | **8,738** | **8,866** |\n\n换算口径：\n- 8,738 百万美元 ÷ 1,000 = **8.738 billion**，即约 **$8.74 billion**。\n- 表内\"Property, plant and equipment net\"一行即为答案，无需再自行扣减（累计折旧 16,135 已在上一行扣除：24,873 − 16,135 = 8,738，验证一致）。\n\n## 补充说明\n\n- 同比看，净 PP&E 由 2017 年末的 8,866 百万美元降至 2018 年末的 8,738 百万美元，减少约 128 百万美元（-1.4%），主要因折旧计提略高于当年资本开支。\n- 数据来源：3M Company and Subsidiaries 合并资产负债表（2018 与 2017 年 12 月 31 日），单位百万美元；数据来自公开披露，非投资建议。",
+          "ms": 2243,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00499",
+          "type": "domain-relevant",
+          "question": "Is 3M a capital-intensive business based on FY2022 data?",
+          "gold": "No, the company is managing its CAPEX and Fixed Assets pretty efficiently, which is evident from below key metrics:\nCAPEX/Revenue Ratio: 5.1%\nFixed assets/Total Assets: 20%\nReturn on Assets= 12.4%",
+          "prediction": "## 结论：3M 属于**中等、偏轻的资本密集型**企业，按 FY2022 数据算不上典型的重资产公司\n\n### 关键依据（均据材料 2022 年数据推导，单位：百万美元）\n\n| 指标 | 计算 | 结果 |\n|---|---|---|\n| PP&E 净额 / 总资产 | 9,178 ÷ 46,455 | **19.8%** |\n| PP&E 原值 / 总资产 | 25,998 ÷ 46,455 | 56.0% |\n| 资本开支 / 净销售额 | 1,749 ÷ 34,229 | **5.1%** |\n| 资本开支 / 经营性现金流 | 1,749 ÷ 5,591 | 31.3% |\n| 资本开支 / 折旧摊销 | 1,749 ÷ 1,831 | **0.96×** |\n| 商誉+无形资产 / 总资产 | (12,790+4,699) ÷ 46,455 | 37.6% |\n\n用到的行项目与期间：合并资产负债表（2022/12/31，PP&E、总资产、商誉、无形资产）、合并利润表（2022 年净销售额）、合并现金流量表（2022 年\"Purchases of PP&E\"、\"Depreciation and amortization\"、\"Net cash provided by operating activities\"）。\n\n### 解读\n\n1. **投入强度**：资本开支仅占销售额 5.1%，约为折旧摊销的 0.96 倍（略低于重置水平），说明当年产能扩张基本是维持性投入，不靠大额持续砸钱拉动增长 → 不符合高资本密集特征。\n2. **资产结构**：按**净额**口径 PP&E 占总资产不到 1/5；反倒是商誉+无形资产合计 175 亿、占 37.6%，比 PP&E 净额更大，说明资产更多来自并购形成的无形资源，而非厂房设备。\n3. **需注意的口径差异**：按**原值**",
+          "ms": 6602,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01226",
+          "type": "domain-relevant",
+          "question": "What drove operating margin change as of FY2022 for 3M? If operating margin is not a useful metric for a company like this, then please state that and explain why.",
+          "gold": "Operating Margin for 3M in FY2022 has decreased by 1.7% primarily due to: \n-Decrease in gross Margin\n-mostly one-off charges including Combat Arms Earplugs litigation, impairment related to exiting PFAS manufacturing, costs related to exiting Russia and divestiture-related restructuring\ncharges",
+          "prediction": "## 结论\n\n在 FY2022（2022 年 1–12 月，同比 2021 年），3M 营业利润率的下行压力**主要来自费用端的\"特殊项目\"，而非经营性成本恶化**；其中可量化的一项就是 2022 年二季度约 **12 亿美元（税前）** 的诉讼计提。\n\n## 驱动因素（据该公司文件）\n\n文件明确说明：\"SG&A, measured as a percent of sales, increased in 2022 when compared to the same period last year\"，即**销售及管理费用占销售收入的比重上升**。由于营业利润率 = 毛利率 − SG&A 占比 − 研发占比 ± 其他营业项目，SG&A 占比上升在其他条件不变时会**直接压低营业利润率**。抬升 SG&A 的项目包括：\n\n1. **重大诉讼特殊项目**——主要与 Combat Arms Earplugs（战斗耳塞）诉讼和解推进相关，2022Q2 一次性税前计提约 **12 亿美元**；\n2. **退出 PFAS 制造相关的减值成本**；\n3. **退出俄罗斯业务的相关成本**；\n4. **剥离（divestiture）相关的重组费用**；\n5. **关键增长计划的持续投入**。\n\n部分被**重组收益**与**日常成本管控**抵消。\n\n## 营业利润率是否是好指标\n\n仍然有效，但**FY2022 的 GAAP 营业利润率可比性显著下降**，原因正是上述项目：它们在金额上巨大、在性质上一次性和离散（诉讼和解、减值、退出某地区/某产品线），会把当期利润率\"打下去\"而不反映持续盈利能力。因此对 3M 这类公司：\n\n- **看趋势/同业对比**时，GAAP 营业利润率在本期会产生误导，宜用**调整后（adjusted）营业利润率**并剔除特殊项目；\n- **看经营本身**时，分部/内生口",
+          "ms": 15093,
+          "toolCalls": [
+            "list_skills",
+            "load_skill"
+          ],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_01865",
+          "type": "novel-generated",
+          "question": "If we exclude the impact of M&A, which segment has dragged down 3M's overall growth in 2022?",
+          "gold": "The consumer segment shrunk by 0.9% organically.",
+          "prediction": "",
+          "ms": 16608,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00807",
+          "type": "domain-relevant",
+          "question": "Does 3M have a reasonably healthy liquidity profile based on its quick ratio for Q2 of FY2023? If the quick ratio is not relevant to measure liquidity, please state that and explain why.",
+          "gold": "No. The quick ratio for 3M was 0.96 by Jun'23 close, which needs a bit of an improvement to touch the 1x mark",
+          "prediction": "## 结论\n\n**速动比率（quick ratio）对 3M 这类以存货和应收账款周转为主业的制造业公司而言，是衡量短期流动性的相关指标，并非\"不适用\"。** 按材料计算，3M 于 FY2023 第二季度（截至 2023-06-30）的速动比率约为 **0.85**，低于通常 1.0 的参考线，属\"基本可接受、但偏紧\"的流动性水平。\n\n## 计算（单位：百万美元，期末时点）\n\n速动资产 = 现金及现金等价物 + 流动有价证券 + 应收账款净额\n\n- 2023-06-30：4,258 + 56 + 4,947 = **9,261**\n- 流动负债合计 = **10,936**\n- **速动比率 = 9,261 ÷ 10,936 ≈ 0.85**\n\n对比 2022-12-31：(3,655 + 238 + 4,532) ÷ 9,523 = 8,425 ÷ 9,523 ≈ **0.88**\n\n即速动比率由 0.88 降至 0.85，主要因流动负债上升（9,523→10,936），其中短期借款及一年内到期长期债务由 1,938 增至 3,033（+约 56%），而速动资产增幅较小。\n\n## 解读\n\n- 0.85 意味着速动资产仅能覆盖约 85% 的流动负债，缺口需依赖存货变现（存货期末 5,280）与经营现金流补充。\n- 用到的行项目：现金及等价物、流动有价证券、应收账款净额、流动负债合计（均取 2023-06-30 与 2022-12-31 两期）。\n- 若同时看流动比率：15,754 ÷ 10,936 ≈ **1.44**，说明整体营运资本仍为正，短期偿付能力未到紧张程度，但缓冲较薄。\n- 因此判断为：**流动性\"尚可但不算充裕\"**——速动比率低于 1 反映对存货和再融资的依赖，需结合其稳定的经营现金流与资本市场融资能力综合看；但单看该比率，不能称为\"稳健的流动性画像\"。\n\n",
+          "ms": 8390,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00941",
+          "type": "domain-relevant",
+          "question": "Which debt securities are registered to trade on a national securities exchange under 3M's name as of Q2 of 2023?",
+          "gold": "Following debt securities registered under 3M's name are listed to trade on the New York Stock Exchange:\n-1.500% Notes due 2026 (Trading Symbol: MMM26)\n-1.750% Notes due 2030 (Trading Symbol: MMM30)\n-1.500% Notes due 2031 (Trading Symbol: MMM31)",
+          "prediction": "**结论：3 只债务证券**（均为票据 Notes，不含普通股）：\n\n| 债务证券名称 | 交易代码 | 注册交易所 |\n|---|---|---|\n| 1.500% Notes due 2026 | MMM26 | New York Stock Exchange |\n| 1.750% Notes due 2030 | MMM30 | New York Stock Exchange |\n| 1.500% Notes due 2031 | MMM31 | New York Stock Exchange |\n\n**依据说明**\n- 判定口径：表中「Title of each class」可归为债务证券的，即三笔 Notes（2026 / 2030 / 2031 到期），三者均注册在纽约证券交易所（NYSE）。\n- 排除项：Common Stock, Par Value $.01 Per Share（MMM）属于权益类证券，不是债务证券。该普通股另在 Chicago Stock Exchange, Inc. 注册——这一交易所**不在**上述任何债务证券名下。\n- 材料未列出其他交易所注册的债务证券，故以上 3 只即为全部。\n\n**提示**：本回答仅基于所给披露材料（属公开披露信息，非投资建议）；如需核对具体期间（如 2023 年二季度）的完整附件清单，建议补充该期定期报告的封面表格原文。",
+          "ms": 2463,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01858",
+          "type": "novel-generated",
+          "question": "Does 3M maintain a stable trend of dividend distribution?",
+          "gold": "Yes, not only they distribute the dividends on a routine basis, 3M has also been increasing the per share dividend for consecutive 65 years",
+          "prediction": "**结论：是，3M 的分红趋势表现出高度稳定性。**\n\n**依据**\n- 材料明确记载：该公司实现了**连续第 65 年提高股息**（\"the 65th consecutive year of dividend increases for 3M\"）。\n- \"连续 65 年逐年增派\"这一表述，同时覆盖了两个稳定性特征：**连续性**（未中断、未减派）与**增长性**（每年递增而非仅维持不变）。\n\n**说明与局限**\n- 本条证据仅为分红增长的连续年限，未给出**具体每股股息金额、派息率（payout ratio）、股息率**及对应财年等数据，因此无法判断分红水平相对盈利或股价是否合理，也无法逐年核验增幅大小。\n- 64 年以前的情况、以及该\"连续增长\"记录是否曾被特别股息或拆股调整所影响，材料中未涉及。\n\n**建议**\n1. 若需评估分红可持续性，建议补充近 3~5 年的每股股息、自由现金流与派息率数据，判断增长是否由盈利与现金流支撑。\n2. 材料来源为该公司自述文件，具体金额与年度请以最新年报/10-K 中的股息披露为准（公开披露信息，非投资建议）。",
+          "ms": 2580,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02987",
+          "type": "metrics-generated",
+          "question": "What is the FY2019 fixed asset turnover ratio for Activision Blizzard? Fixed asset turnover ratio is defined as: FY2019 revenue / (average PP&E between FY2018 and FY2019). Round your answer to two decimal places. Base your judgments on the information provided primarily in the statement of income and the statement of financial position.",
+          "gold": "24.26",
+          "prediction": "## 结论\n**Activision Blizzard FY2019 固定资产周转率 ≈ 24.26 倍（24.26x）**\n\n## 计算依据（单位：百万美元，期间：FY2018–FY2019）\n\n| 项目 | 金额 | 来源 |\n|---|---|---|\n| FY2019 净收入（Total net revenues） | $6,489 | 合并利润表，2019年度 |\n| FY2019 固定资产净额（PP&E, net） | $253 | 合并资产负债表，2019/12/31 |\n| FY2018 固定资产净额（PP&E, net） | $282 | 合并资产负债表，2018/12/31 |\n\n**步骤：**\n1. 平均 PP&E = (253 + 282) ÷ 2 = **267.5**\n2. 固定资产周转率 = 6,489 ÷ 267.5 = 24.2579…\n\n四舍五入至两位小数：**24.26**\n\n## 说明\n- 分子使用利润表中的 \"Total net revenues\"（含产品销售收入 1,975 与订阅、授权及其他收入 4,514，合计 6,489），而非仅产品销售收入。\n- 分母使用资产负债表 \"Property and equipment, net\" 的期初期末简单平均；表中不存在单独的\"固定资产原值\"或累计折旧行项目，故按净额口径计算。\n- 换算口径：报表原始单位即为百万美元，计算中未做单位缩放，比率本身为无量纲倍数。\n\n## 建议\n1. 该比率极高，反映公司轻资产特征（2019年末 PP&E 仅 2.53 亿美元，占总资产 19,845 的约 1.3%），分析时建议同时关注无形资产（531）与商誉（9,764）——它们才是该公司的主要长期资产。\n2. 若需与同业对比，请统一 PP&E 口径（净额 vs. 原值）及收入口径（是否含订阅/授权收入）",
+          "ms": 3592,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_07966",
+          "type": "metrics-generated",
+          "question": "What is the FY2017 - FY2019 3 year average of capex as a % of revenue for Activision Blizzard? Answer in units of percents and round to one decimal place. Calculate (or extract) the answer from the statement of income and the cash flow statement.",
+          "gold": "1.9%",
+          "prediction": "**结论：FY2017–FY2019 三年平均资本开支占收入比 ≈ 1.9%**（按各年比率取平均为 1.91%，按三年合计口径为 1.91%，四舍五入均为 1.9%）。\n\n**计算依据（单位：百万美元）**\n\n| 年度 | 资本开支（现金流产表\"Capital expenditures\"） | 总收入（利润表\"Total net revenues\"） | 占比 |\n|---|---|---|---|\n| 2017 | 155 | 7,017 | 2.21% |\n| 2018 | 131 | 7,500 | 1.75% |\n| 2019 | 116 | 6,489 | 1.79% |\n\n- 三年比率简单平均：(2.21% + 1.75% + 1.79%) / 3 = **1.91% → 1.9%**\n- 交叉验证（合计口径）：(155 + 131 + 116) / (7,017 + 7,500 + 6,489) = 402 / 21,006 = **1.91% → 1.9%**\n\n**口径说明**：资本开支取自现金流量表投资活动中的\"Capital expenditures\"；收入取利润表\"Total net revenues\"（含产品销售收入与订阅、授权及其他收入），两者期间均为 2017/2018/2019 三个完整年度（Amounts in millions）。\n\n**提示**：该比率反映资产投入相对收入的强度，三年从 2.2% 降至 1.8%，说明资本开支增速慢于收入波动，属轻资产内容型企业的典型水平；若要判断投入是否被\"资本化调节\"，建议再比对现金流量表中\"Software development and intellectual property licenses\"（2019 年为流出 275 百万美元）与利润表相关摊销科目。数据来自公司公开披露的合并财务报表，",
+          "ms": 4033,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04735",
+          "type": "metrics-generated",
+          "question": "You are an investment banker and your only resource(s) to answer the following question is (are): the statement of financial position and the cash flow statement. Here's the question: what is the FY2015 operating cash flow ratio for Adobe? Operating cash flow ratio is defined as: cash from operations / total current liabilities. Round your answer to two decimal places.",
+          "gold": "0.66",
+          "prediction": "**结论：Adobe FY2015 经营活动现金流比率 ≈ 0.66**（取两位小数）\n\n**计算依据**（金额单位：千美元）\n\n| 项目 | 来源 | FY2015（截至 2015-11-27） |\n|---|---|---|\n| 经营活动提供的现金净额（Cash from operations） | 合并现金流量表「Net cash provided by operating activities」 | 1,469,502 |\n| 流动负债合计（Total current liabilities） | 合并资产负债表 | 2,213,556 |\n\n计算：\n1,469,502 ÷ 2,213,556 = **0.6639 → 0.66**\n\n**口径说明**\n- 分子直接用现金流量表当年「经营活动现金净额」，含净利 629,551 及折旧摊销 339,473、股权激励 335,859、递延收入增加 320,801 等调整项；\n- 分母用资产负债表 2015-11-27 期末的「流动负债合计」，为期末余额口径（非平均余额），即 1,434,200 递延收入 + 678,364 应计费用 + 93,307 应付账款等之和；\n- 两年对比（同一口径）：FY2014 = 1,287,482 ÷ 2,494,435 = 0.52，FY2015 提升至 0.66，主要因经营性现金流入增长（1.29→1.47 百万千美元）而流动负债同期下降（因 603,229 的债务及融资租赁义务转为长期）。\n\n**投资视角建议**\n1. 0.66 表示经营现金流可覆盖约 66% 的流动负债，一年内现金生成能力尚可但未达 1.0 的稳健线，需结合短期投资 3.11 百万千美元（流动性储备）一并评估短期偿付能力。\n2. 若做同业或趋势对比，建议采用**平均流动负债**口径并连续看 3 年，避免单点期末数",
+          "ms": 4151,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_07507",
+          "type": "metrics-generated",
+          "question": "What is Adobe's year-over-year change in unadjusted operating income from FY2015 to FY2016 (in units of percents and round to one decimal place)? Give a solution to the question by using the income statement.",
+          "gold": "65.4%",
+          "prediction": "**结论：Adobe FY2016 较 FY2015 的营业利润（Operating income，未调整口径）同比增长 65.4%。**\n\n**计算过程**（数据取自所给《CONSOLIDATED STATEMENTS OF INCOME》，单位：千美元）\n\n| 项目 | FY2016（截至2016/12/2） | FY2015（截至2015/11/27） |\n|---|---|---|\n| Operating income | 1,493,602 | 903,095 |\n\n- 变动额 = 1,493,602 − 903,095 = **590,507**（千美元）\n- 同比变动率 = 590,507 ÷ 903,095 = 0.65387 ≈ **65.4%**\n\n**口径说明**\n- 使用利润表中直接列示的 \"Operating income\" 一行（即未作一次性/非经常性调整的报表口径），而非\"调整后营业利润\"。\n- 期间为 FY2016 与 FY2015（Adobe 财年截止日分别为 2016 年 12 月 2 日、2015 年 11 月 27 日）。\n- 分子分母同为千美元，单位相消，结果为百分比。\n\n**参考佐证**：该增长主要来自订阅收入由 3,223,904 增至 4,584,833 千美元（+1,360,929），而总营业费用仅增 392,821 千美元（3,148,099→3,540,920），收入增速（+22.1%）显著快于费用增速（+12.5%）。\n\n数据来自公司公开披露的合并利润表，非投资建议。",
+          "ms": 3018,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03856",
+          "type": "metrics-generated",
+          "question": "What is the FY2017 operating cash flow ratio for Adobe? Operating cash flow ratio is defined as: cash from operations / total current liabilities. Round your answer to two decimal places. Please utilize information provided primarily within the balance sheet and the cash flow statement.",
+          "gold": "0.83",
+          "prediction": "## 结论：Adobe FY2017 经营现金流比率 ≈ **0.83**\n\n**计算口径与取数（单位：千美元）**\n\n| 项目 | FY2017（截至 2017-12-01） | 来源 |\n|---|---|---|\n| 经营活动产生的现金净额 | 2,912,853 | 合并现金流量表 |\n| 流动负债合计 | 3,527,457 | 合并资产负债表 |\n\n**计算**\n- 经营现金流比率 = 2,912,853 ÷ 3,527,457 = **0.8258** → 四舍五入 **0.83**\n\n即以千美元计的绝对值相除，单位约掉，比率为无单位数值。\n\n**简短解读**\n- 0.83 表示 FY2017 经营活动一年产生的现金可覆盖约 83% 的期末流动负债，短期偿付的现金保障尚可但未满 1 倍。\n- 主要拖累项是流动负债中占比最大的**递延收入 2,405,950**（占流动负债约 68%）；该项属于预收性质、后续以服务交付而非现金清偿，故实际现金压力小于该比率的表面含义。\n- 分子端 2,912,853 已是三年最高（FY2016：2,199,728），反映经营现金流同比改善。\n\n**参考对比**：FY2016 同口径比率为 2,199,728 ÷ 2,811,635 = 0.78，FY2017 略有上升。\n\n**建议**：若用于同业或历史趋势比较，建议说明 Adobe 的递延收入结构特殊，可将\"经营活动现金流 ÷（流动负债 − 递延收入）\"作为补充指标一并观察。\n\n数据来自公司公开披露的合并财务报表，非投资建议。",
+          "ms": 2902,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00438",
+          "type": "domain-relevant",
+          "question": "Does Adobe have an improving operating margin profile as of FY2022? If operating margin is not a useful metric for a company like this, then state that and explain why.",
+          "gold": "No the operating margins of Adobe have recently declined from 36.8% in FY 2021 to 34.6% in FY2022. A drop by 2.2% in a year.",
+          "prediction": "## 结论\n**不是。Adobe 截至 FY2022 的营业利润率是「见顶回落」，而非改善**：FY2022 GAAP 营业利润率 34.6%（6,098/17,606），较 FY2021 的 36.8%（5,802/15,785）**下滑约 2.2 个百分点**；只相对 FY2020 的 32.9%（4,237/12,868）仍略高。（数据来源：用户提供的 Adobe 合并利润表；skill 模块需平台取数，本问已由所给报表完整覆盖，故直接据表测算。）\n\n## 关键依据（同比，单位：百万美元）\n- 收入 17,606 vs 15,785，**+11.5%**；营业利润 6,098 vs 5,802，仅 **+5.1%** → 利润增速明显落后收入增速，是利润率压缩的直接原因。\n- 毛利率 87.7% vs 88.2%（**-0.5pp**）：收入成本 +16.1%，其中订阅成本 +19.8%（1,646 vs 1,374），快于订阅收入 +12.5%（16,388 vs 14,573）。\n- 三费合计 +15.1%（9,343 vs 8,118）：研发 +17.6%、销售与市场 +15.0%、管理 +12.4%，均快于收入增长。\n- 趋势上：FY2020→FY2021 是上升（32.9%→36.8%），FY2022 出现**拐点向下**。\n\n## 营业利润率对这家公司是否适用？\n**适用，且应作为核心指标之一**——Adobe 是订阅制软件公司，没有银行/保险那类「利息支出计入营业成本」的结构问题，也没有重资产折旧主导的成本结构，营业利润率在公司内部与同业之间都可比。\n\n但用 GAAP 口径解读时需注意三点：\n1. **含股权激励与无形摊销**：SBC 分散在研发/销售/管理费用中，无形摊销 FY2022 为 169（FY2021 172）；Adobe 对外披露的非 GA",
+          "ms": 13912,
+          "toolCalls": [
+            "list_skills",
+            "load_skill"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00591",
+          "type": "novel-generated",
+          "question": "Does Adobe have an improving Free cashflow conversion as of FY2022?",
+          "gold": "Yes, the FCF conversion (using net income as the denominator) for Adobe has improved by ~13% from 143% in 2021 to 156% in 2022",
+          "prediction": "**结论：是，Adobe 截至 FY2022 的自由现金流转化率（FCF / 净利润）处于持续改善通道，但改善幅度主要由非现金项目与营运资本推动。**\n\n**1. 计算口径（单位：百万美元，财年截至各年 12 月初／11 月末）**\n\n自由现金流 = 经营活动现金流 − 购置固定资产及设备支出：\n\n| 财年 | 经营现金流 | 资本开支 | FCF | 净利润 | FCF/净利润 |\n|---|---|---|---|---|---|\n| FY2022 | 7,838 | (442) | **7,396** | 4,756 | **155.5%** |\n| FY2021 | 7,230 | (348) | **6,882** | 4,822 | **142.7%** |\n| FY2020 | 5,727 | (419) | **5,308** | 5,260 | **100.9%** |\n\n三年连续上行：100.9% → 142.7% → 155.5%，FY2022 同比提升约 12.8 个百分点，FCF 绝对额由 68.82 亿增至 73.96 亿美元（+7.5%）。**故答案为\"是\"。**\n\n**2. 改善的质量需要打一个折扣**\n\n- FY2022 净利润其实**同比下降 1.4%**（4,756 对 4,822），FCF 增长并非来自盈利增长，而来自：经营现金流中的非现金加回（股权激励 1,440、折旧摊销 856、递延所得税 328）和营运资本释放（递延收入 +536）。\n- 若换口径看 **FCF / 经营现金流**，则为 92.7%（FY2020）→ 95.2%（FY2021）→ **94.4%**（FY2022），FY2022 略有回落，原因是资本开支同比增加 27%（442 对 348）。因此\"转化率改善\"在净利润口径成立，在经营现金流口径基本持平略降。\n",
+          "ms": 5795,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01319",
+          "type": "domain-relevant",
+          "question": "What is the quantity of restructuring costs directly outlined in AES Corporation's income statements for FY2022? If restructuring costs are not explicitly outlined then state 0.",
+          "gold": "0",
+          "prediction": "**结论：0（即 FY2022 合并利润表中未单独列示\"重组成本\"）**\n\n**依据（逐一核对 2022 年各费用/损失行项目）**\n\n| 行项目 | 2022 年金额（百万美元） | 是否属于重组成本 |\n|---|---|---|\n| General and administrative expenses | (207) | 否，一般及行政费用 |\n| Loss on extinguishment of debt | (15) | 否，债务清偿损失 |\n| Loss on disposal and sale of business interests | (9) | 否，业务处置/出售损失 |\n| Goodwill impairment expense | (777) | 否，商誉减值 |\n| Asset impairment expense | (763) | 否，资产减值 |\n| Foreign currency transaction gains (losses) | (77) | 否，汇兑损益 |\n| Other non-operating expense | (175) | 否，其他非经营支出 |\n\n- 该利润表（Consolidated Statements of Operations，截至 2022 年 12 月 31 日止年度）从 Total revenue（12,617 百万美元）起，到 Net income (loss) attributable to The AES Corporation（-546 百万美元）止，**全部行项目中没有任何一行使用 \"restructuring\"（重组）字样**。\n- 表中确实存在多项大额非经常性损失（商誉减值 777、资产减值 763、业务处置损失 9，合计 1,549 百万美元），但这些是减值与处置科目，**与\"",
+          "ms": 3229,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00540",
+          "type": "domain-relevant",
+          "question": "Roughly how many times has AES Corporation sold its inventory in FY2022? Calculate inventory turnover ratio for the FY2022; if conventional inventory management is not meaningful for the company then state that and explain why.",
+          "gold": "AES has converted inventory 9.5 times in FY 2022.",
+          "prediction": "**结论：FY2022 存货周转率约 12.1 次（用平均存货），即约 12 次/年；但\"传统存货管理\"（商品购销意义上的周转）对 AES 并不适用，该比率只能作粗略近似。**\n\n**计算（单位：百万美元，期间：截至 2022年12月31日止年度）**\n- 分子：合并利润表 Total cost of sales = 10,069（2021年：8,430）\n- 分母：合并资产负债表 Inventory，2022年 1,055、2021年 604 → 平均存货 =（1,055+604）/2 = 829.5\n- 存货周转率 = 10,069 ÷ 829.5 ≈ **12.1 次**\n- 若只用期末存货：10,069 ÷ 1,055 ≈ **9.5 次**（口径更粗糙，仅作参考）\n\n**为什么传统存货管理意义有限**\n- AES 是发电与公用事业集团，收入来自 Regulated（3,538）与 Non-Regulated（9,079），卖的是\"电\"而非购进的商品；其存货主要是燃料（煤、气、油）、备品备件与材料物料，不是待售产成品。\n- 相应地，成本方不全是\"销售成本中的存货耗用\"，还包含购电成本、燃料费用等，与存货增减并不同步；存货从 604 增至 1,055（+74.7%），周转率被平均口径摊薄，分子分母缺乏严格匹配。\n- 因此更贴合的分析口径是可用天数/燃料库存覆盖天数、购电量与发电量结构、燃料价格与套保，而非\"存货周转率越高越好\"的商品零售逻辑。\n\n**说明与建议**\n- 数据来自你提供的公司合并报表（资产负债表 2022/2021、利润表 2022/2021/2020），未作外部估计；如平台另有该公司口径数据可作交叉验证。\n- 若需对外披露该比率，建议注明\"以合并总销售成本÷平均合并存货计算，仅为近似指标\"，并同时列示期末口径与燃料/备件构成明细。\n\n（以上为公开披露材",
+          "ms": 8016,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_10420",
+          "type": "metrics-generated",
+          "question": "Based on the information provided primarily in the statement of financial position and the statement of income, what is AES's FY2022 return on assets (ROA)? ROA is defined as: FY2022 net income / (average total assets between FY2021 and FY2022). Round your answer to two decimal places.",
+          "gold": "-0.02",
+          "prediction": "## 结论\n\n**AES FY2022 的 ROA ≈ **-1.42%**（用合并净亏损口径）；若改用\"归属于 AES 普通股股东的净亏损\"口径则为 **-1.53%**。\n\n## 计算过程（单位：百万美元；金额来自上表）\n\n| 项目 | 数值 | 来源 |\n|---|---|---|\n| FY2022 净收益（合并\"NET INCOME (LOSS)\"） | **(505)** | Consolidated Statements of Operations，2022 列 |\n| FY2021 资产总额 | 32,963 | Consolidated Balance Sheets，2021 列 |\n| FY2022 资产总额 | 38,363 | Consolidated Balance Sheets，2022 列 |\n| 两年平均资产总额 | (32,963+38,363)/2 = **35,663** | 同上 |\n\nROA = −505 ÷ 35,663 = **−0.01416 → −1.42%**\n\n口径说明：\n- 分子取利润表的**合并净亏损 (505)**（即含非控制性权益的 \"NET INCOME (LOSS)\"），这是\"net income\"最直接的对应行项目；\n- 若取\"归属于 The AES Corporation 的净亏损 (546)\"，则 ROA = −546 ÷ 35,663 = **−1.53%**；\n- 分母为 2021 与 2022 两年**期末**资产总额的算术平均（题设要求 average total assets between FY2021 and FY2022），未做季度平均。\n\n## 提示\n2022 年 ROA 为负，主要因当年计提商誉减值 777 与资产减值 763（合计 1,540 百万美元），而 2021 年 ROA 亦",
+          "ms": 5105,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_06655",
+          "type": "metrics-generated",
+          "question": "What is Amazon's FY2017 days payable outstanding (DPO)? DPO is defined as: 365 * (average accounts payable between FY2016 and FY2017) / (FY2017 COGS + change in inventory between FY2016 and FY2017). Round your answer to two decimal places. Address the question by using the line items and information shown within the balance sheet and the P&L statement.",
+          "gold": "93.86",
+          "prediction": "## 结论\n\n**Amazon FY2017 的应付账款周转天数（DPO）≈ 93.86 天。**\n\n## 计算过程（口径与取数）\n\n**1. 平均应付账款（FY2016–FY2017）**\n- FY2016 资产负债表「Accounts payable」＝ 25,309（百万美元）\n- FY2017 资产负债表「Accounts payable」＝ 34,616\n- 平均值 ＝ (25,309 + 34,616) ÷ 2 ＝ **29,962.5**\n\n**2. 分母：FY2017 COGS + 存货变动**\n- FY2017 利润表「Cost of sales」＝ 111,934\n- 存货（资产负债表 Inventories）：FY2017 16,047 − FY2016 11,461 ＝ **＋4,586**（增加）\n- 分母 ＝ 111,934 + 4,586 ＝ **116,520**\n\n**3. DPO**\n```\n365 × 29,962.5 ÷ 116,520 = 93.8578…\n```\n\n**DPO ＝ 93.86 天**\n\n## 说明\n\n- 金额单位为**百万美元**，期间为 FY2016 / FY2017（均截至 12 月 31 日），计算基于所给资产负债表与利润表行项目。\n- Amazon 利润表未单列 \"Cost of goods sold\"，此处以**「Cost of sales」111,934** 作为 COGS；若改用「Total operating expenses」口径将高估分母、低估 DPO，故不采用。\n- 存货按**增加额（+4,586）**计入分母，即题述 \"change in inventory\" 的代数变动。\n\n**建议**：DPO 由 FY2016 可比的 91.74 天（365×25,309÷…口径不同仅供参考）升至 93",
+          "ms": 4923,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_08135",
+          "type": "metrics-generated",
+          "question": "What is Amazon's year-over-year change in revenue from FY2016 to FY2017 (in units of percents and round to one decimal place)? Calculate what was asked by utilizing the line items clearly shown in the statement of income.",
+          "gold": "30.8%",
+          "prediction": "**结论：亚马逊 FY2016 → FY2017 营业收入同比增长 30.8%。**\n\n**计算依据（合并利润表，单位：百万美元）**\n\n| 行项目 | FY2016 | FY2017 |\n|---|---|---|\n| Net product sales | 94,665 | 118,573 |\n| Net service sales | 41,322 | 59,293 |\n| **Total net sales** | **135,987** | **177,866** |\n\n- 同比增量 = 177,866 − 135,987 = **41,879 百万美元**\n- 同比增速 = 41,879 ÷ 135,987 = 0.3080 → **30.8%**\n\n**口径说明**\n- 使用\"Total net sales\"（净销售额合计）作为收入口径，即 Net product sales + Net service sales；两期均按此口径，期间为截至 12 月 31 日的完整会计年度（FY2016、FY2017）。\n- 若仅看产品销售收入：94,665 → 118,573，增速 25.3%；服务收入：41,322 → 59,293，增速 43.5%，是拉动整体增速的主要来源。\n- 数据来自公司合并利润表（金额单位：百万美元），非投资建议。\n\n**建议**：如需进一步评估收入质量，可结合\"Total operating expenses\"（131,801 → 173,760，增速 31.8%）对照——费用增速略高于收入增速，导致 Operating income 由 4,186 降至 4,106 百万美元，收入增长并未同步转化为经营利润。",
+          "ms": 2414,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_08286",
+          "type": "metrics-generated",
+          "question": "By drawing conclusions from the information stated only in the income statement, what is Amazon's FY2019 net income attributable to shareholders (in USD millions)?",
+          "gold": "$11588.00",
+          "prediction": "**结论：FY2019 归属于股东的净利润 = 11,588 百万美元（约 115.88 亿美元）。**\n\n**推导依据（仅用利润表科目）**\n- 利润表（CONSOLIDATED STATEMENTS OF OPERATIONS，截至 2019 年 12 月 31 日止年度）中，「Net income」一行的 2019 年金额为 **$11,588**（单位：百万美元）。\n- 该表中**未单独列示**\"归属于非控股权益的净利润\"或\"归属于母公司股东的净利润\"科目，因此表内唯一可直接读取的净利润口径即为 **Net income = $11,588 million**。\n- 勾稽验证（同表内科目，2019 年，百万美元）：所得税前利润 13,976 − 所得税 2,374 + 权益法投资损益（税后）(14) = **11,588**，与 Net income 一致。\n\n**说明**\n- 该数为\"表内可见口径\"的净利润；若含少数股东损益，需另看合并权益变动表或附注中的非控股权益分项——本利润表未提供，故不作调整。\n- 期间口径：2019 年 1 月 1 日—2019 年 12 月 31 日（全年，非单季）。\n\n**建议**\n1. 若需确认\"归属母公司股东\"与\"含少数股东\"的口径差异，应查阅合并财务报表附注中的非控股权益（Noncontrolling interests）披露。\n2. 交叉核对时可用每股收益倒算：基本 EPS 23.46 × 基本加权股数 494 ≈ 11,589 百万美元，与上表一致，可作为一致性检验。\n\n（数据来自公司公开披露的年报利润表，非投资建议。）",
+          "ms": 3346,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03882",
+          "type": "metrics-generated",
+          "question": "What is Amcor's year end FY2020 net AR (in USD millions)? Address the question by adopting the perspective of a financial analyst who can only use the details shown within the balance sheet.",
+          "gold": "$1616.00",
+          "prediction": "**结论：Amcor FY2020 年末（2020年6月30日）净应收账款（net AR）为 1,615.9 百万美元。**\n\n**取数依据（仅基于资产负债表）**\n- 资产负债表\"Current assets\"项下唯一对应应收账款的行项目为 **\"Trade receivables, net\"**（净额，已扣除坏账准备）：\n  - 2020年6月30日：**$1,615.9 百万**\n  - 2019年6月30日：$1,864.3 百万\n- 表中无其他应收款项行项目（\"Prepaid expenses and other current assets\" 属预付及其他流动资产，不计入 AR），因此\"净 AR\"即该项余额。\n\n**延伸观察**\n- 同比变动：1,615.9 − 1,864.3 = **−248.4 百万美元**，降幅约 **13.3%**。\n- 同期流动资产合计由 5,210.1 降至 4,534.7 百万美元，AR 下降与整体营运资本收缩方向一致；另需注意 2019 年存在 416.1 百万美元的\"Assets held for sale\"（2020 年为 0），口径差异可能部分影响同比可比性。\n\n**建议**\n1. 单看资产负债表无法判断 AR 下降是销售收缩、收款改善还是保理/出售所致，建议结合利润表收入与现金流量表\"应收账款变动\"项交叉验证。\n2. 可用 AR 周转天数（DSO）对比同业，判断收款效率是否实质改善。\n\n（数据来源：公司合并资产负债表，截至 2020 年 6 月 30 日；公开披露数据，非投资建议。）",
+          "ms": 2488,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01935",
+          "type": "novel-generated",
+          "question": "What was the key agenda of the AMCOR's 8k filing dated 1st July 2022?",
+          "gold": "Amcor Finance (USA), Inc. and Amcor Flexibles North America, Inc., entered into supplemental indentures relating to Guaranteed Senior Notes due 2026 and 2028. This involved the substitution of the Substitute Issuer (Amcor Flexibles North America) for the Former Issuer (Amcor Finance) and the assumption of covenants under the indentures. (In essence a novation agreement)",
+          "prediction": "**结论：该 8-K（2022 年 7 月 1 日提交）的核心议程是——AMCOR 集团内部债券发行主体的\"替换与承继\"（issuer substitution），即由 Amcor Flexibles North America, Inc. 取代 Amcor Finance (USA), Inc. 成为相关票据的发行人。**\n\n**关键依据（据材料所述条款）：**\n\n1. **交易主体与时间**：2022 年 6 月 30 日，Amcor Finance (USA), Inc.（原发行人，Former Issuer）与 Amcor Flexibles North America, Inc.（替换发行人，Substitute Issuer）——二者均为 Amcor plc 的全资子公司——与受托人签署补充契约。\n\n2. **涉及两份契约、四只票据**：\n   - *2016 年契约*（2016 年 4 月 28 日签署，经第二次补充契约修订）：覆盖 **3.625% 担保优先票据（2026 年到期）** 与 **4.500% 担保优先票据（2028 年到期）**（合称 Existing Notes）；\n   - *2019 年契约*（2019 年 6 月 13 日签署，经第一次补充契约修订）：覆盖对应的 **New 2026 Notes** 与 **New 2028 Notes**（合称 New Notes）。\n\n3. **议程实质**：上述补充契约均\"relating to the substitution of the Substitute Issuer for the Former Issuer\"，即**替换发行人并承继原发行人在各契约项下的全部承诺（covenants）**。受托人为 Deutsche Bank Trust Company Americas。\n\n4. ",
+          "ms": 4541,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00799",
+          "type": "domain-relevant",
+          "question": "Has AMCOR's quick ratio improved or declined between FY2023 and FY2022? If the quick ratio is not something that a financial analyst would ask about a company like this, then state that and explain why.",
+          "gold": "The quick ratio has slightly improved from 0.67 times to 0.69 times between FY 2023 and FY 2022.(3.4% jump)",
+          "prediction": "## Short answer\n\n**It improved — modestly.** The quick ratio rose from **0.53x in FY2022 to 0.57x in FY2023**. And yes, a financial analyst *could* ask about it, but for Amcor it is a low-information, second-tier question (explained below).\n\n## The math (from the Consolidated Balance Sheets, as of June 30, $ in millions)\n\nQuick assets = cash and cash equivalents + trade receivables, net:\n\n| | FY2023 | FY2022 |\n|---|---|---|\n| Cash and cash equivalents | 689 | 775 |\n| Trade receivables, net | 1,875 | 1,935 |\n| **Quick assets** | **2,564** | **2,710** |\n| Total current liabilities | 4,476 | 5,103 |\n| **Quick ratio** | **0.57x** | **0.53x** |\n\nSo the ratio improved by ~0.04x (about +8% relative). The result is not an artifact of the definition: excluding only inventories (2,213 in FY2023 vs. ",
+          "ms": 13123,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_01079",
+          "type": "domain-relevant",
+          "question": "What are major acquisitions that AMCOR has done in FY2023, FY2022 and FY2021?",
+          "gold": "Amcor completed these acquisitions during FY2023:\n-100% equity interest of a flexibles manufacturing company in the Czech Republic\n- 100% equity interest in a medical device packaging manufacturing site in\nShanghai, China.\n-acquisition of a New Zealand-based leading manufacturer of state-of-the-art, automated protein\npackaging machines.",
+          "prediction": "## 结论\n\n您提供的材料（Amcor 年报附注中\"业务合并/Business Combinations\"章节的节选）**只披露了 FY2023 完成的收购**，共 3 起，全部归属 Flexibles（软包装）报告分部。**材料中不含 FY2022 和 FY2021 的收购信息**，因此这两年的收购情况无法从现有材料中得出。\n\n## FY2023 的三起重大收购（财年截至 2023 年 6 月 30 日）\n\n| 完成日 | 标的 | 对价 | 可辨认净资产 | 商誉 |\n|---|---|---|---|---|\n| 2022-08-01 | 捷克软包装制造厂（100% 股权） | 5,900 万美元（含 500 万递延对价，已于 FY2024 Q1 支付） | 3,600 万美元 | 2,300 万美元（不可税前扣除） |\n| 2023-03-17 | 中国上海医疗器械包装生产基地（100% 股权） | 6,000 万美元（含 2,000 万或有对价，分 3 年按业绩目标现金支付） | 2,100 万美元 | 3,900 万美元 |\n| 2023-05-31 | 新西兰自动化蛋白包装机械制造商 | 4,500 万美元（含 1,300 万或有对价，分 2 年按业绩目标现金支付） | 900 万美元 | 3,600 万美元（可税前扣除） |\n\n补充推导（用上述行项目加总）：\n- 三起收购对价合计 **1.64 亿美元**；\n- 确认商誉合计 **9,800 万美元**，可辨认净资产合计 **6,600 万美元**；\n- 后两起（上海、新西兰）的购买价格分摊在报告期末仍属**初步估计**，公司计划自收购日起一年内完成 PPA；捷克项目商誉不可税前扣除，新西兰项目可扣除。\n\n## 缺口说明\n\n材料仅覆盖 FY2023（2022 年 7 月 1 日—2023 年 6 月 30 日",
+          "ms": 6027,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01148",
+          "type": "domain-relevant",
+          "question": "What industry does AMCOR primarily operate in?",
+          "gold": "Amcor is a global leader in packaging production for various use cases.",
+          "prediction": "**结论：AMCOR 主要属于包装行业（responsible packaging / 包装制造）。**\n\n依据（来自公司自有文件原文）：\n\n- 公司自述为\"a global leader in developing and producing **responsible packaging**\"——即全球领先的**包装**开发与生产企业，这是其核心业务定位；\n- 下游应用领域为：食品、饮料、药品、医疗、家居与个人护理及其他产品。这些是包装产品的**终端市场**，而非公司自身所属行业。\n\n**判断要点**：材料中反复出现的关键词是 packaging（包装），食品/饮料/医药/医疗/家居个护是其服务的客户领域，据此可将其归入**包装制造（Packaging & Containers）**行业。\n\n**说明**：上述结论完全基于所给材料的推导，未使用平台企业库数据；如需要该公司的行业分类、风险评分等平台建档信息，可提供股票代码（如 AMCR），我再调取核实。\n\n**建议**：若需确认其细分定位（如软包装 flexible packaging 为主），可补充其年报中的业务分部（business segments）说明，或提供证券代码由我在平台内查询。",
+          "ms": 2797,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00684",
+          "type": "domain-relevant",
+          "question": "Does AMCOR have an improving gross margin profile as of FY2023? If gross margin is not a useful metric for a company like this, then state that and explain why.",
+          "gold": "No. For AMCOR there has been a slight decline in gross margins by 0.8%.",
+          "prediction": "## 一、结论\n\n**不是改善，而是明确恶化。**按你提供的 Amcor plc 合并利润表（单位：百万美元，财年截至 6 月 30 日），FY2023 毛利率为 **18.5%**，较 FY2022 的 **19.4%** 下滑约 **90 个基点**，较 FY2021 的 **21.2%** 累计下滑约 **270 个基点**——连续两年下降。\n\n**同时需要说明：对 Amcor 这类包装企业，毛利率不是最有信息量的指标**（理由见第四节），因此\"毛利率下滑\"本身不宜直接解读为盈利能力恶化。\n\n## 二、推导过程（用到的行项目与期间）\n\n| 财年 | Net sales | Cost of sales | Gross profit | 毛利率 |\n|---|---|---|---|---|\n| 2023 | 14,694 | 11,969 | 2,725 | **18.5%** |\n| 2022 | 14,544 | 11,724 | 2,820 | **19.4%** |\n| 2021 | 12,861 | 10,129 | 2,732 | **21.2%** |\n\n（毛利率 = Gross profit ÷ Net sales）\n\nFY2023 的方向背离更值得注意：\n- 净销售额 **+1.0%**（+150）\n- 销售成本 **+2.1%**（+245）\n- 毛利额 **-3.4%**（-95）\n\n即收入增长但成本涨得更快，毛利额绝对下降——**不是结构优化，而是成本压力**。\n\n## 三、为什么不建议用毛利率判断这类公司\n\nAmcor 是包装\"加工/转换商\"（柔性+刚性包装），成本主体是树脂、铝、纸纤维等**原材料**，而收入端在合同中有**原材料价格转嫁（pass-through / 成本联动）条款**：\n\n1. **原材料涨价**会几乎等额推高 net s",
+          "ms": 11330,
+          "toolCalls": [
+            "list_skills",
+            "load_skill"
+          ],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_01936",
+          "type": "novel-generated",
+          "question": "What is the nature & purpose of AMCOR's restructuring liability as oF Q2 of FY2023 close?",
+          "gold": "87% of the total restructuring liability is related Employee liabilities.",
+          "prediction": "## 一、结论摘要\n\n**性质**：这是一项**重组准备金（restructuring accrual）**，不是金融负债，主要以**员工遣散/离职补偿**为主。\n**用途**：用于支付正在执行的重组计划所发生的退出成本——向被裁减员工支付补偿金，以及少量固定资产相关与其他退出成本。\n\n## 二、关键依据（单位：百万美元；Q2 FY2023 = 2022年12月31日）\n\n- **期末余额 9,300 万美元**（$93M），较 FY2022 期末（2022/6/30）的 $118M 下降 $25M；\n- **构成**：员工成本 $81M（占 87.1%）、其他成本 $10M、固定资产相关 $2M —— 说明该负债在性质上**压倒性地是人力遣散义务**，固定资产相关部分已经很小（$3M→$2M）；\n- **本半年（H1 FY2023）变动**：净计提收益 $2M、现金支付 $25M、未使用金额冲回 $2M；\n- 现金支付 $25M 是余额下降的主因，说明重组计划正在**实际执行并逐步清付**；$2M 冲回表明部分原先估计的成本已不再预期发生。\n\n## 三、推导口径与局限\n\n- 上述数字直接取自所给\"重组成本\"滚存表（Liability balance at June 30, 2022 → December 31, 2022 一栏），期间为 FY2023 上半年（2022/7/1–2022/12/31）。\n- **该表未披露**：具体是哪一个重组计划/项目（如工厂关闭、并购整合或成本削减方案）、流动与非流动的拆分、以及按业务分部的地理分布。因此\"用途\"只能界定为\"重组计划相关的退出成本\"，无法指认具体计划名称；这几项需查阅财报附注中重组部分方可确认。\n- 说明：本次回答仅基于您提供的公司文件摘录；平台金融分析模块未返回 Amcor 的相关财务数据，故未纳入 KPI/模型测算。",
+          "ms": 12948,
+          "toolCalls": [
+            "list_skills",
+            "load_skill"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01928",
+          "type": "novel-generated",
+          "question": "What Was AMCOR's Adjusted Non GAAP EBITDA for FY 2023",
+          "gold": "AMCOR's Adj. EBITDA was $2,018mn in FY 2023",
+          "prediction": "**结论：Amcor 2023 财年（截至 2023 年 6 月 30 日的十二个月）调整后 Non-GAAP EBITDA 为 2,018 百万美元。**\n\n**推导过程（依据材料中最后一行 \"Adjusted EBITDA, EBIT, Net income and EPS\" 的 FY2023 列，单位：百万美元）**\n\n| 行项目（FY2023 列） | 金额 |\n|---|---|\n| EBITDA（GAAP 基础口径） | 2,080 |\n| Impact of hyperinflation | +24 |\n| Property and other losses, net | +2 |\n| Russia-Ukraine conflict impacts | −90 |\n| Pension settlements | +5 |\n| Other | −3 |\n| **Adjusted EBITDA** | **2,018** |\n\n核对：2,080 + 24 + 2 − 90 + 5 − 3 = 2,018，与表中\"Adjusted EBITDA\"行 FY2023 列数值一致。\n\n**同表其他对照信息（FY2023 调整后口径）**\n- 调整后 EBIT：1,608 百万美元\n- 调整后净利润：1,089 百万美元\n- 调整后摊薄 EPS：73.3 美分\n\n**同比变化（管理层通常关注的点）**\n- FY2022 调整后 EBITDA 为 2,117 百万美元（1,829 + 37 + 10 + 16 + 13 + 200 + 8 + 4 = 2,117，可自行核对）\n- FY2023 同比减少 99 百万美元，降幅约 4.7%，主要来自 Russia-Ukraine conflict impacts 由 FY2022 的 +200 转为 FY2023 的 −90（合",
+          "ms": 8568,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01930",
+          "type": "novel-generated",
+          "question": "How much was the Real change in Sales for AMCOR in FY 2023 vs FY 2022, if we exclude the impact of FX movement, passthrough costs and one-off items?",
+          "gold": "The Real Growth was flat in FY 2023 vs FY 2022.",
+          "prediction": "**结论：实际（可比、恒定汇率）销售变化 ≈ 0%，即基本持平（FY2023 净销售额 14,694 百万美元 vs FY2022 14,544 百万美元）。**\n\n**推导（十二个月截至 6 月 30 日，Total 列）**\n- 报告增速 +1%（14,694 / 14,544，+150 百万美元，约 +1%）\n- 剔除汇率：FX −3% → 恒定汇率增速 +4%\n- 再剔除原材料转嫁（Raw Material Pass Through）+5%、一次性/影响可比性项目（Items affecting comparability）−1%：\n  **4% − 5% + 1% = 0%**\n- 交叉验证：Volume −3% + Price/Mix +3% = 0%\n\n即：报告口径的 +1% 增长完全由汇率、原料转嫁和一次性项目解释，剔除这些因素后的\"真实\"增长为零——销量下滑 3% 被价格/结构改善 3% 抵消。\n\n**说明**\n- 材料中 Total 列（十二个月）\"Comparable Constant Currency Growth %\"单元格在摘录中为空，但可由同行已给项目（恒定汇率 +4%、转嫁 +5%、可比性项目 −1%）及 Volume/Price-Mix 两行双向推导为 0%，两条路径相互印证。\n- 可比口径下销售额变化金额约为 0（相对 FY2022 基数 14,544 百万美元），单位：百万美元；口径为集团合并 Total。\n- 数据来自公司自身披露材料，非投资建议。\n\n**建议**\n1. 关注销量端持续负增长（−3%）对后续盈利的拖累，价格/结构贡献能否延续是 FY2024 关键变量。\n2. 若做同比对标分析，请统一使用\"可比恒定汇率\"口径（0%），避免用报告口径 +1% 高估内生增长。",
+          "ms": 12050,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03069",
+          "type": "metrics-generated",
+          "question": "Answer the following question as if you are an equity research analyst and have lost internet connection so you do not have access to financial metric providers. According to the details clearly outlined within the P&L statement and the statement of cash flows, what is the FY2015 depreciation and amortization (D&A from cash flow statement) % margin for AMD?",
+          "gold": "4.2%",
+          "prediction": "**结论：AMD FY2015 折旧与摊销（现金流量表口径）占净收入的比例约为 4.2%。**\n\n**计算过程（基于材料所列行项目）**\n\n| 项目 | FY2015 | 来源 |\n|---|---|---|\n| 净收入 Net revenue | $3,991M | 合并利润表（截至 2015-12-26 年度） |\n| 折旧与摊销 Depreciation and amortization | $167M | 合并现金流量表\"经营活动调节项\" |\n\n- D&A % margin = 167 ÷ 3,991 = **4.18%**（约 4.2%）\n\n**口径说明（重要）**\n- 这里使用的是**现金流量表**中的\"Depreciation and amortization\"整行 $167M，它是将净亏损调节为经营现金流时的加回项，包含全部折旧与摊销。\n- 利润表中的\"Amortization of acquired intangible assets\"仅为 **$3M**（2015 年），是**收购取得的无形资产摊销**这一单独费用行，**不**等于现金流量表的 D&A 总额，二者口径不同，不应混用。\n- 单位：材料以百万美元列示，未做换算。\n\n**历史对比（同口径，便于判断趋势）**\n- FY2014：203 ÷ 5,506 = 3.69%\n- FY2013：236 ÷ 5,299 = 4.45%\n\n即 FY2015 的 D&A 绝对额同比下降（203→167），但因净收入下降幅度更大（5,506→3,991，-27.5%），D&A 占收入比重反而从 3.7% 升至 4.2%——反映收入收缩快于折旧摊销基数下降，是典型的**产能利用率/收入承压**信号（同期经营现金流为净流出 $226M、净亏损 $660M，可互相印证）。\n\n**给分析师的提示**\n1. 在模型中将 D",
+          "ms": 4402,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00222",
+          "type": "domain-relevant",
+          "question": "Does AMD have a reasonably healthy liquidity profile based on its quick ratio for FY22? If the quick ratio is not relevant to measure liquidity, please state that and explain why.",
+          "gold": "Yes. The quick ratio is 1.57, calculated as (cash and cash equivalents+Short term investments+Accounts receivable, net+receivables from related parties)/ (current liabilities).",
+          "prediction": "## 结论\n\n**是，AMD FY22（截至 2022 年 12 月 31 日）的速动比率约 1.57，流动性状况健康。** 而且速动比率对 AMD 是**相关**指标——公司存货占流动资产约 25%，剔除存货后仍能覆盖流动负债，说明短期偿债能力并非依赖变现较慢的存货。\n\n## 速动比率计算（单位：百万美元）\n\n速动资产 = 现金及现金等价物 + 短期投资 + 应收账款净额 + 关联方应收\n= 4,835 + 1,020 + 4,126 + 2 = **9,983**\n\n流动负债合计 = **6,369**\n\n**速动比率 = 9,983 ÷ 6,369 ≈ 1.57**\n\n对比参考：\n- **FY21 速动比率**：（2,535 + 1,073 + 2,706 + 2）÷ 4,240 = 6,316 ÷ 4,240 ≈ **1.49**（同比小幅改善）\n- **流动比率**：15,019 ÷ 6,369 ≈ **2.36**（FY21 约 2.02）\n- **被剔除的存货**：FY22 为 3,771（FY21 为 1,955），占流动资产约 25%，因此速动比率比流动比率更能反映\"即时\"偿付能力\n\n## 为何速动比率对本案相关\n\nAMD 属半导体行业，存货（尤其并购 Xilinx 后大幅增加）变现周期长、易受跌价影响；同时流动负债中应付账款 2,493、应计负债 3,077 等需以现金清偿。因此剔除存货的速动比率是恰当的保守口径，1.57 > 1 表明无需依赖存货即可覆盖全部流动负债。\n\n## 请注意的局限\n\n速动比率是**资产负债表日（2022/12/31）的静态时点指标**，未反映经营现金流、负债到期结构或季节性波动；AMD 长期债务净额 2,467、经营租赁负债等长期义务亦不在口径内。若需完整判断偿债能力，应结合现金流量表与债务契约条款一并分析。\n\n**建议**：",
+          "ms": 7038,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00995",
+          "type": "domain-relevant",
+          "question": "What are the major products and services that AMD sells as of FY22?",
+          "gold": "AMD sells server microprocessors (CPUs) and graphics processing units (GPUs), data processing units (DPUs), Field Programmable Gate Arrays (FPGAs), and Adaptive System-on-Chip (SoC) products for data centers; CPUs, accelerated processing units (APUs) that integrate CPUs and GPUs, and chipsets for desktop and notebook personal computers; discrete GPUs, and semi-custom SoC products and development services; and embedded CPUs, GPUs, APUs, FPGAs, and Adaptive SoC products.",
+          "prediction": "AMD 在 FY22 主要销售的产品与服务，按其披露可分为四大板块：\n\n**1. 数据中心产品**\n- 服务器微处理器（CPU）\n- 图形处理器（GPU）\n- 数据处理单元（DPU）\n- 现场可编程门阵列（FPGA）\n- 自适应系统级芯片（Adaptive SoC）\n\n**2. 个人电脑产品**\n- CPU\n- 加速处理单元（APU，集成 CPU 与 GPU）\n- 芯片组（chipsets），用于台式机与笔记本 PC\n\n**3. 图形与半定制产品**\n- 独立 GPU（discrete GPU）\n- 半定制 SoC（semi-custom SoC）产品及开发服务\n\n**4. 嵌入式产品**\n- 嵌入式 CPU、GPU、APU、FPGA 及自适应 SoC\n\n此外，AMD 表示其**会不时出售或授权部分知识产权（IP）组合**——这也构成一项收入来源。\n\n**依据**：以上均直接摘自该公司自身文件的产品概述部分（FY22）。如需要更细致的分部/产品线收入拆分，需结合其 10-K 中分部披露数据进一步查询。",
+          "ms": 3096,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01198",
+          "type": "domain-relevant",
+          "question": "What drove revenue change as of the FY22 for AMD?",
+          "gold": "In 2022, AMD reported Higher sales of their EPYC server processors, higher semi-custom product sales, and the inclusion of Xilinx embedded product sales",
+          "prediction": "**结论：AMD FY2022 净收入增长 44%，主要由数据中心、游戏和嵌入式三大业务板块驱动。**\n\n**关键数据（FY2022 vs FY2021）**\n- 净收入：**236 亿美元**（FY22） vs **164 亿美元**（FY21），同比 **+44%**\n- 数据中心（Data Center）：**+64%**\n- 游戏（Gaming）：**+21%**\n- 嵌入式（Embedded）：**较上年同期大幅增长**\n\n**增长动因（按材料原文归因）**\n1. **数据中心 +64%** —— 主要由于 EPYC 服务器处理器销量提升，这是收入增量的最大来源（增速也最高）。\n2. **游戏 +21%** —— 主要来自半定制（semi-custom）产品销售增长。\n3. **嵌入式 大幅增长** —— 主要由并入 **Xilinx 嵌入式产品销售** 所致（即并购带来的口径增量，而非全部内生增长）。\n\n**两点提示（基于材料本身的推导）**\n- 三大板块增速均快于集团整体的 44%，说明还有未在材料中点名的板块（如客户端 Client）增速低于整体或出现下滑，拖累了合并增速。\n- 嵌入式板块的增长被明确归因于 **Xilinx 并表**，属外延式增长，与数据中心的内生性增长（EPYC 销量）性质不同，评估可持续性时宜分开看待。\n\n**可执行建议**\n1. 若需判断增长质量，建议进一步拆分「Xilinx 并表贡献」与「原有业务内生贡献」，避免把并购增量当作持续增速。\n2. 建议核查客户端（Client）业务同期的收入变动，以解释板块增速与集团 44% 整体增速之间的缺口。\n\n（数据来自该公司自身披露文件，非投资建议。）",
+          "ms": 3118,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00917",
+          "type": "domain-relevant",
+          "question": "What drove operating margin change as of the FY22 for AMD? If operating margin is not a useful metric for a company like this, then please state that and explain why.",
+          "gold": "The decrease in AMD's operating income was primarily driven by amortization of intangible assets associated with the Xilinx acquisition",
+          "prediction": "## 结论\n\n**FY22 营业利润（及由此带来的营业利润率）下滑的首要驱动因素，是 Xilinx 收购产生的无形资产摊销**——这是年报中管理层明确列示的原因，属于**非现金的收购会计影响**，而非当期经营恶化。同时我要指出：**对 AMD 这类刚完成大额并购的公司，GAAP 营业利润率确实不是一个很有用的指标**，理由见下。\n\n## 关键依据（来自你提供的材料）\n\n- FY22 营业利润 **13 亿美元**，FY21 为 **36 亿美元**；\n- 变动：**减少 23 亿美元，降幅约 64%**（(1.3−3.6)/3.6）；\n- 材料原文归因：**\"primarily driven by amortization of intangible assets associated with the Xilinx acquisition\"**。\n\n⚠️ 口径说明：营业利润率 = 营业利润 ÷ 收入，而**这段摘录没有给出收入数据**，因此**利润率本身的百分比无法由该材料算出**；能确定的只是营业利润的绝对额与降幅。若收入同比上升（并购并表通常如此），利润率的降幅会**大于**营业利润 64% 的降幅——但收入是否上升需另取财报数据核实，此处不代估。\n\n## 为什么营业利润率对它不是有效指标\n\n1. **摊销是非现金、非经营的**：Xilinx 收购形成的无形资产摊销按年计提，压低 GAAP 营业利润，却不反映当期现金创造能力或竞争地位。\n2. **跨期可比性被并购打断**：并表后收入与费用基数同时跳变，GAAP 营业利润率的同比对比被会计事件污染。\n3. **半导体本身强周期**，单一年度的利润率波动容易误导，需结合下游周期判断。\n\n**更有解释力的替代口径**：非 GAAP 营业利润率（剔除收购摊销、重组、股权激励）、毛利率、**分部营业利润**（数据中心/客户端/",
+          "ms": 10096,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01279",
+          "type": "domain-relevant",
+          "question": "Among operations, investing, and financing activities, which brought in the most (or lost the least) cash flow for AMD in FY22?",
+          "gold": "In 2022, AMD brought in the most cashflow from Operations",
+          "prediction": "**结论：经营活动（Operating activities）带来的现金最多。**\n\n依据 FY22（截至 2022 年 12 月 31 日的合并现金流量表，单位：百万美元）：\n\n| 活动类别 | FY22 净现金流 |\n|---|---|\n| 经营活动 | **+3,565**（净流入，最多） |\n| 投资活动 | +1,999（净流入） |\n| 筹资活动 | −3,264（净流出，最多\"失血\"） |\n\n推导过程（只用到表中三个小计行）：\n- 经营活动：Net cash provided by operating activities = 3,565（主要靠净利润 1,320 + 折旧摊销 4,174 + 股份支付 1,081，被存货 −1,401、应收 −1,091、预付及其他资产 −1,197 等占用部分抵消）；\n- 投资活动：Net cash provided by investing = 1,999（短期投资到期 4,310、收购 Xilinx 带来现金 2,366，对冲了购买短期投资 −2,667 与收购 Pensando −1,544）；\n- 筹资活动：Net cash used in financing = −3,264（股票回购 −3,702、还债 −312 等为主）。\n\n三项对比：3,565 > 1,999 > −3,264，故**经营活动流入最多**；若按\"亏损最少\"的口径，筹资活动是唯一净流出项，反而不是\"亏损最少\"的答案——答案是经营活动。\n\n补充：FY22 现金及等价物净增 2,300，由上述三项合计（3,565 + 1,999 − 3,264 = 2,300）验证一致，期末余额 4,835。\n\n建议：关注筹资端持续净流出（回购 37 亿）与经营端营运资本占用（存货、应收合计约 −25 亿）的可持续性。数据来自公司披露的现金流量表，非投资建议。",
+          "ms": 2917,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00563",
+          "type": "novel-generated",
+          "question": "From FY21 to FY22, excluding Embedded, in which AMD reporting segment did sales proportionally increase the most?",
+          "gold": "Data Center",
+          "prediction": "**结论：Data Center（数据中心）事业部。**\n\n依据材料（单位：百万美元，财年分别为截至 2022/12/31 与 2021/12/25）：\n\n**1) 增速（比例增长）**\n- Data Center：3,694 → 6,043，**+63.6%**\n- Gaming：5,607 → 6,805，+21.4%\n- Client：6,887 → 6,201，**−10.0%**\n（Embedded 246 → 4,552 按题设排除）\n\n**2) 占总收入比重变化**（合计净收入 16,434 → 23,601）\n- Data Center：22.5% → 25.6%，**+3.1 个百分点**（升幅最大）\n- Gaming：34.1% → 28.8%，−5.3pp\n- Client：41.9% → 26.3%，−15.6pp\n\n无论按\"增速\"还是按\"收入占比提升\"衡量，答案都是 **Data Center**；Client 是唯一收入绝对下滑的板块，Gaming 绝对额增长但占比被稀释。\n\n即：该板块收入由 3,694 增至 6,043 百万美元（+2,349 百万美元），增速约 64%，且占比提升约 3 个百分点。\n\n*数据来自公司披露文件，非投资建议。*",
+          "ms": 6256,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00757",
+          "type": "novel-generated",
+          "question": "Did AMD report customer concentration in FY22?",
+          "gold": "Yes, one customer accounted for 16% of consolidated net revenue",
+          "prediction": "**结论：是。AMD 在 FY2022 的年报中披露了客户集中度。**\n\n**披露要点（截至 2022 年 12 月 31 日止年度）：**\n- **1 家客户**贡献了公司合并净收入的 **16%**；\n- 对该客户的销售来自 **Gaming（游戏）事业部**的产品；\n- 公司指出，若失去该客户，将对其业务产生**重大不利影响**。\n\n**说明与限制：**\n- 上述为 AMD 自身文件中的定性+定量披露，可确认\"存在客户集中风险\"这一事实；\n- 材料**未披露该客户名称**，也**未说明是否还有第二家达到披露门槛的客户**（如其他单一客户占比）。因此只能确认\"至少存在 1 家占合并净收入 16% 的客户\"，无法据此判断集中度的完整分布。\n\n**建议：**\n1. 若用于风险跟踪，可标注\"单一客户收入占比 16%、集中于 Gaming 板块\"，作为收入可持续性监测指标；\n2. 如需完整画像（客户名单、其他客户占比、历年趋势），应查阅完整 10-K\"客户集中度\"章节，而不是仅凭本段摘录下结论。\n\n（数据来自公司公开披露文件，非投资建议。）",
+          "ms": 2828,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00476",
+          "type": "domain-relevant",
+          "question": "Which debt securities are registered to trade on a national securities exchange under American Express' name as of 2022?",
+          "gold": "There are none",
+          "prediction": "**结论：没有。** 截至 2022 年（该 10-K 封面页），American Express 名下**没有任何债务证券**在国家证券交易所注册交易。\n\n**依据（材料中的两行项目）：**\n1. \"Securities registered pursuant to Section 12(b) of the Act:\" 项下仅列示一项——\n   - 证券类别：Common Shares（par value $0.20 per Share，即普通股）\n   - 交易代码：AXP\n   - 注册交易所：New York Stock Exchange\n2. \"Securities registered pursuant to Section 12(g) of the Act: None\"——按 12(g) 条注册的证券为\"无\"。\n\n**推导说明：** 该封面页的 12(b) 表格是\"在交易所注册证券\"的完整清单，其中只出现普通股一类，未列任何债券（debt securities，如票据、债券类证券）；12(g) 一行亦明确写为 None。因此普通股（AXP，NYSE）是唯一在交易所注册的证券，债务证券数量为 0。\n\n**建议：**\n- 若需确认 American Express 已发行但**未在交易所注册**的债务证券（如私募或仅按 12(g) 以外方式发行的票据），需查阅该 10-K 的债务附注或相关募集说明书，本封面页不含此类信息。\n- 若需核对其他年度，请提供对应年度的 10-K 封面页，可比对 12(b) 表格是否新增债务证券条目。",
+          "ms": 3119,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01028",
+          "type": "domain-relevant",
+          "question": "What are the geographies that American Express primarily operates in as of 2022?",
+          "gold": "United States, EMEA, APAC, and LACC",
+          "prediction": "**结论：** 按材料披露的分部口径，American Express 2022 年主要在 **4 个地理区域**经营：**United States（美国）、EMEA、APAC、LACC**（另有 \"Other Unallocated\" 未分配项，不属于地理区域）。\n\n**依据（材料表格，单位：百万美元，2022 年）**\n\n| 地区 | 总收入（扣除利息费用） | 占比 | 持续经营税前利润 |\n|---|---|---|---|\n| United States | 41,396 | 78.3% | 10,383 |\n| EMEA | 4,871 | 9.2% | 550 |\n| APAC | 3,835 | 7.3% | 376 |\n| LACC | 2,917 | 5.5% | 500 |\n| Other Unallocated | (157) | — | (2,224) |\n| 合计 | 52,862 | 100% | 9,585 |\n\n- 占比为按材料数据推导：如美国 41,396 ÷ 52,862 ≈ 78.3%；四项地理区域合计 53,019，抵消后与合并数 52,862 的差异来自其他未分配项 (157)。\n- EMEA、APAC、LACC 为常用缩写（欧洲中东非洲、亚太、拉美及加勒比），材料本身未展开全称。\n- 该口径两年可比（2021、2020 年同样按此四分部列示），说明这是其持续的披露地理划分。\n\n**建议：**\n1. 若需评估区域集中度风险，重点关注美国占近八成收入——区域集中度较高，美国信用/消费周期对其整体盈利影响最大。\n2. EMEA、APAC、LACC 三者合计收入仅约 1.16 万亿美元级以下的 21.7%，但 2022 年 EMEA 税前利润同比改善（550 vs 460）值得跟进入。\n\n（说明：以上数值全部取自你提供的分部表格，未使",
+          "ms": 4949,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00723",
+          "type": "domain-relevant",
+          "question": "Does AMEX have an improving operating margin profile as of 2022? If operating margin is not a useful metric for a company like this, then state that and explain why.",
+          "gold": "Performance is not measured through operating margin",
+          "prediction": "**结论**：对 AMEX 这类\"银行卡网络 + 银行\"混合体，**营业利润率（operating margin）不是一个有意义的核心指标**——公司利润表本身就没有\"营业利润\"科目。用最接近的替代口径测算，2022 年呈**\"拨备前小幅改善、计入信用损失后明显下滑\"**的矛盾图景，不能简单说\"改善\"。\n\n**一、从材料推导（金额单位：百万美元，期间为 2020–2022 财年）**\n- 用「Total revenues net of interest expense − Total expenses」作营业利润代理：\n 2022 = 52,862 − 41,095 = **11,767 → 22.3%**；2021 = 42,380 − 33,110 = 9,270 → **21.9%**；2020 = **25.0%**（9,026/36,087）。\n 即 2022 较 2021 仅提升约 0.4 个百分点，仍明显低于 2020。\n- 若改看 **Pretax income / Total revenues net of interest expense**：2022 = 9,585/52,862 = **18.1%**，2021 = 10,689/42,380 = **25.2%**，2020 = 11.9%——2022 同比**下降约 7 个百分点**。\n- 差异几乎全部来自信用成本：Total provisions for credit losses 2021 为 **收益 1,419**（释放），2022 转为 **支出 2,182**，摆动约 36 亿美元。\n- 收入与费用增速基本同步（收入 +24.7%，总费用 +24.1%），说明拨备前的改善主要来自规模扩张而非成本效率。\n\n**二、为什么\"营业利润率\"在这里不适用**\n1. 公司不披露 operating",
+          "ms": 15382,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00720",
+          "type": "domain-relevant",
+          "question": "What drove gross margin change as of the FY2022 for American Express? If gross margin is not a useful metric for a company like this, then please state that and explain why.",
+          "gold": "Performance is not measured through gross margin",
+          "prediction": "## 结论先行\n\n**American Express（AXP）不适用\"毛利率\"这一指标。** 该材料是合并利润表（截至 2022 年 12 月 31 日年度，单位：百万美元），表中**没有\"营业成本/销货成本（Cost of Sales / COGS）\"行项目，因而也没有毛利（Gross Profit）或毛利率**。AXP 是一家综合支付+银行类金融机构，其\"收入\"是净利息收入与各类手续费净额，不是商品销售收入，无从对应\"成本\"，强行计算毛利率不具经济含义。\n\n## 为什么毛利率对这类公司没用\n\n1. **收入是净额概念**：如\"Total revenues net of interest expense\"（52,862）已在收入中扣除了利息支出，\"Net interest income\"（9,895）本质是存贷利差，而非\"销售额\"。\n2. **主要支出不是\"销售成本\"**：Card Member rewards（14,002）、Marketing（5,458）、Card Member services（2,959）、Business development（4,943）、Salaries（7,252）都是**经营费用**；其中 rewards 在经济实质上更接近收入抵减项，与营销、人力费用性质不同，无法像 COGS 那样从收入中\"减一次\"得出毛利。\n3. **信用损失是周期变量**：Provisions for credit losses 2022 年为 **+2,182**，2021 年为 **−1,419**（转回），单此一项摆动约 **3,600 百万美元**，与\"毛利率\"逻辑无关，却直接决定盈利。\n\n## 若一定要找\"最接近\"的毛利口径（说明：非 GAAP，仅为分析用）\n\n- 以\"收入总额（扣除利息支出后）− Card Member rewards\"模拟：\n  ",
+          "ms": 11657,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01351",
+          "type": "domain-relevant",
+          "question": "How much has the effective tax rate of American Express changed between FY2021 and FY2022?",
+          "gold": "The effective tax rate for American Express has changed/dropped from 24.6% in FY 2021 to 21.6% in FY 2022.",
+          "prediction": "## 结论\n\n美国运通（American Express）的有效税率（Effective tax rate）从 **FY2021 的 24.6% 降至 FY2022 的 21.6%**，**下降 3.0 个百分点**。\n\n## 依据\n\n来源：公司文件 TABLE 1「Selected Metrics and Ratios」栏，列示期间为 2022 与 2021 两个年度（截至 12 月 31 日）：\n\n| 项目 | FY2022 | FY2021 | 变化 |\n|---|---|---|---|\n| Effective tax rate | 21.6% | 24.6% | −3.0 pp |\n\n**交叉验证**（用同一表中的行项目自行推算，口径一致）：\n- FY2022：所得税费用 2,071 ÷ 税前利润 9,585 = 21.6%\n- FY2021：所得税费用 2,629 ÷ 税前利润 10,689 = 24.6%\n\n推算结果与表中披露的有效税率完全吻合，说明该下降是实际税率变化，而非口径差异。\n\n## 说明与提示\n\n- 单位口径：税率为百分比，变动以**百分点（pp）**表述；若按相对变动计，约为 **−12.2%**（3.0 ÷ 24.6）。\n- 表中同期税前利润由 10,689 百万美元降至 9,585 百万美元（−10%），而所得税费用降幅更大（−21%，2,629 → 2,071 百万美元），税率下降主要来自所得税费用的更快减少。\n- 材料未披露税率变动的具体成因（如地域利润结构、一次性税项等），如需归因需查阅公司税务附注。\n\n**建议**：若需评估其盈利质量，可进一步对比有效税率与法定税率（约 21%）的偏离情况；如需对该公司做财务/风险专项分析，我可以调用平台的财务分析或风险评估技能为您取数。\n\n（数据来自公开披露文件，非投资建议。）",
+          "ms": 2771,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01964",
+          "type": "novel-generated",
+          "question": "What was the largest liability in American Express's Balance Sheet in 2022?",
+          "gold": "Customer deposits",
+          "prediction": "**结论：2022 年最大的一笔负债是「客户存款（Customer deposits）」，金额为 110,239 百万美元（约 1,102 亿美元）。**\n\n依据（摘自所附 2022 年 12 月 31 日合并资产负债表「Liabilities」部分，单位：百万美元）：\n\n| 负债项目 | 2022 年 | 2021 年 |\n|---|---|---|\n| **Customer deposits（客户存款）** | **110,239** | 84,382 |\n| Long-term debt（长期债务） | 42,573 | 38,675 |\n| Other liabilities（其他负债） | 37,350 | 30,497 |\n| Accounts payable（应付账款） | 12,133 | 10,574 |\n| Short-term borrowings（短期借款） | 1,348 | 2,243 |\n| 负债合计 | 203,643 | 166,371 |\n\n推导口径：在所给材料 2022 年负债各项中逐项比较金额，客户存款 110,239 为最高，占负债合计 203,643 的约 **54%**（110,239 ÷ 203,643 ≈ 54.1%），是第二大项长期债务（42,573）的约 2.6 倍。同时该科目同比 2021 年（84,382）增长 25,857 百万美元（约 +30.6%）。\n\n补充说明：数据来自公司披露的合并资产负债表（未经审计说明提示，均为公开披露信息，非投资建议）。\n\n建议：\n1. 后续分析负债结构时，可重点关注客户存款的期限与利率敏感性，因其已占负债过半。\n2. 若需评估偿债与流动性压力，可结合「现金及现金等价物合计 33,914」与存款规模对比，测算覆盖倍数。",
+          "ms": 2462,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01981",
+          "type": "novel-generated",
+          "question": "Was American Express able to retain card members during 2022?",
+          "gold": "Yes",
+          "prediction": "**结论：是，2022 年美国运通（American Express）留住了持卡会员——留存率维持在较高水平。**\n\n**依据（均出自所给材料）**\n- **会员留存**：\"Card Member retention remained high\"（持卡会员留存率保持高位）。\n- **净卡费**：净卡费（Net card fees）同比 **+17%**，说明存量卡会员的付费基础在扩大而非流失。\n- **新卡获取**：2022 年新卡获取量创历史纪录（\"record levels\"）。\n- 材料将上述表现归因于其在高端权益（premium value propositions）上的投入。\n\n**需要说明的缺口**\n- 材料为**定性表述**，未给出具体留存率数字（如 retention rate 的百分比），也未分业务线/地区或分季度披露；\n- 因此无法从材料中推导出\"留住了多少比例\"的量化结论，只能用\"高留存 + 净卡费增长 + 新卡创纪录\"这三项相互印证留存情况良好；\n- 材料中也未包含注销率（attrition）或活跃账户数等口径，若需量化留存，需另行查阅年报中的卡会员留存率、billed business、平均卡会员数等科目。\n\n**建议**\n1. 若要把\"留存良好\"做成可比较的结论，建议取年报/10-K 中的 Card Member retention rate 与 billed business 同比，做 2021→2022 的量化对比。\n2. 注意区分\"留存率\"与\"净卡费增长\"：后者还受年费上调、权益结构变化影响，不能单独作为留存证据。\n\n（数据来自该公司公开披露文件，非投资建议。）",
+          "ms": 4783,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_05718",
+          "type": "metrics-generated",
+          "question": "How much (in USD billions) did American Water Works pay out in cash dividends for FY2020? Compute or extract the answer by primarily using the details outlined in the statement of cash flows.",
+          "gold": "$0.40",
+          "prediction": "**答案：约 38.9 亿美元（USD 0.389 billion）**\n\n**取数与推导**\n- 数据来源：American Water Works Company, Inc. 合并现金流量表（Consolidated Statements of Cash Flows，单位：百万美元），截至 2020 年 12 月 31 日止年度。\n- 所用到行项目：**经营活动**下的「Dividends paid」（筹资活动部分）——2020 年为 **$(389) 百万**（括号表示现金流出），2019 年为 $(353) 百万，2018 年为 $(319) 百万。\n- 换算口径：389 百万美元 ÷ 1,000 = **0.389 十亿美元**，即约 **$0.39 billion**。\n\n**说明**\n- 该金额为现金流量表中实际付现的股利，与利润表口径的分红宣告数可能不同；表中无其他与股利相关的付现行项目，故 389 百万即为 FY2020 全部现金股利支出。\n- 单位与期间：**百万美元 / 2020 财年（2020-01-01 至 2020-12-31）**。数据来自公司公开披露的合并财务报表，非投资建议。\n\n**建议**\n- 若后续需做分红可持续性判断，可用同年「Net cash provided by operating activities」1,426 百万美元对比：现金股利约占经营现金流的 27%（389/1,426），覆盖尚有余量。\n\nCould I have needed tools? The question is a document-QA. No enterprise tool relevant. I'll note data source. Fine.",
+          "ms": 3275,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04254",
+          "type": "metrics-generated",
+          "question": "Basing your judgments off of the cash flow statement and the income statement, what is American Water Works's FY2021 unadjusted operating income + depreciation and amortization from the cash flow statement (unadjusted EBITDA) in USD millions?",
+          "gold": "$1832.00",
+          "prediction": "**结论：FY2021 未调整 EBITDA = 1,832 百万美元（约 18.32 亿美元）。**\n\n计算过程（口径：营业利润 + 折旧与摊销，均取 2021 年 12 月 31 日止年度）：\n\n- Consolidated Statements of Operations：Operating income = **1,196** 百万美元\n- Consolidated Statements of Cash Flows：Depreciation and amortization = **636** 百万美元（与利润表中 D&A 636 一致）\n\n1,196 + 636 = **1,832 百万美元**\n\n说明：\n- 该口径为\"未调整\"（unadjusted），即不剔除 2021 年出售业务产生的 747 百万美元收益等非经常项目，也不做任何 EBITDA 加回调整；因该笔收益计入\"Other income (expense)\"而未计入营业利润，所以不进入本计算。\n- 单位与期间：美元百万，FY2021（2021/1/1–2021/12/31），数据来自公司合并利润表与合并现金流量表。\n\n建议：如需可比口径，可与 FY2020 对比——FY2020 营业利润 1,248 + D&A 604 = 1,852 百万美元，即 FY2021 未调整 EBITDA 同比小幅下降约 1.1%（受运营维护费用与一般税费上升带动营业利润下滑影响）。数据来自公开披露，非投资建议。",
+          "ms": 2801,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00070",
+          "type": "domain-relevant",
+          "question": "Does American Water Works have positive working capital based on FY2022 data? If working capital is not a useful or relevant metric for this company, then please state that and explain why.",
+          "gold": "No, American Water Works had negative working capital of -$1561M in FY 2022.",
+          "prediction": "## 结论\n\n**没有正营运资本。** 按材料中合并资产负债表（单位：百万美元，2022 与 2021 财年，截至 12 月 31 日）直接推导：\n\n- FY2022：流动资产合计 1,250 − 流动负债合计 2,811 = **−1,561 百万美元（负）**\n- FY2021：1,554 − 2,141 = **−587 百万美元（负）**\n\n2022 年缺口扩大，主因是短期债务由 584 增至 1,175（+591）、一年内到期长期债务由 57 增至 281（+224），而流动资产反因上年\"持有待售资产 683\"消失而由 1,554 降至 1,250。\n\n## 但这个指标对该公司并不适用\n\n对 American Water Works 这类**受监管的水务公用事业公司**，营运资本不是有用或相关的指标，理由：\n\n1. **资本结构使然，是设计结果而非预警信号**：资产以长期资产为主（物业厂房设备净额 23,223），靠长期债务（10,926）与权益（7,693）融资；流动负债被当作常规融资工具使用，短期债务是可滚动、可再融资的资金来源，而非\"到期即需偿付\"的压力信号。\n2. **收入端收现质量高**：受监管水费按月计收，应收账款净额仅 334，且另有未开票收入 275，回款周期短，不需要持有大额流动资产缓冲。\n3. **现金与受限资金体量小属正常**：现金及等价物 85、受限资金 32，公用事业的偿债能力取决于经营现金流与费率回收，而非账面流动比率。\n4. **口径可比性受扰动**：2021 年含持有待售资产 683 及相关负债 83，两年的负营运资本并非同口径扩张。\n\n## 更相关的替代指标\n\n经营现金流与资本开支的匹配度、债务/EBITDA、利息保障倍数、费率案（rate case）审批与监管滞后、短期债务滚动与再融资成本、信用评级。仅凭上述资产负债表无法计算这",
+          "ms": 10416,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02608",
+          "type": "metrics-generated",
+          "question": "In agreement with the information outlined in the income statement, what is the FY2015 - FY2017 3 year average net profit margin (as a %) for Best Buy? Answer in units of percents and round to one decimal place.",
+          "gold": "2.8%",
+          "prediction": "**答案：2.8%**\n\n**计算过程**（单位：百万美元，来源：材料中 Consolidated Statements of Earnings）\n\n| 财年（截至） | 净利润（归属 Best Buy 股东） | 营业收入 | 净利率 |\n|---|---|---|---|\n| FY2015（2015-01-31） | 1,233 | 40,339 | 3.06% |\n| FY2016（2016-01-30） | 897 | 39,528 | 2.27% |\n| FY2017（2017-01-28） | 1,228 | 39,403 | 3.12% |\n\n- 三年净利率合计 = 3.06% + 2.27% + 3.12% = 8.44%\n- 三年平均净利率 = 8.44% ÷ 3 = **2.81% ≈ 2.8%**\n\n**口径说明**\n- 净利润采用「Net earnings attributable to Best Buy Co., Inc. shareholders」行项目；\n- 收入采用「Revenue」行项目（非毛利）；\n- 三个期间分别对应财年结束日 2015-01-31、2016-01-30、2017-01-28。\n- 若改用「Net earnings including noncontrolling interests」（1,235 / 897 / 1,228），平均净利率为 2.82%，四舍五入后同为 **2.8%**，结论不受口径影响。\n\n**提示**：FY2016 净利率明显下滑（2.27%），主要因该年经营利润从 1,450 降至 1,375 百万美元、且所得税费用由 141 升至 503 百万美元；建议关注税率与重组费用的年度波动对利润率可比性的影响。",
+          "ms": 3840,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04417",
+          "type": "metrics-generated",
+          "question": "What is the year end FY2019 total amount of inventories for Best Buy? Answer in USD millions. Base your judgments on the information provided primarily in the balance sheet.",
+          "gold": "$5409.00",
+          "prediction": "## 结论\n\n**FY2019 年末（2019 年 2 月 2 日）Best Buy 存货总额为 5,409 百万美元（$5,409 million）。**\n\n## 依据（来自合并资产负债表）\n\n| 行项目 | 2019-02-02（FY2019 年末） | 2018-02-03（FY2018 年末） |\n|---|---|---|\n| Merchandise inventories（商品存货） | **$5,409 百万** | $5,209 百万 |\n\n说明与推导：\n- 该资产负债表中与存货对应的唯一科目为 **\"Merchandise inventories\"**，未另设原材料／在产品／产成品等分项，因此该行即为公司期末存货总额。\n- 年度口径：Best Buy 财年截止于次年 2 月初，故 \"February 2, 2019\" 对应 **FY2019 年末**。\n- 同比变动：5,409 − 5,209 = **+200 百万美元（+3.8%）**，用到的行项目为上述两个期间的 Merchandise inventories。\n- 同期流动资产合计 8,870 百万美元（上年 9,829 百万），存货占流动资产约 **61.0%**（5,409 ÷ 8,870），上年约 53.0%（5,209 ÷ 9,829）——存货在流动资产中的占比明显上升，主要因现金及短期投资减少所致。\n\n单位与口径：金额单位为百万美元，取自合并资产负债表，为财年末时点余额，未做换算。\n\n（数据来自公司公开披露文件，非投资建议。）",
+          "ms": 2901,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00685",
+          "type": "domain-relevant",
+          "question": "Are Best Buy's gross margins historically consistent (not fluctuating more than roughly 2% each year)? If gross margins are not a relevant metric for a company like this, then please state that and explain why.",
+          "gold": "Yes, the margins have been consistent, there has been a minor decline of 1.1% in gross margins between FY2022 and FY2023.",
+          "prediction": "## 结论\n\n**是，Best Buy 的毛利率历史上是稳定的**——三年区间 21.4%~22.5%，全幅仅约 1.1 个百分点（pp），未超过 2%，且逐年变动最大也只有约 1.1pp。同时需要说明：**对 Best Buy 这类公司，毛利率是核心相关指标**，不是\"不适用\"的指标。\n\n## 依据（数据来自所附合并利润表，单位：百万美元）\n\n| 财年（期末） | 收入 | 毛利 | 毛利率 |\n|---|---|---|---|\n| FY2023（2023-01-28） | 46,298 | 9,912 | **21.41%** |\n| FY2022（2022-01-29） | 51,761 | 11,640 | **22.49%** |\n| FY2021（2021-01-30） | 47,262 | 10,573 | **22.37%** |\n\n毛利率＝毛利 ÷ 收入，均由表中\"Revenue、Cost of sales、Gross profit\"三行直接推导。\n\n- 极差：22.49% − 21.41% = **1.08pp**\n- 同比变动：FY2022→FY2023 为 **−1.08pp**；FY2021→FY2022 为 **+0.12pp**\n\n即：收入在三年间波动较大（51,761 → 47,262 → 46,298，最大同比降幅约 10.6%），但**成本与收入几乎同比例变动，毛利率保持稳定**（FY2023 的 -1.08pp 主要是促销/品类结构压力，幅度仍属温和）。\n\n## 毛利率为什么对 Best Buy 是相关指标\n\nBest Buy 是自营式消费电子专业零售商，其\"Cost of sales\"即商品进货成本，\"Gross profit\"直接反映**商品定价、品类组合与促销力度**，是零售业最标准的核心盈利指标之一。因此这里不存在\"毛利率不适",
+          "ms": 7566,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01077",
+          "type": "domain-relevant",
+          "question": "What are major acquisitions that Best Buy has done in FY2023, FY2022 and FY2021?",
+          "gold": "Best Buy closed two acquisitions, both these companies were already partially owned by Best Buy, but Best Buy acquired all outstanding shares of these two companies during FY 2022: (1) Current Health Ltd and (2) Two Peaks, LLC d/b/a Yardbird Furniture",
+          "prediction": "**结论**：在你提供的这段材料中，**只有 FY2022（2021 年 11 月）的两笔收购被列明**；**FY2023 与 FY2021 没有任何收购事项出现在材料中**。\n\n**材料明确给出的收购（均为 fiscal 2022）**\n\n| 标的 | 完成日 | 净现金对价 | 商誉 | 归属 |\n|---|---|---|---|---|\n| Current Health Ltd.（居家照护技术平台） | 2021-11-02 | 3.89 亿美元 | 3.51 亿美元 | Best Buy Health 报告单元；计入 Domestic 报告分部、Services 收入类别 |\n| Two Peaks, LLC d/b/a Yardbird Furniture（DTC 户外家具） | 2021-11-04 | 0.79 亿美元 | 0.47 亿美元 | Best Buy Domestic 报告单元 |\n\n两笔均采用企业合并的购买法核算，且**对经营结果均不重大**；两项商誉均可用于所得税税前扣除。\n\n**关于 FY2023 与 FY2021 的说明（重要）**\n\n- 材料中**没有**任何 FY2023（约 2022-01-30 至 2023-01-28）或 FY2021（约 2020-02-02 至 2021-01-30）的收购描述。\n- 需要特别提示**财年口径**：Best Buy 的 FY2022 指截至 2022 年 1 月底的财年，因此上述两笔 2021 年 11 月的交易属于 **FY2022，而非 FY2021**——若按自然年理解容易张冠李戴。\n- 该段文字是一份\"Acquisitions\"小节的摘录，**没有**写\"FY2023/FY2021 无收购\"。因此我不能据此断定这两个财年不存在收购，也不能用记忆或估计补足——材料中确实缺少这部分信息（缺",
+          "ms": 6453,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01275",
+          "type": "domain-relevant",
+          "question": "Among operations, investing, and financing activities, which brought in the most (or lost the least) cash flow for Best Buy in FY2023?",
+          "gold": "Best Buy generated the most cash flow from operating activities in FY 2023 ($1.8 bn)",
+          "prediction": "**结论：经营（Operating）活动带来的现金最多，FY2023 净流入 18.24 亿美元。**\n\nFY2023（截至 2023 年 1 月 28 日）三大活动现金流（单位：百万美元）：\n\n| 活动 | 金额 | 方向 |\n|---|---|---|\n| 经营活动 | +1,824 | 净流入 |\n| 投资活动 | (962) | 净流出 |\n| 筹资活动 | (1,806) | 净流出 |\n\n- 经营活动是**唯一净流入**的项目，主要靠净利润 1,419 + 折旧摊销 918，加上存货减少释放 809 的现金（部分被应付账款减少 1,099、其他负债减少 483 抵消）。\n- 若把问题理解为\"花钱最少的那项\"：投资活动净流出 9.62 亿，小于筹资活动净流出 18.06 亿，**投资活动失血最少**（筹资活动因回购股票 1,014 与分红 789 而流出最大）。\n- 三项合计 -952，加上汇率影响 -8，全年现金及等价物减少 9.52 亿，期末余额 22.53 亿。\n\n数据来源：Best Buy 合并现金流量表（FY2023，10-K），金额为百万美元，非投资建议。\n\n**建议**：关注 FY2024 经营现金流是否延续——本期经营现金流 18.24 亿虽为正，但已较 FY2022 的 32.52 亿明显回落，主要受应付账款与营运资金变动拖累，需结合后续季报跟踪。",
+          "ms": 2563,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00288",
+          "type": "novel-generated",
+          "question": "Was there any drop in Cash & Cash equivalents between FY 2023 and Q2 of FY2024?",
+          "gold": "Yes, there was a decline of ~42% between FY2023 and Q2 of FY 2024.",
+          "prediction": "**结论：是的，出现了明显下降。**\n\n按材料中\"Cash and cash equivalents\"表格（单位：百万美元）：\n\n| 时点 | 现金及现金等价物 |\n|---|---|\n| 2023年1月28日（FY2023 期末） | $1,874 |\n| 2023年7月29日（FY2024 第二季度末，即 Q2 FY2024） | $1,093 |\n\n- **降幅：$1,874 − $1,093 = $781 百万美元（约 7.81 亿美元）**\n- **下降比例：781 ÷ 1,874 ≈ 41.7%**\n\n也就是说，从 FY2023 年末到 FY2024 年第二季度末，现金及现金等价物减少了约 7.81 亿美元，缩水超四成。\n\n**补充对照（避免误读）：** 若横向比较的是上一财年同期（2022年7月30日的 Q2 FY2023，$840 百万），本期反而是**增加** $253 百万（+30.1%）。因此\"下降\"这一结论仅在 FY2023 年末 → Q2 FY2024 这一口径下成立，属于半年内的环比大幅回落，而非同比恶化。\n\n**说明：** 上文口径为财年末对第二季度末，涉及科目仅\"Cash and cash equivalents\"一行；材料未提供现金流量表明细，故无法进一步拆分该 $781 百万下降中经营、投资、筹资各占多少。\n\n**建议：** 若关注流动性，请进一步查阅同期现金流量表与短期借款/信用额度余额，确认该降幅是否由回购、资本支出或债务偿还所致，以及流动性缓冲是否充足。",
+          "ms": 4690,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00460",
+          "type": "novel-generated",
+          "question": "Was there any change in the number of Best Buy stores between Q2 of FY2024 and FY2023?",
+          "gold": "Yes, there is decline in number stores by 1.32% from 982 stores in Q2 FY 2023 to 969 by the end of Q2 FY2024.",
+          "prediction": "**结论：有变化——Best Buy 品牌门店净减少 23 家（Q2 FY2023 期末 930 家 → Q2 FY2024 期末 907 家）。**\n\n**依据（同一张门店变动表，Domestic segment）：**\n\n| 期间 | 期初 | 新开 | 关闭 | 期末 |\n|---|---|---|---|---|\n| Q2 FY2024 | 908 | 0 | (1) | **907** |\n| Q2 FY2023 | 931 | 1 | (2) | **930** |\n\n- 期末口径同比：930 → 907，**净减 23 家（-2.5%）**。\n- 单季口径：FY2024 第二季度关闭 1 家、无新开；FY2023 同期新开 1 家、关闭 2 家。\n- 期初基数也同步下移：931 → 908（减 23 家），说明减少主要发生在 FY2023 第二季度之后、FY2024 第二季度之前，本季度仅净减 1 家。\n\n**对照说明（避免误读）**：若看\"Total\"一行（含 Outlet Centers、Pacific Sales、Yardbird），期末门店为 982 → 969，**只减 13 家**。差异来自：\n- Yardbird：13 → 22（+9）\n- Outlet Centers：18 → 20（+2）\n- Pacific Sales：21 → 20（-1）\n\n即 Best Buy 品牌门店缩减被小型业态（Yardbird、Outlet）扩张部分抵消。\n\n**建议**：引用该数据时务必注明是全公司口径还是 Best Buy 品牌口径，两者结论差 10 家；若要做趋势判断，建议同时取 FY2024 全年门店数，确认关店是否集中于下半年。\n\n（数据来源：公司自己披露的 Domestics segment 门店变动表，Q2 FY2024/FY2023；非投资建议",
+          "ms": 3746,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01902",
+          "type": "novel-generated",
+          "question": "Which Best Buy product category performed the best (by top line) in the domestic (USA) Market during Q2 of FY2024?",
+          "gold": "The entertainment segment experienced the highest growth of 9% during Q2 FY2024, primarily from gaming division.",
+          "prediction": "**结论：娱乐（Entertainment）品类，同店销售增长 9.0%，是材料中表现最好的商品品类。**\n\n依据（材料中的各品类同店销售变动）：\n\n| 品类 | 同店销售变动 | 主要驱动 |\n|---|---|---|\n| Entertainment | **+9.0%** | 游戏（gaming）增长，被 VR 与无人机下滑部分抵消 |\n| Services | +7.6% | 付费会员基数累积增长 |\n| Consumer Electronics | −5.7% | 家庭影院拖累，耳机/便携音箱增长部分抵消 |\n| Computing and Mobile Phones | −6.4% | 电脑、手机、平板 |\n| Appliances | −16.1% | 大型家电 |\n\n推导说明：材料仅给出各品类的**同店销售（comparable sales）变动率**，按此口径排序，Entertainment 的 +9.0% 为最高。Services 虽为 +7.6%，但它属于服务而非商品品类，故不计入\"product category\"的比较。表现最差的是 Appliances（−16.1%）。\n\n需要说明的两个口径限制：\n1. 材料只提供变动率，未提供各品类**绝对收入（top line 金额）**，因此无法确证绝对销售额排名——理论上一个下滑的小品类仍可能金额更大；此处\"表现最好\"是按同店销售增长口径判断。\n2. 这段摘录未区分**美国本土与国际市场**，上述数字是整体口径；若需严格的\"domestic (USA) Market\"排序，需查阅财报中按地域分部披露的品类收入表。\n\n建议：若用于投资或经营分析，请以 Best Buy 10-Q 中\"Domestic segment\"分品类收入（百万美元）复核绝对规模；同时关注娱乐品类的游戏业务增长可持续性，以及家电（−16",
+          "ms": 4644,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04660",
+          "type": "metrics-generated",
+          "question": "Considering the data in the balance sheet, what is Block's (formerly known as Square) FY2016 working capital ratio? Define working capital ratio as total current assets divided by total current liabilities. Round your answer to two decimal places.",
+          "gold": "1.73",
+          "prediction": "**结论：Block（原 Square, Inc.）FY2016 的营运资本比率（流动资产／流动负债）为 1.73。**\n\n**计算依据**（来源：公司 FY2016 合并资产负债表，单位：千美元）\n\n- 2016 年 12 月 31 日流动资产合计（Total current assets）：**1,001,425**\n- 2016 年 12 月 31 日流动负债合计（Total current liabilities）：**577,464**\n\n营运资本比率 = 1,001,425 ÷ 577,464 = **1.7342 → 1.73**\n\n**补充说明**\n\n- 口径：按题目定义采用\"流动资产合计 ÷ 流动负债合计\"，均为资产负债表账面值，未做任何调整；分子分母单位一致（千美元），比值无量纲，故不影响结果。\n- 对比 FY2015：流动资产 705,563 ÷ 流动负债 334,202 = 2.11，即 2016 年该比率由 2.11 下降至 1.73。主要因流动负债增速快于流动资产——其中 Customers payable 由 215,365 增至 388,058（+172,693）、Other current liabilities 由 28,945 增至 73,623（+44,678），而流动资产增加主要来自 Settlements receivable（+178,375）、Cash 及 Customer funds held，但 Short-term investments 由 59,901 降至 0。\n\n**建议**：1.73 仍高于 1，短期偿付能力尚可，但一年内降幅明显（-0.38），建议进一步核查客户应付／结算类负债的对手方资金属性，判断其是否为可滚动、非刚性偿付的资金沉淀，以还原真实流动性压力。\n\n（数据来自公司公开披露的合并资产负债表，非投资建",
+          "ms": 2960,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03838",
+          "type": "metrics-generated",
+          "question": "What is the FY2019 - FY2020 total revenue growth rate for Block (formerly known as Square)? Answer in units of percents and round to one decimal place. Approach the question asked by assuming the standpoint of an investment banking analyst who only has access to the statement of income.",
+          "gold": "101.5%",
+          "prediction": "## 结论\n\n**FY2019 → FY2020 总净收入增长率 = +101.5%**（按合并利润表\"Total net revenue\"口径计算）。\n\n## 计算过程（仅使用利润表）\n\n| 项目 | 2019 | 2020 |\n|---|---|---|\n| Total net revenue（千美元） | 4,713,500 | 9,497,578 |\n\n- 收入增量 = 9,497,578 − 4,713,500 = **4,784,078 千美元**（约 47.84 亿美元）\n- 增长率 = 4,784,078 ÷ 4,713,500 = **2.0150 倍 → +101.5%**（保留一位小数）\n\n即收入在一年内翻了一番以上。\n\n## 投行视角的关键拆解\n\n增长几乎全部来自**比特币收入**：由 516,465 千美元增至 4,571,543 千美元，增量约 4,055,078 千美元，对总增量贡献约 **84.8%**；交易类收入（Transaction-based revenue）仅增长 6.9%（3,081,074 → 3,294,978）。同期 Bitcoin costs 由 508,239 增至 4,474,534 千美元，毛利率极低，因此该收入对 Gross profit 的拉动远小于对收入的拉动（Gross profit 仅 +44.6%）。这是解读\"收入翻倍\"时必须提示的质量问题。\n\n## 建议\n\n1. 在可比口径（core/非比特币）下重算增长率，以判断主营业务的真实动能；\n2. 若用于估值，应以 Gross profit 或调整后 EBITDA 增长率替代 Total net revenue 增长率，避免加密资产价格波动造成的收入虚增。\n\n数据来自公司披露的合并利润表（公开信息，非投资建议）。",
+          "ms": 3340,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_07661",
+          "type": "metrics-generated",
+          "question": "Using the cash flow statement, answer the following question to the best of your abilities: how much did Block (formerly known as Square) generate in cash flow from operating activities in FY2020? Answer in USD millions.",
+          "gold": "$382.00",
+          "prediction": "**答案：约 3.816 亿美元（$381,603 千美元）**\n\n**依据**\n- 取自材料中「SQUARE, INC. 合并现金流量表」（单位：千美元），FY2020（截至 2020 年 12 月 31 日）行项目：\n  - **Net cash provided by operating activities = 381,603（千美元）**\n- 换算口径：381,603 千美元 ÷ 1,000 = **381.6 百万美元（USD millions ≈ $381.6M）**。\n\n**参考对比（同期经营活动现金流）**\n- FY2019：465,699 千美元（约 465.7M）\n- FY2018：295,080 千美元（约 295.1M）\n\n即 FY2020 经营活动现金流净额同比 **下降约 8,410 万美元（-18.1%）**（465,699 → 381,603 千美元）。\n\n**说明**：该数字为现金流量表上的「经营活动提供的现金净额」合计数，已隐含当年若干大额营运资金变动（如客户资金 -1,151,536、客户应付 +1,733,138 等）的影响；数据来自公司公开披露，非投资建议。",
+          "ms": 2153,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_10285",
+          "type": "metrics-generated",
+          "question": "We need to calculate a financial metric by using information only provided within the balance sheet. Please answer the following question: what is Boeing's year end FY2018 net property, plant, and equipment (in USD millions)?",
+          "gold": "$12645.00",
+          "prediction": "**答案：12,645 百万美元（即约 126.45 亿美元）**\n\n依据：波音公司（The Boeing Company and Subsidiaries）合并财务状况表（Consolidated Statements of Financial Position，单位：百万美元）中，截至 **2018 年 12 月 31 日** 的资产项下：\n\n- **Property, plant and equipment, net（不动产、厂房及设备净额）= $12,645**\n- 上年同期（2017 年 12 月 31 日）为 $12,672，同比减少约 27 百万美元（-0.2%）\n\n说明：该指标仅取自资产负债表项目，为扣减累计折旧后的净额口径，不含在建工程等未单独列示的明细。\n\n需要的话，我可以再帮你算一下该科目占总资产（$117,359 百万）的比重（约 10.8%）或与折旧相关的现金回报指标。",
+          "ms": 1767,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00517",
+          "type": "domain-relevant",
+          "question": "Are there any product categories / service categories that represent more than 20% of Boeing's revenue for FY2022?",
+          "gold": "Yes. Boeing has product and service categories that represent more than 20% of Boeing's revenue for FY2022. These categories are Commercial Airplanes which comprises 39% of total revenue, Defence which comprises 35% of total revenue and Services which comprises 26% of total revenue.",
+          "prediction": "## 结论\n**是。FY2022（2022 年 1–12 月）有三个业务类别收入占比超过 20%。**\n\n## 依据（以 FY2022 总收入 $66,608 百万为分母）\n\n| 类别 | FY2022 收入（百万美元） | 占总收入比 |\n|---|---|---|\n| Commercial Airplanes | 25,867 | **38.8%** |\n| Defense, Space & Security | 23,162 | **34.8%** |\n| Global Services | 17,611 | **26.4%** |\n| Boeing Capital | 199 | 0.3% |\n| Unallocated items, eliminations and other | (231) | −0.3% |\n| **合计** | **66,608** | 100.0% |\n\n计算口径：直接用材料中\"Years ended December 31, 2022\"列的各类别收入 ÷ 同列 Total revenues $66,608 百万；占比合计 99.99%（四舍五入误差）。\n\n## 说明\n- 超过 20% 门槛的为 **Commercial Airplanes（38.8%）**、**Defense, Space & Security（34.8%）**、**Global Services（26.4%）** 三项，合计约 100%。\n- Boeing Capital 与 Unallocated items 均远低于 20%（其中后者为负数，属抵销项）。\n- 该结论基于材料所披露的**报告分部（segment）口径**；材料未提供更细的产品/机型或服务线收入拆分，因此无法在分部以下层级判断是否有其他类别超过 20%。\n\n数据来自公开披露的分部信息，非投资建议。",
+          "ms": 4205,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01091",
+          "type": "domain-relevant",
+          "question": "Has Boeing reported any materially important ongoing legal battles from FY2022?",
+          "gold": "Yes. Multiple lawsuits have been filed against Boeing resulting from a 2018 Lion Air crash and a 2019 Ethiopian Airlines crash.",
+          "prediction": "## 结论\n\n**只能部分认定。** 就所给材料而言，可以确认存在\"多起、尚未了结的诉讼\"，且这类诉讼通常构成重大或有事项；但材料**无法证明这些法律战是 FY2022 发生或属于 FY2022 报告期**——其触发事件是 2018 年和 2019 年的两起空难。\n\n## 材料能支持什么\n\n材料原文：*\"Multiple legal actions have been filed against us as a result of the October 29, 2018 accident of Lion Air Flight 610 and the March 10, 2019 accident of Ethiopian Airlines Flight 302.\"*\n\n由此可推导三点：\n- **存在诉讼**：用词为 \"Multiple legal actions\"（多起法律行动），数量上不止一起；\n- **尚未终结**：使用现在完成时 \"have been filed\"，未提及和解、判决或撤诉，可推断为 ongoing（持续中）；\n- **重大性倾向**：涉及两起造成重大人员伤亡的空难，按一般披露惯例属于重大或有事项。\n\n## 材料不能支持什么（关键缺口）\n\n1. **无时间归属**：材料全文中没有出现 \"FY2022\"、\"2022\" 等字样，未说明诉讼是在 FY2022 提起、FY2022 仍在进行，还是在更早期间已披露。\n2. **触发事件在 2018/2019 财年**：事故日期为 2018-10-29 与 2019-03-10，对应 FY2018/FY2019，而非 FY2022。仅凭这段文字，无法把诉讼\"归到 FY2022\"。\n3. **无量化信息**：未给出索赔金额、被告/原告、诉讼阶段或预计损失区间，无法判断对财务状况的影响幅度。\n\n**该缺口的影响**：本",
+          "ms": 10682,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "REFUSAL",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00678",
+          "type": "domain-relevant",
+          "question": "Does Boeing have an improving gross margin profile as of FY2022? If gross margin is not a useful metric for a company like this, then state that and explain why.",
+          "gold": "Yes. Boeing has an improving gross margin profile as of FY2022. Gross profit improved from $3,017 million in FY2021 to $3,502 million in FY2022. Gross margin % improved from 4.8% in FY2021 to 5.3% in FY2022.",
+          "prediction": "## 结论\n\n**是，FY2022 毛利率较 FY2021 与 FY2020 改善**——但改善幅度温和，且对波音这类公司而言，毛利率是一个**用途有限的指标**，不宜单独作为判断依据。\n\n## 关键测算（单位：百万美元，来自所给合并利润表）\n\n| 口径 | FY2022 | FY2021 | FY2020 |\n|---|---|---|---|\n| 总收入 | 66,608 | 62,286 | 58,158 |\n| 毛利（收入 − 产品销售成本 − 服务成本） | **3,530** | **3,049** | **−5,642** |\n| 毛利率 | **5.3%** | **4.9%** | **−9.7%** |\n| （若将 Boeing Capital 利息费用 28/32/43 也计入成本） | 3,502（5.26%） | 3,017（4.84%） | −5,685（−9.78%） |\n\n- 方向不变：2020 年为负毛利，2021 转正，2022 再提升 **+0.4 个百分点**，毛利额同比 +481（+15.8%），收入同比 +6.9%——收入增长快于销售成本，是改善来源。\n- 改善**全部来自产品**：产品毛利率 −15.8% → 2.8% → 3.4%（收入 47,142→51,386→55,893）；服务毛利率 16.2% → 14.8% → **15.0%**，两年是走弱的。\n\n## 为什么毛利率对波音\"不好用\"\n\n1. **长周期完工百分比确认收入**：毛利受\"估计总成本变动\"的当期追溯调整（catch-up）与异常生产成本（737 MAX 停飞/停产、787 生产缺陷）主导，波动的是一次性项目与会计估计，而非当期定价能力。\n2. **成本口径不完整**：本表只到产品销售/服务成本，**未列研发（R&D）与 SG&A**，因此上述\"毛利\"介于",
+          "ms": 28038,
+          "toolCalls": [
+            "list_skills",
+            "load_skill"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01290",
+          "type": "domain-relevant",
+          "question": "Who are the primary customers of Boeing as of FY2022?",
+          "gold": "Boeing's primary customers as of FY2022 are a limited number of commercial airlines and the US government. The US government accounted for 40% of Boeing's total revenues in FY2022.",
+          "prediction": "## 结论\n\n根据所给材料，波音（Boeing）FY2022 的主要客户可归纳为两类：\n\n1. **美国政府**——材料明确指出\"我们从美国政府获得很大一部分收入\"，并给出量化数据：**2022 年有 40% 的收入来自美国政府合同**。\n2. **商业航空公司**——材料称\"我们从**数量有限的商业航空公司**获得显著比例的收入\"，即客户高度集中于少数几家航司。\n\n## 关键依据（均出自所给材料）\n\n- \"We derive a substantial portion of our revenue from the U.S. government\"\n- \"In 2022, 40% of our revenues were earned pursuant to U.S. government contracts\"\n- \"We derive a significant portion of our revenues from a limited number of commercial airlines\"\n\n## 需要说明的缺口\n\n- 材料**只给出了美国政府合同的占比（40%）**，**未披露商业航空公司客户的具体收入占比**，也未列出具体航司名称。\n- 因此，两类客户中**美国政府的权重是明确的（40%）**，而\"商业航空公司\"仅为定性描述（\"显著比例\"\"数量有限\"），无法从材料推导出确切百分比。\n\n若需要更精确的客户结构（如各航司占比、国防/商用分部拆分），需查阅波音 FY2022 年报中\"客户集中度\"或分部收入附注，本材料不足以支撑该层级的量化。",
+          "ms": 3659,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00464",
+          "type": "novel-generated",
+          "question": "Is Boeing's business subject to cyclicality?",
+          "gold": "Yes, Boeing's business is subject to cyclicality due to its exposure to the airline industry which is a cyclical industry.",
+          "prediction": "## 结论\n\n**是，波音的业务具有明显的周期性（cyclical）。**\n\n## 依据（来自该公司自身披露文件）\n\n材料原文指出：\n\n> \"Historically, the airline industry has been cyclical and very competitive and has experienced significant profit swings and constant challenges to be more cost competitive.\"\n>（历史上，航空业具有周期性且竞争激烈，经历过显著的利润波动，并持续面临降低成本的压力。）\n\n从这段材料可以推导出两层含义：\n\n1. **需求端天然波动**——航空业本身的周期性与\"significant profit swings\"（利润大幅波动）决定了航空公司的盈利随经济周期起伏。\n2. **传导至波音的订单与交付**——航空公司的盈利水平直接决定其飞机采购与更新计划；材料强调行业\"very competitive\"且\"持续面临降本压力\"，意味着客户在景气下行时会推迟订单、压价或推迟交付，从而放大波音民机业务的收入与利润波动。\n\n因此，材料虽未出现\"波音的周期性\"这一字面表述，但其中对航空公司客户所处行业周期性及利润波动的描述，正是波音业务周期性的直接来源，可据此判定答案为\"是\"。\n\n## 需要说明的信息边界\n\n- 该摘录**仅覆盖航空公司/航空业的周期特征**，未量化波音收入的波动幅度、未给出具体期间数据，也**未区分业务分部**（如民机与防务、服务业务的周期性差异）。\n- 因此本结论的\"周期性\"判断仅限于**需求传导逻辑**，不包含任何定量测算；如需量化，需要财报中分部的收入/订单数据。\n\n## 建议\n\n1. 若用于风险评估，建议补充取数：调阅波音分年度/分季度收入、订单储备（back",
+          "ms": 6165,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00494",
+          "type": "novel-generated",
+          "question": "What production rate changes is Boeing forecasting for FY2023?",
+          "gold": "Boeing forecasts an increase in the production rates for the 737, 777X and 787 aircrafts in 2023.",
+          "prediction": "## Boeing FY2023 产量变化预测（依据该公司文件）\n\n**结论：三项商用飞机项目均指向\"2023年恢复/提升\"，但只有 787 给出了明确目标数字。**\n\n| 项目 | 当前状态 | 2023年预测 |\n|---|---|---|\n| **787** | 低速率生产 | **逐步提升至每月 5 架**（明确目标） |\n| **777X** | 生产**暂停** | **2023年恢复生产**（未给具体速率） |\n| **737** | 在每月 **31 架**水平上难以稳定（运营与供应链承压） | **计划逐步提升**，但节奏取决于市场需求与供应链产能（无具体数字） |\n\n**关键依据（原文要点）：**\n- 787：\"we expect to gradually increase to 5 per month in 2023\"\n- 777X：\"Production of the 777X is currently paused and is expected to resume in 2023\"\n- 737：\"stabilizing production at 31 per month... plan to gradually increase 737 production rates based on market demand and supply chain capacity\"\n\n**需要注意的口径限制：**\n- 文件中**未披露** 777X 恢复后的产量目标，也未给出 737 提升后的具体月度速率或时间表，因此这两项只能定性描述，不能推算具体数字；\n- 787 的 \"5 per month in 2023\" 未说明是年内达到还是全年平均，材料不足以区分。\n\n**建议：** 如需量化 2023 年交付量影响，应结合后续季度财报中披露的实际月度速率与交付",
+          "ms": 3158,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00585",
+          "type": "novel-generated",
+          "question": "How does Boeing's effective tax rate in FY2022 compare to FY2021?",
+          "gold": "Effective tax rate in FY2022 was 0.62%, compared to  -14.76% in FY2021.",
+          "prediction": "## 结论\n\nBoeing 的**有效税率从 FY2021 的净税收收益状态转为 FY2022 的接近盈亏平衡**，两年相差约 **15.4 个百分点**，税负方向发生了明显反转。\n\n## 推导过程（数据来自所给合并利润表，单位：百万美元）\n\n有效税率 = 所得税(费用)/收益 ÷ 税前亏损\n\n| 项目 | FY2022 | FY2021 |\n|---|---|---|\n| 税前亏损（Loss before income taxes） | (5,022) | (5,033) |\n| 所得税费用/(收益) | (31)（费用） | 743（收益） |\n| 有效税率（按\"费用为正/税前利润\"口径） | 31 ÷ (5,022) ≈ **-0.6%** | (743) ÷ (5,033) ≈ **+14.8%** |\n| 有效税率（按报表行项目原始符号口径） | -31 ÷ (5,022) ≈ **+0.6%** | 743 ÷ (5,033) ≈ **-14.8%** |\n\n两种符号口径只是表示方式不同，实质一致：\n\n- **FY2021**：公司在 50.33 亿美元税前亏损的情况下确认了 **7.43 亿美元所得税收益**，相当于税前亏损的约 **14.8%**，即有效税率为**大幅负值（净收益）**；\n- **FY2022**：税前亏损 50.22 亿美元，却确认了 **3,100 万美元所得税费用**，有效税率约为 **+0.6%（对亏损小幅计提）**。\n\n## 变化幅度\n\n有效税率从 FY2021 的约 **-14.8%** 升至 FY2022 的约 **+0.6%**（按费用正口径：由 +14.8% 降至 -0.6%），**变动约 15.4 个百分点**——税收从\"显著增厚业绩\"变为\"几乎无影响/小幅拖累\"（以 7.43 亿 vs. 0.31 亿美元计，收益金额减少",
+          "ms": 8308,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03473",
+          "type": "metrics-generated",
+          "question": "What is the FY2017 return on assets (ROA) for Coca Cola? ROA is defined as: FY2017 net income / (average total assets between FY2016 and FY2017). Round your answer to two decimal places. Give a response to the question by relying on the details shown in the balance sheet and the P&L statement.",
+          "gold": "0.01",
+          "prediction": "## 结论\n\n**可口可乐 FY2017 的 ROA ≈ 1.46%**（按合并净利润口径）。若以\"归属股东净利润\"为分子，则为 **1.42%**。\n\n## 计算过程\n\n**分子（FY2017 净利润，来自利润表）**\n- 合并净利润（CONSOLIDATED NET INCOME，含非控股权益）：**$1,283 百万**\n- 归属股东净利润（NET INCOME ATTRIBUTABLE TO SHAREOWNERS）：$1,248 百万\n\n**分母（FY2016 与 FY2017 平均总资产，来自资产负债表）**\n- FY2017 TOTAL ASSETS = $87,896 百万\n- FY2016 TOTAL ASSETS = $87,270 百万\n- 平均总资产 = (87,896 + 87,270) ÷ 2 = **$87,583 百万**\n\n**ROA**\n- 主口径：1,283 ÷ 87,583 = **0.0146 = 1.46%**\n- 替代口径：1,248 ÷ 87,583 = **0.0142 = 1.42%**\n\n## 说明\n\n- 口径说明：分母为两年期末总资产的简单算术平均，单位为百万美元，与分子单位一致，无需换算。\n- 口径差异来源：FY2017 净利润下降主要受所得税费用异常上升影响（$5,560 百万 vs FY2016 的 $1,586 百万），导致利润表底部\"合并净利润\"与\"归属股东净利润\"相差 $35 百万（非控股权益）。\n- 该 ROA 极低（1.4%~1.5%），主要因所得税一次性因素而非经营性资产效率恶化（营业利润 $7,501 百万，营业利润率仍约 21%）。\n\n**建议**：如用于横向对比或估值，请统一口径（建议采用合并净利润 $1,283 百万 → 1.46%），并注意 FY2017 税率异常对同年的 ROE、ROA 均",
+          "ms": 9454,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_09724",
+          "type": "metrics-generated",
+          "question": "What is Coca Cola's FY2021 COGS % margin? Calculate what was asked by utilizing the line items clearly shown in the income statement.",
+          "gold": "39.7%",
+          "prediction": "**结论：可口可乐 FY2021 的 COGS（销售成本）占收入比重 = 39.7%**\n\n**计算过程（单位：百万美元，2021 年度，截至 12 月 31 日）**\n\n| 用到的行项目 | FY2021 |\n|---|---|\n| Net Operating Revenues（净营业收入） | 38,655 |\n| Cost of goods sold（销售成本） | 15,357 |\n\nCOGS % margin = 15,357 ÷ 38,655 = 0.3973 ≈ **39.7%**\n\n**核对与口径说明**\n- 换算口径：直接使用利润表原始行项目，未做任何币种或单位换算（原文即为\"百万美元\"）。\n- 交叉验证：Gross Profit 23,298 ÷ 38,655 = 60.3%，60.3% + 39.7% = 100%，与毛利/成本互补关系一致。\n- 因 COGS 未单独列示折旧摊销等细分项，此处为利润表口径的**毛利前成本率**，与\"营业成本率\"含义一致。\n\n**可比参考（同表期间）**\n- FY2020：13,433 ÷ 33,014 = 40.7%\n- FY2019：14,619 ÷ 37,266 = 39.2%\n\n即 2021 年 COGS 率较 2020 年下降约 1.0 个百分点，回到接近 2019 年水平。\n\n**建议**\n1. 分析盈利质量时，把 COGS 率与毛利率、营业利润率（10,308 ÷ 38,655 = 26.7%）连起来看，判断成本改善是否传导至经营层面。\n2. 若需归因成本率变动，应进一步查阅年报 MD&A 与分部/地区收入结构，本材料仅含合并利润表，不含成本构成明细。\n\n数据来源：可口可乐公司合并利润表（公司披露文件），非投资建议。",
+          "ms": 3672,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_06272",
+          "type": "metrics-generated",
+          "question": "What is Coca Cola's FY2022 dividend payout ratio (using total cash dividends paid and net income attributable to shareholders)? Round answer to two decimal places. Answer the question asked by assuming you only have access to information clearly displayed in the cash flow statement and the income statement.",
+          "gold": "0.8",
+          "prediction": "## 结论\n\n**可口可乐 FY2022 股利支付率 ≈ 79.82%**\n\n## 计算依据（仅用现金流量表与利润表已列示项目）\n\n| 项目 | FY2022 | 来源 |\n|---|---|---|\n| 支付的现金股利（Dividends） | 7,616 百万美元 | 合并现金流量表 · 筹资活动 |\n| 归属于股东净利润（Net Income Attributable to Shareowners） | 9,542 百万美元 | 合并利润表 |\n\n计算：\n- 7,616 ÷ 9,542 = 0.798155…\n- 四舍五入至两位小数 → **0.80，即 79.82%**（以百分比表示）\n\n口径说明：\n- 分子使用现金流量表\"筹资活动—Dividends\"的**实际现金分红总额**（7,616 百万美元），不含股票回购（Purchases of stock for treasury 1,418 百万美元）；\n- 分母使用利润表\"Net Income Attributable to Shareowners of The Coca-Cola Company\"（9,542 百万美元），非合并净利润 9,571 百万美元（后者含少数股东损益 29 百万美元）。\n- 若按合并净利润 9,571 计算则为 79.57%，与题目要求的\"归属于股东\"口径不符，故不采用。\n\n数据来源：公司公开披露的 2022 年度合并财务报表（单位：百万美元），非投资建议。",
+          "ms": 3366,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_10130",
+          "type": "metrics-generated",
+          "question": "Based on the information provided primarily in the balance sheet and the statement of income, what is FY2020 days payable outstanding (DPO) for Corning? DPO is defined as: 365 * (average accounts payable between FY2019 and FY2020) / (FY2020 COGS + change in inventory between FY2019 and FY2020). Round your answer to two decimal places.",
+          "gold": "63.86",
+          "prediction": "## 结论\n\n**Corning FY2020 应付账款周转天数（DPO）≈ 63.86 天**（约 63.9 天）\n\n## 计算过程（单位：百万美元）\n\n按题目给定口径：DPO = 365 × 平均应付账款 ÷（FY2020 营业成本 + 存货变动）\n\n| 取数项 | 来源 | 数值 |\n|---|---|---|\n| 应付账款 FY2020 | 合并资产负债表（2020/12/31） | 1,174 |\n| 应付账款 FY2019 | 合并资产负债表（2019/12/31） | 1,587 |\n| 平均应付账款 | (1,174 + 1,587) ÷ 2 | **1,380.5** |\n| 营业成本 FY2020 | 合并利润表 Cost of sales | 7,772 |\n| 存货 FY2020 | 资产负债表 Inventories, net | 2,438 |\n| 存货 FY2019 | 资产负债表 Inventories, net | 2,320 |\n| 存货变动 | 2,438 − 2,320 | **+118** |\n\n计算：\n- 分母 = 7,772 + 118 = **7,890**\n- DPO = 365 × 1,380.5 ÷ 7,890 = 503,882.5 ÷ 7,890 = **63.8634…** → **63.86 天**\n\n## 说明与提示\n\n- 数据取自 Corning 2020 年年报（Form 10-K）合并利润表与合并资产负债表，均为 2020/2019 两期口径，无需额外换算，单位为百万美元。\n- 口径提示：本题分母采用\"COGS + 存货增加额\"，相当于把存货增量还原为当期采购/生产的现金性支出，因此结果略低于直接用 COGS 计算（365×1380.5÷7772 ≈ 64.83 天）。请按题目给定公式口径使用。\n- 以上",
+          "ms": 7258,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02981",
+          "type": "metrics-generated",
+          "question": "Taking into account the information outlined in the income statement, what is the FY2019 - FY2021 3 year average unadjusted operating income % margin for Corning? Answer in units of percents and round to one decimal place.",
+          "gold": "10.3%",
+          "prediction": "**答案：10.3%**\n\n**计算口径与过程**（均取自所给 Consolidated Statements of Income，单位：百万美元）\n\n| 财年 | 营业利润 Operating income | 净销售额 Net sales | 营业利润率 |\n|---|---|---|---|\n| 2021 | 2,112 | 14,082 | 15.0% |\n| 2020 | 509 | 11,303 | 4.5% |\n| 2019 | 1,306 | 11,503 | 11.4% |\n\n- 2021：2,112 ÷ 14,082 = 14.998% ≈ 15.0%\n- 2020：509 ÷ 11,303 = 4.503% ≈ 4.5%\n- 2019：1,306 ÷ 11,503 = 11.354% ≈ 11.4%\n\n三年平均 = (14.998% + 4.503% + 11.354%) ÷ 3 = 30.855% ÷ 3 = **10.285% ≈ 10.3%**\n\n**说明**\n- \"Unadjusted（未调整）\"即直接使用报表列示的 Operating income，不做一次性项目剔除；虽然 2020 年存在 Transaction-related gain, net（498）等非经营性项目，但该科目位于 Operating income **之后**，本就不影响营业利润口径。\n- 换算口径：金额为原表列示（百万美元），利润率未做单位换算即比率；平均方法为三个年度利润率的简单算术平均。\n- 数据来自公司自身合并利润表（FY2019–FY2021），非投资建议。",
+          "ms": 3654,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01346",
+          "type": "domain-relevant",
+          "question": "How much has the effective tax rate of Corning changed between FY2021 and FY2022?",
+          "gold": "The effective tax rate of Corning has changed from 20% in FY2021 to 23% in FY 2022.",
+          "prediction": "**结论：康宁（Corning）的有效税率从 FY2021 的 20% 上升到 FY2022 的 23%，提高了 3 个百分点（相对上升约 15%）。**\n\n依据（来自所给\"RESULTS OF OPERATIONS\"表，Year ended December 31，单位：百万美元）：\n\n| 项目 | 2022 | 2021 | 变动 |\n|---|---|---|---|\n| 税前利润 | 1,797 | 2,426 | (26%) |\n| 所得税费用 | (411) | (491) | 16% |\n| **有效税率** | **23%** | **20%** | **+3 pct** |\n\n说明与推导：\n- 表中直接列示了两年的\"Effective tax rate\"：2022 年 23%、2021 年 20%，差额 = 23% − 20% = **3 个百分点**（相对变化 3/20 = 15%）。\n- 该上升与税前利润下降 26%、而所得税费用仅下降 16%（绝对值从 491 降至 411）方向一致，即税负相对收入基础变重。\n- 口径提示：表中税率均以\"占税前利润百分比\"列示，2022 年为全年（截至 12 月 31 日）口径，与 2021 年可比。\n\n如需进一步分析税率上升的具体原因（如估值备抵、地区利润结构、一次性项目等），当前材料未提供所得税调节表（tax reconciliation）明细，需补充该披露才能判断。数据来自公司公开披露，非投资建议。",
+          "ms": 2029,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00005",
+          "type": "domain-relevant",
+          "question": "Does Corning have positive working capital based on FY2022 data? If working capital is not a useful or relevant metric for this company, then please state that and explain why.",
+          "gold": "Yes. Corning had a positive working capital amount of $831 million by FY 2022 close. This answer considers only operating current assets and current liabilities that were clearly shown in the balance sheet.",
+          "prediction": "## 结论\n\n**是。Corning 2022 财年营运资本为正，约 22.78 亿美元（$2,278 百万）。** 且对 Corning 这类资本密集型制造业公司，营运资本仍属有意义、可用的指标。\n\n## 计算过程（单位：百万美元）\n\n依据材料「Consolidated Balance Sheets」中 **December 31, 2022** 一列：\n\n| 项目 | 2022 | 2021 |\n|---|---|---|\n| 流动资产合计 | 7,453 | 7,659 |\n| 流动负债合计 | 5,175 | 4,806 |\n| **营运资本（差额）** | **+2,278** | **+2,853** |\n| 流动比率 | 1.44× | 1.59× |\n\n用到的行项目：\n- 流动资产：现金及等价物 1,671 + 应收账款净额 1,721 + 存货 2,904 + 其他流动资产 1,157 = 7,453\n- 流动负债：一年内到期长期债务及短期借款 224 + 应付账款 1,804 + 其他应计负债 3,147 = 5,175\n\n## 是否需要\"额外说明\"\n\n有两种情况下\"营运资本不适用\"，Corning 均不属于，理由如下：\n\n1. **不是现金/无存货型的轻资产或金融类企业**。Corning 是重资产制造商（PP&E 净额达 15,371，占总资产 29,499 的约 52%），日常经营确实依赖存货 (2,904) 与应收账款 (1,721) 的周转，与流动负债的匹配关系直接反映短期流动性与营运效率——因此营运资本是相关指标。\n2. **即使采用更保守口径，结论不变**。若剔除现金（1,671）只看经营性营运资本：(1,721 + 2,904 + 1,157) − 5,175 = **+607**，仍为正。也就是说，正营运资本不是靠现金堆出来的，经营资产",
+          "ms": 8567,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_04209",
+          "type": "metrics-generated",
+          "question": "Using only the information within the balance sheet, how much total assets did Costco have at the end of FY2021? Answer in USD millions.",
+          "gold": "$59268.00",
+          "prediction": "**结论：59,268 百万美元（USD 59,268 million）**\n\n依据（截至 FY2021 期末，即 2021 年 8 月 29 日，摘自合并资产负债表）：\n\n- 流动资产合计：29,505\n- 物业及设备净额：23,492\n- 经营租赁使用权资产：2,890\n- 其他长期资产：3,381\n- **资产总计（TOTAL ASSETS）：59,268**\n\n验算：29,505 + 23,492 + 2,890 + 3,381 = 59,268（百万美元），与表中 TOTAL ASSETS 一致。同口径下 FY2020（2020 年 8 月 30 日）资产总计为 55,556 百万美元，FY2021 同比增加 3,712 百万美元（约 +6.7%）。\n\n数据来自公司披露的合并资产负债表，非投资建议。",
+          "ms": 1618,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_05915",
+          "type": "metrics-generated",
+          "question": "What is the FY2018 fixed asset turnover ratio for CVS Health? Fixed asset turnover ratio is defined as: FY2018 revenue / (average PP&E between FY2017 and FY2018). Round your answer to two decimal places. Calculate what was asked by utilizing the line items clearly shown in the P&L statement and the balance sheet.",
+          "gold": "17.98",
+          "prediction": "## 结论\n\n**CVS Health FY2018 固定资产周转率 ≈ 17.98**\n\n## 计算过程（单位：百万美元）\n\n| 项目 | 来源 | 金额 |\n|---|---|---|\n| FY2018 Total revenues | 合并利润表 | $194,579 |\n| Property and equipment, net（2018-12-31） | 合并资产负债表 | $11,349 |\n| Property and equipment, net（2017-12-31） | 合并资产负债表 | $10,292 |\n| 平均 PP&E | (11,349 + 10,292) ÷ 2 | $10,820.5 |\n\n固定资产周转率 = 194,579 ÷ 10,820.5 = **17.98**\n\n## 说明\n\n- 分子采用利润表\"Total revenues\"（$194,579M），即含 Products、Premiums、Services 及 Net investment income 的合计口径；期间为 FY2018（截至 2018-12-31 的年度）。\n- 分母采用资产负债表\"Property and equipment, net\"两年期初/期末简单平均：($11,349M + $10,292M) ÷ 2 = $10,820.5M。\n- 换算口径：三张表均以\"百万美元\"列示，分子分母单位一致，比值无量纲，无需额外换算。\n- 有意思的一点：2018 年公司收入增长约 5%（184,786 → 194,579），但 PP&E 仅从 10,292 增至 11,349（约 +10%），周转率因此仍处于高位水平，主要反映其零售药房与 PBM 业务属轻资产运营模式（大量资产来自 2018 年 Aetna 并购形成的商誉 78,678M 与无形资产 36,524M，而",
+          "ms": 4483,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00790",
+          "type": "domain-relevant",
+          "question": "Is CVS Health a capital-intensive business based on FY2022 data?",
+          "gold": "Yes, CVS Health requires an extensive asset base to operate, which is evident from its ROA of only 1.82% in 2022 and 3.39% in 2021, though it should be noted that a significant portion of this asset base is goodwill, and CVS's fixed assets/total assets ratio is on the lower side of 5.6%.",
+          "prediction": "## 结论\n\n**不构成\"资本密集型\"企业**（按 FY2022 数据）。CVS Health 是一家以药品分销＋医疗服务为主的规模化、劳动与营运资金驱动型公司，而非依赖厂房设备的资本密集型制造商。\n\n## 关键依据（均据材料 FY2022，单位：百万美元）\n\n| 指标 | 计算 | 结果 |\n|---|---|---|\n| 固定资产（PP&E 净额）占营收 | 12,873 / 322,467 | **4.0%**，\"轻资产\"水平 |\n| PP&E 占总资产 | 12,873 / 228,275 | 5.6% |\n| 总资产周转率 | 322,467 / 228,275 | **1.41 次**，周转快、资产轻 |\n| 销售成本率 | 196,892 / 322,467 | 61.1%，典型的商品/药品流通结构 |\n| 营业利润率 | 7,746 / 322,467 | 2.4%，薄利走量 |\n| 商誉＋无形资产占比 | (78,150 + 24,754) / 228,275 | **45.1%**，资产以并购形成，非实物资本 |\n| 应收＋存货占营收 | (27,276 + 19,090) / 322,467 | 14.4%，属营运资金密集 |\n\n判断逻辑：真正的资本密集企业通常 PP&E/营收显著偏高（如制造、公用事业），且利润率对产能利用率高度敏感。CVS 的 PP&E 仅占营收 4%、总资产周转 1.41 次，而资产端 45% 是商誉与无形资产（历史并购），负债端还体现为 **17,872 的经营租赁使用权资产**（门店/配送网络主要靠租赁而非自有资本开支）。因此其\"重\"在渠道、人力与营运资金，不在固定资产。\n\n## 数据缺口（影响结论强度）\n\n材料仅含合并利润表与资产负债表，**未提供现金流量表**，故以下两项无法计算：\n- 资本开支/营收比率、资本开支/折旧比",
+          "ms": 10059,
+          "toolCalls": [
+            "list_skills",
+            "load_skill"
+          ],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_01107",
+          "type": "domain-relevant",
+          "question": "Has CVS Health reported any materially important ongoing legal battles from 2022, 2021 and 2020?",
+          "gold": "Yes, CVS Health has been involved in multiple ongoing legal battles. Some notable legal dispute areas for CVS are: (1) usual and customary pricing litigation: where it's claimed that CVSâs retail pharmacies overcharged for prescription drugs; (2) PBM litigation and investigations: where it's claimed that that rebate agreements between the drug manufacturers and PBMs caused inflated prices for certain drug products; and (3) controlled substances litigation: legal matters around opioids for which CVS has agreed to pay up to $4.3 billion to claimants in remediation and $625 million to attorneys and fees",
+          "prediction": "## 结论\n\n**仅就能给出的材料而言：2022 年可以确认存在重大、未决的法律诉讼；2021 年与 2020 年，材料中没有提供任何信息，无法回答。**\n\n## 2022 年（材料中有明确披露）\n\n1. **Usual and Customary Pricing Litigation（常用惯常价格诉讼）**\n   公司及部分现任/前任董事与高管被列为被告，多项诉讼指控其零售药房在理赔裁决过程中未提交正确的常用惯常价格，导致处方药收费过高。\n   → 属集体诉讼性质、被告含个人，通常意味着仍处未决状态。\n\n2. **药品定价与返利安排诉讼**\n   公司面临多起诉讼（含州总检察长、政府下级机构及若干推定集体诉讼），指控药品制造商与 PBM 之间的返利协议抬高了特定药品价格。\n\n3. **阿片类药物索赔（2022 年 12 月和解）**\n   - 2022 年 12 月签订正式和解协议（财务金额于 2022 年 10 月达成原则性一致），对手方为多州总检察长领导小组与原告执行委员会（PEC）。\n   - 和解金额上限：约 **43 亿美元** 阿片类治理支出 + **6.25 亿美元** 律师费、成本及追加治理支出，合计约 **49.25 亿美元**。\n   - 支付安排：自 **2023 年**起分 **10 年** 支付，年均约 **4.93 亿美元**（49.25 亿 ÷ 10，本平台换算）。\n   - 覆盖范围：实质解决各州及政治分区对公司实体的阿片类索赔，**但不包括私人原告**——即与私人原告的诉讼并未因此终结。\n\n## 关键缺口（影响结论强度）\n\n- 材料未提及 **2021 年、2020 年**的任何法律诉讼、索赔或和解事项，也未给出这两个年度的应计金额或未决案件数量。\n- 材料未标明所摘录文件所属报告期与文件类型（如年度/季度报告）以及\"重大性\"门槛的界定。",
+          "ms": 8033,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01244",
+          "type": "domain-relevant",
+          "question": "Has CVS Health paid dividends to common shareholders in Q2 of FY2022?",
+          "gold": "Yes, CVS paid a $ 0.55 dividend per share every quarter in FY2022",
+          "prediction": "**结论：是的——材料支持 CVS Health 在 FY2022 第二季度向普通股股东派发了股息。**\n\n**依据（来自你提供的材料）：**\n- 材料写明：\"During 2022... the quarterly cash dividend was **$0.55 per share**\"（2022 年季度现金股息为每股 0.55 美元）。\n- 该股息为**季度（quarterly）**性质，即 2022 全年按季发放，Q2（4–6 月）自然包含在内，对应的每股金额为 **0.55 美元**。\n\n**口径与限制说明：**\n- 该材料给出的是\"每股季度股息金额\"这一标准，并**未逐笔列出 Q2 的具体宣告日/派发日**；我据此季度派息安排推导出 Q2 已派息，推导仅基于上述这一行项目与 2022 年度期间，未使用任何外部估计值。\n- 若你需要\"Q2 具体派发日期、除息日、派息总额\"等细节，需查阅现金流量表或股息宣告公告，本材料不含这些信息。\n\n**建议：** 如需精确到日期的派息记录，可进一步调取该公司 FY2022 10-Q 的现金流量表（\"Dividends paid\" 行）或股息宣告公告核对。\n\n（说明：以上仅为基于所给材料的解读，非投资建议。）",
+          "ms": 3814,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00839",
+          "type": "novel-generated",
+          "question": "Does Foot Locker's new CEO have previous CEO experience in a similar company to Footlocker?",
+          "gold": "Yes. She was previous CEO of Ulta Beauty which means she had to manage a large retail company that has brick and mortar + online business. So yes she was a CEO in a similar company to Foot Locker before this.",
+          "prediction": "**结论：是。** 根据材料，Foot Locker 新任 CEO 具备同类公司的 CEO 任职经历。\n\n**关键依据：**\n- 新任 CEO 为 **Mary N. Dillon**（61 岁），自 **2022 年 9 月 1 日**起生效，同时加入公司董事会及董事会执行委员会。\n- 材料明确其此前职务为 **Ulta Beauty, Inc. 的执行董事长（Executive Chair）兼首席执行官（CEO）**——材料用的是 \"former\"（前任），说明该 CEO 经历发生在其加入 Foot Locker 之前，属于既往经验。\n- 就业务性质而言，Ulta Beauty 与 Foot Locker 同属**专业零售（specialty retail）**领域（前者为美妆专业零售商，后者为运动鞋服专业零售商），因此可视为\"类似公司\"。\n\n**说明：** 材料本身只直接给出了 Ulta Beauty 的职务信息，未逐字写明\"两家公司相似\"；上文的\"类似公司\"判断是基于二者均为专业零售商的行业属性推导得出，而非材料中的直接表述。\n\n**建议：** 若需确认其对 Foot Locker 具体业务（运动鞋服零售、门店运营）的适配度，可进一步查阅其履历中是否有运动/鞋服零售领域的直接经验。\n\n（本回答基于您提供的公司文件，非投资建议。）",
+          "ms": 3448,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00822",
+          "type": "novel-generated",
+          "question": "Were there any board member nominees who had substantially more votes against joining than the other nominees?",
+          "gold": "Yes, his name is Richard A. Johnson",
+          "prediction": "**结论：有，且只有一位——Richard A. Johnson。**\n\n**关键依据（来源：公司本次年度股东大会董事选举计票表，选举十名董事、任期至 2023 年年度股东大会）**\n\n- Richard A. Johnson：反对票 **16,105,005** 票，赞成 54,484,293 票。\n- 其余九位提名人的反对票均集中在 **约 44 万 ~ 607 万**区间：\n - 最低 Virginia C. Drosos 294,935；Tristan Walker 4,419,340；Steven Oakland 4,524,393；\n - 最高 Dona D. Young 6,074,467。\n- 换算口径（反对票 ÷ 赞成票）：Johnson 约 **29.6%**，其余九人约 **0.5%~11.3%**（多数在 8%~11%）。\n Johnson 的反对票约为其余九人中最高者（Young 6,074,467）的 **2.7 倍**，约为九人中位水平（约 490 万）的 **3.3 倍**。\n\n**一个佐证细节**\n\nJohnson 的弃权票仅 **77,685**，而其他九人的弃权票都在 **约 1,071 万**（10,714,223~10,722,670）。这一差额约 **1,063 万**，与其超出常规水平的反对票（约 1,100 万）量级相当，提示 Johnson 名下约千万级票数被计为\"反对\"而非\"弃权\"，这与\"其余董事普遍拿到的是一次例行弃权票、而 Johnson 多拿了反对票\"的对比一致。\n\n**补充说明**\n\n- 尽管反对票显著偏高，材料明确写明\"十名提名人均已当选\"（each of the ten nominees was duly elected），因此这属于相对性异议，而非未获通过。\n- 材料未给出表决权基准日、出席比例或会议具体日期",
+          "ms": 6476,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04103",
+          "type": "metrics-generated",
+          "question": "What is the FY2019 cash conversion cycle (CCC) for General Mills? CCC is defined as: DIO + DSO - DPO. DIO is defined as: 365 * (average inventory between FY2018 and FY2019) / (FY2019 COGS). DSO is defined as: 365 * (average accounts receivable between FY2018 and FY2019) / (FY2019 Revenue). DPO is defined as: 365 * (average accounts payable between FY2018 and FY2019) / (FY2019 COGS + change in inventory between FY2018 and FY2019). Round your answer to two decimal places. Address the question by using the line items and information shown within the income statement and the balance sheet.",
+          "gold": "-3.7",
+          "prediction": "## 结论\n\n**General Mills FY2019（2018/5/28–2019/5/26）现金转换周期 CCC ≈ −3.70 天**\n\n即：DIO 52.60 + DSO 36.40 − DPO 92.70 = **−3.70 天**（负值说明公司在存货与应收占用资金之前，已通过应付账款获得约 3.7 天的净融资）。\n\n## 计算过程（单位：百万美元，天）\n\n**1. DIO = 365 × 平均存货 / FY2019 COGS**\n- 平均存货 = (1,642.2 + 1,559.3) / 2 = 1,600.75\n- COGS（FY2019 Cost of sales）= 11,108.4\n- DIO = 365 × 1,600.75 / 11,108.4 = **52.60 天**\n\n**2. DSO = 365 × 平均应收 / FY2019 净销售额**\n- 平均 Receivables = (1,684.2 + 1,679.7) / 2 = 1,681.95\n- Net sales（FY2019）= 16,865.2\n- DSO = 365 × 1,681.95 / 16,865.2 = **36.40 天**\n\n**3. DPO = 365 × 平均应付账款 / (FY2019 COGS + 存货变动)**\n- 平均 Accounts payable = (2,746.2 + 2,854.1) / 2 = 2,800.15\n- 存货变动 = 1,559.3 − 1,642.2 = **−82.9**（存货下降）\n- 分母 = 11,108.4 + (−82.9) = 11,025.5\n- DPO = 365 × 2,800.15 / 11,025.5 = **92.70 天**\n\n**4. CCC = 52.60 + 36.40 − 92.70 ",
+          "ms": 6923,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03471",
+          "type": "metrics-generated",
+          "question": "By drawing conclusions from the information stated only in the statement of financial position, what is General Mills's FY2020 working capital ratio? Define working capital ratio as total current assets divided by total current liabilities. Round your answer to two decimal places.",
+          "gold": "0.68",
+          "prediction": "**结论：General Mills 2020 财年（截至 2020 年 5 月 31 日）的营运资本比率约为 0.68。**\n\n计算口径与取数（仅用合并资产负债表数据，单位：百万美元）：\n\n- 流动资产合计（Total current assets，2020-05-31）：**5,121.3**\n  （现金及等价物 1,677.8 + 应收账款 1,615.1 + 存货 1,426.3 + 预付款及其他流动资�� 402.1）\n- 流动负债合计（Total current liabilities，2020-05-31）：**7,491.5**\n  （应付账款 3,247.7 + 一年内到期的长期债务 2,331.5 + 应付票据 279.0 + 其他流动负债 1,633.3）\n\n营运资本比率 = 5,121.3 ÷ 7,491.5 = **0.6836 ≈ 0.68**\n\n即每 1 美元流动负债对应约 0.68 美元流动资产，比率低于 1，说明期末流动资产不足以覆盖流动负债（差额约 2,370.2 百万美元）。\n\n补充观察：上年同期（2019-05-26）为 4,186.5 ÷ 7,087.1 ≈ 0.59，本年比率上升，主要因现金及等价物由 450.0 增至 1,677.8 百万美元。\n\n注：以上数据来自公司合并资产负债表披露，仅为数据测算，非投资建议。",
+          "ms": 3058,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04854",
+          "type": "metrics-generated",
+          "question": "According to the information provided in the statement of cash flows, what is the FY2020 free cash flow (FCF) for General Mills? FCF here is defined as: (cash from operations - capex). Answer in USD millions.",
+          "gold": "$3215.00",
+          "prediction": "## FY2020 自由现金流（FCF）\n\n**FCF = 经营活动现金流 − 资本开支 = 3,676.2 − 460.8 = 3,215.4（百万美元）**\n\n### 计算依据（取自已给出材料）\n| 项目 | FY2020（百万美元） | 来源行 |\n|---|---|---|\n| 经营活动提供的净现金 | 3,676.2 | Net cash provided by operating activities |\n| 资本开支（购置土地、厂房及设备） | 460.8 | Purchases of land, buildings, and equipment（投资活动项，原表为 −460.8） |\n\n- 口径说明：本定义下的 FCF 未扣除收购、投资联营、资产处置等其他投资活动现金流，仅用\"经营现金流 − 资本开支\"。\n- 期间：General Mills 财年（FY2020）；单位：百万美元（USD millions），与报表原始单位一致。\n\n### 补充观察\n- FY2020 资本开支较 FY2019（537.6）下降约 14%，叠加经营现金流同比增长约 31%（2,807.0→3,676.2，主要受当期营运资本变动 +793.9 及退休金/重组等非现金调整影响），共同推高本年度 FCF。\n\n**建议**：如需跨年对比，可比口径下 FY2019 FCF = 2,807.0 − 537.6 = 2,269.4 百万美元、FY2018 = 2,841.0 − 622.7 = 2,218.3 百万美元；但 FY2018 含 80.358 亿美元收购支出，若采用\"收购后自由现金流\"口径结论将显著不同，分析时需明确口径。\n\n（数据来自公司公开披露的合并现金流量表，非投资建议。）",
+          "ms": 2929,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_10136",
+          "type": "metrics-generated",
+          "question": "We want to calculate a financial metric. Please help us compute it by basing your answers off of the cash flow statement and the income statement. Here's the question: what is the FY2022 retention ratio (using total cash dividends paid and net income attributable to shareholders) for General Mills? Round answer to two decimal places.",
+          "gold": "0.54",
+          "prediction": "## 结论\n\n**通用磨坊（General Mills）FY2022 留存率（retention ratio）= 0.54**\n\n## 计算过程\n\n留存率 = 1 − 股利支付率 = 1 −（现金股利总额 ÷ 归属股东的净利润）\n\n| 项目 | 金额（百万美元） | 来源 |\n|---|---|---|\n| FY2022 现金股利支付（Dividends paid） | 1,244.5 | 合并现金流量表·筹资活动 |\n| FY2022 归属于 General Mills 的净利润 | 2,707.3 | 合并利润表（Net earnings attributable to General Mills） |\n\n- 股利支付率 = 1,244.5 ÷ 2,707.3 = 0.4597\n- 留存率 = 1 − 0.4597 = **0.5403 → 0.54**\n\n## 口径说明\n\n1. **期间**：FY2022（2021年5月末至2022年5月末的财年），两表期间一致。\n2. **分子**：使用现金流量表\"筹资活动—Dividends paid\"1,244.5，即实际支付的现金股利；**未**包含\"Distributions to noncontrolling and redeemable interest holders\"129.8，因该项是对非控股/可赎回权益持有人的分配，不属于普通股股东股利。\n3. **分母**：使用利润表\"Net earnings attributable to General Mills\"2,707.3，即归属股东的净利润；**未**使用含少数股东权益的 2,735.0（Net earnings, including earnings attributable to redeemable and noncontrolling interests）",
+          "ms": 3708,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00956",
+          "type": "domain-relevant",
+          "question": "Are JnJ's FY2022 financials that of a high growth company?",
+          "gold": "No, JnJ's FY2022 financials are not of a high growth company as sales grew by 1.3% in FY2022.",
+          "prediction": "**结论：不是。** FY2022 的合并销售额表现属于**低速、成熟型增长**，不符合\"高增长公司\"（通常需营收两位数以上、且可持续）的特征。\n\n**关键依据**（均来自公司 MD&A \"Analysis of Consolidated Sales\"）：\n\n| 口径 | 2022 | 2021 |\n|---|---|---|\n| 全球销售额 | 949 亿美元 | — |\n| 同比增速 | **+1.3%** | **+13.6%** |\n| 销量 | +6.9% | +12.9% |\n| 价格 | −0.8% | −0.7% |\n| 汇率 | −4.8% | +1.4% |\n\n推导：\n- **增速大幅失速**：13.6% − 1.3% = **下降约 12.3 个百分点**，2021 的 13.6% 里还含 +1.4% 的汇率顺风。\n- **增速构成可核对**：6.9%（量）− 0.8%（价）− 4.8%（汇）= **1.3%**，与披露的总增速一致。\n- **剔除汇率看经营**：1.3% + 4.8% ≈ **约 +6.1% 固定汇率增速**；即使按这个更宽的算法，也只是中速增长，而非高增长。\n- **价格贡献为负**（−0.8%），高增长/强定价权公司通常不会出现收入端价格拖累。\n\n**信息缺口及影响**：材料仅给出合并销售额一行数据，未包含分部收入、毛利率、EPS、研发投入或管理层增速指引；对 2020、2021 的详细讨论被引至\"fiscal year ended January 2, 2022 的 10-K Item 7\"，该内容不在本材料中。因此上述判断**只基于营收增速这一维度**，不能据此评价盈利质量或长期成长性。\n\n**建议**\n1. 若要确认\"成长性\"结论，需补充分部（创新药/医疗器械）收入增速、有机增长（operational growth）口径及",
+          "ms": 8565,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00669",
+          "type": "domain-relevant",
+          "question": "What drove gross margin change as of FY2022 for JnJ? If gross margin is not a useful metric for a company like this, then please state that and explain why.",
+          "gold": "For FY22, JnJ had changes in gross margin due to: One-time COVID-19 vaccine manufacturing exit related costs, Currency impacts in the Pharmaceutical segment, Commodity inflation in the MedTech and Consumer Health segments, partially offset by Supply chain benefits in the Consumer Health segment.",
+          "prediction": "**结论**：FY2022 强生毛利率承压，直接驱动因素是**\"产品销售成本占销售额比重上升\"（Cost of products sold as a percent to sales increased）**；材料未提供各期销售成本金额与销售额，故**无法量化毛利率变动的具体百分点**，只能给出方向与归因。\n\n**成本端（毛利端）自述的四大驱动**（摘自公司《Analysis of Consolidated Earnings Before Provision for Taxes on Income》）：\n1. **一次性 COVID-19 疫苗生产退出相关成本**（one-time COVID-19 vaccine manufacturing exit related costs）——推高成本；\n2. **Pharmaceutical 板块的汇率影响**（currency impacts）；\n3. **MedTech 与 Consumer Health 板块的大宗商品通胀**（commodity inflation）；\n4. 部分抵销项：**Consumer Health 板块的供应链收益**（supply chain benefits）。\n\n补充一条与毛利相关的量：计入产品销售成本的**无形资产摊销 FY2022 为 43 亿美元，FY2021 为 47 亿美元**（下降约 4 亿美元，对成本是**有利**方向，即部分缓和了毛利率压力）。\n\n**关于\"毛利率是否有用\"**：材料本身说明它对这类公司只能算**参考性指标**，理由有三：\n- 公司**不直接披露毛利/毛利率**，只披露\"产品销售成本占销售额比重\"及\"合并税前利润占销售额比重\"（FY2022 22.9% vs FY2021 24.3%，下降 1.4pp），管理层用以衡量盈利的口径是后者，而非毛利率；\n- 成本中掺",
+          "ms": 14579,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00711",
+          "type": "domain-relevant",
+          "question": "Roughly how many times has JnJ sold its inventory in FY2022? Calculate inventory turnover ratio for FY2022; if conventional inventory management is not meaningful for the company then state that and explain why.",
+          "gold": "JnJ sold its inventory 2.7 times in FY2022.",
+          "prediction": "## 结论\nJ&J 2022 财年的存货周转率约为 **2.72 次（≈2.7 次）**，即存货平均约 **134 天**周转一次。常规存货周转分析对该公司**是适用的、可计算的**，但需注意口径与业务结构带来的解释限制。\n\n## 计算（单位：百万美元，期间：FY2022 = 截至 2023/1/1，FY2021 = 截至 2022/1/2）\n\n| 项目 | 取数 |\n|---|---|\n| 销售成本 Cost of products sold（FY2022） | 31,089 |\n| 期末存货（2022 年，即 2023/1/1） | 12,483 |\n| 期初存货（2021 年，即 2022/1/2） | 10,387 |\n| 平均存货 | (12,483 + 10,387) ÷ 2 = **11,435** |\n\n- 存货周转率 = 31,089 ÷ 11,435 = **2.72 次**\n- 存货周转天数 = 365 ÷ 2.72 = **约 134 天**\n- 敏感性口径：若只用期末存货，31,089 ÷ 12,483 = **2.49 次**（≈147 天）；若误用\"销售净额\"作分子，94,943 ÷ 11,435 = **8.30 次**——这不是标准周转率口径，会明显高估，因为分子是收入、分母是成本。\n\n## 是否\"常规存货管理不适用\"？\n**不适用这一说法在此站不住脚**，理由：存货 12,483 百万美元约为销售净额（94,943）的 13%、销售成本的 40%，规模重大，周转率有明确经济含义。但要注意三点解释性限制（材料本身也支持这种谨慎）：\n\n1. **合并口径混合了三类不同供应链**：创新药、医疗器械、消费者健康。药品的原料药/生物制品生产、质量放行与有效期管理周期长，器械则含寄售（医院端）库存，把三者合成一个 2.72 次的比率，可比性有限——低",
+          "ms": 17352,
+          "toolCalls": [
+            "list_skills"
+          ],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00651",
+          "type": "novel-generated",
+          "question": "Is growth in JnJ's adjusted EPS expected to accelerate in FY2023?",
+          "gold": "No, rate of growth in adjusted EPS is expected to decelerate slightly from 3.6% in FY2022 to 3.5% in FY2023.",
+          "prediction": "**结论：不会加速，预计略有放缓（基本持平）。**\n\n**关键依据（来自公司2022年第四季度财报/2023年指引原文）：**\n\n| 口径 | 期间 | 调整后EPS增速 |\n|---|---|---|\n| 实际：调整后EPS $10.15 | FY2022 | **+3.6%** |\n| 指引：调整后经营EPS $10.50 | FY2023 | **+3.5%*** |\n\n- 推导：FY2023 指引值 $10.50 ÷ FY2022 调整后EPS $10.15 − 1 = **约 +3.45%**，与公司明示的 **3.5%** 一致，说明指引增速确实略低于 2022 年的 3.6%。\n- 因此答案是：**增速不仅没有加快，反而小幅回落约 0.1 个百分点**（约与上年持平）。\n\n**需要注意的口径差异（影响结论的严谨性）：**\n- FY2022 的 +3.6% 是**报告口径调整后EPS**增速；FY2023 的 +3.5%* 是**\"调整后经营（operational）EPS\"**增速，即剔除汇率影响。\n- 两者并非完全同口径，若同期汇率逆风延续，报告口径下的实际增速可能低于 3.5%。因此可以说\"公司预计 FY2023 调整后EPS 增速**不高于** FY2022 水平\"，加速的结论不成立。\n- 参照项：FY2023 调整后经营销售额（剔除新冠疫苗）指引增速为 **4.0%***，EPS 增速（3.5%）低于销售额增速，反映利润率仍存压力。\n\n**对比背景（同期实际）：** FY2022 报告EPS $6.73（−13.8%）、Q4 调整后EPS $2.35（+10.3%*）；调整后EPS 的增长主要由非新冠业务的经营增长驱动，而非规模跃升。\n\n**建议：**\n1. 跟踪 FY2023 各季度调整后经营EPS 增速是否维持在 3.5% 附近，并单独查看汇率对报",
+          "ms": 4874,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01484",
+          "type": "novel-generated",
+          "question": "How did JnJ's US sales growth compare to international sales growth in FY2022?",
+          "gold": "US sales increased 3.0% vs international sales decline of 0.6%.",
+          "prediction": "**结论：按报告口径（as-reported），美国销售增长跑赢国际；但按运营/固定汇率口径（operational），国际增长反而大幅领先。**\n\n**全年（FY2022）对比**\n\n| | 2022 | 2021 | Reported | Operational | 汇率影响 | Adj. Operational |\n|---|---|---|---|---|---|---|\n| 美国 | $48,580M | $47,156M | **+3.0%** | +3.0 | — | +3.0 |\n| 国际 | $46,363M | $46,619M | **(0.6)%** | **+9.1** | (9.7) | +9.3 |\n| 全球 | $94,943M | $93,775M | +1.3% | +6.1 | (4.8) | +6.2 |\n\n**推导与关键点（基于材料 Full Year 行项目）**\n1. 美国：48,580 − 47,156 = **+1,424M**，除以 47,156 ≈ **+3.0%**，与材料列示的 3.0% 一致；汇率影响为 **0**，说明美国增长完全来自内生/运营。\n2. 国际：46,363 − 46,619 = **−256M**，除以 46,619 ≈ **−0.6%**；但汇率拖累达 **−9.7 个百分点**，剔除后运营增长为 **+9.1%**。\n3. 因此两条口径结论相反：**报告口径下美国（+3.0%）高于国际（−0.6%），差距约 3.6pp**；**运营口径下国际（+9.1%）高于美国（+3.0%），差距约 6.1pp**。原因是国际业务承受了约 9.7pp 的汇率逆风，而美国业务基本无汇率影响。\n\n（注：材料仅给出 Q4 与 Full Year 分区域数据，以上为 FY2022 全年口径；Q4 美国 +2.9%、",
+          "ms": 3717,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01488",
+          "type": "novel-generated",
+          "question": "Which business segment of JnJ will be treated as a discontinued operation from August 30, 2023 onward?",
+          "gold": "The Consumer Health business segment will be treated as a discontinued operation from August 30, 2023 onward.",
+          "prediction": "**结论：Consumer Health（消费者健康）业务板块**——即分拆后的 Kenvue Inc.（原 Johnson & Johnson Consumer Health 业务）。\n\n**依据（来源：公司新闻稿 Exhibit 99.1，2023年8月30日）**\n- Johnson & Johnson 于 2023年8月30日宣布完成 Kenvue 分拆（exchange offer 交割）；\n- 新闻稿明确表述：\"As a result of the completion of the exchange offer, Johnson & Johnson will now present its **Consumer Health business** financial results as **discontinued operations**，including a gain of approximately $20 billion in the third quarter of 2023\"；\n- 由此，公司自该日起按\"聚焦 Pharmaceutical 与 MedTech 的创新药与医疗器械公司\"口径披露财务与2023年指引。\n\n**要点补充**\n- 该分拆使其 Consumer Health 板块在合并报表中单列为**终止经营（discontinued operations）**，并在2023年第三季度确认约 **200亿美元** 收益；\n- 公司保留 Kenvue **9.5%** 股权，并取得约 **132亿美元** 现金（来自 Kenvue 债务发行与 IPO）。\n\n**建议**\n1. 分析 JnJ 后续可比业绩时，应以**持续经营口径**（Pharmaceutical + MedTech）为准，2023 年数据需注意 Consumer Health",
+          "ms": 2778,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01490",
+          "type": "novel-generated",
+          "question": "What is the amount of the gain accruing to JnJ as a result of the separation of its Consumer Health business segment, as of August 30, 2023?",
+          "gold": "JnJ will make a gain of approximately $20 billion from the separation of its Consumer Health business segment.",
+          "prediction": "**结论：约 200 亿美元（$20 billion）。**\n\n**依据（来自所给材料，Exhibit 99.1，2023 年 8 月 30 日发布）：**\n\n- 材料明确表述：随着交换要约完成，强生（Johnson & Johnson, NYSE: JNJ）将把其消费者健康（Consumer Health）业务列报为**终止经营（discontinued operations）**，其中**包含 2023 年第三季度约 200 亿美元的收益（a gain of approximately $20 billion in the third quarter of 2023）**。\n- 该收益对应的是将原 Consumer Health 业务（Kenvue Inc.）分拆（separation）所确认的利得，发生时点为 2023 年第三季度，公告日期为 2023 年 8 月 30 日。\n\n**口径说明：**\n- 金额为\"约（approximately）\"200 亿美元，属公司披露的估计数，非精确值。\n- 该利得计入 2023 年第三季度，并列于终止经营项下，而非持续经营利润。\n\n**补充背景（同份材料）：** 强生从 Kenvue 债务发行及 IPO 中获得 132 亿美元现金收益，并保留 9.5% 的 Kenvue 股权；同时减少约 1.91 亿股流通股。\n\n**提示：** 以上数据来自公司公开披露文件，非投资建议；如需核对原文，可查阅强生投资者关系页面的该份新闻稿全文。",
+          "ms": 2819,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01491",
+          "type": "novel-generated",
+          "question": "What is the amount of the cash proceeds that JnJ realised from the separation of Kenvue (formerly Consumer Health business segment), as of August 30, 2023?",
+          "gold": "JnJ realised $13.2 billion in cash proceeds from the separation of Kenvue.",
+          "prediction": "## 结论\n\n**约 132 亿美元（$13.2 billion）现金收益**。\n\n## 依据（来源：Exhibit 99.1，2023 年 8 月 30 日新闻稿）\n\n新闻稿要点原文明确写道：\n\n> \"Company secured **$13.2 billion in cash proceeds** from the Kenvue debt offering and initial public offering and maintains 9.5% of equity stake in Kenvue\"\n\n即：截至 2023 年 8 月 30 日，强生（JNJ）通过 **Kenvue 发债（debt offering）与首次公开发行（IPO）** 合计获得约 **132 亿美元**现金，并保留 Kenvue **9.5%** 的股权。\n\n## 需要注意的口径区别\n\n材料中另有一笔\"约 **200 亿美元**\"数字，但**不是现金收益**：\n\n> \"will now present its Consumer Health business financial results as **discontinued operations, including a gain of approximately $20 billion** in the third quarter of 2023\"\n\n这 200 亿美元是分拆完成后、消费者健康业务转入**终止经营**时在 2023 年第三季度确认的**会计处置收益（账面 gain）**，与 132 亿美元的**现金所得（cash proceeds）**是两个不同科目，不应混淆。\n\n## 建议\n\n- 若用于现金流分析，采用 **132 亿美元现金所得**；\n- 若用于利润表/终止经营分析，则采用 **约 200 亿美元一次性收益**，并",
+          "ms": 2477,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01487",
+          "type": "novel-generated",
+          "question": "Did JnJ's net earnings as a percent of sales increase in Q2 of FY2023 compared to Q2 of FY2022?",
+          "gold": "Yes, net earnings as a percent of sales increased from 20% in Q2 of FY2022 to 20.1% in Q2 of FY2023.",
+          "prediction": "**结论：是，小幅上升。**\n\n**依据（Q2 FY2023 vs Q2 FY2022，单位：百万美元）**\n\n| 项目 | Q2 FY2023 | Q2 FY2022 |\n|---|---|---|\n| 销售收入 Sales to customers | 25,530（100.0%） | 24,020（100.0%） |\n| 净收益 Net earnings | 5,144（**20.1%**） | 4,814（**20.0%**） |\n\n- 净收益占销售收入的比重由 **20.0% 升至 20.1%**，提高约 **0.1 个百分点**。\n- 复核口径：5,144 ÷ 25,530 = 20.15% ≈ 20.1%；4,814 ÷ 24,020 = 20.04% ≈ 20.0%，与材料标注的\"Percent to Sales\"一致。\n- 绝对额方面净收益同比 +6.9%（4,814 → 5,144），与收入同比 +6.3% 基本同步，因此利润率仅微升。\n\n**补充观察**：净收益率的提升幅度很小，主要靠毛利率改善（67.0% → 67.8%）和销售/管理及研发费用率的相对稳定支撑；而所得税费用率由 4.3% 大幅升至 6.4%（税项同比 +57.7%）对净利率形成明显拖累——即\"营业利润率 24.3% → 26.5%\"的改善未完全传导到净利端。\n\n**建议**：若关注盈利质量，可进一步核查税率上升的成因（一次性税项或地区结构变化）及 Other (income) expense 由 +273 转为 -60 的波动来源，这两项是本季净利率未能显著走高的主因。\n\n*数据来源：公司提交的未经审计简明合并利润表（Condensed Consolidated Statement of Earnings），非投资建议。*",
+          "ms": 3340,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00299",
+          "type": "novel-generated",
+          "question": "Which of JPM's business segments had the lowest net revenue in 2021 Q1?",
+          "gold": "Corporate. Its net revenue was -$473 million.",
+          "prediction": "## 结论\n\n**2021 年第一季度净收入最低的板块是「Corporate（公司/其他）」，为 −4.73 亿美元（$(473) 百万），是唯一录得负收入的板块。**\n\n## 依据（材料：Segment results, managed basis，截至 2021 年 3 月 31 日止三个月）\n\n| 板块 | 2021 Q1 总净收入 |\n|---|---|\n| Consumer & Community Banking | $12,517 百万 |\n| Corporate & Investment Bank | $14,605 百万 |\n| Commercial Banking | $2,393 百万 |\n| Asset & Wealth Management | $4,077 百万 |\n| **Corporate** | **$(473) 百万** ← 最低 |\n| Total | $33,119 百万 |\n\n- 若**只比较四大业务板块**（剔除 Corporate 这一非业务性归集项），则最低的是 **Commercial Banking，$2,393 百万**，其次为 Asset & Wealth Management（$4,077 百万）。\n- Corporate 板块净收入为负，主要因其承担未分摊至业务条线的费用/项目，材料中其非利息支出高达 $876 百万（同比 +500%），导致税前利润为 −$1,349 百万。\n\n## 提示\n\n- 单位口径：材料以百万美元列示，且为 **managed basis**（管理口径），与报告口径（reported basis）可能不同。\n- 数据来自公司公开披露文件，非投资建议。\n- 若需进一步比较各板块同比变化（如 Corporate 由 2020 Q1 的 +$166 百万转为 −$473 百万，标记为 NM），可展开",
+          "ms": 2725,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02119",
+          "type": "novel-generated",
+          "question": "If JPM went bankrupted by the end by 2021 Q1 and liquidated all of its assets to pay its shareholders, how much could each shareholder get?",
+          "gold": "They could receive $66.56 per share.",
+          "prediction": "## 结论\n\n按材料给出的口径，每位股东在清算情形下约可拿到 **每股 66.56 美元**（截至 2021 年第一季度）。\n\n## 依据与推导\n\n- 材料仅提供一个关键数据：**有形账面价值每股（TBVPS）= $66.56**（2021 Q1，同比 +10%）。\n- 在\"破产清算、变卖全部资产分配给股东\"的假设下，可分配给普通股股东的权益对应的是**有形净资产**（即剔除商誉、无形资产等难以变现的项目），而 TBVPS 正是有形净资产 ÷ 流通股数，因此它是该情形下每股可得金额的最直接代理指标。\n- 用到的行项目与期间：JPM 2021 Q1 的 TBVPS，取自公司披露文件。\n\n## 重要提示（口径与缺口）\n\n1. 这是一个**简化假设下的估算**：真实清算中，资产变卖通常低于账面价值（尤其贷款、交易性资产），且要先清偿债务与优先求偿权，实际每股回收往往**低于**有形账面价值。\n2. 材料**未提供**总资产、负债、商誉等明细，也**未提供**股东层级（优先股/普通股）划分，因此无法进一步测算\"变现折价\"后的净值——该缺口意味着 $66.56 只能作为**上限参考值**，而非精确清算回收额。\n3. 数据来自公开披露，非投资建议。\n\n## 建议\n\n- 若需更贴近清算现实的估算，请补充 2021 Q1 的**有形普通股权益（TCE）、总负债与商誉/无形资产明细**，我可据此做折价情景测算。\n- 若你想了解 JPM 当前的经营风险或财务质量，我可以调取平台评分与财报分析模块进一步研判。",
+          "ms": 4302,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00206",
+          "type": "domain-relevant",
+          "question": "Are JPM's gross margins historically consistent (not fluctuating more than roughly 2% each year)? If gross margins are not a relevant metric for a company like this, then please state that and explain why.",
+          "gold": "Since JPM is a financial institution, gross margin is not a relevant metric.",
+          "prediction": "## 结论\n\n**毛利率（gross margin）对 JPMorgan Chase 这类公司不是一个相关指标**，因此\"毛利率是否历年稳定在约 ±2% 以内\"这个问题本身不适用，无法也不应该用毛利率来评判其盈利稳定性。\n\n## 为什么毛利率不适用\n\n1. **公司性质**：材料显示 JPMorgan Chase & Co. 是在特拉华州注册的 **financial holding company（金融控股公司）**，业务涵盖投资银行、消费者与中小企业金融服务、商业银行、金融交易处理和资产管理，属于金融机构，而非制造或零售类企业。\n2. **没有\"销货成本\"科目**：银行不销售实物商品，利润表中不存在 COGS / 营业成本，也就无法定义\"毛利\"与\"毛利率\"。其收入结构是：\n   - 总收入（total net revenue）= 净利息收入（net interest income）+ 非利息收入（noninterest revenue）；\n   - 资金成本以\"利息支出\"（interest expense）列示，性质上是融资成本，并非 COGS。\n3. **行业看的是别的指标**：衡量 JPM 盈利与稳定性，应关注净息差（NIM）、效率比率（efficiency ratio）、ROE / ROTCE、信贷成本（provision for credit losses）以及 CET1 资本充足率等。用毛利率会得出误导性结论。\n\n## 材料缺口说明\n\n所提供的材料**仅为公司概览**（截至 2022 年 12 月 31 日：总资产 3.7 万亿美元、股东权益 2,923 亿美元），不含任何利润表科目或逐年收入/成本数据。因此，即使假设需要计算，也无法从该材料得出任何毛利率数值——这一缺口不影响上述\"指标不适用\"的结论，但意味着**无法对毛利率的历史波动做任何量化陈述**。\n\n",
+          "ms": 7211,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00394",
+          "type": "novel-generated",
+          "question": "In 2022 Q2, which of JPM's business segments had the highest net income?",
+          "gold": "Corporate & Investment Bank. Its net income was $3725 million.",
+          "prediction": "**结论：2022 年第二季度净收入最高的业务板块是「公司与投资银行」（Corporate & Investment Bank, CIB），净收入 37.25 亿美元。**\n\n各板块 2022 Q2 净收入（Net income/(loss)，百万美元，三个月截至 6 月 30 日）对比：\n\n| 板块 | 2022 Q2 | 2021 Q2 | 同比 |\n|---|---|---|---|\n| 公司与投资银行（CIB） | **3,725** | 5,020 | −26% |\n| 消费者与社区银行（CCB） | 3,100 | 5,645 | −45% |\n| 资产管理（AWM） | 1,004 | 1,156 | −13% |\n| 商业银行（CB） | 994 | 1,422 | −30% |\n| 公司（Corporate） | (174) | (1,295) | +87%（亏损收窄） |\n| 合计 | 8,649 | 11,948 | −28% |\n\n**关键依据**\n- CIB 以 37.25 亿美元居首，较第二名 CCB（31.00 亿美元）高出 6.25 亿美元；\n- 简单加总验证：3,100 + 3,725 + 994 + 1,004 − 174 = 8,649，与表中「Total」一致，说明口径可比；\n- 该季全部板块净收入同比均下滑（Corporate 为亏损收窄），CIB 降幅（−26%）小于 CCB（−45%）。\n\n注：以上为材料中「Segment results — managed basis」口径数据，单位为百万美元，来自公司披露文件，非投资建议。\n\n**建议**：若需评估板块盈利质量，可结合 ROE 一并看——CIB 该季 ROE 为 14%，低于 CCB 的 24%，说明其净收入规模领先主要靠资本占用更大；进一步可拆解 CIB 内固定收益/股票业",
+          "ms": 3148,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02049",
+          "type": "novel-generated",
+          "question": "Looking at VaR, did the risk that JPM faced in the second fiscal quarter of 2023 decrease compared to the same period in the prior year?",
+          "gold": "Yes. It decreased.",
+          "prediction": "**结论：是的，风险下降了。**\n\n依据材料原文：截至 **2023 年 6 月 30 日的三个月**（即第二财季），**平均总 VaR 较上年同期下降 700 万美元**；该下降主要由**信贷组合 VaR（Credit Portfolio VaR）**以及**固定收益（fixed income）**相关的风险削减所驱动。\n\n要点说明：\n- 口径：这是**平均总 VaR**在 2023Q2（截至 6/30）与**上年同期**（2022Q2）之间的**变动额**，为\"同比下降 700 万美元\"，方向为下降。\n- 驱动因素：材料明确归因于**风险敞口削减**对 Credit Portfolio VaR 及固定收益的影响。\n- 材料未给出的内容：具体的 VaR 绝对值水平、各分项 VaR 的单独变动额、期末（时点）VaR、以及置信区间/持有期口径均未列明——因此只能确认\"下降 700 万美元\"这一变动，无法量化下降幅度占比。\n\n建议：\n1. 若需判断\"幅度是否显著\"，请补充 2022Q2 的平均总 VaR 基数值（可从同一年报/季报的 VaR 明细表取数）以计算降幅百分比；\n2. 进一步核对 Credit Portfolio VaR 与固定收益分项的单独变动，确认下降是结构性（敞口削减）而非波动率短期回落。\n\n（以上数据来自公司自身披露文件，非投资建议。）",
+          "ms": 3725,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_10499",
+          "type": "metrics-generated",
+          "question": "What is Kraft Heinz's FY2019 inventory turnover ratio? Inventory turnover ratio is defined as: (FY2019 COGS) / (average inventory between FY2018 and FY2019). Round your answer to two decimal places. Please base your judgments on the information provided primarily in the balance sheet and the P&L statement.",
+          "gold": "6.25",
+          "prediction": "## 结论\n\n**Kraft Heinz FY2019 存货周转率 = 6.25 次**（约 6.25x）。\n\n## 计算过程（单位：百万美元）\n\n| 项目 | 来源 | 金额 |\n|---|---|---|\n| FY2019 销售成本（Cost of products sold） | 合并利润表，截至 2019/12/28 年度 | 16,830 |\n| FY2019 期末存货（Inventories） | 合并资产负债表，2019/12/28 | 2,721 |\n| FY2018 期末存货（Inventories） | 合并资产负债表，2018/12/29 | 2,667 |\n\n- 平均存货 = (2,721 + 2,667) / 2 = **2,694**\n- 存货周转率 = 16,830 / 2,694 = **6.2472… ≈ 6.25**\n\n## 说明\n\n- 分子采用利润表中的 **Cost of products sold**（即 COGS）16,830，对应 FY2019（2019/12/28 结束的财年）；未使用\"Total costs and expenses\"等其他口径。\n- 分母采用资产负债表 **Inventories** 一行（未含\"Assets held for sale\"中的存货，该行未拆分存货金额），取 2018、2019 两个期末数的简单平均。\n- 该比率为纯比值，无单位，与金额的百万美元口径无关（分子分母同口径）。\n- 数据来自公司自行披露的合并利润表与合并资产负债表（FY2019 年报），非投资建议。\n\n**建议**：如需横向比较，可注意 Kraft Heinz 因 2019 年确认商誉减值 11.97 亿、无形资产减值 7.02 亿美元，COGS 未受该减值影响，故该周转率与同行相比具备一定可比性；若需剔除处置业务（Assets ",
+          "ms": 3576,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04412",
+          "type": "metrics-generated",
+          "question": "We need to calculate a reasonable approximation (or exact number if possible) of a financial metric. Basing your judgment by information plainly provided in the balance sheet and the P&L statement, what is Lockheed Martin's FY2020 asset turnover ratio? Asset turnover ratio is defined as: FY2020 revenue / (average total assets between FY2019 and FY2020). Round your answer to two decimal places.",
+          "gold": "1.33",
+          "prediction": "**结论：Lockheed Martin FY2020 资产周转率 ≈ 1.33**\n\n用到的行项目与期间（单位：百万美元）：\n- 利润表「Total net sales」FY2020 = 65,398\n- 资产负债表「Total assets」：2020-12-31 = 50,710；2019-12-31 = 47,528\n\n计算：\n1. 平均总资产 = (50,710 + 47,528) ÷ 2 = 49,119\n2. 资产周转率 = 65,398 ÷ 49,119 = 1.3314…\n\n**答案：1.33（倍）**\n\n说明：口径为\"销售额／两年平均总资产\"，均取合并报表金额，未做任何估计或外部数据补充。\n\n**建议**：该比率反映每美元资产产生约 1.33 美元收入；若用于同口径同业比较，注意对方是否使用期末总资产或包含非持续经营收入，口径差异会显著影响可比性。",
+          "ms": 2086,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03031",
+          "type": "metrics-generated",
+          "question": "What is Lockheed Martin's FY2021 net working capital? Define net working capital as total current assets less total current liabilities. Answer in USD millions. Respond to the question by assuming the perspective of an investment analyst who can only use the details shown within the balance sheet.",
+          "gold": "$5818.00",
+          "prediction": "**结论：洛克希德·马丁 FY2021 净营运资本（NWC）= 58.18 亿美元（$5,818 million）**\n\n**计算口径（仅使用资产负债表行项目，Dec 31, 2021 列）**\n- 流动资产合计（Total current assets）：$19,815 million\n- 流动负债合计（Total current liabilities）：$13,997 million\n- NWC = 19,815 − 13,997 = **$5,818 million**\n\n**同比参考（Dec 31, 2020 列）**\n- 19,378 − 13,933 = $5,445 million\n- 即 FY2021 净营运资本同比增加约 **$373 million（+6.9%）**\n\n**作为投资分析师，从这张表能读出的三点**\n1. **流动性为正且小幅走强**：流动比率由 1.39x 升至 1.42x（19,815/13,997），短期偿付缓冲略有改善。\n2. **改善主要来自资产端而非负债收缩**：Contract assets 由 $9,545 增至 $10,579（+$1,034），而 Total current liabilities 基本持平（13,933 → 13,997，仅 +$64），其中 Current maturities of long-term debt 从 $500 降到 $6，被 Contract liabilities 增加 $562 抵销。\n3. **需注意营运资本结构的行业特性**：合同资产/合同负债规模巨大（合计约 $18.7bn），NWC 的波动更多反映军工行业\"里程碑开票\"节奏，而非传统存货—应付账款循环；现金及等价物 $3,604 与 NWC 相比占比不高（约 62%）。\n\n**说明与建议**\n- 本答案严格限定于题目给出",
+          "ms": 4865,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03718",
+          "type": "metrics-generated",
+          "question": "What is Lockheed Martin's 2 year total revenue CAGR from FY2020 to FY2022 (in units of percents and round to one decimal place)? Provide a response to the question by primarily using the statement of income.",
+          "gold": "0.4%",
+          "prediction": "**结论：FY2020→FY2022 两年总营收 CAGR ≈ 0.4%**\n\n**计算依据（Consolidated Statements of Earnings，Total net sales 行，单位：百万美元）**\n\n| 项目 | 金额 |\n|---|---|\n| FY2020 Total net sales | 65,398 |\n| FY2022 Total net sales | 65,984 |\n\n- 两年总增长倍数 = 65,984 ÷ 65,398 = 1.00896（即两年累计仅增长 0.90%，绝对增加 586 百万美元）\n- CAGR = (1.00896)^(1/2) − 1 = 1.00447 − 1 = **0.447% → 0.4%**\n\n**口径说明**\n- 仅使用\"Total net sales\"（Products + Services 合计），未使用成本、利润等其他行项目。\n- 期间为 2020-01-01～2022-12-31 两个完整年度区间（非三年）。\n- 注意中间年度 FY2021 营收为 67,044（高于两端年份），因此两年 CAGR 被\"高点回落\"压低，仅看首尾会低估期间波动；若以 2021→2022 单年看则为 −1.6%。\n\n**建议**\n1. 若关注趋势而非区间端点，建议同时披露 FY2020→2021→2022 逐年增速（2021 年 +2.5%，2022 年 −1.6%），避免 CAGR 掩盖波动。\n2. 可结合分部（业务板块）销售数据判断收入结构变化，因总额基本持平时结构变动可能更关键。\n\n数据来源：公司 Consolidated Statements of Earnings（10-K，截至 2022 年 12 月 31 日年度），公开披露，非投资建议。",
+          "ms": 3534,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04171",
+          "type": "metrics-generated",
+          "question": "Basing your judgments off of the balance sheet, what is the year end FY2018 amount of accounts payable for MGM Resorts? Answer in USD millions.",
+          "gold": "$303.00",
+          "prediction": "**结论：FY2018 年末（2018年12月31日）应付账款 = 302.578 百万美元（约 302.6 百万美元）。**\n\n依据与口径说明：\n- 来源行项目：合并资产负债表「LIABILITIES AND STOCKHOLDERS' EQUITY — Current liabilities — Accounts payable」。\n- 该表以**千美元**为单位列示（In thousands）：2018年12月31日为 **302,578（千美元）**；上一年（2017年12月31日）为 255,028（千美元）。\n- 换算：302,578 ÷ 1,000 = **302.578 百万美元**；同比增加 47,550 千美元（约 +18.6%）。\n\n注意区分：同属流动负债的「Construction payable」（2018年：311,793 千美元）在表中**单独列示**，不属于 Accounts payable 科目；若需合并口径，应另行说明。\n\n数据来自该公司公开披露的合并资产负债表，非投资建议。\n\n**建议（如需进一步核对）**：\n1. 若关注供应商付款压力，可将应付账款与存货、营业成本联动看周转天数，避免只看单一科目；\n2. 若做同比分析，注意 Construction payable 同期由 474,807 千美元降至 311,793 千美元，对总流动负债的影响大于应付账款变动本身。",
+          "ms": 2661,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03849",
+          "type": "metrics-generated",
+          "question": "What is the FY2018 - FY2020 3 year average of capex as a % of revenue for MGM Resorts? Answer in units of percents and round to one decimal place. Please utilize information provided primarily within the statement of cash flows and the statement of income.",
+          "gold": "7.9%",
+          "prediction": "**答案：7.9%（区间平均法）**\n\n计算依据（数据取自合并现金流量表「Capital expenditures, net of construction payable」与合并利润表「Revenues」合计，单位：千美元）：\n\n| 年度 | 资本开支（取绝对值） | 营业收入 | 资本开支/营收 |\n|---|---|---|---|\n| 2018 | 1,486,843 | 11,763,096 | 12.6% |\n| 2019 | 739,006 | 12,899,672 | 5.7% |\n| 2020 | 270,579 | 5,162,082 | 5.2% |\n\n三年比率算术平均 = (12.6399% + 5.7289% + 5.2417%) / 3 = **7.9%**\n\n说明：\n- 营收为利润表中各收入项目合计（赌场、客房、餐饮、娱乐零售及其他、代付成本），三年分别为 117.63 亿、128.997 亿、51.62 亿美元。\n- 资本开支使用现金流量表投资活动中的「Capital expenditures, net of construction payable」净额，取正号口径。\n- 若改用「三年合计资本开支 ÷ 三年合计营收」的口径，结果约为 8.4%；本题按\"3 year average of the ratio\"理解为逐年比率取平均，故为 **7.9%**。\n\n（数据来自公司披露的 2018–2020 年年报合并报表，非投资建议。）",
+          "ms": 4931,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01254",
+          "type": "domain-relevant",
+          "question": "Has MGM Resorts paid dividends to common shareholders in FY2022?",
+          "gold": "Yes. MGM maintained 0.01$ per share annual dividend through out FY 2022.",
+          "prediction": "**结论：是——MGM Resorts 在 2022 财年向普通股股东派发了股息。**\n\n依据（材料原文）：公司称「We maintained an annual dividend of $0.01 per share throughout 2022」——即在 2022 年全年维持每股 0.01 美元的年度股息。\n\n推导说明：\n- 用到的信息为材料中「annual dividend of $0.01 per share」与期间「throughout 2022」两项；\n- 「throughout 2022」表明该股息政策贯穿整个 2022 财年，而非仅宣布未执行，因此 FY2022 存在对普通股股东的现金股息支付；\n- 该材料未披露季度派发次数、除息日或全年派息总额，若需核实具体派息次数与金额，需查阅现金流量表「支付股息」项目或公司分红公告。\n\n说明：以上引用来自公司文件原文，属公开披露信息，非投资建议。",
+          "ms": 2428,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00382",
+          "type": "novel-generated",
+          "question": "Which region had the Highest EBITDAR Contribution for MGM during FY2022?",
+          "gold": "Las Vegas resorts contributed ~90% of company level EBITDAR during FY2022.",
+          "prediction": "**结论：Las Vegas Strip Resorts（拉斯维加斯大道度假村）是 FY2022 贡献最高的区域板块。**\n\n关键依据（Twelve months ended December 31, 2022，单位：千美元）：\n- **Las Vegas Strip Resorts：$3,142,308**（约 31.4 亿美元）← 最高\n- Regional Operations：$1,294,630\n- MGM China：**$(203,136)**（亏损）\n- Unconsolidated affiliates：$(222,079)\n- Management and other operations：$(11,934)\n- Stock compensation：$(71,297)\n- Corporate：$(431,238)\n- 十二个月合计：$3,497,254\n\n补充说明：\n1. 表中仅列示 Las Vegas Strip Resorts、Regional Operations、MGM China 三个地理/业务板块，其余为合资、管理及其他、股权激励与公司层面费用，故\"区域贡献最高\"即指 Las Vegas Strip Resorts。\n2. 同比看，Las Vegas Strip Resorts 由 FY2021 的 $1,738,211 增至 FY2022 的 $3,142,308，增幅约 **+80.8%**（口径：同为十二个月、单位千美元）；Regional Operations 同期由 $1,217,814 增至 $1,294,630，增幅约 +6.3%。\n3. 唯一显著拖累来自 MGM China，FY2022 为 $(203,136)，而 FY2021 为正的 $25,367，由盈转亏。\n\n建议：\n- 若做板块对比分析，可将 Las Vegas ",
+          "ms": 3503,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01911",
+          "type": "novel-generated",
+          "question": "What was MGM's interest coverage ratio using FY2022 Adjusted EBIT as the numerator and annual Interest Expense as the denominator?",
+          "gold": "As adjusted EBIT is negative, coverage ratio is zero",
+          "prediction": "**结论：MGM 2022 财年利息保障倍数 ≈ 2.6 倍**（Adjusted EBIT 1,546,688 ÷ 利息费用 594,954）。\n\n**推导过程（单位：千美元，均为截至 2022/12/31 的十二个月口径）**\n\n材料中只直接披露了 **Adjusted EBITDAR（十二个月 2022 = 3,497,254）**，没有单列 \"Adjusted EBIT\"。按 MGM 的口径，Adjusted EBITDAR 与 Adjusted EBIT 之间的唯一差额就是三净租赁（triple-net）经营租赁及土地租赁租金费用，因此：\n\n- 用到的行项目：\n  - Adjusted EBITDAR（Twelve months ended December 31, 2022）：$3,497,254\n  - Triple-net operating lease and ground lease rent expense（Twelve months ended December 31, 2022）：$1,950,566\n  - Interest expense, net of amounts capitalized（Twelve months ended December 31, 2022）：$594,954\n- 计算：\n  - Adjusted EBIT = 3,497,254 − 1,950,566 = **1,546,688**\n  - 利息保障倍数 = 1,546,688 ÷ 594,954 = **2.60**\n\n**需要说明的口径问题**\n1. 分子由 Adjusted EBITDAR 扣减租金费用倒推得出，属于基于材料所列行项目的推导，而非报表中直接标注的 \"Adjusted EBIT\" 科目；若采用其他调整口径（例如不剔除某些一次性项目），倍数会不同",
+          "ms": 7555,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_01912",
+          "type": "novel-generated",
+          "question": "Which region had the worst topline performance for MGM during FY2022?",
+          "gold": "MGM China experienced the worst topline performance amongst the other regions presented. Its revenue declined 44% in FY2022 whereas the other regions presented increased their revenues.",
+          "prediction": "**结论：MGM China（美高梅中国）在 FY2022 的营收表现最差。**\n\n依据（摘自该公司文件）：\n\n| 区域 | FY2022 净收入 | FY2021 净收入 | 同比 |\n|---|---|---|---|\n| Las Vegas Strip Resorts | 84 亿美元 | 47 亿美元 | +77% |\n| Regional Operations | 38 亿美元 | 34 亿美元 | +12% |\n| MGM China | 6.74 亿美元 | 12 亿美元 | **−44%** |\n\n判断口径：以\"净收入同比增速\"作为 topline（营收端）表现衡量标准。三个区域中，Las Vegas Strip Resorts（+77%）与 Regional Operations（+12%）均为正增长，唯一负增长的是 **MGM China，同比下降 44%**，净收入由约 12 亿美元降至 6.74 亿美元。\n\n补充说明：表中 MGM China 降幅系文件原文直接披露（\"a decrease of 44%\"），无需另行换算；金额单位为美元、期间为 FY2022 对比 FY2021。\n\n建议：若需进一步定位拖累原因，可结合 MGM China 分部收入结构（赌场/客房/餐饮）及各季度披露数据拆解，判断是宏观访客量、出行限制还是客单价因素所致。",
+          "ms": 2008,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00407",
+          "type": "novel-generated",
+          "question": "Which type of debt received the largest investment among the short term investments for MGM in H1 FY2023?",
+          "gold": "the biggest short term investment is in corporate bonds (almost 82% of the total investment)",
+          "prediction": "**结论：Corporate bonds（公司债，Level 2）是 MGM 短期投资中金额最大的债务类投资。**\n\n依据（截至 2023 年 6 月 30 日，单位：千美元）：\n\n| 短期投资类型 | 公允价值层级 | 2023/6/30 |\n|---|---|---|\n| **Corporate bonds** | Level 2 | **416,420** |\n| U.S. government securities | Level 1 | 57,696 |\n| U.S. agency securities | Level 2 | 29,049 |\n| Commercial paper and certificates of deposit | Level 2 | 4,561 |\n| 短期投资合计 | — | 507,726 |\n\n- 公司债 416,420 千美元，占短期投资总额 507,726 千美元的约 **82.0%**，是第二名美国国债（57,696 千美元）的约 7.2 倍。\n- 换算口径：416,420 千美元 ≈ 4.164 亿美元；短期投资合计 ≈ 5.077 亿美元。\n- 对比期末（2022/12/31）公司债为 213,875 千美元，半年内增加约 202,545 千美元（约增 94.7%），而美国国债同期基本持平（56,835 → 57,696），说明 H1 FY2023 的增量配置主要流向公司债。\n\n注：该结论仅基于所给公允价值层级披露表，未包含期限、评级等明细；数据为披露口径，非投资建议。",
+          "ms": 2238,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04700",
+          "type": "metrics-generated",
+          "question": "What is the FY2016 COGS for Microsoft? Please state answer in USD millions. Provide a response to the question by primarily using the statement of income.",
+          "gold": "$32780.00",
+          "prediction": "**FY2016 营业成本（COGS / Cost of revenue）＝ 32,780 百万美元**\n\n依据（微软 FY2016 合并利润表，截至 2016 年 6 月 30 日止年度）：\n\n| 项目 | FY2016（百万美元） |\n|---|---|\n| Cost of revenue – Product | 17,880 |\n| Cost of revenue – Service and other | 14,900 |\n| **Total cost of revenue** | **32,780** |\n\n推导口径：17,880 + 14,900 = 32,780（百万美元），即利润表中\"Total cost of revenue\"行项目直接列示的金额。\n\n补充参考：同期 Total revenue 为 85,320 百万美元，据此毛利率约 (85,320 − 32,780) / 85,320 ≈ 61.6%；上一年度（FY2015）营业成本为 33,038 百万美元，同比下降约 0.8%。\n\n建议：若需按业务线拆分或与同业比较营业成本结构，可进一步说明分析口径（如产品/服务成本占比），我可据此再做拆解。\n\n数据来自公司公开披露的 10-K 财务报表，非投资建议。",
+          "ms": 2103,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00552",
+          "type": "domain-relevant",
+          "question": "Has Microsoft increased its debt on balance sheet between FY2023 and the FY2022 period?",
+          "gold": "No. Microsoft decreased its debt by $2.5bn in FY 2023 vs FY 2022.",
+          "prediction": "## 结论\n**没有增加。**微软 FY2023（2023/6/30）**有息负债合计反而下降**；但若笼统看\"总负债\"，则是上升的——两者口径不同，需区分。\n\n## 计算过程（单位：百万美元）\n| 项目 | FY2023 | FY2022 | 变动 |\n|---|---|---|---|\n| 一年内到期的长期债务（流动） | 5,247 | 2,749 | +2,498 |\n| 长期债务 | 41,990 | 47,032 | −5,042 |\n| **有息负债合计** | **47,237** | **49,781** | **−2,544（−5.1%）** |\n| 总负债 Total liabilities | 205,753 | 198,298 | +7,455（+3.8%） |\n\n- 有息债务 = 资产负债表\"Current portion of long-term debt\"＋\"Long-term debt\"两行相加，期间为 FY2023 与 FY2022（截至 6 月 30 日）。\n- 结构变化：长期债务减少 50.4 亿，但**一年内到期部分增加 25 亿（+90.9%）**，说明部分长期债务临近到期、被重分类为流动负债，并非新借债。\n- \"总负债\"增加 74.6 亿，主要来自短期未实现收入（45,538→50,901）、其他长期负债、经营租赁负债等**经营性/租赁类科目，不是借款**。\n\n## 佐证\n现金及短期投资合计由 104,757 增至 111,262（+6,505），**净现金状况同比改善**，进一步印证债务规模未扩张。\n\n数据来源：微软 FY2023 年报（Form 10-K）合并资产负债表，公开披露，非投资建议。\n\n## 建议\n1. 分析债务时请用\"有息负债\"口径，勿将 total liabilities 直接当债务，否则会把未实现收入等经营性",
+          "ms": 5757,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04458",
+          "type": "metrics-generated",
+          "question": "We want to calculate a financial metric. Please help us compute it by basing your answers off of the statement of income and the statement of cash flows. Here's the question: what is the FY2015 unadjusted EBITDA % margin for Netflix? Calculate unadjusted EBITDA using unadjusted operating income and D&A (from cash flow statement).",
+          "gold": "5.4%",
+          "prediction": "**结论：FY2015 Netflix 的未调整（unadjusted）EBITDA 利润率约为 56.8%**，即 EBITDA ≈ 38.53 亿美元（$3,852,871 千），营收 67.80 亿美元（$6,779,511 千）。\n\n**计算过程（单位：千美元，FY2015 / 截至2015年12月31日财年）**\n\n1) 未调整营业利润（Statement of Operations）\n- Operating income = **305,826**\n\n2) 现金流量表中列示的 D&A（全部折旧与摊销项目）\n- Amortization of streaming content assets = 3,405,382\n- Amortization of DVD content assets = 79,380\n- Depreciation and amortization of property, equipment and intangibles = 62,283\n- 小计 D&A = **3,547,045**\n\n3) 未调整 EBITDA = 305,826 + 3,547,045 = **3,852,871**\n4) EBITDA 利润率 = 3,852,871 ÷ 6,779,511 = **56.8%**\n\n换算口径说明：报表以“千美元”列示，本文按原单位计算后再换算为十亿美元/亿美元；期间为 FY2015（2015年1月1日—12月31日）。\n\n**口径提示**：上述 D&A 采用现金流量表上全部三项摊销/折旧（含流媒体内容资产摊销，这是 Netflix 最大的摊销项目）。若只把“物业、设备及无形资产的折旧摊销 + DVD 内容摊销”计入 D&A（即剔除流媒体内容摊销 3,405,382），则 EBITDA = 447,489，利润率约 6.6%。两者差",
+          "ms": 9994,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_03282",
+          "type": "metrics-generated",
+          "question": "What is Netflix's year end FY2017 total current liabilities (in USD millions)? Base your judgments on the information provided primarily in the balance sheet.",
+          "gold": "$5466.00",
+          "prediction": "**结论：Netflix FY2017 年末（2017年12月31日）流动负债合计为 5,466.3 百万美元（约 54.66 亿美元）。**\n\n**依据（合并资产负债表，\"Current liabilities\" 部分）：**\n\n| 项目 | 2017-12-31（千美元） |\n|---|---|\n| Current content liabilities | 4,173,041 |\n| Accounts payable | 359,555 |\n| Accrued expenses | 315,094 |\n| Deferred revenue | 618,622 |\n| **Total current liabilities** | **5,466,312** |\n\n**换算口径：** 表内单位为人民报表所示\"in thousands\"（千美元），故 5,466,312 千美元 ÷ 1,000 = **5,466.312 百万美元 ≈ 5,466.3 百万美元**。\n\n**交叉验证：** 四项明细加总 4,173,041 + 359,555 + 315,094 + 618,622 = 5,466,312，与表内列示的合计一致。\n\n**参考：** 上一年（2016-12-31）流动负债合计为 4,586,657 千美元（约 4,586.7 百万美元），同比增加约 879.7 百万美元（+19.2%），主要来自内容负债与递延收入的增长。\n\n数据来自公司公开披露的财务报表，非投资建议。",
+          "ms": 2325,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04302",
+          "type": "metrics-generated",
+          "question": "We need to calculate a reasonable approximation (or exact number if possible) of a financial metric. Basing your judgment by information plainly provided in the statement of income, what is Nike's three year average of cost of goods sold as a % of revenue from FY2016 to FY2018? Answer in units of percents and round to one decimal place.",
+          "gold": "55.1%",
+          "prediction": "**答案：55.1%**\n\n计算依据（来自 Consolidated Statements of Income，\"Cost of sales\" 即 cost of goods sold，与 Revenues 同表同行项目）：\n\n| 年度 | Cost of sales (百万美元) | Revenues (百万美元) | 占比 |\n|---|---|---|---|\n| FY2016 | 17,405 | 32,376 | 53.8% |\n| FY2017 | 19,038 | 34,350 | 55.4% |\n| FY2018 | 20,441 | 36,397 | 56.2% |\n\n- FY2016：17,405 ÷ 32,376 = 53.759%\n- FY2017：19,038 ÷ 34,350 = 55.424%\n- FY2018：20,441 ÷ 36,397 = 56.161%\n\n三年平均 = (53.759% + 55.424% + 56.161%) ÷ 3 = **55.115% ≈ 55.1%**\n\n**说明**：公司损益表以\"Cost of sales\"列示销货成本，三年口径一致，可直接逐年相比后取算术平均（非三年合计收入/合计成本的加权平均）。若按加权口径（三年合计成本 56,884 ÷ 合计收入 103,123）则为 55.16%，四舍五入后同为 55.2%/55.1% 附近 —— 按题目\"三年平均\"的字面要求，取逐年比率的算术平均，即 **55.1%**。\n\n数据来源：Nike, Inc. FY2018 年报（10-K）Consolidated Statements of Income，单位为百万美元。",
+          "ms": 2973,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_03531",
+          "type": "metrics-generated",
+          "question": "According to the details clearly outlined within the balance sheet, how much total current assets did Nike have at the end of FY2019? Answer in USD millions.",
+          "gold": "$16525.00",
+          "prediction": "**Nike 2019 财年末（2019 年 5 月 31 日）流动资产合计 = 16,525 百万美元。**\n\n依据——材料《NIKE, INC. 合并资产负债表》（单位：百万美元）\"Current assets\" 部分：\n\n| 行项目 | FY2019 |\n|---|---|\n| Cash and equivalents | 4,466 |\n| Short-term investments | 197 |\n| Accounts receivable, net | 4,272 |\n| Inventories | 5,622 |\n| Prepaid expenses and other current assets | 1,968 |\n| **Total current assets** | **16,525** |\n\n验算：4,466 + 197 + 4,272 + 5,622 + 1,968 = 16,525，与表中\"Total current assets\"一致。\n（上年同期 FY2018 为 15,134，同比增加约 1,391 百万美元，+9.2%。）\n\n数据来自公司披露的合并资产负债表，非投资建议。",
+          "ms": 1580,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04080",
+          "type": "metrics-generated",
+          "question": "When primarily referencing the income statement and the statement of financial position, what is the FY2021 inventory turnover ratio for Nike? Inventory turnover ratio is defined as: (FY2021 COGS) / (average inventory between FY2020 and FY2021). Round your answer to two decimal places.",
+          "gold": "3.46",
+          "prediction": "**结论：FY2021 存货周转率 = 3.46（次）**\n\n**计算依据（均取自材料中 Nike FY2021 10-K，单位：百万美元）**\n\n| 项目 | 金额 | 来源 |\n|---|---|---|\n| FY2021 营业成本（Cost of sales） | 24,576 | 合并利润表，截至 2021/5/31 年度 |\n| FY2021 期末存货（Inventories） | 6,854 | 合并资产负债表，2021/5/31 |\n| FY2020 期末存货（Inventories） | 7,367 | 合并资产负债表，2020/5/31 |\n\n**推导过程**\n\n1. 平均存货 = (6,854 + 7,367) ÷ 2 = 14,221 ÷ 2 = **7,110.5**\n2. 存货周转率 = 24,576 ÷ 7,110.5 = **3.4563…**\n3. 四舍五入至两位小数 = **3.46**\n\n**口径说明**\n\n- 采用的是题设定义式：以 FY2021 营业成本除以 FY2020 与 FY2021 两期期末存货的简单算术平均（材料未给出季度/月度存货明细，故无法用更细的平均口径）。\n- 资产负债表为\"MAY 31\"时点值，与利润表\"YEAR ENDED MAY 31, 2021\"期间口径一致。\n- 金额单位均为百万美元，比率本身为无量纲倍数，不受单位影响。\n\n**可比参照**：存货较上年下降 513（7,367→6,854），而营业成本同比上升约 16.1%（21,162→24,576），说明周转效率较 FY2020（21,162 ÷ 7,367 ≈ 2.87，用期末口径）明显改善。\n\n如需分析该比率背后的驱动因素（如供应链恢复、需求回暖）或与同业对比，请告知，我可调用平台数据做进一步研判。\n\n（数据来自公司公开披露的 10-K 文件，非投资",
+          "ms": 3728,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01163",
+          "type": "domain-relevant",
+          "question": "Among operations, investing, and financing activities, which brought in the most (or lost the least) cash flow for Nike in FY2023?",
+          "gold": "Among the three, cash flow from operations was the highest for Nike in FY2023.",
+          "prediction": "**结论：经营活动（Operations）带来的现金最多，FY2023 为净流入 58.41 亿美元。**\n\n依据（合并现金流量表，截至 2023 年 5 月 31 日止年度，单位：百万美元）：\n\n| 活动类别 | FY2023 净现金流 |\n|---|---|\n| 经营活动 | **+5,841** |\n| 投资活动 | +564 |\n| 筹资活动 | **−7,447** |\n\n- 三项中经营活动金额最高：5,841 > 564 > −7,447。\n- 筹资活动是唯一大额净流出（主要为回购普通股 5,480 + 支付股利 2,012），\n  故\"亏得最少\"的也不是它——它就是现金净消耗最大的一项。\n- 投资活动虽为正，但净额仅 564，远小于经营活动的 5,841（受短期投资买卖与资本开支\n  −969 抵消后形成），**不能**算作最主要的现金来源。\n- 合计三项加汇率影响 −91 后，全年现金净减少 1,133，期初 8,574 → 期末 7,441（百万美元）。\n\n**建议：** 若关注现金生成能力，重点看经营活动的可持续性（FY2023 的 5,841 已高于 FY2022 的 5,188，但低于 FY2021 的 6,657）；筹资端 74 亿的净流出主要由股东回报驱动，需结合自由现金流（经营 5,841 − 资本开支 969 ≈ 4,872）判断其可持续性。\n\n数据来自公司公开披露的现金流量表，非投资建议。",
+          "ms": 2837,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00080",
+          "type": "domain-relevant",
+          "question": "Does Paypal have positive working capital based on FY2022 data? If working capital is not a useful or relevant metric for this company, then please state that and explain why.",
+          "gold": "Yes. Paypal has a positive working capital of $ 1.6Bn as of FY2022 end.",
+          "prediction": "## 结论\n\n**是——按 FY2022 数据，PayPal 的营运资本（working capital）为正，约 124.16 亿美元。但对该公司的经营实质而言，营运资本并非一个有用的指标，需谨慎解读。**\n\n## 计算（来源：PayPal FY2022 合并资产负债表，截至 2022/12/31，单位：百万美元）\n\n| 行项目 | 2022 | 2021 |\n|---|---|---|\n| 流动资产合计 | 57,517 | 52,574 |\n| 流动负债合计 | 45,101 | 43,029 |\n| **营运资本** | **12,416** | **9,545** |\n\n- 2022 年：57,517 − 45,101 = **12,416 百万美元（≈124 亿美元）**\n- 2021 年：52,574 − 43,029 = 9,545 百万美元\n- 同比增加 2,871 百万美元（+30%），主要来自\"贷款及应收利息净额\"由 4,846 增至 7,431、现金及等价物由 5,197 增至 7,776。\n\n## 为什么这个指标对 PayPal 参考价值有限\n\n1. **流动资产/负债被客户资金主导，属于过手性质（pass-through）**：2022 年\"应收资金及客户账户\"36,357 与\"应付资金及应付客户款项\"40,107，合计占总流动项目的六成以上。这些是代客户持有的受限资金，不能用于公司一般经营，也不代表公司的偿付压力。\n2. **剔除客户资金后仍为正，但口径含义不同**：调整后流动资产 21,160（57,517 − 36,357），调整后流动负债 4,994（45,101 − 40,107），调整后营运资本约 **16,166 百万美元**。\n3. **商业模式不依赖存货—应付周期**：PayPal 是支付/信贷平台，流动性的合理观察口径是\"非受",
+          "ms": 8891,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_04980",
+          "type": "metrics-generated",
+          "question": "What is the FY2021 capital expenditure amount (in USD billions) for PepsiCo? Respond to the question by assuming the perspective of an investment analyst who can only use the details shown within the statement of cash flows.",
+          "gold": "$4.60",
+          "prediction": "**结论：FY2021 资本支出（capital expenditure）为 46.25 亿美元（$4.625 billion），约合 46 亿美元。**\n\n**推算依据（仅用现金流量表口径）**\n- 现金流出项：投资活动（Investing Activities）下的\"Capital spending\"行，2021 财年（截至 2021 年 12 月 25 日）列示为 **(4,625)** 百万美元。括号表示现金流出。\n- 单位换算：表中单位为\"in millions\"，故 4,625 百万美元 ÷ 1,000 = **$4.625 billion**。\n- 同期对比（同一行的可比期间）：2020 年 (4,240) 百万美元、2019 年 (4,232) 百万美元，即 FY2021 同比 2020 年增长约 385 百万美元（**+9.1%**）。\n\n**口径说明**\n1. 现金流量表中与资本性支出相关的另一行为\"Acquisitions, net of cash acquired, and investments in noncontrolled affiliates\"（2021 年 (61) 百万美元），属于并购/股权投资，不属于资本支出，故未计入。\n2. 该表未单列\"购买固定资产与无形资产\"等其他 CapEx 科目，因此以分析师视角，本表内可识别的资本支出即为\"Capital spending\"一项；这也意味着若公司存在融资租赁、非现金取得资产等支出，现金流量表不会体现，实际经济性资本开支可能略高于此数。\n\n**可执行建议**\n1. 若需口径更严格的\"资本支出\"，应交叉核对 10-K 中\"Property, Plant and Equipment\"附注（含融资租赁、应付未付资本开支），现金流量表口径通常偏低。\n2. 做自由现金流测算时，以经营现金流 11,616",
+          "ms": 5213,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01009",
+          "type": "domain-relevant",
+          "question": "What are the geographies that Pepsico primarily operates in as of FY2022?",
+          "gold": "As of FY2022, Pepsico primarily operates in the following geographies: North America, Latin America, Europe, Africa, Middle East, South Asia, Asia Pacific, Australia, New Zealand and China.",
+          "prediction": "**结论：** 根据材料，百事公司（PepsiCo）通过七个报告分部（reportable segments）覆盖全球主要地域，产品销售至**200 多个国家和地区**（\"more than 200 countries and territories\"）。\n\n**七个分部对应的地域（依据 Item 1. Business – Our Operations）：**\n\n| 分部 | 覆盖地域 |\n|---|---|\n| FLNA（菲多利北美） | 美国、加拿大 |\n| QFNA（桂格食品北美） | 美国、加拿大 |\n| PBNA（百事饮料北美） | 美国、加拿大 |\n| LatAm（拉丁美洲） | 拉丁美洲全部饮料与方便食品业务 |\n| Europe（欧洲） | 欧洲全部饮料与方便食品业务 |\n| AMESA（非洲、中东和南亚） | 非洲、中东、南亚 |\n| APAC（亚太、澳新及中国区） | 亚太、澳大利亚、新西兰及中国地区 |\n\n**归纳为五大主要经营区域：** 北美（美国+加拿大）、拉丁美洲、欧洲、非洲/中东/南亚、亚太（含澳新与中国）。\n\n**依据说明：**\n- 全球触达范围引自\"serving customers and consumers in more than 200 countries and territories\"；\n- 地域划分引自\"Company Overview\"与\"Our Operations\"下第 1)~7) 项分部定义，报告期口径为 FY2022 年报（Form 10-K）。\n\n**建议：** 如需按分部进一步比较收入或利润的地域集中度，可提供 10-K 中的分部财务数据（Item 7 / Note on segment reporting），我可以据此做地域收入占比拆解。",
+          "ms": 2828,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00735",
+          "type": "domain-relevant",
+          "question": "Has Pepsico reported any materially important ongoing legal battles from FY2022 and FY2021?",
+          "gold": "No, Pepsico is not involved in material legal battles.",
+          "prediction": "**结论：没有。仅就你提供的这份披露看，百事公司（PepsiCo）未报告任何单独具有重大影响的未决法律战（FY2022、FY2021 均无）。**\n\n**依据（均出自该材料 Item 3. Legal Proceedings）**\n1. 全文为概括性表述：公司及其子公司\"are party to a variety of litigation, claims, legal or regulatory proceedings, inquiries and investigations\"——即存在诉讼、索赔、法律/监管程序、问询与调查，但**未点名、未量化、未单列**任何一宗案件。\n2. 管理层判断：\"the final outcome of the foregoing will not have a material adverse effect on our financial condition, results of operations or cash flows\"——明确表示预计**不构成重大不利影响**。管理层既已作出\"非重大\"判断，就意味着没有设定为\"materially important\"的案件予以专门披露，两个财年亦然（本段未按年度分列，措辞覆盖所有上述程序）。\n3. 该段指向 Item 1 Business Regulatory Matters 与 Item 1A Risk Factors，但**你提供的材料中不含这两部分内容**，因此无法从现有文本判断是否存在定性层面的监管事项讨论。\n\n**需要说清的边界**\n- 本材料的性质是\"无重大诉讼\"的标准式披露，而非\"无诉讼\"：公司确实涉及多类诉讼与监管调查，只是未达单独披露的重大性门槛（按 SEC 规则，重大未决程序、含超阈值的环境类索赔通常须具名披露——本段未具名，可推知未被认定达到该门槛）。\n- 材料未",
+          "ms": 7512,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01328",
+          "type": "domain-relevant",
+          "question": "What is the quantity of restructuring costs directly outlined in Pepsico's income statements for FY2022? If restructuring costs are not explicitly outlined then state 0.",
+          "gold": "Pepsico's restructuring costs in FY2022 amounted to $411 million .",
+          "prediction": "## 结论\n**0** —— 百事公司（PepsiCo）的**利润表（income statement）中并未单独列示重组成本**这一科目，因此按要求填 0。\n\n## 依据（材料为 Note 3「Restructuring and Impairment Charges」，非利润表本身）\n- 材料是**附注**披露，不是利润表。附注把 2019 生产力计划的相关费用**分摊反映在利润表已有的科目中**，未设独立行项目：\n - 2022 年计入 **Cost of sales**：$33 百万\n - 2022 年计入 **Selling, general and administrative expenses**：$347 百万\n - 2022 年计入 **Other pension and retiree medical benefits expense**：$31 百万\n - 附注合计 **Total restructuring and impairment charges：$411 百万**（2021 年 $247 百万，2020 年 $289 百万）\n- 也就是说，$411 百万是**附注口径的分摊汇总**，而非利润表上一个\"restructuring costs\"行项目。题目问的是\"利润表中**直接列示**的重组成本数量\"，材料中没有这样的行项目，故为 0。\n- 另需注意口径差异：该附注标题含 **impairment（减值）**，\"Total restructuring and impairment charges\"并非纯重组成本；且 2022 年第四季度对该计划做了扩展延期（至 2028 年），预计税前总费用约 $36.5 亿——这是未来预期，不属于 FY2022 利润表列示金额。\n\n## 说明与建议\n- 若你的口径是\"FY2022 与重组相关的费用总额（含减值、",
+          "ms": 6323,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_03620",
+          "type": "metrics-generated",
+          "question": "What is the FY2022 unadjusted EBITDA less capex for PepsiCo? Define unadjusted EBITDA as unadjusted operating income + depreciation and amortization [from cash flow statement]. Answer in USD millions. Respond to the question by assuming the perspective of an investment analyst who can only use the details shown within the statement of cash flows and the income statement.",
+          "gold": "$9068.00",
+          "prediction": "**结论：FY2022 PepsiCo 未调整 EBITDA 减资本开支 = 9,068 百万美元（USD 9,068 million）**\n\n**计算过程（仅使用利润表与现金流量表已给出项目，2022 财年，单位：百万美元）**\n\n| 步骤 | 项目 | 来源 | 金额 |\n|---|---|---|---|\n| 1 | Operating Profit（未调整营业利润） | Consolidated Statement of Income | 11,512 |\n| 2 | Depreciation and amortization | Consolidated Statement of Cash Flows（经营活动） | 2,763 |\n| 3 | **未调整 EBITDA（1+2）** | 推导 | **14,275** |\n| 4 | Capital spending（资本开支） | Consolidated Statement of Cash Flows（投资活动） | (5,207) |\n| 5 | **EBITDA − Capex（3+4）** | 推导 | **9,068** |\n\n即：11,512 + 2,763 = 14,275；14,275 − 5,207 = **9,068 百万美元**。\n\n**口径说明（分析要点）**\n- 「未调整」严格按题设定义：直接用利润表报告的 Operating Profit 11,512，**不剔除** Gain associated with the Juice Transaction（−3,321，系收益，摊薄口径应为加回）与 Impairment of intangible assets（3,166）等非经常项目；若做\"调整后\"处理，结果会明显不同。\n- 折旧摊销取现金流量表中的 2,763（而非报表附注口径），",
+          "ms": 6256,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04481",
+          "type": "metrics-generated",
+          "question": "What is the FY2022 unadjusted EBITDA % margin for PepsiCo? Calculate unadjusted EBITDA using unadjusted operating income and D&A (from cash flow statement). Give a response to the question by relying on the details shown in the statement of cash flows and the P&L statement.",
+          "gold": "16.5%",
+          "prediction": "**结论：FY2022（2022年12月31日止财年）百事公司未调整 EBITDA 利润率约为 16.5%。**\n\n**测算过程（单位：百万美元）**\n\n| 项目 | FY2022 | 来源 |\n|---|---|---|\n| 净收入 Net Revenue | 86,392 | 合并利润表 |\n| 营业利润 Operating Profit（未调整） | 11,512 | 合并利润表 |\n| 折旧与摊销 D&A | 2,763 | 合并现金流量表（经营活动部分） |\n| 未调整 EBITDA = 11,512 + 2,763 | **14,275** | 推导 |\n| EBITDA 利润率 = 14,275 ÷ 86,392 | **≈16.5%** | 推导 |\n\n换算口径说明：以上均取自材料原表的「2022」列，单位与原始报表一致为百万美元，未做额外换算；此处采用的是报表列示的**未调整**营业利润（即已含 Juice Transaction 收益 33.21 亿美元与无形资产减值 31.66 亿美元，未作剔除），D&A 直接取现金流量表「Depreciation and amortization」行，与「Impairment and other charges」（3,618）等非现金项目区分开，未混入。\n\n作为参照：同期营业利润率约为 13.3%（11,512 ÷ 86,392），两者差额即 D&A 贡献的约 3.2 个百分点。\n\n**建议**\n1. 若需与同业可比，建议同时列示剔除 Juice Transaction 收益与商誉减值后的调整后 EBITDA 利润率，两口径差异会较大（该两项合计约 65 亿美元为一次性因素）。\n2. 该材料仅含利润表与现金流量表前段，未含资产负债表；如需 EV/EBITDA 等倍数，还需净债务数据，请补充后续材料。数据来自公司公开披",
+          "ms": 2986,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01482",
+          "type": "novel-generated",
+          "question": "At the Pepsico AGM held on May 3, 2023, what was the outcome of the shareholder vote on the shareholder proposal for a congruency report by Pepsico on net-zero emissions policies?",
+          "gold": "The shareholder proposal for a congruency report by Pepsico on net-zero emissions policies was defeated.",
+          "prediction": "**结论：该股东提案未获通过（被否决）。**\n\n**表决结果（2023年5月3日 百事公司年度股东大会）**\n- 赞成：19,718,780 股\n- 反对：977,228,788 股\n- 反对占压倒性多数，提案被否决（defeated）。\n\n**基于材料推导（说明口径）**\n- 有效\"赞成+反对\"票合计 = 19,718,780 + 977,228,788 = **996,947,568 股**\n- 赞成占比 ≈ 19,718,780 ÷ 996,947,568 ≈ **1.98%**\n- 反对占比 ≈ 977,228,788 ÷ 996,947,568 ≈ **98.02%**\n\n**缺口说明**：材料仅给出赞成/反对票数，未披露弃权票、券商未投票（broker non-votes）及出席股份总数，故上述比例为\"以赞成+反对票为基数\"的计算口径，不等于占全部流通股或出席股份的比例。\n\n**要点**：这是一项要求百事公司就净零排放政策出具\"一致性报告（congruency report）\"的股东提案，因约 98% 的反对票而未能通过。\n\n建议：如需引用，请以公司 2023 年 8-K/股东大会投票结果公告及委托书（Proxy Statement）原文为准（数据来自公开披露，非投资建议）。",
+          "ms": 4019,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00705",
+          "type": "novel-generated",
+          "question": "By how much did Pepsico increase its unsecured five year revolving credit agreement on May 26, 2023?",
+          "gold": "$400,000,000 increase.",
+          "prediction": "**结论：增加了 4 亿美元（$400,000,000）。**\n\n**依据（2023年5月26日生效的协议）**\n\n| 项目 | 金额 |\n|---|---|\n| 原 2022 五年期无担保循环信贷协议（终止） | $3,800,000,000 |\n| 新 2023 五年期无担保循环信贷协议（签订） | $4,200,000,000 |\n| **净增加** | **$400,000,000（4 亿美元，+10.5%）** |\n\n- 计算口径：$4,200,000,000 − $3,800,000,000 = $400,000,000。\n- 终止时原协议下**无未偿还借款**，因此本次是额度替换而非叠加，净增量即 4 亿美元。\n- 需注意区分：材料中提到的 **$4,950,000,000** 是\"经现有或新增银行同意后可增额\"的**上限条款（accordion）**，并非 2023 年 5 月 26 日实际增加的金额；新协议基础额度为 42 亿美元，含 7.5 亿美元同日欧元摇摆额度（swing line），2028 年 5 月 26 日到期。\n\n**提示**：本回答依据该公司披露文件中\"2022 五年期信贷协议\"与\"2023 五年期信贷协议\"两处金额科目推导得出，金额单位均为美元，期间为 2023 年 5 月 26 日生效日。",
+          "ms": 2398,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00882",
+          "type": "novel-generated",
+          "question": "As of May 26, 2023, what is the total amount Pepsico may borrow under its unsecured revolving credit agreements?",
+          "gold": "Total amount Pepsico may borrow under unsecured revolving credit agreements = $8,400,000,000.",
+          "prediction": "## 结论\n\n**合计 84 亿美元（$8,400,000,000）**，即截至 2023 年 5 月 26 日，百事公司（PepsiCo）在无担保循环信贷协议下可借款总额。\n\n## 推导依据（2023-05-26 生效的两份新协议）\n\n| 协议 | 承诺额度 |\n|---|---|\n| 2023 364 Day Credit Agreement（364 天期） | $4,200,000,000 |\n| 2023 Five Year Credit Agreement（五年期） | $4,200,000,000 |\n| **合计** | **$8,400,000,000** |\n\n计算口径：\n- 当日百事同时**终止**了两份旧的各 38 亿美元协议（2022 364 Day / 2022 Five Year），终止时均无未偿借款，因此**不计入**可借款额度；\n- 当日**新签**两份各 42 亿美元协议，故 $4,200,000,000 × 2 = **$8,400,000,000**。\n\n## 两点补充说明\n\n1. **可扩容上限（非当前额度）**：两份协议均含\"手风琴\"条款，经现有或新增银行同意后，各自可将承诺额提高至最高 $4,950,000,000。若按上限计算合计为 $9,900,000,000，但该扩容**需贷方同意**，并非截至 5 月 26 日即可动用的额度。\n2. **币种与用途**：两笔额度可以美元和/或欧元借入，用于一般公司用途；五年期协议含 7.5 亿美元欧元同日拆借（swing line）子额度。\n\n**建议**：若用于流动性/偿债能力分析，请以 **84 亿美元**为基础额度，并将 99 亿美元视为或有扩容空间，注明其触发条件为贷方同意，不宜直接计入当期可用流动性。\n\n（数据来自公司 Item 8.01 公告原文，属公开披露信息，非投资建议。）",
+          "ms": 3406,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01474",
+          "type": "novel-generated",
+          "question": "As of FY2023Q1, why did Pepsico raise full year guidance for FY2023?",
+          "gold": "Pepsico experienced a strong start to FY2023.",
+          "prediction": "**结论：因为 2023 财年第一季度开局强劲（\"strong start to the year\"）**，百事（PepsiCo）据此在 FY2023Q1 上调了全年指引。\n\n**关键依据（材料原文，来自公司 FY2023Q1 披露，董事长兼 CEO Ramon Laguarta 表态）：**\n\n1. **业绩与经营动能良好**：公司对当期\"performance and business momentum\"表示满意。\n2. **品类与区域具韧性**：第一季度其各项品类（categories）和区域市场（geographies）\"remained resilient\"——即需求端未出现明显走弱。\n3. **上调幅度**：\n   - 全年 **有机收入（organic revenue）增速**：由 6% 上调至 **8%**；\n   - 全年 **核心固定汇率 EPS（core constant currency EPS）增速**：由 8% 上调至 **9%**。\n\n**逻辑链**：Q1 实际表现超预期（韧性+动能）→ 全年基数效应与趋势可延续 → 因此同步上调收入与 EPS 两项全年指引。\n\n**说明与建议：**\n- 该表述属于管理层定性归因，材料未给出 Q1 具体收入/EPS 数值及超预期幅度，如需量化验证\"强劲程度\"，应以 Q1 财报实际数与上年同期对比（本材料未含，不宜代估）。\n- 建议关注后续季报中该 8%／9% 指引是否维持，以及\"品类与区域韧性\"能否在北美饮料、国际零食等分部层面延续——这是指引可信度的核心观察点。\n\n（信息来自公司公开披露文件，非投资建议。）",
+          "ms": 3362,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_01476",
+          "type": "novel-generated",
+          "question": "As of FY2023Q1, by how many percentage points did Pepsico raise full year guidance in respect of core constant currency EPS growth?",
+          "gold": "Pepsico raised full year guidance in respect of core constant currency EPS growth by 1 percentage point.",
+          "prediction": "**结论：上调 1 个百分点。**\n\n依据（PepsiCo FY2023Q1 公司文件，CEO Ramon Laguarta 表述）：\n\n- 全年核心固定汇率每股收益（core constant currency EPS）增长指引：由 **8% 上调至 9%**；\n- 计算：9% − 8% = **1 个百分点**；\n- 同期参考：全年有机收入（organic revenue）指引由 6% 上调至 8%，上调 **2 个百分点**。\n\n说明：该结论直接来自材料中\"previously 8 percent → 9 percent\"的表述，为口径已明确的指引区间调整幅度（百分比之差），非投资建议。",
+          "ms": 1769,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00302",
+          "type": "novel-generated",
+          "question": "Did Pfizer grow its PPNE between FY20 and FY21?",
+          "gold": "Yes, change in PPNE was positive year over year",
+          "prediction": "**结论：是，辉瑞（Pfizer）FY21 的 PP&E（净额）较 FY20 增长。**\n\n**推导依据**（材料为截至 12 月 31 日的资产负债表，单位：百万美元）：\n\n| 项目 | 2021 | 2020 | 变动 |\n|---|---|---|---|\n| Property, plant and equipment（净额，即 PPNE） | 14,882 | 13,745 | +1,137 |\n\n- 绝对增幅：14,882 − 13,745 = **+1,137 百万美元**\n- 相对增幅：1,137 ÷ 13,745 ≈ **+8.3%**\n\n**说明**：此处 PPNE 取材料中\"Property, plant and equipment\"行项目（资产负债表上该行通常为扣除累计折旧后的净额）。用到的行项目仅为上述一行，期间为 FY2021 与 FY2020 两个年度末。\n\n**补充观察**：同期总资产中流动资产扩张远快于固定资产——总流动资产从 35,067 增至 59,693（+70%），主要来自短期投资（10,437→29,125）与应收账款（7,913→11,479），而 PP&E 增速仅 8.3%。这说明 FY21 资产增长主要由流动性与金融类资产驱动，而非产能性资本开支扩张。\n\n**建议**：\n1. 若关注产能投入力度，建议进一步查阅现金流量表\"购置不动产、厂房及设备\"（capital expenditures）与折旧金额，判断 PP&E 净额增长中有多少来自新增资本开支、多少来自汇率折算或并购并表。\n2. 数据来自公司公开披露的资产负债表，非投资建议。",
+          "ms": 2655,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00702",
+          "type": "novel-generated",
+          "question": "Were there any potential events that are not in Pfizer's standard business operations that substantially increased net income in 2019?",
+          "gold": "Yes, the gain on completion of Consumer Healthcare JV Transaction",
+          "prediction": "## 结论\n**是。** 2019 年 Pfizer 的净利润中确实包含一笔明显不属于常规经营活动的重大一次性收益。\n\n## 关键依据（单位：百万美元，2019 财年，截至 12 月 31 日）\n\n| 项目 | 2019 | 2020 | 2021 |\n|---|---|---|---|\n| (Gain) on completion of Consumer Healthcare JV transaction | **(8,107)** | (6) | — |\n| 持续经营税前利润 | 11,321 | 7,036 | 24,311 |\n| 终止经营（税后净额） | 5,318 | 2,529 | (434) |\n| 归属于 Pfizer Inc. 普通股股东的净利润 | 16,026 | 9,159 | 21,979 |\n\n**推导（2019 年）：**\n- 该 JV 交易收益以**负数**列示在\"成本与费用\"中，实质是一笔 **81.07 亿美元的一次性收益**（2020 年同类项目仅 600 万美元，2021 年为零）。\n- 剔除这笔收益后，持续经营税前利润仅为 11,321 − 8,107 = **约 32.14 亿美元**；即该非经常性收益贡献了持续经营税前利润的 **约 72%**。\n- 终止经营项目另贡献税后 **53.18 亿美元**（2020 年为 25.29 亿、2021 年为 −4.34 亿），同属非持续经营性质，也非标准业务运营。\n\n## 说明与建议\n- 数据来自公司披露的合并利润表（Year Ended December 31，2019），单位为百万美元；本文仅做材料推导，不含估计值。\n- 建议在评估 2019 年盈利质量时，将上述 81.07 亿 JV 收益与 53.18 亿终止经营损益剔除，观察可持续经营利润水平；如需进一步判断，请核对 JV 交",
+          "ms": 6747,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02416",
+          "type": "novel-generated",
+          "question": "What are three main companies acquired by Pfizer mentioned in this 10K report?",
+          "gold": "Trillium, Array, and Therachon",
+          "prediction": "## 结论\n该 10-K 附注（Note 2.A Acquisitions）中明确列示的三家主要被收购公司为：**Trillium、Array、Therachon**。\n\n## 关键交易要点（均出自 Note 2.A）\n\n| 标的 | 完成日 | 对价 | 会计处理 |\n|---|---|---|---|\n| Trillium（临床期免疫肿瘤） | 2021-11-17 | $18.50/股现金，总对价 **20 亿美元**（扣除所获现金） | 资产收购 |\n| Array（商业化阶段生物制药，肿瘤小分子） | 2019-07-30 | $48/股现金，对价公允价值 **112 亿美元**（扣除所获现金后 109 亿美元） | 企业合并（以债务+自有现金支付） |\n| Therachon（私营临床期生物技术，罕见病/软骨发育不全） | 2019-07-01 | 首付 **3.40 亿美元**，另有最高 4.70 亿美元里程碑款；转移对价公允价值 3.22 亿美元 | 资产收购 |\n\n补充口径说明：Trillium 因核心资产 TTI-622 构成所获总资产绝大部分公允价值，按资产收购处理，当期在研发费用中确认 21 亿美元购置 IPR&D（无其他未来用途），其中 20 亿美元净现金对价列示为经营活动现金流出；Therachon 同属资产收购，确认 3.37 亿美元研发费用；Array 未来归属员工的未解锁期权 1.57 亿美元计入重组及并购相关费用。\n\n数据来源：该公司 10-K 报告 Note 2 \"Acquisitions, Divestitures, Equity-Method Investments, Licensing Arrangements and Collaborative Arrangements\" A. Acquisitions 章节（公开披露文件，非投",
+          "ms": 4912,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00283",
+          "type": "novel-generated",
+          "question": "How much does Pfizer expect to pay to spin off Upjohn in the future in USD million?",
+          "gold": "77.78",
+          "prediction": "**结论：约 7.00 亿美元（$700 million）。**\n\n依据（摘自所给材料）：\n- 公司表示，与分拆 Upjohn 相关的预计成本约为 **$700 million**；\n- 其中约 **90%** 已自项目启动至 **2023 年第二季度**期间发生，即已发生约 **$630 million（700 × 90%）**，尚未发生的部分约 **$70 million**；\n- 这些费用包括法律实体拆分相关成本费用及交易成本。\n\n换算口径说明：材料以\"百万美元\"为单位，$700 million 即 7.00 亿美元；未做其他换算。该表述为\"expect to incur\"（预计发生），属前瞻性估计，非已确定的最终金额。\n\n建议：若需用于估值或模型，可将剩余约 $70 million 作为未来期间的分拆相关费用假设，并在后续季报中核对实际发生额是否收敛于 $700 million 总额。",
+          "ms": 2118,
+          "toolCalls": [],
+          "judge": "INCORRECT",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00724",
+          "type": "novel-generated",
+          "question": "For Pfizer, which geographic region had the biggest drop in Q22023 year over year revenues (on a percentage basis)?",
+          "gold": "Developed Rest of the World",
+          "prediction": "**结论：Developed Rest of World（发达市场其他地区）降幅最大，为 −74%。**\n\n依据（辉瑞 2023 年第二季度，即截至 2023 年 7 月 2 日的三个月 vs 截至 2022 年 7 月 3 日的三个月，单位：百万美元）：\n\n| 地区 | 2023Q2 | 2022Q2 | 同比 |\n|---|---|---|---|\n| United States | 6,185 | 11,222 | −45% |\n| Developed Europe | 2,415 | 5,480 | −56% |\n| **Developed Rest of World** | **1,305** | **5,034** | **−74%** |\n| Emerging Markets | 2,828 | 6,006 | −53% |\n| 合计 Revenues | 12,734 | 27,742 | −54% |\n\n要点：\n- 四个地区同比均为负增长，降幅排序为 Developed Rest of World(−74%) > Developed Europe(−56%) > Emerging Markets(−53%) > United States(−45%)。\n- 从绝对额看，Developed Rest of World 从 5,034 百万美元降至 1,305 百万美元，减少 3,729 百万美元，降幅约 74.1%（3,729/5,034）。\n- 若看上半年（截至 2023 年 7 月 2 日的六个月），Developed Rest of World 与 Developed Europe 均为 −55%，并列最大。\n\n建议：季度口径下关注 Developed Rest of World；做趋势判断时应同时看半年度数据以排除单季波动影响（数据来自公司披露文件，",
+          "ms": 2550,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02419",
+          "type": "novel-generated",
+          "question": "As of Q2'2023, is Pfizer spinning off any large business segments?",
+          "gold": "Yes, it's spinning off Upjohn.",
+          "prediction": "**结论：是——按该文件披露，辉瑞（Pfizer）仍在承担 Upjohn 业务分拆（separation）的相关成本，即存在大型业务板块的分拆事项；但摘录仅涉及 Upjohn 一个板块。**\n\n**关键依据（材料原文，摘自公司文件）**\n- 预计分拆 Upjohn 相关成本约 **7.00 亿美元（$700 million）**；\n- 其中约 **90%** 已自分拆启动（inception）起、截至 **2023 年第二季度（Q2 2023）** 发生；\n- 成本构成：法律实体拆分（separation of legal entities）相关成本费用 + 交易费用。\n\n**可推导的换算**\n- 截至 Q2'2023 已发生额 ≈ $700M × 90% = **约 6.3 亿美元（$630 million）**；\n- 剩余未发生额 ≈ **约 0.7 亿美元**，即分拆成本在 Q2'2023 已大部分入账，但流程尚未完全结束。\n\n**口径与缺口说明**\n- 上述数字均为\"预计/累计已发生\"的成本口径，非收入或资产口径；\n- 该摘录只提到 **Upjohn** 一项分拆，未提及其他业务板块，因此只能确认 Upjohn 这一笔；是否还有其他板块在分拆，材料中无信息，不做推断；\n- 材料未给出分拆对手方、交割日期或完成比例（仅有成本进度 90%），故不能据此外推分拆是否已完成。\n\n**建议**\n1. 若需确认\"是否还有其他大型板块分拆\"，应查阅同一期间财报的分部信息/后续事项（subsequent events）章节；\n2. 引用时注明来源为公司自身披露文件、期间为截至 Q2 2023（数据来自公开披露，非投资建议）。",
+          "ms": 7862,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00746",
+          "type": "domain-relevant",
+          "question": "Which debt securities are registered to trade on a national securities exchange under Ulta Beauty's name as of FY2023?",
+          "gold": "There are none",
+          "prediction": "**结论：没有。截至 FY2023（2023 年 1 月 28 日结束的财年），Ulta Beauty, Inc. 未登记任何债务证券在全国性证券交易所交易。**\n\n依据材料中 10-K 封面\"Securities registered pursuant to Section 12(b) of the Act\"（依《交易法》第 12(b) 条登记的证券）表格：\n\n| 证券类别 | 交易代码 | 登记交易所 |\n|---|---|---|\n| Common stock, par value $0.01 per share（普通股，面值 0.01 美元） | ULTA | The NASDAQ Global Select Market |\n\n- 该表是封面中唯一列示 12(b) 条登记证券的地方，**仅包含普通股一项，无任何债券、票据等债务证券**。\n- 封面另有\"Securities registered pursuant to Section 12(g) of the Act: **None**\"（依第 12(g) 条登记的证券：无），说明也不存在通过 12(g) 登记的其他类别证券（债务证券通常在此列示）。\n\n因此，答案可明确表述为：**无（None）**——Ulta Beauty 名下在纳斯达克全球精选市场登记的只有普通股（ULTA），未登记债务证券。\n\n说明：以上为对该公司 10-K 封面披露内容的直接读取，数据来自公开披露文件，非投资建议。",
+          "ms": 2225,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00521",
+          "type": "domain-relevant",
+          "question": "What are major acquisitions that Ulta Beauty has done in FY2023 and FY2022?",
+          "gold": "Ulta Beauty did not make any acquisitions in FY2023 and FY2022.",
+          "prediction": "## 结论\n\n**就所提供的材料（合并现金流量表）而言，FY2023 与 FY2022 均未显示任何重大收购活动。**\"Acquisitions, net of cash acquired\"（收购，扣除取得现金）行在这两年均无金额列示；唯一有金额的是 FY2021。\n\n## 依据（现金流量表·投资活动）\n\n| 行项目（千美元） | FY2023（截至 2023-01-28） | FY2022（截至 2022-01-29） | FY2021（截至 2021-01-30） |\n|---|---|---|---|\n| Acquisitions, net of cash acquired | 空白（无金额） | 空白（无金额） | (1,220) |\n| Capital expenditures | (312,126) | (172,187) | (151,866) |\n| Proceeds from short-term investments | 空白 | 空白 | 110,000 |\n\n即：\n- **FY2023**：投资活动现金流出主要是资本支出 312,126 千美元（约 3.12 亿美元），收购行无金额；\n- **FY2022**：资本支出 172,187 千美元（约 1.72 亿美元），收购行无金额；\n- **FY2021**：唯一列示的收购净现金流出 1,220 千美元（约 122 万美元），规模上也不属于\"重大收购\"。\n\n## 需要说明的材料局限\n\n1. 现金流量表只反映**以现金支付**的收购对价。若期间存在以股权/或有对价支付、或未构成\"业务合并\"的资产购买（通常并入\"Capital expenditures\"或无形资产），不会体现在\"Acquisitions, net of cash acquired\"这一行。\n2. 因此，严格说材料能支持的是：**该两财年",
+          "ms": 7096,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00601",
+          "type": "novel-generated",
+          "question": "What drove the reduction in SG&A expense as a percent of net sales in FY2023?",
+          "gold": "Lower marketing expenses and leverage of incentive compensation due to higher sales. The answer here assumes FY2023 refers to the 12 months ended on January 28, 2023 (although the company refers to this period as its fiscal 2022.",
+          "prediction": "**先说明一处期间不匹配**：您提供的材料标题与正文均是「Fiscal 2022 vs Fiscal 2021」，全文未出现任何 FY2023 的净销售额或 SG&A 金额。因此严格来说，无法从该材料回答\"FY2023 的 SG&A 占比为何下降\"——缺的是 FY2023 的利润表与同比口径说明，这直接影响结论归属的年度。\n\n**若您实际要问的是材料所载的那一次下降（FY2022 对 FY2021）**，材料给出了明确答案：\n\n- 事实：SG&A 费用额增长 16.2% 至 $2.4B（FY2021 为 $2.1B）；占净销售额比重由 **23.9% 降至 23.5%**（下降约 40 个基点）。\n- 算术上的直接原因：费用增速（16.2%）低于净销售额增速（18.3%，$10.2B vs $8.6B），即销售增长快于费用增长形成摊薄。\n- 公司自述的驱动因素：\n  1. **营销费用下降**（lower marketing expenses）；\n  2. **销售增长带来的激励薪酬摊薄效应**（leverage of incentive compensation due to higher sales）；\n  3. 部分被以下两项抵销（deleverage）：**战略性投资推高公司总部管理费用**、**薪酬投入推高门店人工与福利**。\n\n需要 FY2023 的话，请补充 FY2023 的年报/10-K 管理层讨论（MD&A）段落或平台内该公司的财报文件，我再按同一口径（SG&A 金额、占净销售额比重、同比变动及驱动项）做逐项归因。\n\n建议：① 若您手头有 FY2023 文件，直接上传附件或告知企业名称/股票代码，我调取金融分析模块核对；② 引用数据时务必标注对应财年，避免把 FY2022 的驱动因素误归到 FY2023。以上数据来自公司自己披露的文件，非投资建议。",
+          "ms": 6161,
+          "toolCalls": [],
+          "judge": "REFUSAL",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00603",
+          "type": "novel-generated",
+          "question": "What drove the increase in Ulta Beauty's merchandise inventories balance at end of FY2023?",
+          "gold": "Increase in Merchandise inventories balance was driven by the opening of 47 new stores. The answer here assumes FY2023 refers to the 12 months ended on January 28, 2023 (although the company refers to this period as its fiscal 2022.",
+          "prediction": "## 结论\n\n**本次提供的材料无法回答\"FY2023 存货增长动因\"——它讲的是 FY2022（第四季度末）的存货变动，而非 FY2023。**\n\n## 材料实际内容（口径：百万美元，财年末）\n\n| 项目 | FY2022 Q4末 | FY2021 Q4末 | 变动 |\n|---|---|---|---|\n| Merchandise inventories, net | 1.6 十亿（约 16 亿） | 1.5 十亿（约 15 亿） | +1.042 亿（$104.2 million） |\n\n材料明确给出的 **FY2022 存货增加 $104.2 million 的三大动因**：\n\n1. **新开门店**——自 2022 年 1 月 29 日以来新开 47 家门店带来的铺货；\n2. **新品上市与品牌扩张**——为新品牌发布（new brand launches）和品牌扩展（brand expansions）备货；\n3. **存货成本上升**（inventory cost increases）。\n\n## 关键缺口说明\n\n- 问的是 **FY2023 期末**存货余额增长动因，但材料中所有数字与表述均指向 **fiscal 2022 第四季度**（对比基期为 fiscal 2021 第四季度），**不含 FY2023 的任何期间、金额或归因文字**。\n- 因此**不能**把上面三条 FY2022 动因直接套用到 FY2023；二者期间不同、金额不同，属不同披露事项。\n- 另需注意：材料给出的 47 家新店、$104.2 million 增幅等，均为 FY2022 口径，与 FY2023 无关。\n\n## 建议\n\n1. 若要回答 FY2023，请补充 **FY2023 年报（10-K）中 MD&A 的存货段落**，或 FY2023 资产负债表及存货附注；届时可按\"期末余额 −",
+          "ms": 6056,
+          "toolCalls": [],
+          "judge": "REFUSAL",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00605",
+          "type": "novel-generated",
+          "question": "What percent of Ulta Beauty's total spend on stock repurchases for FY 2023 occurred in Q4 of FY2023?",
+          "gold": "36%. The answer here assumes FY2023 refers to the 12 months ended on January 28, 2023 (although the company refers to this period as its fiscal 2022.",
+          "prediction": "**结论：按材料无法回答该问题——材料中不含 FY2023 的任何回购数据。**\n\n**缺什么**\n- 材料只覆盖 **fiscal 2022**：Q4 FY2022 回购 722,457 股、金额 **$328.1 million**；FY2022 全年回购约 220 万股、金额 **$900.0 million**；截至 2023 年 1 月 28 日剩余额度 $1.1 billion（March 2022 宣布的 $20 亿计划）。\n- 题目问的是 **FY2023 全年回购总额**与**FY2023 第四季度回购额**，这两个数字材料中均未出现，因此无法计算占比。\n- 影响：缺少分子（Q4 FY2023 支出）与分母（FY2023 全年支出），该比例不可推导；用 FY2022 数据替代属于口径错配，不予采用。\n\n**若题目年份应为 FY2022（据此材料）**\nQ4 FY2022 $328.1M ÷ FY2022 $900.0M = **36.5%**，即 FY2022 全年回购支出的约 36.5% 发生在第四季度（数据来源：公司自己的回购计划披露，期间为 fiscal 2022）。\n\n**建议**\n1. 请补充 Ulta Beauty FY2023 年报（10-K）中\"Share Repurchase Program\"一节，或至少 FY2023 全年及 Q4 的回购股数与金额。\n2. 核对该问题是否将 FY2022 误写为 FY2023；若是，可直接采用 36.5%（= 328.1/900.0，单位：百万美元）。\n\n以上数据来自公司公开披露，非投资建议。",
+          "ms": 4780,
+          "toolCalls": [],
+          "judge": "REFUSAL",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00606",
+          "type": "novel-generated",
+          "question": "Did Ulta Beauty's wages expense as a percent of net sales increase or decrease in FY2023?",
+          "gold": "Wages expense as a percent of net sales increased in FY2023. The answer here assumes FY2023 refers to the 12 months ended on January 28, 2023 (although the company refers to this period as its fiscal 2022.",
+          "prediction": "## 结论\n\n**无法从所给材料判断 FY2023 工资费用占净销售额比重的升降方向——材料中不含 FY2023 的任何数据。**\n\n## 依据（材料实际覆盖的期间）\n\n所给段落标题与内容均为 **Full Year of Fiscal 2022（对比 fiscal 2021）**，只披露了两个年度：\n\n| 项目 | FY2022 | FY2021 |\n|---|---|---|\n| 净销售额 | 102亿美元（+18.3%） | 86亿美元 |\n| SG&A 费用 | 24亿美元（+16.2%） | 21亿美元 |\n| SG&A / 净销售额 | **23.5%** | 23.9%（下降） |\n\n与\"工资\"直接相关的唯一表述是：SG&A 占比下降的同时，\"**deleverage of store payroll and benefits due to wage investments**\"（门店薪酬与福利因工资投入而**去杠杆**）——即在 FY2022 内部，**门店薪酬福利占净销售额的比重是上升的**，只是被营销费用下降和 incentive compensation 的杠杆效应所抵消，使 SG&A 总占比仍下降 0.4 个百分点。\n\n## 缺口说明\n\n1. **期间不匹配**：问题问 FY2023，材料只到 FY2022，不能外推（FY2023 的销售结构、工资涨幅、SG&A 构成均未知）。\n2. **科目颗粒度不足**：即使 FY2022，材料也只给出 SG&A 合计占比，工资费用（store payroll and benefits）**没有单独金额或占比**，只有定性描述，因此严格意义上\"工资费用占净销售额比重\"在材料中也无精确数值。\n\n## 建议\n\n- 若需回答 FY2023，请提供 Ulta Beauty **FY2023（截至 2024 年 2 月 3",
+          "ms": 8675,
+          "toolCalls": [],
+          "judge": "REFUSAL",
+          "correct": false
+        },
+        {
+          "id": "financebench_id_00859",
+          "type": "novel-generated",
+          "question": "Among all of the derivative instruments that Verizon used to manage the exposure to fluctuations of foreign currencies exchange rates or interest rates, which one had the highest notional value in FY 2021?",
+          "gold": "Cross currency swaps. Its notional value was $32,502 million.",
+          "prediction": "**结论：Cross currency swaps（交叉货币互换）名义金额最高，2021 年 12 月 31 日为 32,502 百万美元（约 325.02 亿美元）。**\n\n依据（材料中\"notional amounts of outstanding derivative instruments\"表，单位：百万美元，At December 31）：\n\n| 衍生工具 | 2021 | 2020 |\n|---|---|---|\n| Cross currency swaps | **32,502** | 26,288 |\n| Interest rate swaps | 19,779 | 17,768 |\n| Forward starting interest rate swaps | 1,000 | 2,000 |\n| Foreign exchange forwards | 932 | 1,405 |\n\n推导：将 2021 年四项名义金额直接比较，32,502 > 19,779 > 1,000 > 932，故最高者为 cross currency swaps，占四类合计（54,213 百万美元）的约 59.95%。\n\n补充变化：该项同比 2020 年增加 6,214 百万美元（+23.6%）；同期 forward starting interest rate swaps 减少 1,000 百万美元（−50%），foreign exchange forwards 减少 473 百万美元（−33.7%）。\n\n说明：以上数据均取自所提供材料原文表格，未做任何估计；公司亦声明不持有以交易为目的的衍生品。\n\n建议：\n1. 若需判断汇率/利率风险敞口的实质变化，还需结合套期会计处理与对应被套期项目的金额一并看，单看名义金额不代表净风险大小。\n2. 交叉货币互换名义额上升较快，可关注其对手方",
+          "ms": 2799,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_02024",
+          "type": "novel-generated",
+          "question": "As of FY 2021, how much did Verizon expect to pay for its retirees in 2024?",
+          "gold": "The estimated pension benefits were $1097 million, and the estimated health care and life insurance benefits were $862 million.",
+          "prediction": "**结论：FY2021 年报中，Verizon 预计 2024 年向退休人员支付合计约 19.59 亿美元（$1,959 million）。**\n\n**依据（摘自该公司「Estimated Future Benefit Payments」表，单位：百万美元）**\n\n| 项目 | 2024 年预计支付 |\n|---|---|\n| Pension Benefits（养老金） | $1,097 |\n| Health Care and Life（医疗及人寿） | $862 |\n| **合计** | **$1,959** |\n\n推导口径：该表按年列示未来给付，2024 年一行两列分别为养老金 1,097 与医疗/人寿 862；因题目问\"为退休人员支付的总额\"，将两者相加得 1,959 百万美元 = 19.59 亿美元。\n\n补充观察：相比 2022 年（2,049 + 906 = 2,955 百万美元），2024 年预计支付额下降约 33.7%，反映养老金给付随计划冻结/参与人数下降而逐年递减。\n\n**建议**\n1. 若需口径可比，可同时引用\"养老金\"与\"医疗及人寿\"分项，避免与仅养老金口径的数据混用。\n2. 该数为公司基于精算假设的估计值，实际支付会随折现率、医疗成本趋势及参与人数变动，宜与后续年报实际数对比核验。",
+          "ms": 2566,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00216",
+          "type": "domain-relevant",
+          "question": "Does Verizon have a reasonably healthy liquidity profile based on its quick ratio for FY 2022? If the quick ratio is not relevant to measure liquidity, please state that and explain why.",
+          "gold": "No. The quick ratio was approximately 0.54 for Verizon. It indicated that Verizon does not have a healthy liquidity profile.",
+          "prediction": "## 结论\n\nVerizon FY2022 的速动比率（quick ratio）**可算、且与流动性衡量相关**（本材料已给出全部所需行项目，无需外部数据），但从该比率看，其流动性**并不算\"稳健健康\"**——速动比率仅约 **0.54**，明显低于常用的 1.0 参考线。\n\n## 计算过程（单位：百万美元，期间：2022 与 2021 年 12 月 31 日）\n\n速动资产 = 现金及现金等价物 + 应收账款净额（剔除存货、预付费用及其他流动资产的\"非速动\"部分）\n\n- FY2022：2,605 + 24,506 = **27,111**\n- 流动负债合计：**50,171**\n- **速动比率 = 27,111 / 50,171 ≈ 0.54**\n\n同比：\n\n- FY2021：2,921 + 23,846 = 26,767；流动负债 47,160 → **≈ 0.57**\n- 即由 0.57 小幅下滑至 0.54\n\n参考：流动比率 = 37,857 / 50,171 ≈ **0.75**（说明即便计入存货与预付项目，流动资产仍不足以覆盖流动负债）。\n\n## 判断\n\n- 0.54 意味着速动资产仅能覆盖约 **54%** 的流动负债；通常 1.0 被视为\"健康\"下限，因此**单看速动比率，Verizon FY2022 的流动性偏紧，而谈不上\"reasonably healthy\"**。\n- 需注意的时点压力：一年内到期债务 9,963，而现金仅 2,605，短期债务的偿付更依赖经营性现金流与再融资，而非账面速动资产。\n- 关于\"是否相关\"：**速动比率在此处是相关的**（数据完整、可计算），因此不应以\"不适用\"为由回避；但其口径有局限——它排除了预付费用及其他（8,358）等真实可用的流动资产，也未反映电信企业现金流稳定、可进入资本市场再融资的特点。这些是比率的固有局限，属",
+          "ms": 9887,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00215",
+          "type": "domain-relevant",
+          "question": "Is Verizon a capital intensive business based on FY 2022 data?",
+          "gold": "Yes. Verizon's capital intensity ratio was approximately 2.774729. This means that it took approximately $2.77 of assets to generate $1 of revenue and thus, Verizon can be considered capital intensive.",
+          "prediction": "**结论：是。按 FY 2022 数据，Verizon 属于典型的重资产（资本密集型）企业。**\n\n**关键依据（单位：百万美元，时点为 2022 年 12 月 31 日，收入为 FY2022）**\n\n| 项目 | 金额 | 占比/口径 |\n|---|---|---|\n| 固定资产原值（Property, plant and equipment） | 307,689 | — |\n| 固定资产净额 | 107,434 | 占总资产 379,680 的 **28.3%** |\n| 累计折旧 | 200,255 | 占原值 **65.1%**（资产已用年限长、折旧负担重） |\n| 无线牌照（Wireless licenses） | 149,796 | 同属长期资本性投入 |\n| 固定资产净额 + 无线牌照 | 257,230 | 占总资产 **67.7%** |\n| 流动资产合计 | 37,857 | 仅占总资产 **10.0%** |\n| 合并营业收入 | 136,835 | 固定资产净额/收入 = **78.5%** |\n\n**推导说明**\n- 资产结构：长期资本性资产（固定资产 + 无线牌照 + 商誉 28,671 + 其他无形 11,461）合计约 2,973 亿美元，占总资产约 78%，而流动资产仅约 379 亿（10%），说明资金主要沉淀在长期资产上而非周转性资产。\n- 持续投入：固定资产原值由 2021 年的 289,897 增至 307,689，**一年净增 17,792（+6.1%）**；固定资产净额由 99,696 增至 107,434（+7,738，+7.8%）——即便扣除折旧后仍在扩张，说明存在持续的资本开支。\n- 收入效率：用\"固定资产净额÷营业收入\"衡量，2022 年为 107,434 ÷ 136,835 ≈ **78.5%**，即每产生 1 美元收入",
+          "ms": 6306,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_00566",
+          "type": "domain-relevant",
+          "question": "Has Verizon increased its debt on balance sheet between 2022 and the 2021 fiscal period?",
+          "gold": "No. Verizon's debt decreased by $229 million.",
+          "prediction": "## 结论\n\n**没有增加——按合并资产负债表口径，Verizon 2022 年总债务较 2021 年略有下降**；但短期（一年内到期）债务明显上升。\n\n## 关键依据（单位：百万美元，2022-12-31 vs 2021-12-31）\n\n| 项目 | 2022 | 2021 | 变动 |\n|---|---|---|---|\n| **Total debt** | 150,639 | 150,868 | **−229（−0.15%）** |\n| 长期债务合计（含一年内到期） | 150,489 | 150,868 | −379 |\n| 长期债务（非流动部分） | 140,676 | 143,425 | −2,749 |\n| 一年内到期债务 | 9,963 | 7,443 | **+2,520（+33.9%）** |\n\n推导口径：Total debt = 长期债务（非流动）140,676 + 一年内到期部分 9,963，其中后者 = 长期债务一年内到期 9,813 + 商业票据 150（2021 年无商业票据）。两列明细合计均已复核一致（2022 年 150,489；2021 年 150,868）。\n\n## 需要注意的结构性变化\n\n总量虽微降，**结构上是\"长期变短、短期变多\"**：\n\n- 10 年期以上债务由 73,520 降至 60,134（−13,386），5 年期以下由 18,406 升至 23,929（+5,523）；\n- 浮动利率债务上升：5–10 年浮动由 824 升至 3,029；资产支持浮动债由 4,610 升至 10,271；\n- 一年内到期债务增加 2,520，再融资压力前移。\n\n因此，若提问中的\"债务\"特指**一年内到期的债务**，答案是\"是，增加了 33.9%\"；若指**资产负债表上的债务总额**，答案是\"否，小幅下降约 0.15%\"。\n\n## 建议\n",
+          "ms": 8031,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_06247",
+          "type": "metrics-generated",
+          "question": "What is FY2018 days payable outstanding (DPO) for Walmart? DPO is defined as: 365 * (average accounts payable between FY2017 and FY2018) / (FY2018 COGS + change in inventory between FY2017 and FY2018). Round your answer to two decimal places. Please base your judgments on the information provided primarily in the statement of financial position and the P&L statement.",
+          "gold": "42.69",
+          "prediction": "**FY2018 DPO ≈ 42.69 天**\n\n计算过程（单位：百万美元，来自合并资产负债表与合并利润表）：\n\n| 项目 | 取值 | 来源 |\n|---|---|---|\n| FY2018 应付账款 | 46,092 | 资产负债表（2018/1/31） |\n| FY2017 应付账款 | 41,433 | 资产负债表（2017/1/31） |\n| FY2018 存货 | 43,783 | 资产负债表 |\n| FY2017 存货 | 43,046 | 资产负债表 |\n| FY2018 销货成本（Cost of sales） | 373,396 | 利润表（FY2018） |\n\n- 平均应付账款 = (46,092 + 41,433) / 2 = **43,762.5**\n- 存货变动 = 43,783 − 43,046 = **+737**\n- 分母 = 373,396 + 737 = **374,133**\n- DPO = 365 × 43,762.5 / 374,133 = **42.69 天**\n\n说明：COGS 采用利润表中的 \"Cost of sales\"（非含会员及其他收入的 Total revenues）；存货变动为 FY2018 相对 FY2017 的净增加，已按题目定义加回分母。金额均为百万美元，故单位在比率中约去，结果以\"天\"计。\n\n建议：若需横向比较，可用同口径计算同业公司 DPO 与自身历史年度 DPO，观察应付账款周转是否出现异常拉长（可能意味着现金流压力或供应商账期议价变化）。",
+          "ms": 3169,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_04784",
+          "type": "metrics-generated",
+          "question": "Based on the information provided primarily in the statement of income, what is the FY2018 - FY2019 change in unadjusted operating income % margin for Walmart? Answer in units of percents and round to one decimal place.",
+          "gold": "0.2%",
+          "prediction": "**结论：FY2018 → FY2019 未调整营业利润率上升约 +0.2 个百分点（4.1% → 4.3%）。**\n\n**计算依据（取自利润表，单位：百万美元）**\n\n| 项目 | FY2019 | FY2018 |\n|---|---|---|\n| 营业利润（Operating income） | 21,957 | 20,437 |\n| 总收入（Total revenues） | 514,405 | 500,343 |\n| 营业利润率 | 4.268% | 4.085% |\n\n- FY2019：21,957 ÷ 514,405 = **4.3%**\n- FY2018：20,437 ÷ 500,343 = **4.1%**\n- 变动：4.268% − 4.085% = **+0.18 ≈ +0.2 个百分点**\n\n说明：\n- 采用**未调整（unadjusted）**的营业利润，即利润表上直接列示的 Operating income，未剔除任何一次性项目（该表中“Loss on extinguishment of debt”“Other (gains) and losses”位于营业利润之下，不影响营业利润口径）。\n- 分母用 Total revenues（含会员及其他收入 4,076 / 4,582）；若改用 Net sales 计算，结果为 4.30% vs 4.12%，变动同样为 **+0.2 个百分点**，结论不变。\n- 本表为 Walmart Inc. 合并利润表，财年截至 1 月 31 日，FY2019 对应 2019 年 1 月 31 日止年度。\n\n**建议：**\n1. 若需评估“经营性”盈利质量，建议另算剔除一次性损益后的调整后利润率，并与收入增速（FY2019 总收入 +2.8%）、SG&A 增速（+0.6%）对照，判断利润率改善主要来自成本费用控制还是收",
+          "ms": 3333,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        },
+        {
+          "id": "financebench_id_06741",
+          "type": "metrics-generated",
+          "question": "What is the FY2018 - FY2020 3 year average unadjusted EBITDA % margin for Walmart? Define unadjusted EBITDA as unadjusted operating income + depreciation and amortization from the cash flow statement. Answer in units of percents and round to one decimal place. Calculate what was asked by utilizing the line items clearly shown in the P&L statement and the cash flow statement.",
+          "gold": "6.2%",
+          "prediction": "## 结论：FY2018–FY2020 三年平均 unadjusted EBITDA 利润率 ≈ **6.2%**\n\n**计算口径**：unadjusted EBITDA = 未调整营业利润（Operating income）+ 现金流量表折旧与摊销（Depreciation and amortization）；利润率分母用利润表 Total revenues（沃尔玛财年截至 1 月 31 日，故 FY2020 = 截至 2020/1/31 的年度）。\n\n| 财年 | 营业利润 | + 折旧摊销 | = EBITDA | ÷ 总营收 | EBITDA 利润率 |\n|---|---|---|---|---|---|\n| FY2018 | 20,437 | 10,529 | 30,966 | 500,343 | 6.19% |\n| FY2019 | 21,957 | 10,678 | 32,635 | 514,405 | 6.34% |\n| FY2020 | 20,568 | 10,987 | 31,555 | 523,964 | 6.02% |\n\n**三年平均 = (6.19% + 6.34% + 6.02%) ÷ 3 = 6.19% ≈ 6.2%**\n\n（等价的汇总口径：三年 EBITDA 合计 95,156 百万美元 ÷ 三年营收合计 1,538,712 百万美元 = 6.18%，结果一致。）\n\n单位均为百万美元，金额取自利润表 2020/2019/2018 三列的 Operating income，以及现金流量表同三列的 Depreciation and amortization。\n\n**说明与建议**\n- 该期间 EBITDA 利润率基本平稳在 6% 区间，FY2019 略高、FY2020 因营业利润下降（20,568 vs 21,957）而小幅回落至 6.02%，但",
+          "ms": 4732,
+          "toolCalls": [],
+          "judge": "CORRECT",
+          "correct": true
+        }
+      ]
+    }
+  ],
+  "reference": {
+    "directA1Judge3Pct": 88.67,
+    "directDeterministicPct": 34.67
+  }
+}
