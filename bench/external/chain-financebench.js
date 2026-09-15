@@ -104,9 +104,19 @@ async function chatStream(port, body, { timeoutMs = 300000 } = {}) {
   const out = { generatedAt: new Date().toISOString(), mode: 'chain-financebench', model: llm.model, limit, judgeVotes: votes, arms: [] }
 
   try {
-    // 建技能与预设（B0 不需要）
+    // 建技能与预设（B0 不需要；BP = 内置预设，按名字在库里查找，不创建）
     for (const a of arms) {
       if (a.id === 'B0') continue
+      if (a.builtinName) {
+        const r = await fetch(`http://127.0.0.1:${port}/api/plugins/presets`)
+        const j = await r.json()
+        const items = j.items || j.presets || []
+        const hit = items.find((x) => x.name === a.builtinName)
+        if (!hit) throw new Error(`找不到内置预设「${a.builtinName}」，现有：${items.map((x) => x.name).join('、')}`)
+        a.presetId = hit.id
+        console.log(`使用内置预设「${hit.name}」→ id=${a.presetId}（skills=${JSON.stringify(hit.skills || [])}）`)
+        continue
+      }
       if (a.skill) {
         const r = await fetch(`http://127.0.0.1:${port}/api/skills`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(a.skill),

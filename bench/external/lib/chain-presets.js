@@ -52,6 +52,8 @@ const LIST = [
   { id: 'B5', label: '改提示 + 去工具 + 载入技能', promptExtra: PROMPT_FIX, tools: NO_TOOLS, skill: SKILL },
   { id: 'B6', label: '条件化 A1（按证据充分性放开推导）', promptExtra: `${PROMPT_FIX}\n\n${PROMPT_CONDITIONAL_A1}`, tools: NO_TOOLS, skill: SKILL },
   { id: 'B7', label: '无条件 A1（照搬 FinanceBench 版，作对照）', promptExtra: `${PROMPT_FIX}\n\n[证据规则]\n材料一定包含回答问题所需的信息；若未逐字陈述，请推导而不是拒答。`, tools: NO_TOOLS, skill: SKILL },
+  // BP = 产品内置预设（不创建、按名字在库里查找）：用于回归"内置预设 + 内置技能"这一生态形态
+  { id: 'BP', label: '内置预设：客观题 / 知识问答模式', builtinName: '客观题 / 知识问答模式', promptExtra: '', tools: null, skill: null },
 ]
 
 module.exports = { LIST, SKILL, PROMPT_FIX, PROMPT_CONDITIONAL_A1, NO_TOOLS, byId: (id) => LIST.find((a) => a.id === id) || null }
