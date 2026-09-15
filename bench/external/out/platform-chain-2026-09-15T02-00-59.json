@@ -1,0 +1,2877 @@
+{
+  "generatedAt": "2026-09-15T02:00:59.911Z",
+  "mode": "platform-chain",
+  "model": "deepseek-flash",
+  "port": 1041,
+  "seed": 20260101,
+  "presetArm": "B4",
+  "cflue": {
+    "n": 150,
+    "correct": 117,
+    "accuracyPct": 78,
+    "sampleHash": "6b073e9375e2a0d5761cb9d857365c9a07161b07bd34e4fd5c5ec2bb5147629e",
+    "extractMode": {
+      "compact": 146,
+      "none": 4
+    },
+    "emptyAnswers": 4,
+    "weakExtraction": 0,
+    "usedTools": 0,
+    "meanMs": 2441,
+    "errors": 0,
+    "rows": [
+      {
+        "id": "knowledge_20",
+        "group": "判断题 / 证券从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1068,
+        "toolCalls": [],
+        "events": 40,
+        "error": null
+      },
+      {
+        "id": "knowledge_43",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2660,
+        "toolCalls": [],
+        "events": 379,
+        "error": null
+      },
+      {
+        "id": "knowledge_58",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 659,
+        "toolCalls": [],
+        "events": 65,
+        "error": null
+      },
+      {
+        "id": "knowledge_83",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "ABDE",
+        "prediction": "ABDE",
+        "grade": {
+          "gold": "ABDE",
+          "predicted": "ABDE",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2836,
+        "toolCalls": [],
+        "events": 348,
+        "error": null
+      },
+      {
+        "id": "knowledge_85",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4515,
+        "toolCalls": [],
+        "events": 641,
+        "error": null
+      },
+      {
+        "id": "knowledge_103",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 22170,
+        "toolCalls": [],
+        "events": 4099,
+        "error": null
+      },
+      {
+        "id": "knowledge_152",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1684,
+        "toolCalls": [],
+        "events": 123,
+        "error": null
+      },
+      {
+        "id": "knowledge_163",
+        "group": "多项选择题 / 银从中级资格",
+        "gold": "AD",
+        "prediction": "AD",
+        "grade": {
+          "gold": "AD",
+          "predicted": "AD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1202,
+        "toolCalls": [],
+        "events": 78,
+        "error": null
+      },
+      {
+        "id": "knowledge_176",
+        "group": "判断题 / 银行初级资格",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1423,
+        "toolCalls": [],
+        "events": 117,
+        "error": null
+      },
+      {
+        "id": "knowledge_249",
+        "group": "单项选择题 / 金融理财师（AFP）",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2582,
+        "toolCalls": [],
+        "events": 261,
+        "error": null
+      },
+      {
+        "id": "knowledge_281",
+        "group": "单项选择题 / 初级会计职称",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 985,
+        "toolCalls": [],
+        "events": 17,
+        "error": null
+      },
+      {
+        "id": "knowledge_283",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1327,
+        "toolCalls": [],
+        "events": 121,
+        "error": null
+      },
+      {
+        "id": "knowledge_321",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 765,
+        "toolCalls": [],
+        "events": 44,
+        "error": null
+      },
+      {
+        "id": "knowledge_342",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 951,
+        "toolCalls": [],
+        "events": 31,
+        "error": null
+      },
+      {
+        "id": "knowledge_345",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1870,
+        "toolCalls": [],
+        "events": 171,
+        "error": null
+      },
+      {
+        "id": "knowledge_370",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1438,
+        "toolCalls": [],
+        "events": 135,
+        "error": null
+      },
+      {
+        "id": "knowledge_372",
+        "group": "多项选择题 / 初级会计职称",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1660,
+        "toolCalls": [],
+        "events": 89,
+        "error": null
+      },
+      {
+        "id": "knowledge_379",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1124,
+        "toolCalls": [],
+        "events": 68,
+        "error": null
+      },
+      {
+        "id": "knowledge_391",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 497,
+        "toolCalls": [],
+        "events": 17,
+        "error": null
+      },
+      {
+        "id": "knowledge_400",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "D",
+        "prediction": "A",
+        "grade": {
+          "gold": "D",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2748,
+        "toolCalls": [],
+        "events": 369,
+        "error": null
+      },
+      {
+        "id": "knowledge_420",
+        "group": "判断题 / 银行初级资格",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1605,
+        "toolCalls": [],
+        "events": 187,
+        "error": null
+      },
+      {
+        "id": "knowledge_423",
+        "group": "单项选择题 / 金融理财师（AFP）",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1624,
+        "toolCalls": [],
+        "events": 201,
+        "error": null
+      },
+      {
+        "id": "knowledge_428",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1268,
+        "toolCalls": [],
+        "events": 44,
+        "error": null
+      },
+      {
+        "id": "knowledge_453",
+        "group": "判断题 / 初级会计职称",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1251,
+        "toolCalls": [],
+        "events": 46,
+        "error": null
+      },
+      {
+        "id": "knowledge_484",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1148,
+        "toolCalls": [],
+        "events": 139,
+        "error": null
+      },
+      {
+        "id": "knowledge_494",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1415,
+        "toolCalls": [],
+        "events": 54,
+        "error": null
+      },
+      {
+        "id": "knowledge_518",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1422,
+        "toolCalls": [],
+        "events": 127,
+        "error": null
+      },
+      {
+        "id": "knowledge_562",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 835,
+        "toolCalls": [],
+        "events": 55,
+        "error": null
+      },
+      {
+        "id": "knowledge_576",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1529,
+        "toolCalls": [],
+        "events": 150,
+        "error": null
+      },
+      {
+        "id": "knowledge_588",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1660,
+        "toolCalls": [],
+        "events": 160,
+        "error": null
+      },
+      {
+        "id": "knowledge_637",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2424,
+        "toolCalls": [],
+        "events": 134,
+        "error": null
+      },
+      {
+        "id": "knowledge_646",
+        "group": "单项选择题 / 保险从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1364,
+        "toolCalls": [],
+        "events": 97,
+        "error": null
+      },
+      {
+        "id": "knowledge_679",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1304,
+        "toolCalls": [],
+        "events": 96,
+        "error": null
+      },
+      {
+        "id": "knowledge_694",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1232,
+        "toolCalls": [],
+        "events": 66,
+        "error": null
+      },
+      {
+        "id": "knowledge_702",
+        "group": "多项选择题 / 初级经济师",
+        "gold": "ACD",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ACD",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.75,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1158,
+        "toolCalls": [],
+        "events": 104,
+        "error": null
+      },
+      {
+        "id": "knowledge_710",
+        "group": "判断题 / 银行初级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 990,
+        "toolCalls": [],
+        "events": 57,
+        "error": null
+      },
+      {
+        "id": "knowledge_730",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 858,
+        "toolCalls": [],
+        "events": 4,
+        "error": null
+      },
+      {
+        "id": "knowledge_741",
+        "group": "单项选择题 / 证券专项考试",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1459,
+        "toolCalls": [],
+        "events": 45,
+        "error": null
+      },
+      {
+        "id": "knowledge_759",
+        "group": "单项选择题 / 初级会计职称",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1440,
+        "toolCalls": [],
+        "events": 20,
+        "error": null
+      },
+      {
+        "id": "knowledge_819",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1025,
+        "toolCalls": [],
+        "events": 25,
+        "error": null
+      },
+      {
+        "id": "knowledge_829",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1392,
+        "toolCalls": [],
+        "events": 33,
+        "error": null
+      },
+      {
+        "id": "knowledge_831",
+        "group": "判断题 / 银行初级资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1010,
+        "toolCalls": [],
+        "events": 42,
+        "error": null
+      },
+      {
+        "id": "knowledge_872",
+        "group": "判断题 / 银行初级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 966,
+        "toolCalls": [],
+        "events": 67,
+        "error": null
+      },
+      {
+        "id": "knowledge_876",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 953,
+        "toolCalls": [],
+        "events": 20,
+        "error": null
+      },
+      {
+        "id": "knowledge_893",
+        "group": "多项选择题 / 初级经济师",
+        "gold": "ABC",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABC",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.75,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1511,
+        "toolCalls": [],
+        "events": 105,
+        "error": null
+      },
+      {
+        "id": "knowledge_939",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1435,
+        "toolCalls": [],
+        "events": 36,
+        "error": null
+      },
+      {
+        "id": "knowledge_967",
+        "group": "判断题 / 期货从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3204,
+        "toolCalls": [],
+        "events": 425,
+        "error": null
+      },
+      {
+        "id": "knowledge_990",
+        "group": "多项选择题 / 初级经济师",
+        "gold": "ABCE",
+        "prediction": "ABCE",
+        "grade": {
+          "gold": "ABCE",
+          "predicted": "ABCE",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1365,
+        "toolCalls": [],
+        "events": 60,
+        "error": null
+      },
+      {
+        "id": "knowledge_998",
+        "group": "多项选择题 / 反假货币知识",
+        "gold": "AB",
+        "prediction": "AB",
+        "grade": {
+          "gold": "AB",
+          "predicted": "AB",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5646,
+        "toolCalls": [],
+        "events": 1071,
+        "error": null
+      },
+      {
+        "id": "knowledge_1013",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2443,
+        "toolCalls": [],
+        "events": 309,
+        "error": null
+      },
+      {
+        "id": "knowledge_1018",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 958,
+        "toolCalls": [],
+        "events": 30,
+        "error": null
+      },
+      {
+        "id": "knowledge_1048",
+        "group": "多项选择题 / 证券从业资格",
+        "gold": "AC",
+        "prediction": "AC",
+        "grade": {
+          "gold": "AC",
+          "predicted": "AC",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1100,
+        "toolCalls": [],
+        "events": 46,
+        "error": null
+      },
+      {
+        "id": "knowledge_1089",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1847,
+        "toolCalls": [],
+        "events": 146,
+        "error": null
+      },
+      {
+        "id": "knowledge_1096",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1297,
+        "toolCalls": [],
+        "events": 145,
+        "error": null
+      },
+      {
+        "id": "knowledge_1103",
+        "group": "单项选择题 / 保险从业资格",
+        "gold": "C",
+        "prediction": "",
+        "grade": {
+          "gold": "C",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 22568,
+        "toolCalls": [],
+        "events": 4099,
+        "error": null
+      },
+      {
+        "id": "knowledge_1118",
+        "group": "单项选择题 / 证券专项考试",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1613,
+        "toolCalls": [],
+        "events": 57,
+        "error": null
+      },
+      {
+        "id": "knowledge_1135",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 7586,
+        "toolCalls": [],
+        "events": 1347,
+        "error": null
+      },
+      {
+        "id": "knowledge_1184",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1434,
+        "toolCalls": [],
+        "events": 148,
+        "error": null
+      },
+      {
+        "id": "knowledge_1240",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1307,
+        "toolCalls": [],
+        "events": 94,
+        "error": null
+      },
+      {
+        "id": "knowledge_1242",
+        "group": "多项选择题 / 注册会计师",
+        "gold": "ABD",
+        "prediction": "ABD",
+        "grade": {
+          "gold": "ABD",
+          "predicted": "ABD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1294,
+        "toolCalls": [],
+        "events": 101,
+        "error": null
+      },
+      {
+        "id": "knowledge_1274",
+        "group": "判断题 / 银行初级资格",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1333,
+        "toolCalls": [],
+        "events": 40,
+        "error": null
+      },
+      {
+        "id": "knowledge_1279",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "A",
+        "prediction": "D",
+        "grade": {
+          "gold": "A",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1897,
+        "toolCalls": [],
+        "events": 147,
+        "error": null
+      },
+      {
+        "id": "knowledge_1360",
+        "group": "多项选择题 / 初级经济师",
+        "gold": "AB",
+        "prediction": "ABE",
+        "grade": {
+          "gold": "AB",
+          "predicted": "ABE",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.6666666666666666,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2090,
+        "toolCalls": [],
+        "events": 98,
+        "error": null
+      },
+      {
+        "id": "knowledge_1383",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 872,
+        "toolCalls": [],
+        "events": 30,
+        "error": null
+      },
+      {
+        "id": "knowledge_1392",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 602,
+        "toolCalls": [],
+        "events": 48,
+        "error": null
+      },
+      {
+        "id": "knowledge_1413",
+        "group": "单项选择题 / 初级会计职称",
+        "gold": "D",
+        "prediction": "C",
+        "grade": {
+          "gold": "D",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1231,
+        "toolCalls": [],
+        "events": 49,
+        "error": null
+      },
+      {
+        "id": "knowledge_1456",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "BC",
+        "prediction": "BC",
+        "grade": {
+          "gold": "BC",
+          "predicted": "BC",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 816,
+        "toolCalls": [],
+        "events": 58,
+        "error": null
+      },
+      {
+        "id": "knowledge_1466",
+        "group": "多项选择题 / 注册会计师",
+        "gold": "ABD",
+        "prediction": "ABD",
+        "grade": {
+          "gold": "ABD",
+          "predicted": "ABD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4111,
+        "toolCalls": [],
+        "events": 583,
+        "error": null
+      },
+      {
+        "id": "knowledge_1477",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1322,
+        "toolCalls": [],
+        "events": 103,
+        "error": null
+      },
+      {
+        "id": "knowledge_1510",
+        "group": "多项选择题 / 银从中级资格",
+        "gold": "ACDE",
+        "prediction": "ACD",
+        "grade": {
+          "gold": "ACDE",
+          "predicted": "ACD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.75,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1282,
+        "toolCalls": [],
+        "events": 83,
+        "error": null
+      },
+      {
+        "id": "knowledge_1535",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1217,
+        "toolCalls": [],
+        "events": 47,
+        "error": null
+      },
+      {
+        "id": "knowledge_1556",
+        "group": "多项选择题 / 证券从业资格",
+        "gold": "ABCD",
+        "prediction": "ACD",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "ACD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.75,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2245,
+        "toolCalls": [],
+        "events": 354,
+        "error": null
+      },
+      {
+        "id": "knowledge_1559",
+        "group": "判断题 / 银从中级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 857,
+        "toolCalls": [],
+        "events": 22,
+        "error": null
+      },
+      {
+        "id": "knowledge_1571",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "DE",
+        "prediction": "DE",
+        "grade": {
+          "gold": "DE",
+          "predicted": "DE",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 7140,
+        "toolCalls": [],
+        "events": 1234,
+        "error": null
+      },
+      {
+        "id": "knowledge_1609",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "BE",
+        "prediction": "",
+        "grade": {
+          "gold": "BE",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 20640,
+        "toolCalls": [],
+        "events": 4099,
+        "error": null
+      },
+      {
+        "id": "knowledge_1665",
+        "group": "多项选择题 / 银行初级资格",
+        "gold": "AC",
+        "prediction": "A",
+        "grade": {
+          "gold": "AC",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 6273,
+        "toolCalls": [],
+        "events": 1097,
+        "error": null
+      },
+      {
+        "id": "knowledge_1688",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 742,
+        "toolCalls": [],
+        "events": 69,
+        "error": null
+      },
+      {
+        "id": "knowledge_1704",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1231,
+        "toolCalls": [],
+        "events": 48,
+        "error": null
+      },
+      {
+        "id": "knowledge_1767",
+        "group": "多项选择题 / 注册会计师",
+        "gold": "AD",
+        "prediction": "D",
+        "grade": {
+          "gold": "AD",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1641,
+        "toolCalls": [],
+        "events": 159,
+        "error": null
+      },
+      {
+        "id": "knowledge_1782",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 737,
+        "toolCalls": [],
+        "events": 17,
+        "error": null
+      },
+      {
+        "id": "knowledge_1845",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1287,
+        "toolCalls": [],
+        "events": 15,
+        "error": null
+      },
+      {
+        "id": "knowledge_1869",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1136,
+        "toolCalls": [],
+        "events": 20,
+        "error": null
+      },
+      {
+        "id": "knowledge_1894",
+        "group": "单项选择题 / 证券从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 839,
+        "toolCalls": [],
+        "events": 19,
+        "error": null
+      },
+      {
+        "id": "knowledge_1928",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 17922,
+        "toolCalls": [],
+        "events": 4099,
+        "error": null
+      },
+      {
+        "id": "knowledge_1952",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "ABCD",
+        "prediction": "ABCDE",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "ABCDE",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.8,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1705,
+        "toolCalls": [],
+        "events": 207,
+        "error": null
+      },
+      {
+        "id": "knowledge_2027",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 506,
+        "toolCalls": [],
+        "events": 23,
+        "error": null
+      },
+      {
+        "id": "knowledge_2056",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1055,
+        "toolCalls": [],
+        "events": 35,
+        "error": null
+      },
+      {
+        "id": "knowledge_2133",
+        "group": "单项选择题 / 证券专项考试",
+        "gold": "A",
+        "prediction": "D",
+        "grade": {
+          "gold": "A",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1314,
+        "toolCalls": [],
+        "events": 57,
+        "error": null
+      },
+      {
+        "id": "knowledge_2152",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2667,
+        "toolCalls": [],
+        "events": 275,
+        "error": null
+      },
+      {
+        "id": "knowledge_2203",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 599,
+        "toolCalls": [],
+        "events": 15,
+        "error": null
+      },
+      {
+        "id": "knowledge_2235",
+        "group": "单项选择题 / 初级会计职称",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1058,
+        "toolCalls": [],
+        "events": 62,
+        "error": null
+      },
+      {
+        "id": "knowledge_2238",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "A",
+        "grade": {
+          "gold": "D",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 4525,
+        "toolCalls": [],
+        "events": 678,
+        "error": null
+      },
+      {
+        "id": "knowledge_2255",
+        "group": "多项选择题 / 银行初级资格",
+        "gold": "ABCDE",
+        "prediction": "ABCDE",
+        "grade": {
+          "gold": "ABCDE",
+          "predicted": "ABCDE",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1030,
+        "toolCalls": [],
+        "events": 106,
+        "error": null
+      },
+      {
+        "id": "knowledge_2270",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2101,
+        "toolCalls": [],
+        "events": 233,
+        "error": null
+      },
+      {
+        "id": "knowledge_2289",
+        "group": "多项选择题 / 期货从业资格",
+        "gold": "ABC",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABC",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.75,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 3563,
+        "toolCalls": [],
+        "events": 465,
+        "error": null
+      },
+      {
+        "id": "knowledge_2300",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1282,
+        "toolCalls": [],
+        "events": 76,
+        "error": null
+      },
+      {
+        "id": "knowledge_2311",
+        "group": "单项选择题 / 保险从业资格",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4755,
+        "toolCalls": [],
+        "events": 848,
+        "error": null
+      },
+      {
+        "id": "knowledge_2353",
+        "group": "单项选择题 / 金融理财师（AFP）",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4905,
+        "toolCalls": [],
+        "events": 827,
+        "error": null
+      },
+      {
+        "id": "knowledge_2370",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 776,
+        "toolCalls": [],
+        "events": 16,
+        "error": null
+      },
+      {
+        "id": "knowledge_2415",
+        "group": "单项选择题 / 金融理财师（AFP）",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 6219,
+        "toolCalls": [],
+        "events": 1119,
+        "error": null
+      },
+      {
+        "id": "knowledge_2436",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 855,
+        "toolCalls": [],
+        "events": 25,
+        "error": null
+      },
+      {
+        "id": "knowledge_2446",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2341,
+        "toolCalls": [],
+        "events": 325,
+        "error": null
+      },
+      {
+        "id": "knowledge_2466",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "ABDE",
+        "prediction": "ABDE",
+        "grade": {
+          "gold": "ABDE",
+          "predicted": "ABDE",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1205,
+        "toolCalls": [],
+        "events": 125,
+        "error": null
+      },
+      {
+        "id": "knowledge_2479",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "AD",
+        "prediction": "A",
+        "grade": {
+          "gold": "AD",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1981,
+        "toolCalls": [],
+        "events": 270,
+        "error": null
+      },
+      {
+        "id": "knowledge_2482",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1497,
+        "toolCalls": [],
+        "events": 36,
+        "error": null
+      },
+      {
+        "id": "knowledge_2495",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5392,
+        "toolCalls": [],
+        "events": 901,
+        "error": null
+      },
+      {
+        "id": "knowledge_2520",
+        "group": "单项选择题 / 保险从业资格",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1472,
+        "toolCalls": [],
+        "events": 47,
+        "error": null
+      },
+      {
+        "id": "knowledge_2537",
+        "group": "多项选择题 / 银从中级资格",
+        "gold": "ABCDE",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABCDE",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.8,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2640,
+        "toolCalls": [],
+        "events": 384,
+        "error": null
+      },
+      {
+        "id": "knowledge_2591",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1316,
+        "toolCalls": [],
+        "events": 99,
+        "error": null
+      },
+      {
+        "id": "knowledge_2595",
+        "group": "多项选择题 / 银从中级资格",
+        "gold": "ABCDE",
+        "prediction": "ABCE",
+        "grade": {
+          "gold": "ABCDE",
+          "predicted": "ABCE",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.8,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 3659,
+        "toolCalls": [],
+        "events": 589,
+        "error": null
+      },
+      {
+        "id": "knowledge_2600",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1414,
+        "toolCalls": [],
+        "events": 40,
+        "error": null
+      },
+      {
+        "id": "knowledge_2624",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1431,
+        "toolCalls": [],
+        "events": 77,
+        "error": null
+      },
+      {
+        "id": "knowledge_2689",
+        "group": "单项选择题 / 证券从业资格",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2087,
+        "toolCalls": [],
+        "events": 114,
+        "error": null
+      },
+      {
+        "id": "knowledge_2755",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2992,
+        "toolCalls": [],
+        "events": 377,
+        "error": null
+      },
+      {
+        "id": "knowledge_2784",
+        "group": "单项选择题 / 黄金从业资格",
+        "gold": "C",
+        "prediction": "B",
+        "grade": {
+          "gold": "C",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 5962,
+        "toolCalls": [],
+        "events": 907,
+        "error": null
+      },
+      {
+        "id": "knowledge_2785",
+        "group": "单项选择题 / 证券专项考试",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 999,
+        "toolCalls": [],
+        "events": 27,
+        "error": null
+      },
+      {
+        "id": "knowledge_2802",
+        "group": "多项选择题 / 反假货币知识",
+        "gold": "ABC",
+        "prediction": "B",
+        "grade": {
+          "gold": "ABC",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1001,
+        "toolCalls": [],
+        "events": 39,
+        "error": null
+      },
+      {
+        "id": "knowledge_2880",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 848,
+        "toolCalls": [],
+        "events": 4,
+        "error": null
+      },
+      {
+        "id": "knowledge_2894",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1125,
+        "toolCalls": [],
+        "events": 64,
+        "error": null
+      },
+      {
+        "id": "knowledge_2896",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 952,
+        "toolCalls": [],
+        "events": 27,
+        "error": null
+      },
+      {
+        "id": "knowledge_2899",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2350,
+        "toolCalls": [],
+        "events": 252,
+        "error": null
+      },
+      {
+        "id": "knowledge_2944",
+        "group": "多项选择题 / 初级经济师",
+        "gold": "AD",
+        "prediction": "D",
+        "grade": {
+          "gold": "AD",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 843,
+        "toolCalls": [],
+        "events": 27,
+        "error": null
+      },
+      {
+        "id": "knowledge_2968",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "AD",
+        "prediction": "AD",
+        "grade": {
+          "gold": "AD",
+          "predicted": "AD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1846,
+        "toolCalls": [],
+        "events": 220,
+        "error": null
+      },
+      {
+        "id": "knowledge_2980",
+        "group": "单项选择题 / 期货从业资格",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1031,
+        "toolCalls": [],
+        "events": 4,
+        "error": null
+      },
+      {
+        "id": "knowledge_3008",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "B",
+        "prediction": "D",
+        "grade": {
+          "gold": "B",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1352,
+        "toolCalls": [],
+        "events": 82,
+        "error": null
+      },
+      {
+        "id": "knowledge_3058",
+        "group": "多项选择题 / 反假货币知识",
+        "gold": "BC",
+        "prediction": "C",
+        "grade": {
+          "gold": "BC",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1386,
+        "toolCalls": [],
+        "events": 24,
+        "error": null
+      },
+      {
+        "id": "knowledge_3075",
+        "group": "多项选择题 / 注册会计师",
+        "gold": "AD",
+        "prediction": "AD",
+        "grade": {
+          "gold": "AD",
+          "predicted": "AD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1659,
+        "toolCalls": [],
+        "events": 175,
+        "error": null
+      },
+      {
+        "id": "knowledge_3144",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 702,
+        "toolCalls": [],
+        "events": 21,
+        "error": null
+      },
+      {
+        "id": "knowledge_3150",
+        "group": "单项选择题 / 证券专项考试",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1573,
+        "toolCalls": [],
+        "events": 146,
+        "error": null
+      },
+      {
+        "id": "knowledge_3176",
+        "group": "多项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1033,
+        "toolCalls": [],
+        "events": 56,
+        "error": null
+      },
+      {
+        "id": "knowledge_3189",
+        "group": "多项选择题 / 初级会计职称",
+        "gold": "ABCD",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 6948,
+        "toolCalls": [],
+        "events": 1215,
+        "error": null
+      },
+      {
+        "id": "knowledge_3194",
+        "group": "多项选择题 / 初级会计职称",
+        "gold": "ABD",
+        "prediction": "ABD",
+        "grade": {
+          "gold": "ABD",
+          "predicted": "ABD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1013,
+        "toolCalls": [],
+        "events": 63,
+        "error": null
+      },
+      {
+        "id": "knowledge_3209",
+        "group": "多项选择题 / 期货从业资格",
+        "gold": "ABCD",
+        "prediction": "A",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.25,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2709,
+        "toolCalls": [],
+        "events": 270,
+        "error": null
+      },
+      {
+        "id": "knowledge_3220",
+        "group": "单项选择题 / 初级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1136,
+        "toolCalls": [],
+        "events": 38,
+        "error": null
+      },
+      {
+        "id": "knowledge_3228",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1497,
+        "toolCalls": [],
+        "events": 45,
+        "error": null
+      },
+      {
+        "id": "knowledge_3277",
+        "group": "单项选择题 / 金融理财师（AFP）",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1818,
+        "toolCalls": [],
+        "events": 75,
+        "error": null
+      },
+      {
+        "id": "knowledge_3334",
+        "group": "单项选择题 / 银从中级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1093,
+        "toolCalls": [],
+        "events": 32,
+        "error": null
+      },
+      {
+        "id": "knowledge_3370",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3870,
+        "toolCalls": [],
+        "events": 555,
+        "error": null
+      },
+      {
+        "id": "knowledge_3425",
+        "group": "判断题 / 银从中级资格",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1226,
+        "toolCalls": [],
+        "events": 102,
+        "error": null
+      },
+      {
+        "id": "knowledge_3509",
+        "group": "多项选择题 / 证券从业资格",
+        "gold": "CD",
+        "prediction": "C",
+        "grade": {
+          "gold": "CD",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 4842,
+        "toolCalls": [],
+        "events": 784,
+        "error": null
+      },
+      {
+        "id": "knowledge_3580",
+        "group": "判断题 / 初级会计职称",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1013,
+        "toolCalls": [],
+        "events": 59,
+        "error": null
+      },
+      {
+        "id": "knowledge_3582",
+        "group": "单项选择题 / 注册会计师",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2093,
+        "toolCalls": [],
+        "events": 89,
+        "error": null
+      },
+      {
+        "id": "knowledge_3680",
+        "group": "单项选择题 / 金融理财师（AFP）",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4702,
+        "toolCalls": [],
+        "events": 979,
+        "error": null
+      },
+      {
+        "id": "knowledge_3723",
+        "group": "多项选择题 / 银行初级资格",
+        "gold": "BCD",
+        "prediction": "BCD",
+        "grade": {
+          "gold": "BCD",
+          "predicted": "BCD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1017,
+        "toolCalls": [],
+        "events": 45,
+        "error": null
+      },
+      {
+        "id": "knowledge_3754",
+        "group": "多项选择题 / 期货从业资格",
+        "gold": "BC",
+        "prediction": "BCD",
+        "grade": {
+          "gold": "BC",
+          "predicted": "BCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.6666666666666666,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 8241,
+        "toolCalls": [],
+        "events": 1695,
+        "error": null
+      },
+      {
+        "id": "knowledge_3796",
+        "group": "多项选择题 / 初级经济师",
+        "gold": "ABCD",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1971,
+        "toolCalls": [],
+        "events": 139,
+        "error": null
+      },
+      {
+        "id": "knowledge_3834",
+        "group": "多项选择题 / 注册会计师",
+        "gold": "BD",
+        "prediction": "BCD",
+        "grade": {
+          "gold": "BD",
+          "predicted": "BCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.6666666666666666,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 3077,
+        "toolCalls": [],
+        "events": 463,
+        "error": null
+      },
+      {
+        "id": "knowledge_3837",
+        "group": "单项选择题 / 基金从业资格",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 953,
+        "toolCalls": [],
+        "events": 82,
+        "error": null
+      },
+      {
+        "id": "knowledge_3839",
+        "group": "单项选择题 / 中级经济师",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 912,
+        "toolCalls": [],
+        "events": 63,
+        "error": null
+      },
+      {
+        "id": "knowledge_3857",
+        "group": "单项选择题 / 银行初级资格",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1482,
+        "toolCalls": [],
+        "events": 165,
+        "error": null
+      }
+    ]
+  },
+  "finevalMm": null,
+  "presetId": 6
+}
