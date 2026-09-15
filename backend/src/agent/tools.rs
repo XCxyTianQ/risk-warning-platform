@@ -1313,21 +1313,10 @@ pub fn screen_by_financial_metric(db: &Db, args: &Value) -> Value {
 
 /// 需要网络或写库的异步工具（含手搓插件 `custom_*`、MCP `mcp_*` 与多模态读取）
 pub fn is_async_tool(name: &str) -> bool {
-    matches!(
-        name,
-        "resolve_stock_code"
-            | "add_enterprise"
-            | "refresh_enterprise_data"
-            | "handle_alert"
-            | "run_risk_analysis"
-            | "read_attachment"
-            // 板块与行情工具要访问外部接口，必须走异步分发；
-            // 漏登记会让它们落到同步分发器并回 "unknown tool"（评测时踩过）
-            | "list_industry_boards"
-            | "get_board_constituents"
-            | "get_stock_snapshot"
-    ) || name.starts_with("custom_")
-        || name.starts_with("mcp_")
+    // 元数据已收敛到 tool_specs.rs 的声明表（P1）。
+    // 这里保留函数名以免改动调用点，但**不再手抄名单**——
+    // 当初就是因为手抄名单漏登记 `list_industry_boards`，导致模型调不动工具、回 "unknown tool"。
+    crate::agent::tool_specs::is_async(name)
 }
 
 /// 异步工具分发（网络 + 写操作 + 插件 + MCP）

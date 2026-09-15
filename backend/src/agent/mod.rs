@@ -1,6 +1,7 @@
 //! Agent 内核：提示词、工具、会话与压缩、循环。
 
 pub mod approvals;
+pub mod tool_specs;
 pub mod events;
 pub mod prompt;
 pub mod runner;
