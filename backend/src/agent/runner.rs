@@ -20,6 +20,35 @@ use crate::agent::tools::{build_registry_for, call_tool};
 use crate::llm::{LlmClient, LlmConfig, StreamEvent};
 use crate::state::AppState;
 
+/// 权限等级（对齐 DSH 的只读 / 限制级 / 完全权限）。
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PermissionMode {
+    /// 只读：写操作直接拒绝
+    ReadOnly,
+    /// 限制级：写操作请求用户授权（默认）
+    Restricted,
+    /// 完全权限（YOLO）：写操作直接执行
+    Full,
+}
+
+/// 读取权限等级：`RWP_PERMISSION_MODE` = readonly | restricted | full。
+///
+/// 为什么用环境变量而不是设置项：授权闸门在 agent 循环的热路径上，读环境变量无锁无 IO；
+/// 且评测/自动化场景（无 UI、无人点授权）本来就是通过进程环境注入的。
+/// 设置项与 UI 开关属于下一步（可复用同一枚举）。
+pub fn permission_mode() -> PermissionMode {
+    match std::env::var("RWP_PERMISSION_MODE")
+        .unwrap_or_default()
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "readonly" | "read-only" | "ro" => PermissionMode::ReadOnly,
+        "full" | "yolo" => PermissionMode::Full,
+        _ => PermissionMode::Restricted,
+    }
+}
+
 /// 单轮对话内允许的最大工具调用轮次。
 ///
 /// 原先为 5 —— 任务级测评第 1 题（"调研贵金属板块前十并逐家评估"）直接撞上这个上限：
@@ -27,7 +56,7 @@ use crate::state::AppState;
 /// 5 轮连建档都不够，平台只能回一句"请换一种问法"。
 /// 提到 24：足够完成"取名单 + 建档若干 + 取数 + 总结"，同时仍能防止死循环。
 /// 注：轮次上限不是唯一约束，单轮输出与工具结果长度另有上限（见 MAX_TOOL_RESULT_CHARS）。
-pub const MAX_STEPS: usize = 24;
+pub const MAX_STEPS: usize = 40;
 pub const MAX_TOOL_RESULT_CHARS: usize = 6000;
 
 fn client_for(state: &AppState, preset_model: Option<&str>, max_tokens: Option<i64>) -> LlmClient {
@@ -332,8 +361,30 @@ pub fn run_agent(
                     "read_only": read_only,
                 }));
 
+                // ---- 权限等级（对齐 DSH 的三种模式）----
+                //   readonly   只读：写操作**直接拒绝**，不会等待授权（适合审计/演示/只查不改的场景）
+                //   restricted 限制级：写操作请求用户授权（默认，保持既有行为；无 UI 时会等待至超时）
+                //   full       完全权限（YOLO）：写操作**直接执行**，无人值守自动化不再被授权卡住
+                // 由环境变量 RWP_PERMISSION_MODE 控制，启动参数 --permission-mode 会写入该变量。
+                let pm = permission_mode();
+                if !read_only && pm == PermissionMode::ReadOnly {
+                    let denied = json!({ "error": "当前为只读模式（permission-mode=readonly），已拒绝写操作。如需执行请切换为 restricted 或 full。" });
+                    let mut tool_msg = Msg::new("tool", dump_tool_result(&denied));
+                    tool_msg.tool_call_id = call.id.clone();
+                    tool_msg.tool_name = name.clone();
+                    let _ = store.append(&db, &mut session, tool_msg);
+                    yield AgentEvent::new("tool_result", json!({
+                        "id": call.id,
+                        "name": name,
+                        "result": { "ok": false, "error": denied["error"] },
+                        "latency_ms": 0,
+                    }));
+                    continue;
+                }
+
                 // 写操作：先请求用户授权（Harness/Codex 的 approval 机制）
-                if !read_only && rt.agent_require_approval {
+                // full 模式下跳过授权——这是"完全权限"的全部含义，也是自动化跑得通的前提。
+                if !read_only && pm != PermissionMode::Full && rt.agent_require_approval {
                     let description = tool.map(|t| t.description.clone()).unwrap_or_default();
                     let slot = crate::agent::approvals::create(
                         &session.id, &call.id, &name, args.clone(), &description,
