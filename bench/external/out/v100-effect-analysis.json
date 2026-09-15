@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-09-15T01:14:38.044Z",
+  "runs": [
+    {
+      "file": "chain-fb-2026-09-14T15-36-02.json",
+      "version": "pre",
+      "arm": "B0",
+      "label": "改动前基线",
+      "n": 149,
+      "acc": 86.58,
+      "refusals": 4,
+      "ms": 5009
+    },
+    {
+      "file": "chain-fb-2026-09-14T23-09-17.json",
+      "version": "v1",
+      "arm": "B0",
+      "label": "v1.0.0 默认（无预设）",
+      "n": 150,
+      "acc": 85.33,
+      "refusals": 4,
+      "ms": 5216
+    },
+    {
+      "file": "chain-fb-2026-09-15T00-15-33.json",
+      "version": "v1",
+      "arm": "B0",
+      "label": "v1.0.0 默认（无预设）",
+      "n": 145,
+      "acc": 86.9,
+      "refusals": 3,
+      "ms": 3139
+    },
+    {
+      "file": "chain-fb-2026-09-15T00-36-58.json",
+      "version": "v1",
+      "arm": "BP",
+      "label": "v1.0.0 + 内置预设",
+      "n": 148,
+      "acc": 88.51,
+      "refusals": 2,
+      "ms": 3159
+    },
+    {
+      "file": "chain-fb-2026-09-15T00-56-48.json",
+      "version": "v1",
+      "arm": "BP",
+      "label": "v1.0.0 + 内置预设",
+      "n": 148,
+      "acc": 89.19,
+      "refusals": 1,
+      "ms": 3210
+    }
+  ],
+  "summary": {
+    "pre_B0": {
+      "runs": 1,
+      "n": 149,
+      "correct": 129,
+      "accuracyPct": 86.58,
+      "refusals": 4,
+      "refusalPct": 2.68,
+      "meanMs": 5009
+    },
+    "v1_B0": {
+      "runs": 2,
+      "n": 295,
+      "correct": 254,
+      "accuracyPct": 86.1,
+      "refusals": 7,
+      "refusalPct": 2.37,
+      "meanMs": 4195
+    },
+    "v1_BP": {
+      "runs": 2,
+      "n": 296,
+      "correct": 263,
+      "accuracyPct": 88.85,
+      "refusals": 3,
+      "refusalPct": 1.01,
+      "meanMs": 3185
+    }
+  },
+  "pairs": [
+    {
+      "desc": "内置预设的增量价值",
+      "aKey": "v1_B0",
+      "bKey": "v1_BP",
+      "used": 582,
+      "aw": 15,
+      "bw": 29,
+      "both": 487,
+      "neither": 51,
+      "net": 14,
+      "z": 2.11,
+      "significant": true
+    },
+    {
+      "desc": "v1.0.0 相对改动前的总效果",
+      "aKey": "pre_B0",
+      "bKey": "v1_BP",
+      "used": 294,
+      "aw": 7,
+      "bw": 15,
+      "both": 248,
+      "neither": 24,
+      "net": 8,
+      "z": 1.71,
+      "significant": false
+    },
+    {
+      "desc": "仅产品提示/技能库（无预设）的效果",
+      "aKey": "pre_B0",
+      "bKey": "v1_B0",
+      "used": 293,
+      "aw": 14,
+      "bw": 14,
+      "both": 240,
+      "neither": 25,
+      "net": 0,
+      "z": 0,
+      "significant": false
+    }
+  ]
+}
