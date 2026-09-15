@@ -80,6 +80,7 @@ bench/external/out/*
 !bench/external/out/chain-fb-pooled.json
 !bench/external/out/chain-fb-2026-09-14T23-09-17.json
 !bench/external/out/chain-fb-2026-09-15T00-00-40.json
+!bench/external/out/chain-fb-2026-09-15T00-15-33.json
 !bench/external/out/chain-fb-2026-09-14T23-43-46.json
 !bench/external/out/judge-matrix-financebench.json
 !bench/external/out/samegen-results.json
