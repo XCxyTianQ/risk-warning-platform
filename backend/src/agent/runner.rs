@@ -239,6 +239,35 @@ pub fn run_agent(
 
         let mut tool_free_retry = false;
 
+        // 工具元数据自检（每个进程只跑一次）：
+        // 声明表与实际注册不一致会导致"模型看得见工具却调不动"（曾踩：unknown tool）。
+        // 这里在首次对话时校验一次并打到 stderr，把"靠人记得登记"变成"启动即报警"。
+        {
+            use std::sync::Once;
+            static TOOL_SPEC_AUDIT: Once = Once::new();
+            TOOL_SPEC_AUDIT.call_once(|| {
+                let names: Vec<String> = reg
+                    .definitions()
+                    .iter()
+                    .filter_map(|d| {
+                        d.get("function")
+                            .and_then(|f| f.get("name"))
+                            .or_else(|| d.get("name"))
+                            .and_then(|n| n.as_str())
+                            .map(|s| s.to_string())
+                    })
+                    .collect();
+                let problems = crate::agent::tool_specs::audit(&names);
+                if problems.is_empty() {
+                    eprintln!("[tool-specs] 自检通过：{} 个工具与声明表一致", names.len());
+                } else {
+                    for p in problems {
+                        eprintln!("[tool-specs] ⚠️ {p}");
+                    }
+                }
+            });
+        }
+
         // 主动压缩检查（图片 token 单独计入）
         let messages = build_messages(&db, &data_dir, &session, &store, &system_prompt, false);
         let (over, est) = store.should_compact_extra(
