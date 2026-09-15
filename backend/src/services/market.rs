@@ -111,17 +111,46 @@ fn to_yi(v: &Value) -> Value {
 /// `reqwest` 的 `.query()`，它会把 `fs=m:90+t:2` 里的 `+` 编码成 `%2B`，东财不认这个筛选条件，
 /// 表现为"请求失败"。同一条 URL 在 Node 侧直接拼字符串可以正常返回——差异就在编码。
 pub async fn industry_boards(keyword: &str) -> Value {
-    let query = "/api/qt/clist/get?pn=1&pz=300&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:90+t:2&fields=f12,f14,f3,f104,f105";
-    let (v, host) = match clist_get(query).await {
-        Ok(x) => x,
-        Err(e) => return json!({ "error": format!("板块列表获取失败: {e}") }),
-    };
-    let rows = v
-        .get("data")
-        .and_then(|d| d.get("diff"))
-        .and_then(|d| d.as_array())
-        .cloned()
-        .unwrap_or_default();
+    // 关键修正（实测踩过）：延时主机**每页硬上限 100 条**，若只取一页且按涨跌幅排序，
+    // 「贵金属」这类排名靠后的板块会取不到，表现为"平台没有这个板块"。因此：
+    // ① 行业(t:2) 与概念(t:3) 都查——东财把「贵金属」归在概念口径，用户说的板块可能落在任一边；
+    // ② 按页码翻页取全量（最多 4 页 = 400 个板块），而不是只取第一页。
+    let mut rows: Vec<Value> = Vec::new();
+    let mut host = CLIST_HOSTS[0];
+    for (kind, fs) in [("行业", "m:90+t:2"), ("概念", "m:90+t:3")] {
+        for pn in 1..=4 {
+            let query = format!(
+                "/api/qt/clist/get?pn={pn}&pz=100&po=1&np=1&fltt=2&invt=2&fid=f12&fs={fs}&fields=f12,f14,f3,f104,f105"
+            );
+            match clist_get(&query).await {
+                Ok((v, h)) => {
+                    host = h;
+                    let page = v
+                        .get("data")
+                        .and_then(|d| d.get("diff"))
+                        .and_then(|d| d.as_array())
+                        .cloned()
+                        .unwrap_or_default();
+                    let n = page.len();
+                    for mut r in page {
+                        if let Some(o) = r.as_object_mut() {
+                            o.insert("board_type".to_string(), json!(kind));
+                        }
+                        rows.push(r);
+                    }
+                    if n < 100 {
+                        break; // 已到末页
+                    }
+                }
+                Err(e) => {
+                    if rows.is_empty() && pn == 1 {
+                        return json!({ "error": format!("板块列表获取失败: {e}") });
+                    }
+                    break;
+                }
+            }
+        }
+    }
     let kw = keyword.trim();
     let list: Vec<Value> = rows
         .iter()
@@ -138,6 +167,9 @@ pub async fn industry_boards(keyword: &str) -> Value {
         .collect();
     json!({
         "kind": "industry_board_list",
+        "source_host": host,
+        "data_timing": if host.contains("delay") { "延时行情（实时行情主机不可达时的回退数据源）" } else { "实时行情" },
+        "board_types_included": ["行业", "概念"],
         "keyword": kw,
         "count": list.len(),
         "boards": list,
@@ -209,6 +241,8 @@ pub async fn board_constituents(board: &str, limit: usize) -> Value {
         .collect();
     json!({
         "kind": "board_constituents",
+        "source_host": host,
+        "data_timing": if host.contains("delay") { "延时行情（实时主机不可达时的回退）" } else { "实时行情" },
         "board_code": board_code,
         "board_name": if board_name.is_empty() { Value::Null } else { json!(board_name) },
         "total_constituents": total,
