@@ -1,0 +1,3081 @@
+{
+  "generatedAt": "2026-09-15T02:51:42.813Z",
+  "mode": "platform-chain",
+  "model": "deepseek-flash",
+  "port": 4549,
+  "seed": 20260101,
+  "presetArm": "B4",
+  "cflue": null,
+  "finevalMm": {
+    "n": 149,
+    "correct": 96,
+    "accuracyPct": 64.43,
+    "sampleHash": "f368c3a8d37c035db9fba08b94767adf8189b38c8f81ac7fbb1809be7408ae96",
+    "usedTools": 62,
+    "meanMs": 12972,
+    "errors": 1,
+    "rows": [
+      {
+        "id": "mm_Financial_Market_Sentiment_Analysis_2",
+        "group": "FinEval-MM/金融市场情绪洞察",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2142,
+        "toolCalls": [],
+        "attachmentId": "d663b49e75a1",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Market_Sentiment_Analysis_5",
+        "group": "FinEval-MM/金融市场情绪洞察",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 16075,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "00ecd4e2a5cb",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Market_Sentiment_Analysis_8",
+        "group": "FinEval-MM/金融市场情绪洞察",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 29003,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "9f8893e62171",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Market_Sentiment_Analysis_9",
+        "group": "FinEval-MM/金融市场情绪洞察",
+        "gold": "A",
+        "prediction": "C",
+        "grade": {
+          "gold": "A",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1951,
+        "toolCalls": [],
+        "attachmentId": "49d5f01f679c",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Market_Sentiment_Analysis_12",
+        "group": "FinEval-MM/金融市场情绪洞察",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 28283,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "6305851807fe",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_22",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 30473,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "read_attachment"
+        ],
+        "attachmentId": "94b9d2110a81",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_23",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 25578,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "50b2e36d90ab",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_24",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 30175,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "465f21316081",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_28",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3484,
+        "toolCalls": [],
+        "attachmentId": "007110285699",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_29",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 26148,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "cb1f9182962c",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_30",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1838,
+        "toolCalls": [],
+        "attachmentId": "e3b17d4aa750",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_32",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5621,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "47dfc75b0262",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_59",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 11696,
+        "toolCalls": [],
+        "attachmentId": "e3c1c895be62",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_64",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 8360,
+        "toolCalls": [],
+        "attachmentId": "e0bb69d4f87a",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_66",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 19795,
+        "toolCalls": [],
+        "attachmentId": "d976fc11d141",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_67",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 19384,
+        "toolCalls": [],
+        "attachmentId": "f66ccff54683",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_71",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 18758,
+        "toolCalls": [],
+        "attachmentId": "026b39acf0d6",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_97",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1459,
+        "toolCalls": [],
+        "attachmentId": "8af7e1e0a76a",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Scenario_Analysis_98",
+        "group": "FinEval-MM/金融情景分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3905,
+        "toolCalls": [],
+        "attachmentId": "99cfc48d3911",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_66",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1237,
+        "toolCalls": [],
+        "attachmentId": "2df03354178b",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_67",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2892,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "32da2579721d",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_69",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1369,
+        "toolCalls": [],
+        "attachmentId": "d4e0c5ba6bc2",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_70",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2333,
+        "toolCalls": [],
+        "attachmentId": "a6a709f5e8e8",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_108",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1893,
+        "toolCalls": [],
+        "attachmentId": "d721d1dadba0",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_110",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1191,
+        "toolCalls": [],
+        "attachmentId": "2f69b2fffb84",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_112",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1942,
+        "toolCalls": [],
+        "attachmentId": "c8a0cc7a2504",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_113",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "A",
+        "prediction": "B",
+        "grade": {
+          "gold": "A",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 10767,
+        "toolCalls": [],
+        "attachmentId": "84ceba10bfd4",
+        "error": null
+      },
+      {
+        "id": "mm_Industry_Analysis_and_Inference_127",
+        "group": "FinEval-MM/产业分析推断",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 43736,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "7b239de3a3da",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_43",
+        "group": "FinEval-MM/投资分析",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1533,
+        "toolCalls": [],
+        "attachmentId": "e00572470353",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_44",
+        "group": "FinEval-MM/投资分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1243,
+        "toolCalls": [],
+        "attachmentId": "95867d292293",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_94",
+        "group": "FinEval-MM/投资分析",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4145,
+        "toolCalls": [
+          "read_attachment"
+        ],
+        "attachmentId": "fe2298e2d6aa",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_95",
+        "group": "FinEval-MM/投资分析",
+        "gold": "A",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "A",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.25,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 28563,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "e5bfad082a3c",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_96",
+        "group": "FinEval-MM/投资分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 6334,
+        "toolCalls": [],
+        "attachmentId": "c610520a837d",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_98",
+        "group": "FinEval-MM/投资分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1953,
+        "toolCalls": [],
+        "attachmentId": "bb23ba1356bb",
+        "error": null
+      },
+      {
+        "id": "mm_Investment_Analysis_101",
+        "group": "FinEval-MM/投资分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 13298,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment",
+          "read_attachment"
+        ],
+        "attachmentId": "52fae2ff8711",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_1",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 43156,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "7b2582419ca0",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_2",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 28486,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "df223de290ad",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_3",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 25003,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "218de22574f3",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_8",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2743,
+        "toolCalls": [],
+        "attachmentId": "6ed461270eb0",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_9",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1346,
+        "toolCalls": [],
+        "attachmentId": "a3b1e9467d12",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_11",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "三个选项均不正确：图中 2024/12/09 数据行明确显示「开 12.46 高 12.62 **低 12.34** 均 12.50」，即当日最低价为 12.34 元，A/B/C（7.75 / 8.00 / 8.25 元）都不符；其中 A 的 7.75 元是图中约 2024-08 时点标注的低点，并非 12 月 9 日。",
+        "grade": {
+          "gold": "A",
+          "predicted": "ABC",
+          "how": "weak-scan",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 13700,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "f8e8c14eb3d6",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_12",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1971,
+        "toolCalls": [],
+        "attachmentId": "f093bb73d9f6",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_15",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 19355,
+        "toolCalls": [],
+        "attachmentId": "8cc091b6cdb5",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_18",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4640,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "42a34b60cea0",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_30",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A;D",
+        "prediction": "A",
+        "grade": {
+          "gold": "AD",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2071,
+        "toolCalls": [],
+        "attachmentId": "8e6e4843b3ef",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_31",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A;B",
+        "prediction": "A",
+        "grade": {
+          "gold": "AB",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 4069,
+        "toolCalls": [],
+        "attachmentId": "27cd02f3fd4e",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_50",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1295,
+        "toolCalls": [],
+        "attachmentId": "e2dc0770496b",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_51",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1301,
+        "toolCalls": [],
+        "attachmentId": "97f69ae6a43d",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_52",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3444,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "5c78fd0d5f57",
+        "error": null
+      },
+      {
+        "id": "mm_Candlestick_Chart_Analysis_54",
+        "group": "FinEval-MM/股票k线解读",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 22721,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "f6d105533bf8",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_7",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "B",
+        "prediction": "C",
+        "grade": {
+          "gold": "B",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 34906,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "aa6671e38363",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_14",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3992,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "9a8e5327d6c7",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_15",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2719,
+        "toolCalls": [],
+        "attachmentId": "84d9e22a8969",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_18",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 27577,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "f9d6983b51ae",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_19",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 74784,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment",
+          "read_attachment"
+        ],
+        "attachmentId": "58d18ddc3fb1",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_20",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2452,
+        "toolCalls": [],
+        "attachmentId": "42fa2c5b1233",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_21",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1855,
+        "toolCalls": [],
+        "attachmentId": "7f07f6b7249b",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_24",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5148,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "708b541f7ed6",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_25",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4473,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "d091e7ad1ed6",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_38",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2622,
+        "toolCalls": [],
+        "attachmentId": "c6a64eef9441",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_39",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "C",
+        "prediction": "",
+        "grade": {
+          "gold": "C",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 46874,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "2a7f8bb6c564",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_40",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2331,
+        "toolCalls": [],
+        "attachmentId": "4f5ed963313b",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_58",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "C",
+        "prediction": "C",
+        "grade": {
+          "gold": "C",
+          "predicted": "C",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5647,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "ef73889c1252",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_60",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1651,
+        "toolCalls": [],
+        "attachmentId": "cf4e6ea1ad1b",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_63",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 17889,
+        "toolCalls": [],
+        "attachmentId": "ed52c8d60fa3",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_64",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 25355,
+        "toolCalls": [
+          "read_attachment",
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "b144176937d7",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_65",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 40673,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "ebdaa84f24b8",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_66",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "C",
+        "prediction": "",
+        "grade": {
+          "gold": "C",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 48466,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "2b7d40d8db4e",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_70",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 71199,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment",
+          "read_attachment"
+        ],
+        "attachmentId": "66c46d3125ec",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_71",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "D",
+        "prediction": "",
+        "grade": {
+          "gold": "D",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 18288,
+        "toolCalls": [],
+        "attachmentId": "850539c33b36",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Statistics_91",
+        "group": "FinEval-MM/财务数据统计",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1504,
+        "toolCalls": [],
+        "attachmentId": "2bd8c6748873",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_5",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2046,
+        "toolCalls": [],
+        "attachmentId": "3fa7510b56f0",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_6",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1574,
+        "toolCalls": [],
+        "attachmentId": "4b547d996d24",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_7",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "C",
+        "grade": {
+          "gold": "A",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 8482,
+        "toolCalls": [],
+        "attachmentId": "093ec7669b5e",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_10",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 17149,
+        "toolCalls": [],
+        "attachmentId": "8e362cb9cc92",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_11",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1459,
+        "toolCalls": [],
+        "attachmentId": "db725cfb7479",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_39",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "B",
+        "grade": {
+          "gold": "A",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2962,
+        "toolCalls": [],
+        "attachmentId": "deb5c0f1327b",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Entity_Relationships_Interpretation_43",
+        "group": "FinEval-MM/金融实体关系解读",
+        "gold": "A",
+        "prediction": "C",
+        "grade": {
+          "gold": "A",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 4831,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "78731c2b5332",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_2",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1840,
+        "toolCalls": [],
+        "attachmentId": "aa76caf24d9a",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_3",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2361,
+        "toolCalls": [],
+        "attachmentId": "59428ec16b89",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_4",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2747,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "806a40863b2c",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_5",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2006,
+        "toolCalls": [],
+        "attachmentId": "759e52d7e382",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_8",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5128,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "60727c94b38d",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_39",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2508,
+        "toolCalls": [],
+        "attachmentId": "186f6bbaa48e",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_41",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1466,
+        "toolCalls": [],
+        "attachmentId": "954263324762",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_76",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "D",
+        "prediction": "D",
+        "grade": {
+          "gold": "D",
+          "predicted": "D",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1531,
+        "toolCalls": [],
+        "attachmentId": "3874058f0a4a",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_79",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 45897,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "09c7cd16c650",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_80",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 18375,
+        "toolCalls": [],
+        "attachmentId": "a8d34edff827",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_82",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": null,
+        "correct": null,
+        "ms": 30973,
+        "error": "平台返回错误：模型调用失败：LLM 网络错误: error sending request for url (https://api.deepseek.com/v1/chat/completions)"
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_99",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1789,
+        "toolCalls": [],
+        "attachmentId": "92eaa54da315",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_108",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "B",
+        "grade": {
+          "gold": "A",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 14510,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "6a4c8efe9771",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_110",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 48890,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "09cda29fe3e6",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_111",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2628,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "b80d4f9ba8e4",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_112",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "A",
+        "prediction": "",
+        "grade": {
+          "gold": "A",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 18940,
+        "toolCalls": [],
+        "attachmentId": "cb080007389d",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Indicator_Assessment_113",
+        "group": "FinEval-MM/财务指标分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 61968,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "df0a4378a647",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Information_Extraction_3",
+        "group": "FinEval-MM/金融信息识别",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1494,
+        "toolCalls": [],
+        "attachmentId": "a1dfc08a7f91",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Information_Extraction_19",
+        "group": "FinEval-MM/金融信息识别",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 24786,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "0ff37282faa4",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Information_Extraction_23",
+        "group": "FinEval-MM/金融信息识别",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4165,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "148dcfdbd6f3",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Information_Extraction_24",
+        "group": "FinEval-MM/金融信息识别",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 21679,
+        "toolCalls": [],
+        "attachmentId": "3cc379d02967",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Information_Extraction_33",
+        "group": "FinEval-MM/金融信息识别",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2589,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "59f3324a3502",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Information_Extraction_34",
+        "group": "FinEval-MM/金融信息识别",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 29658,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "af9ee1f18277",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_0",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4412,
+        "toolCalls": [],
+        "attachmentId": "575da680ac5a",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_1",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1626,
+        "toolCalls": [],
+        "attachmentId": "acb34e2eac48",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_3",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1344,
+        "toolCalls": [],
+        "attachmentId": "0041456ee5f0",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_7",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1646,
+        "toolCalls": [],
+        "attachmentId": "7e7614fbfe26",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_8",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1902,
+        "toolCalls": [],
+        "attachmentId": "8c85d038f3c7",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_9",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1513,
+        "toolCalls": [],
+        "attachmentId": "d2b73c47824e",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_11",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2547,
+        "toolCalls": [],
+        "attachmentId": "f7646e215431",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_12",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 4989,
+        "toolCalls": [
+          "read_attachment",
+          "list_attachments"
+        ],
+        "attachmentId": "0abc8dc97ce4",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_13",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1444,
+        "toolCalls": [],
+        "attachmentId": "ce967194f46f",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_15",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 24497,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "423391bef454",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_19",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2718,
+        "toolCalls": [],
+        "attachmentId": "c0c4ece52fb8",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_20",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "A",
+        "grade": {
+          "gold": "B",
+          "predicted": "A",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1675,
+        "toolCalls": [],
+        "attachmentId": "2db430a9eff1",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_23",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1674,
+        "toolCalls": [],
+        "attachmentId": "d7783e2c563f",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_26",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2952,
+        "toolCalls": [],
+        "attachmentId": "c9e1023bb8ca",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_29",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "",
+        "grade": {
+          "gold": "B",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 49578,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment",
+          "read_attachment"
+        ],
+        "attachmentId": "7903b690d878",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_40",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 5893,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "b9e9955c9f4d",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_41",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2433,
+        "toolCalls": [],
+        "attachmentId": "7cb208572ff6",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_45",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "B",
+        "grade": {
+          "gold": "A",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 32954,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "026a3d1b5482",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_46",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1842,
+        "toolCalls": [],
+        "attachmentId": "60b76e9c7a7b",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_55",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1794,
+        "toolCalls": [],
+        "attachmentId": "c9e9b0c1c92d",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_56",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 21485,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "4185dfbe6a0c",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_57",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 32600,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "c415849d73af",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_58",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2049,
+        "toolCalls": [],
+        "attachmentId": "4fceb790b378",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_60",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "D",
+        "prediction": "C",
+        "grade": {
+          "gold": "D",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 34368,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "6f34da6c369c",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_62",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2767,
+        "toolCalls": [
+          "list_attachments"
+        ],
+        "attachmentId": "9b1665ee330d",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_64",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "D",
+        "prediction": "",
+        "grade": {
+          "gold": "D",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 44252,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "24bd2cdf4309",
+        "error": null
+      },
+      {
+        "id": "mm_Stock_Selection_Strategies_Backtesting_70",
+        "group": "FinEval-MM/智能选股策略回测分析",
+        "gold": "B",
+        "prediction": "B",
+        "grade": {
+          "gold": "B",
+          "predicted": "B",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2984,
+        "toolCalls": [],
+        "attachmentId": "0fec8da9c1d6",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_3",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "A;B;C",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABC",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.75,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 6999,
+        "toolCalls": [],
+        "attachmentId": "381e94922e16",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_6",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "A;B;C;D",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2198,
+        "toolCalls": [],
+        "attachmentId": "7795a9c76815",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_9",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "A;B;C;D",
+        "prediction": "",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 17432,
+        "toolCalls": [],
+        "attachmentId": "986f392878c0",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_10",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "A;C",
+        "prediction": "C",
+        "grade": {
+          "gold": "AC",
+          "predicted": "C",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 35026,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "68f8de60998c",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_11",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "B",
+        "prediction": "ABC",
+        "grade": {
+          "gold": "B",
+          "predicted": "ABC",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2752,
+        "toolCalls": [],
+        "attachmentId": "5e214daa4b29",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_13",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "B;D",
+        "prediction": "AD",
+        "grade": {
+          "gold": "BD",
+          "predicted": "AD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 3785,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "1d9c6e5edfa9",
+        "error": null
+      },
+      {
+        "id": "mm_Asset_Allocation_Analysis_14",
+        "group": "FinEval-MM/资产配置分析",
+        "gold": "A;B;C;D",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "ABCD",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 1884,
+        "toolCalls": [],
+        "attachmentId": "594a9b871d2d",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_1",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3799,
+        "toolCalls": [
+          "read_attachment",
+          "list_attachments"
+        ],
+        "attachmentId": "5a067aa0f3ca",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_6",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "C",
+        "prediction": "D",
+        "grade": {
+          "gold": "C",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 9632,
+        "toolCalls": [],
+        "attachmentId": "b8016f1294de",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_8",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;C",
+        "prediction": "ABC",
+        "grade": {
+          "gold": "AC",
+          "predicted": "ABC",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.6666666666666666,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 27204,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "d591505a7d50",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_14",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;B",
+        "prediction": "AD",
+        "grade": {
+          "gold": "AB",
+          "predicted": "AD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 28185,
+        "toolCalls": [
+          "list_attachments",
+          "read_attachment",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "61de6a339ade",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_16",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;B",
+        "prediction": "D",
+        "grade": {
+          "gold": "AB",
+          "predicted": "D",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 37192,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "f89bc27a4154",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_17",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "B;C",
+        "prediction": "B",
+        "grade": {
+          "gold": "BC",
+          "predicted": "B",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 5307,
+        "toolCalls": [],
+        "attachmentId": "89fcbfab92b6",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_18",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;B;C",
+        "prediction": "",
+        "grade": {
+          "gold": "ABC",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 40737,
+        "toolCalls": [
+          "list_attachments",
+          "list_attachments",
+          "read_attachment"
+        ],
+        "attachmentId": "41bd8c32964c",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_20",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;B",
+        "prediction": "AB",
+        "grade": {
+          "gold": "AB",
+          "predicted": "AB",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 2051,
+        "toolCalls": [],
+        "attachmentId": "052a2a3b559d",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_36",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;D",
+        "prediction": "ACD",
+        "grade": {
+          "gold": "AD",
+          "predicted": "ACD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.6666666666666666,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 4854,
+        "toolCalls": [],
+        "attachmentId": "a729fa9fe660",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_37",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "B;C",
+        "prediction": "ABCD",
+        "grade": {
+          "gold": "BC",
+          "predicted": "ABCD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.5,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 5405,
+        "toolCalls": [
+          "list_attachments",
+          "list_tables"
+        ],
+        "attachmentId": "d9130bc9df06",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_41",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "B;C",
+        "prediction": "",
+        "grade": {
+          "gold": "BC",
+          "predicted": "",
+          "how": "none",
+          "correct": false,
+          "partialJaccard": 0,
+          "abstained": true
+        },
+        "correct": false,
+        "ms": 19010,
+        "toolCalls": [],
+        "attachmentId": "f24538d4be0e",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_46",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "B;C",
+        "prediction": "AB",
+        "grade": {
+          "gold": "BC",
+          "predicted": "AB",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 1874,
+        "toolCalls": [],
+        "attachmentId": "521fb6ed1c7b",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_48",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;D",
+        "prediction": "CD",
+        "grade": {
+          "gold": "AD",
+          "predicted": "CD",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.3333333333333333,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2614,
+        "toolCalls": [],
+        "attachmentId": "8ab92562fbd3",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_51",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A;C",
+        "prediction": "ABC",
+        "grade": {
+          "gold": "AC",
+          "predicted": "ABC",
+          "how": "compact",
+          "correct": false,
+          "partialJaccard": 0.6666666666666666,
+          "abstained": false
+        },
+        "correct": false,
+        "ms": 2225,
+        "toolCalls": [],
+        "attachmentId": "3d2e675249cd",
+        "error": null
+      },
+      {
+        "id": "mm_Financial_Data_Reasoning_and_Interpretation_80",
+        "group": "FinEval-MM/金融数据推理与理解",
+        "gold": "A",
+        "prediction": "A",
+        "grade": {
+          "gold": "A",
+          "predicted": "A",
+          "how": "compact",
+          "correct": true,
+          "partialJaccard": 1,
+          "abstained": false
+        },
+        "correct": true,
+        "ms": 3069,
+        "toolCalls": [],
+        "attachmentId": "27f4c7f732b6",
+        "error": null
+      }
+    ]
+  },
+  "presetId": 6
+}

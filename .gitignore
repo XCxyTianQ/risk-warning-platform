@@ -85,6 +85,8 @@ bench/external/out/*
 !bench/external/out/chain-fb-2026-09-15T00-56-48.json
 !bench/external/out/v100-effect-analysis.json
 !bench/external/out/platform-chain-2026-09-15T02-00-59.json
+!bench/external/out/platform-chain-2026-09-15T02-51-42.json
+!bench/external/out/platform-chain-2026-09-15T02-51-28.json
 !bench/external/out/chain-fb-2026-09-14T23-43-46.json
 !bench/external/out/judge-matrix-financebench.json
 !bench/external/out/samegen-results.json
